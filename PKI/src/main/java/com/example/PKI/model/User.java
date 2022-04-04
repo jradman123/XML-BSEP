@@ -28,12 +28,16 @@ public class User {
     @Column(nullable = false)
     private boolean isAdmin;
 
+    @Column(nullable = false)
+    private boolean isLoggedIn;
+    
     public User() {  }
 
-    public User(String email, String password, boolean isAdmin) {
+    public User(String email, String password, boolean isAdmin,boolean isLoggedIn) {
         this.email = email;
         this.password = password;
         this.isAdmin = isAdmin;
+        this.isLoggedIn = isLoggedIn;
     }
 
     public Integer getId() {
@@ -69,4 +73,11 @@ public class User {
         isAdmin = admin;
     }
 
+	public boolean isLoggedIn() {
+		return isLoggedIn;
+	}
+
+	public void setLoggedIn(boolean isLoggedIn) {
+		this.isLoggedIn = isLoggedIn;
+	}
 }
