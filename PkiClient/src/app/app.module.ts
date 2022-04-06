@@ -8,13 +8,15 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 import { AdminHomeComponent } from './components/admin-home/admin-home.component';
 import { ClientHomeComponent } from './components/client-home/client-home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NavbarComponent } from './components/navbar/navbar.component';
  
 @NgModule({
   declarations: [
     AppComponent,
     LandingPageComponent,
     AdminHomeComponent,
-    ClientHomeComponent
+    ClientHomeComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,

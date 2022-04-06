@@ -10,6 +10,9 @@ import lombok.Data;
 public class Certificate {
 
     @Id
+    private int id;
+
+    @Column
     private String serialNumber;
 
     @Column

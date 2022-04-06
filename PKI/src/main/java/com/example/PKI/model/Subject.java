@@ -1,5 +1,6 @@
 package com.example.PKI.model;
 
+import java.math.*;
 import java.security.PublicKey;
 import java.util.Date;
 
@@ -7,12 +8,14 @@ import org.bouncycastle.asn1.x500.X500Name;
 
 import lombok.Data;
 
+import javax.security.auth.x500.*;
+
 @Data
 public class Subject {
 	
     private PublicKey publicKey;
     private X500Name x500Name;
-    private String serialNumber;
+    private BigInteger serialNumber;
     private Date startDate;
     private Date endDate;
     private String commonName;
@@ -23,6 +26,9 @@ public class Subject {
     private String country;
     private String type;
     private String alias;
+
+    public Subject(PublicKey aPublic, X500Name build, BigInteger sn, Date startDate, Date endDate) {
+    }
 
 
     public PublicKey getPublicKey() {
@@ -41,11 +47,11 @@ public class Subject {
         this.x500Name = x500Name;
     }
 
-    public String getSerialNumber() {
+    public BigInteger getSerialNumber() {
         return serialNumber;
     }
 
-    public void setSerialNumber(String serialNumber) {
+    public void setSerialNumber(BigInteger serialNumber) {
         this.serialNumber = serialNumber;
     }
 
@@ -129,7 +135,8 @@ public class Subject {
 	public void setLocality(String locality) {
 		this.locality = locality;
 	}
-    
-    
+
+
+
 }
 
