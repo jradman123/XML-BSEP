@@ -9,6 +9,7 @@ import { AdminHomeComponent } from './components/admin-home/admin-home.component
 import { ClientHomeComponent } from './components/client-home/client-home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
  
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]
