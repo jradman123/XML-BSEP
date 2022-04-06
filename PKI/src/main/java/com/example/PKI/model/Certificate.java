@@ -30,6 +30,9 @@ public class Certificate {
     @Column
     private String subjectCommonName;
 
+    public Certificate() {
+    }
+
     public String getSerialNumber() {
         return serialNumber;
     }

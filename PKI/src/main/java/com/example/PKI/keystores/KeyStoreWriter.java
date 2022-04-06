@@ -1,4 +1,7 @@
 package com.example.PKI.keystores;
+import com.example.PKI.service.*;
+import org.springframework.beans.factory.annotation.*;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,11 +11,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
+import java.security.cert.*;
+import java.util.*;
 
 public class KeyStoreWriter {
     private KeyStore keyStore;
+    @Autowired
+    private KeyService keyService;
 
     public KeyStoreWriter() {
         try {
@@ -66,4 +71,7 @@ public class KeyStoreWriter {
             e.printStackTrace();
         }
     }
+
+
+
 }

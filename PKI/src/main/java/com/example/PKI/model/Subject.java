@@ -12,7 +12,8 @@ import javax.security.auth.x500.*;
 
 @Data
 public class Subject {
-	
+    //msm da u subject treba i private key
+
     private PublicKey publicKey;
     private X500Name x500Name;
     private BigInteger serialNumber;
@@ -27,9 +28,13 @@ public class Subject {
     private String type;
     private String alias;
 
-    public Subject(PublicKey aPublic, X500Name build, BigInteger sn, Date startDate, Date endDate) {
+    public Subject(PublicKey publicKey, X500Name x500Name, BigInteger serialNumber, Date startDate, Date endDate) {
+        this.publicKey = publicKey;
+        this.x500Name = x500Name;
+        this.serialNumber = serialNumber;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
-
 
     public PublicKey getPublicKey() {
         return publicKey;
