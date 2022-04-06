@@ -1,12 +1,10 @@
 package com.example.PKI.controller;
 
+import com.example.PKI.dto.LogedUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.PKI.dto.LoginDTO;
 import com.example.PKI.model.User;
@@ -22,21 +20,26 @@ public class UserController {
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
-	
+
+	@CrossOrigin(origins = "http://localhost:4200")
 	@PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO)  {
+    public ResponseEntity<LogedUserDTO> login(@RequestBody LoginDTO loginDTO)  {
 		User user = userService.findByEmail(loginDTO.getEmail());
 		if(userService.login(loginDTO)) {
 			if(user.isAdmin()) {
-				return new ResponseEntity<String>("admin", HttpStatus.OK);
+				LogedUserDTO logedUser = new LogedUserDTO(loginDTO.getEmail(),"admin");
+				return new ResponseEntity<LogedUserDTO>(logedUser, HttpStatus.OK);
 			}else {
-				return new ResponseEntity<String>("user", HttpStatus.OK);
+				LogedUserDTO logedUser = new LogedUserDTO(loginDTO.getEmail(),"user");
+				return new ResponseEntity<LogedUserDTO>(logedUser, HttpStatus.OK);
 			}
 		}
-        return new ResponseEntity<String>("Invalid login", HttpStatus.BAD_REQUEST);
+		LogedUserDTO logedUser = new LogedUserDTO(loginDTO.getEmail(),"error");
+        return new ResponseEntity<LogedUserDTO>(logedUser,HttpStatus.BAD_REQUEST);
         
     }
-	
+
+	@CrossOrigin(origins = "http://localhost:4200")
 	@PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody LoginDTO loginDTO)  {
 		User user = userService.findByEmail(loginDTO.getEmail());
