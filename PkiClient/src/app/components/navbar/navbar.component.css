@@ -1,0 +1,9 @@
+.nav-link {
+    font-size: 16px;
+  }
+  
+  .navbar-nav > li > a,
+  .navbar-nav > li > .dropdown > a {
+    padding-right: 0;
+  }
+  
