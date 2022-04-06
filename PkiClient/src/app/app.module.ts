@@ -10,6 +10,7 @@ import { ClientHomeComponent } from './components/client-home/client-home.compon
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ClientNavbarComponent } from './components/client-navbar/client-navbar.component';
  
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     LandingPageComponent,
     AdminHomeComponent,
     ClientHomeComponent,
-    NavbarComponent
+    NavbarComponent,
+    ClientNavbarComponent
   ],
   imports: [
     BrowserModule,

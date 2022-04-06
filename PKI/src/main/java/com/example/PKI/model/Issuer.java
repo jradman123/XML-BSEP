@@ -8,6 +8,9 @@ import lombok.Data;
 
 @Data
 public class Issuer {
+    public Issuer(PrivateKey privKey, X500Name issuerName) {
+    }
+
     public X500Name getX500Name() {
         return x500Name;
     }
