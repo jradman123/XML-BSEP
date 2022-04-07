@@ -22,8 +22,14 @@ public class KeyServiceImpl implements KeyService {
     }
 
     @Override
-    public String getKeyStorePath() {
-        return "test.pks";
+    public String getKeyStorePath(String type) {
+        if(type.equals("ROOT")) {
+            return "roots.pks";
+        }else if(type.equals("INTERMEDIATE")){
+            return "intermediates.pks";
+        }else{
+            return "clients.pks";
+        }
     }
 
     @Override
@@ -40,5 +46,10 @@ public class KeyServiceImpl implements KeyService {
         }
         return null;
     }
+
+    @Override
+    public String getKeyPass() {
+        return "key";
     }
+}
 

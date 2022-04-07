@@ -1,8 +1,7 @@
 package com.example.PKI.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+
 import lombok.Data;
 
 @Data
@@ -10,6 +9,7 @@ import lombok.Data;
 public class Certificate {
 
     @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
     @Column

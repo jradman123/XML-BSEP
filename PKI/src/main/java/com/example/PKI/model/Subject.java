@@ -28,12 +28,16 @@ public class Subject {
     private String type;
     private String alias;
 
-    public Subject(PublicKey publicKey, X500Name x500Name, BigInteger serialNumber, Date startDate, Date endDate) {
+    public Subject(PublicKey publicKey, X500Name x500Name, BigInteger serialNumber, Date startDate, Date endDate, String type, String alias,String commonName,String organization) {
         this.publicKey = publicKey;
         this.x500Name = x500Name;
         this.serialNumber = serialNumber;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.type = type;
+        this.alias = alias;
+        this.commonName = commonName;
+        this.organization = organization;
     }
 
     public PublicKey getPublicKey() {

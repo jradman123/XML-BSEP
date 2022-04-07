@@ -8,6 +8,8 @@ import com.example.PKI.service.cert.*;
 import org.bouncycastle.asn1.x500.*;
 import org.bouncycastle.operator.*;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
@@ -25,27 +27,14 @@ public class CertificateController {
 
 
     @PostMapping("/api/certificate/generate")
-    public void generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException, UnrecoverableKeyException {
-
-
-
-      //  IssuerDto issuerDto = new IssuerDto();
-      //  subjectDto.setX500Name(certificateService.getX500NameSubject(subjectDto));
+    public ResponseEntity<String> generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException, UnrecoverableKeyException {
         SubjectWithPKDto subjectWithPK = certificateService.generateSubjectData(subjectDto);
-
-        //KeyPair keyPair = keyService.generateKeyPair();
-        //subjectDto.setPublicKey(keyPair.getPublic());
-        //subjectDto.setPrivateKey(keyPair.getPrivate());
-
-        //zasto da mi vraca sertifikate?
-        //  keystoreService.getCertificates(keyService.getKeyStorePass());
-        certificateService.createCertificate(subjectWithPK, subjectDto.getType(),subjectDto.getIssuerSerialNumber());
-
-        //sacuva u bazi podataka sertifikat zajedno sa njegovim tipom
-        //  subjectDto.setAlias(keyService.getSerialNumber().toString());
-        //  subjectDto.setSerialNumber(subjectDto.getAlias());
-        //  CGservice.saveCertificateDB(subjectDto);
-        Certificate newCertificate = new Certificate();
-        certificateService.saveCertificateDB(subjectWithPK);
+        certificateService.createCertificate(subjectWithPK, subjectDto.getIssuerSerialNumber());
+        Certificate certificate= certificateService.saveCertificateDB(subjectWithPK);
+        if(certificate != null){
+            return new ResponseEntity<String>("Success!", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<String>("Error!",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

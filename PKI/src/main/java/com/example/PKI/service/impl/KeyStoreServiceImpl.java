@@ -40,9 +40,10 @@ public class KeyStoreServiceImpl implements KeyStoreService {
         return keyStore;
     }
 
+    //metodu treba popraviti jer se treba proslijediti tip sertifikata koji nam trebaju
     @Override
     public List<X509Certificate> getCertificates(String keyStorePass) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
-        String keyStorePath=keyService.getKeyStorePath();
+        String keyStorePath=keyService.getKeyStorePath("ROOT");
         KeyStore keyStore=getKeyStore(keyStorePath,keyStorePass);
         List<X509Certificate>certificateList=new ArrayList<>();
         Enumeration<String> aliass= keyStore.aliases();

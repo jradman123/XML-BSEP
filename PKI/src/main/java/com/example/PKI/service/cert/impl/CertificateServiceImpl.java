@@ -34,17 +34,17 @@ public class CertificateServiceImpl implements CertificateService {
     CertificateRepository repository;
 
     @Override
-    public X509Certificate generateCertificate(SubjectWithPKDto subjectWithPKDto, String issuerSerialNumber, String type) {
+    public X509Certificate generateCertificate(SubjectWithPKDto subjectWithPKDto, String issuerSerialNumber) {
         try{
             //ovo istraziti : on koristi SHA256withECDSA
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
             Security.addProvider(new BouncyCastleProvider());
             builder = builder.setProvider("BC");
-            KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
+            KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(subjectWithPKDto.getSubject().getType()),keyService.getKeyStorePass());
 
             X500Name issuer = null;
             PrivateKey privKey = null;
-            if(type.equals("ROOT")){
+            if(subjectWithPKDto.getSubject().getType().equals("ROOT")){
                 issuer=subjectWithPKDto.getSubject().getX500Name();
                 privKey=subjectWithPKDto.getPrivateKey();
             }
@@ -52,7 +52,7 @@ public class CertificateServiceImpl implements CertificateService {
                 X509Certificate issuerCert= (X509Certificate) keyStore.getCertificate(issuerSerialNumber);
                 issuer=new JcaX509CertificateHolder(issuerCert).getSubject();
                 privKey = (PrivateKey) keyStore.getKey(issuerSerialNumber, "key".toCharArray());
-                boolean valid = validate(issuerSerialNumber);
+                //boolean valid = validate(issuerSerialNumber); //popraviti metodu da zaista validira issuera
             }
 
 
@@ -98,7 +98,7 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public void saveCertificateDB(SubjectWithPKDto subjectWithPK) {
+    public com.example.PKI.model.Certificate saveCertificateDB(SubjectWithPKDto subjectWithPK) {
         CertificateType cerType;
         if (subjectWithPK.getSubject().getType().equals("ROOT")) {
             cerType = CertificateType.ROOT;
@@ -113,18 +113,18 @@ public class CertificateServiceImpl implements CertificateService {
             certificate.setSerialNumber(subjectWithPK.getSubject().getSerialNumber().toString());
             certificate.setType(cerType);
             certificate.setValid(true);
-            certificate.setSubjectCommonName(subjectWithPK.getSubject().getCommonName()+"organizacija:"+subjectWithPK.getSubject().getOrganization());
+            certificate.setSubjectCommonName(subjectWithPK.getSubject().getCommonName()+" organizacija: "+subjectWithPK.getSubject().getOrganization());
 
-            repository.save(certificate);
+            return repository.save(certificate);
         }
+        return null;
     }
 
     @Override
-    public void createCertificate(SubjectWithPKDto subjectWithPK, String type,String issuerSerialNumber) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
-        X509Certificate certificate = generateCertificate(subjectWithPK,issuerSerialNumber,type);
-        String keyPass="key";
-        KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
-        keyStoreService.store(keyService.getKeyStorePass(),keyPass,new Certificate[]{certificate},subjectWithPK.getPrivateKey(), subjectWithPK.getSubject().getAlias(),keyService.getKeyStorePath());
+    public void createCertificate(SubjectWithPKDto subjectWithPK,String issuerSerialNumber) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
+        X509Certificate certificate = generateCertificate(subjectWithPK,issuerSerialNumber);
+        KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(subjectWithPK.getSubject().getType()),keyService.getKeyStorePass());
+        keyStoreService.store(keyService.getKeyStorePass(),keyService.getKeyPass(),new Certificate[]{certificate},subjectWithPK.getPrivateKey(), subjectWithPK.getSubject().getAlias(),keyService.getKeyStorePath(subjectWithPK.getSubject().getType()));
 
     }
 
@@ -135,8 +135,9 @@ public class CertificateServiceImpl implements CertificateService {
 
             //Datumi od kad do kad vazi sertifikat
             SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
-           // Date startDate = iso8601Formater.parse(subjectDto.getStartDate().toString());
-           // Date endDate = iso8601Formater.parse(subjectDto.getEndDate().toString());
+            /*System.out.println(subjectDto.getStartDate().toString());
+            Date startDate = iso8601Formater.parse(subjectDto.getStartDate().toString());
+            Date endDate = iso8601Formater.parse(subjectDto.getEndDate().toString());*/
             //da se ne zezam sad s datumima
             Date startDate = iso8601Formater.parse("2021-12-31");
             Date endDate = iso8601Formater.parse("2022-12-31");
@@ -158,7 +159,8 @@ public class CertificateServiceImpl implements CertificateService {
             //UID (USER ID) je ID korisnika
             //NE ZNAM STA SA OVIM
             //IZVUCI USERA IZ BAZE KOJI IMA ISTI EMAIL I NJEGOV ID DODJELITI KAO UID?
-            builder.addRDN(BCStyle.UID, "123456");
+
+            builder.addRDN(BCStyle.UID,subjectDto.getEmail());
 
             //Kreiraju se podaci za sertifikat, sto ukljucuje:
             // - javni kljuc koji se vezuje za sertifikat
@@ -166,9 +168,7 @@ public class CertificateServiceImpl implements CertificateService {
             // - serijski broj sertifikata
             // - od kada do kada vazi sertifikat
             //msm da u subject treba i private key
-            Subject subject = new Subject(keyPairSubject.getPublic(), builder.build(), serialNumber, startDate, endDate);
-            subject.setAlias(subjectDto.getAlias());
-            subject.setType(subjectDto.getType());
+            Subject subject = new Subject(keyPairSubject.getPublic(), builder.build(), serialNumber, startDate, endDate,subjectDto.getType(),subjectDto.getAlias(),subjectDto.getCommonName(),subjectDto.getOrganization());
             return new SubjectWithPKDto(subject,keyPairSubject.getPrivate());
         } catch (ParseException e) {
             e.printStackTrace();
@@ -177,10 +177,10 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
 
-    private boolean validate(String alias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+   /* private boolean validate(String alias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         X509Certificate certificate= (X509Certificate) keyStore.getCertificate(alias);
         Certificate[] chain=keyStore.getCertificateChain(alias);
         return false;
-    }
+    }*/
 }
