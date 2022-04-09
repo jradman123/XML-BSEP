@@ -1,9 +1,6 @@
 package com.example.PKI.util.keyStoreUtils;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.security.*;
@@ -28,9 +25,9 @@ public class KeyStoreWriter {
 
     public void loadKeyStore(String fileName, char[] password) {
         try {
-            String fullPath = fileName;
+            String fullPath = fileName + ".jks";
             File f = new File(fullPath);
-            if(fullPath != null && f.exists()) {
+            if (fullPath != null && f.exists()) {
                 keyStore.load(new FileInputStream(fullPath), password);
             } else {
                 keyStore.load(null, password);

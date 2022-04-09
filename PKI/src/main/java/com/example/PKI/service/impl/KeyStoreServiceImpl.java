@@ -31,7 +31,7 @@ public class KeyStoreServiceImpl implements KeyStoreService {
     @Override
     public KeyStore getKeyStore(String keyStorePath, String keyStorePassword) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException {
         char[] keyStorePasswordChars=keyStorePassword.toCharArray();
-        KeyStore keyStore=KeyStore.getInstance("PKCS12");
+        KeyStore keyStore=KeyStore.getInstance("JKS");
         try{
             keyStore.load(new FileInputStream(keyStorePath),keyStorePasswordChars);
         }catch (FileNotFoundException e){

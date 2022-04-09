@@ -1,5 +1,7 @@
 package com.example.PKI.util.keyStoreUtils;
 
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +10,7 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
+@Component
 public class KeyStoreReader {
 
     private KeyStore keyStore;
