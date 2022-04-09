@@ -10,7 +10,7 @@ import java.security.cert.*;
 
 public interface CertificateService {
     Subject generateSubjectData(User subject);
-    X509Certificate generateCertificate(CertificateDto certificateDto);
+    X509Certificate generateCertificate(CertificateDto certificateDto,Subject generatedSubjectData);
     Certificate saveCertificateDB(CertificateDto certificateDto, User subject);
     void createCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException;
     X509Certificate getCertificateByAlias(String alias, KeyStore keystore) throws KeyStoreException;

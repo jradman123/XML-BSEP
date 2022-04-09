@@ -37,7 +37,7 @@ public class CertificateServiceImpl implements CertificateService {
     private BigInteger serialNumber;
 
     @Override
-    public X509Certificate generateCertificate(CertificateDto certificateDto) {
+    public X509Certificate generateCertificate(CertificateDto certificateDto,Subject generatedSubjectData) {
         try{
             System.out.println(certificateDto.getSubjectId().toString());
             SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
@@ -52,10 +52,8 @@ public class CertificateServiceImpl implements CertificateService {
             Security.addProvider(new BouncyCastleProvider());
             builder = builder.setProvider("BC");
             KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(certificateDto.getType()),keyService.getKeyStorePass());
-
-            User subjectData = userRepository.findById(certificateDto.getSubjectId()).get();
+            
             X500Name issuer = null;
-            Subject generatedSubjectData = generateSubjectData(subjectData);
             PrivateKey privateKey = null;
             if(certificateDto.getType().equals("ROOT")){
                 issuer = generatedSubjectData.getX500Name();
@@ -139,7 +137,7 @@ public class CertificateServiceImpl implements CertificateService {
     public void createCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
         User user = userRepository.findById(certificateDto.getSubjectId()).get();
         String alias = user.getEmail() + user.getId();
-        X509Certificate certificate = generateCertificate(certificateDto);
+        X509Certificate certificate = generateCertificate(certificateDto,generatedSubjectData);
         KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(certificateDto.getType()),keyService.getKeyStorePass());
         keyStoreService.store(keyService.getKeyStorePass(),keyService.getKeyPass(),new Certificate[]{certificate},generatedSubjectData.getKeyPair().getPrivate(), alias,keyService.getKeyStorePath(certificateDto.getType()));
 
