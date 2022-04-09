@@ -1,6 +1,7 @@
 package com.example.PKI.repository;
 
 import com.example.PKI.model.*;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.support.*;
 
 import java.util.*;
@@ -10,5 +11,6 @@ public interface CertificateRepository extends JpaRepositoryImplementation<Certi
 
     Certificate findBySerialNumber(String serial);
 
+    @Query(value = "select c.type from certificate c where c.serialNumber = ?1", nativeQuery = true)
     CertificateType findTypeBySerialNumber(String serialNumber);
 }
