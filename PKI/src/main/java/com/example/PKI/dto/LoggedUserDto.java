@@ -1,13 +1,13 @@
 package com.example.PKI.dto;
 
-public class LogedUserDTO {
+public class LogedUserDto {
     private String email;
     private String role;
 
-    public LogedUserDTO() {
+    public LogedUserDto() {
     }
 
-    public LogedUserDTO( String email, String role) {
+    public LogedUserDto(String email, String role) {
         this.email = email;
         this.role = role;
     }
