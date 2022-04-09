@@ -3,9 +3,9 @@ package com.example.PKI.controller;
 import com.example.PKI.dto.*;
 import com.example.PKI.model.*;
 import com.example.PKI.model.Certificate;
+import com.example.PKI.repository.UserRepository;
 import com.example.PKI.service.*;
 import com.example.PKI.service.cert.*;
-import org.bouncycastle.asn1.x500.*;
 import org.bouncycastle.operator.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -24,13 +24,16 @@ public class CertificateController {
     private KeyService keyService;
     @Autowired
     private CertificateService certificateService;
+    @Autowired
+    private UserRepository userRepository;
 
 
     @PostMapping("/api/certificate/generate")
-    public ResponseEntity<String> generateCertificate(@RequestBody SubjectDto subjectDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException, UnrecoverableKeyException {
-        SubjectWithPKDto subjectWithPK = certificateService.generateSubjectData(subjectDto);
-        certificateService.createCertificate(subjectWithPK, subjectDto.getIssuerSerialNumber());
-        Certificate certificate= certificateService.saveCertificateDB(subjectWithPK);
+    public ResponseEntity<String> generateCertificate(@RequestBody CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException, UnrecoverableKeyException {
+        User subject =  userRepository.findById(certificateDto.getSubjectId()).get();
+        Subject generatedSubjectData = certificateService.generateSubjectData(subject);
+        certificateService.createCertificate(certificateDto, generatedSubjectData);
+        Certificate certificate= certificateService.saveCertificateDB(certificateDto,subject);
         if(certificate != null){
             return new ResponseEntity<String>("Success!", HttpStatus.OK);
         }else{

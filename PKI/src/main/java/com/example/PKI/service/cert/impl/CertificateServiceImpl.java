@@ -31,39 +31,51 @@ public class CertificateServiceImpl implements CertificateService {
     @Autowired
     private KeyStoreService keyStoreService;
     @Autowired
-    CertificateRepository repository;
+    private CertificateRepository repository;
+    @Autowired
+    private UserRepository userRepository;
+    private BigInteger serialNumber;
 
     @Override
-    public X509Certificate generateCertificate(SubjectWithPKDto subjectWithPKDto, String issuerSerialNumber) {
+    public X509Certificate generateCertificate(CertificateDto certificateDto) {
         try{
+            System.out.println(certificateDto.getSubjectId().toString());
+            SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
+            /*System.out.println(subjectDto.getStartDate().toString());
+            Date startDate = iso8601Formater.parse(subjectDto.getStartDate().toString());
+            Date endDate = iso8601Formater.parse(subjectDto.getEndDate().toString());*/
+            Date startDate = iso8601Formater.parse("2021-12-31");
+            Date endDate = iso8601Formater.parse("2022-12-31");
+            serialNumber = new BigInteger(keyService.getSerialNumber().toString());
             //ovo istraziti : on koristi SHA256withECDSA
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
             Security.addProvider(new BouncyCastleProvider());
             builder = builder.setProvider("BC");
-            KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(subjectWithPKDto.getSubject().getType()),keyService.getKeyStorePass());
+            KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(certificateDto.getType()),keyService.getKeyStorePass());
 
+            User subjectData = userRepository.findById(certificateDto.getSubjectId()).get();
             X500Name issuer = null;
-            PrivateKey privKey = null;
-            if(subjectWithPKDto.getSubject().getType().equals("ROOT")){
-                issuer=subjectWithPKDto.getSubject().getX500Name();
-                privKey=subjectWithPKDto.getPrivateKey();
+            Subject generatedSubjectData = generateSubjectData(subjectData);
+            PrivateKey privateKey = null;
+            if(certificateDto.getType().equals("ROOT")){
+                issuer = generatedSubjectData.getX500Name();
+                privateKey = generatedSubjectData.getKeyPair().getPrivate();
             }
             else {
-                X509Certificate issuerCert= (X509Certificate) keyStore.getCertificate(issuerSerialNumber);
+                User issuerData = userRepository.findById(certificateDto.getIssuerId()).get();
+                X509Certificate issuerCert= (X509Certificate) keyStore.getCertificate(issuerData.getEmail() + issuerData.getId());
                 issuer=new JcaX509CertificateHolder(issuerCert).getSubject();
-                privKey = (PrivateKey) keyStore.getKey(issuerSerialNumber, "key".toCharArray());
-                //boolean valid = validate(issuerSerialNumber); //popraviti metodu da zaista validira issuera
+                privateKey = (PrivateKey) keyStore.getKey(certificateDto.getIssuerSerialNumber(), "key".toCharArray());
             }
 
-
-            ContentSigner contentSigner = builder.build(privKey);
+            ContentSigner contentSigner = builder.build(privateKey);
 
             X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer,
-                    subjectWithPKDto.getSubject().getSerialNumber(),
-                    subjectWithPKDto.getSubject().getStartDate(),
-                    subjectWithPKDto.getSubject().getEndDate(),
-                    subjectWithPKDto.getSubject().getX500Name(),
-                    subjectWithPKDto.getSubject().getPublicKey());
+                    serialNumber,
+                    startDate,
+                    endDate,
+                    generatedSubjectData.getX500Name(),
+                    generatedSubjectData.getKeyPair().getPublic());
 
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
@@ -92,88 +104,65 @@ public class CertificateServiceImpl implements CertificateService {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         return null;
     }
 
     @Override
-    public com.example.PKI.model.Certificate saveCertificateDB(SubjectWithPKDto subjectWithPK) {
+    public com.example.PKI.model.Certificate saveCertificateDB(CertificateDto subjectDto, User subject) {
         CertificateType cerType;
-        if (subjectWithPK.getSubject().getType().equals("ROOT")) {
+        if (subjectDto.getType().equals("ROOT")) {
             cerType = CertificateType.ROOT;
-        } else if (subjectWithPK.getSubject().getType().equals("INTERMEDIATE")) {
+        } else if (subjectDto.getType().equals("INTERMEDIATE")) {
             cerType = CertificateType.INTERMEDIATE;
         } else {
             cerType = CertificateType.CLIENT;
         }
 
-        if (subjectWithPK.getSubject().getStartDate().compareTo(subjectWithPK.getSubject().getEndDate()) < 0) {
+        if (subjectDto.getStartDate().compareTo(subjectDto.getEndDate()) < 0) {
             com.example.PKI.model.Certificate certificate = new com.example.PKI.model.Certificate();
-            certificate.setSerialNumber(subjectWithPK.getSubject().getSerialNumber().toString());
+            certificate.setSerialNumber(serialNumber.toString());
             certificate.setType(cerType);
             certificate.setValid(true);
-            certificate.setSubjectCommonName(subjectWithPK.getSubject().getCommonName()+" organizacija: "+subjectWithPK.getSubject().getOrganization());
-
+            certificate.setSubjectCommonName(subject.getCommonName()+" "+subject.getOrganization());
+            certificate.setValidFrom(subjectDto.getStartDate());
+            certificate.setValidTo(subjectDto.getEndDate());
             return repository.save(certificate);
         }
         return null;
     }
 
     @Override
-    public void createCertificate(SubjectWithPKDto subjectWithPK,String issuerSerialNumber) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
-        X509Certificate certificate = generateCertificate(subjectWithPK,issuerSerialNumber);
-        KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(subjectWithPK.getSubject().getType()),keyService.getKeyStorePass());
-        keyStoreService.store(keyService.getKeyStorePass(),keyService.getKeyPass(),new Certificate[]{certificate},subjectWithPK.getPrivateKey(), subjectWithPK.getSubject().getAlias(),keyService.getKeyStorePath(subjectWithPK.getSubject().getType()));
+    public void createCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
+        User user = userRepository.findById(certificateDto.getSubjectId()).get();
+        String alias = user.getEmail() + user.getId();
+        X509Certificate certificate = generateCertificate(certificateDto);
+        KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(certificateDto.getType()),keyService.getKeyStorePass());
+        keyStoreService.store(keyService.getKeyStorePass(),keyService.getKeyPass(),new Certificate[]{certificate},generatedSubjectData.getKeyPair().getPrivate(), alias,keyService.getKeyStorePath(certificateDto.getType()));
 
     }
 
     @Override
-    public SubjectWithPKDto generateSubjectData(SubjectDto subjectDto) {
-        try {
-            KeyPair keyPairSubject = keyService.generateKeyPair();
+    public X509Certificate getCertificateByAlias(String alias, KeyStore keystore) throws KeyStoreException {
+        X509Certificate certificate = (X509Certificate) keystore.getCertificate(alias);
+        return certificate;
+    }
 
-            //Datumi od kad do kad vazi sertifikat
-            SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
-            /*System.out.println(subjectDto.getStartDate().toString());
-            Date startDate = iso8601Formater.parse(subjectDto.getStartDate().toString());
-            Date endDate = iso8601Formater.parse(subjectDto.getEndDate().toString());*/
-            //da se ne zezam sad s datumima
-            Date startDate = iso8601Formater.parse("2021-12-31");
-            Date endDate = iso8601Formater.parse("2022-12-31");
+    @Override
+    public Subject generateSubjectData(User subject) {
+        KeyPair keyPairSubject = keyService.generateKeyPair();
 
+        X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+        builder.addRDN(BCStyle.CN, subject.getCommonName());
+        builder.addRDN(BCStyle.O, subject.getOrganization());
+        builder.addRDN(BCStyle.OU, subject.getOrganizationUnit());
+        builder.addRDN(BCStyle.C, subject.getCountry());
+        builder.addRDN(BCStyle.E, subject.getEmail());
 
-            //Serijski broj sertifikata
-            subjectDto.setAlias(keyService.getSerialNumber().toString());
-            BigInteger serialNumber = new BigInteger(subjectDto.getAlias());
-
-            //klasa X500NameBuilder pravi X500Name objekat koji predstavlja podatke o vlasniku
-            X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-            builder.addRDN(BCStyle.CN, subjectDto.getCommonName());
-            //builder.addRDN(BCStyle.SURNAME, "Sladic");
-            //builder.addRDN(BCStyle.GIVENNAME, "Goran");
-            builder.addRDN(BCStyle.O, subjectDto.getOrganization());
-            builder.addRDN(BCStyle.OU, subjectDto.getOrganizationUnit());
-            builder.addRDN(BCStyle.C, subjectDto.getCountry());
-            builder.addRDN(BCStyle.E, subjectDto.getEmail());
-            //UID (USER ID) je ID korisnika
-            //NE ZNAM STA SA OVIM
-            //IZVUCI USERA IZ BAZE KOJI IMA ISTI EMAIL I NJEGOV ID DODJELITI KAO UID?
-
-            builder.addRDN(BCStyle.UID,subjectDto.getEmail());
-
-            //Kreiraju se podaci za sertifikat, sto ukljucuje:
-            // - javni kljuc koji se vezuje za sertifikat
-            // - podatke o vlasniku
-            // - serijski broj sertifikata
-            // - od kada do kada vazi sertifikat
-            //msm da u subject treba i private key
-            Subject subject = new Subject(keyPairSubject.getPublic(), builder.build(), serialNumber, startDate, endDate,subjectDto.getType(),subjectDto.getAlias(),subjectDto.getCommonName(),subjectDto.getOrganization());
-            return new SubjectWithPKDto(subject,keyPairSubject.getPrivate());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new Subject(builder.build(), keyPairSubject);
     }
 
 
