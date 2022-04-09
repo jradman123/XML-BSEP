@@ -1,10 +1,8 @@
 package com.example.PKI.dto;
 
-import lombok.*;
-import org.bouncycastle.asn1.x500.*;
+import lombok.Data;
 
-import java.security.*;
-import java.util.*;
+import java.util.Date;
 
 @Data
 public class SubjectDto {
@@ -111,6 +109,4 @@ public class SubjectDto {
     public void setIssuerSerialNumber(String issuerSerialNumber) {
         this.issuerSerialNumber = issuerSerialNumber;
     }
-
-
 }

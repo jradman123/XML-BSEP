@@ -6,11 +6,11 @@ import lombok.*;
 import java.security.*;
 
 @Data
-public class SubjectWithPKDto {
+public class SubjectWithPkDto {
     private Subject subject;
     private PrivateKey privateKey;
 
-    public SubjectWithPKDto(Subject subject, PrivateKey privateKey) {
+    public SubjectWithPkDto(Subject subject, PrivateKey privateKey) {
         this.subject = subject;
         this.privateKey = privateKey;
     }

@@ -1,14 +1,11 @@
 package com.example.PKI.model;
 
-import java.math.*;
-import java.security.PublicKey;
-import java.util.Date;
-
+import lombok.Data;
 import org.bouncycastle.asn1.x500.X500Name;
 
-import lombok.Data;
-
-import javax.security.auth.x500.*;
+import java.math.BigInteger;
+import java.security.PublicKey;
+import java.util.Date;
 
 @Data
 public class Subject {
@@ -28,7 +25,7 @@ public class Subject {
     private String type;
     private String alias;
 
-    public Subject(PublicKey publicKey, X500Name x500Name, BigInteger serialNumber, Date startDate, Date endDate, String type, String alias,String commonName,String organization) {
+    public Subject(PublicKey publicKey, X500Name x500Name, BigInteger serialNumber, Date startDate, Date endDate, String type, String alias, String commonName, String organization) {
         this.publicKey = publicKey;
         this.x500Name = x500Name;
         this.serialNumber = serialNumber;
@@ -80,7 +77,6 @@ public class Subject {
         this.endDate = endDate;
     }
 
- 
     public String getOrganization() {
         return organization;
     }
@@ -129,23 +125,20 @@ public class Subject {
         this.alias = alias;
     }
 
-	public String getCommonName() {
-		return commonName;
-	}
+    public String getCommonName() {
+        return commonName;
+    }
 
-	public void setCommonName(String commonName) {
-		this.commonName = commonName;
-	}
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
 
-	public String getLocality() {
-		return locality;
-	}
+    public String getLocality() {
+        return locality;
+    }
 
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
-
-
-
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
 }
 
