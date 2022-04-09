@@ -29,11 +29,10 @@ public class CertificateController {
 
 
     @PostMapping("/api/certificate/generate")
-    public ResponseEntity<String> generateCertificate(@RequestBody CertificateDto certificateDto) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, OperatorCreationException, NoSuchProviderException, InvalidAlgorithmParameterException, UnrecoverableKeyException {
-        User subject =  userRepository.findById(certificateDto.getSubjectId()).get();
-        Subject generatedSubjectData = certificateService.generateSubjectData(subject);
+    public ResponseEntity<String> generateCertificate(@RequestBody CertificateDto certificateDto) throws Exception {
+        Subject generatedSubjectData = certificateService.generateSubjectData(certificateDto.getSubjectId());
         certificateService.createCertificate(certificateDto, generatedSubjectData);
-        Certificate certificate= certificateService.saveCertificateDB(certificateDto,subject);
+        Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
         if(certificate != null){
             return new ResponseEntity<String>("Success!", HttpStatus.OK);
         }else{

@@ -7,5 +7,8 @@ import java.util.*;
 
 public interface CertificateRepository extends JpaRepositoryImplementation<Certificate, Integer> {
     Collection<Certificate> findAllByTypeAndValid(CertificateType ct, boolean b);
+
     Certificate findBySerialNumber(String serial);
+
+    CertificateType findTypeBySerialNumber(String serialNumber);
 }

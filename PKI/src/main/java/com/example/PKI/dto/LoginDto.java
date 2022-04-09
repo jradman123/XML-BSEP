@@ -1,15 +1,15 @@
 package com.example.PKI.dto;
 
-public class LoginDTO {
+public class LoginDto {
 	
 	private String password;
 	private String email;
 	
-	public LoginDTO() {
+	public LoginDto() {
 		super();
 	}
 
-	public LoginDTO(String password, String email) {
+	public LoginDto(String password, String email) {
 		super();
 		this.password = password;
 		this.email = email;
