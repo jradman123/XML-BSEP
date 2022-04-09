@@ -25,7 +25,7 @@ public class Certificate {
     private String validTo;
  
     @Column
-    private boolean valid;
+    private boolean isRevoked;
 
     @Column
     private String subjectCommonName;
@@ -49,12 +49,12 @@ public class Certificate {
         this.type = type;
     }
 
-    public boolean isValid() {
-        return valid;
+    public boolean isRevoked() {
+        return isRevoked;
     }
 
-    public void setValid(boolean valid) {
-        this.valid = valid;
+    public void setIsRevoked(boolean isRevoked) {
+        this.isRevoked = isRevoked;
     }
 
     public String getSubjectCommonName() {

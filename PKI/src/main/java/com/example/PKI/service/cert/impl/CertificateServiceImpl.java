@@ -24,19 +24,19 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.sql.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 @Service
@@ -96,14 +96,10 @@ public class CertificateServiceImpl implements CertificateService {
             } else {
                 issuerAlias = certificateDto.getIssuerSerialNumber();
 
-                CertificateType typebyy = certificateRepository.findTypeBySerialNumber(certificateDto.getIssuerSerialNumber());
-                String kezstorpaff = keyService.getKeyStorePath(typebyy.toString());
-                //issuerKeyStore = keyStoreService.getKeyStore(kezstorpaff, keyService.getKeyStorePass());
+                issuerKeyStore = keyStoreReader.getKeyStore(keyService.getKeyStorePath(certificateRepository
+                        .findTypeBySerialNumber(certificateDto.getIssuerSerialNumber()).toString()), keyService.getKeyStorePass());
 
-                issuerKeyStore = keyStoreReader.getKeyStore(kezstorpaff, keyService.getKeyStorePass());
-
-                X509Certificate ceee = (X509Certificate) issuerKeyStore.getCertificate(issuerAlias);
-                issuer = new JcaX509CertificateHolder(ceee).getSubject();
+                issuer = new JcaX509CertificateHolder((X509Certificate) issuerKeyStore.getCertificate(issuerAlias)).getSubject();
                 privateKey = (PrivateKey) issuerKeyStore.getKey(issuerAlias, keyService.getKeyPass().toCharArray());
             }
             // signer
@@ -185,7 +181,7 @@ public class CertificateServiceImpl implements CertificateService {
             com.example.PKI.model.Certificate certificate = new com.example.PKI.model.Certificate();
             certificate.setSerialNumber(serialNumber.toString());
             certificate.setType(cerType);
-            certificate.setValid(true);
+            certificate.setIsRevoked(false);
             certificate.setSubjectCommonName(subject.getCommonName() + " " + subject.getOrganization());
             certificate.setValidFrom(subjectDto.getStartDate());
             certificate.setValidTo(subjectDto.getEndDate());
@@ -223,6 +219,112 @@ public class CertificateServiceImpl implements CertificateService {
         return new Subject(builder.build(), keyPairSubject);
     }
 
+    @Override
+    public void revokeCertificate(String serialNumber) throws Exception {
+
+        com.example.PKI.model.Certificate certificate = certificateRepository.findBySerialNumber(serialNumber);
+        if (certificate != null)
+            if (certificate.isRevoked()) throw new Exception("Certificate is already revoked!");
+
+        revokeAllBelow(serialNumber);
+    }
+
+    private void revokeAllBelow(String serialNumber) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        KeyStore[] keyStores = getKeyStores();
+        for (KeyStore ks : keyStores) revokeAllByKS(ks, serialNumber);
+    }
+
+    private KeyStore[] getKeyStores() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        KeyStore rootKS = keyStoreReader.getKeyStore("roots", "password");
+        KeyStore intermediateKS = keyStoreReader.getKeyStore("intermediates", "password");
+        KeyStore clientKS = keyStoreReader.getKeyStore("clients", "password");
+        return new KeyStore[]{rootKS, intermediateKS, clientKS};
+    }
+
+    private void revokeAllByKS(KeyStore keyStore, String serialNumber) throws KeyStoreException {
+        ArrayList<String> aliases = Collections.list(keyStore.aliases());
+        for (String alias : aliases)
+            checkCertificateChain(keyStore.getCertificateChain(alias), serialNumber);
+    }
+
+    private void checkCertificateChain(Certificate[] certificates, String serialNumber) {
+        int idx = -1;
+        for (int i = 0; i < certificates.length; i++) {
+            if (((X509Certificate) certificates[i]).getSerialNumber().toString().equals(serialNumber)) {
+                idx = i;
+            }
+        }
+
+        if (idx != -1) {
+            for (int i = 0; i <= idx; i++) {
+                X509Certificate certificate = (X509Certificate) certificates[i];
+                com.example.PKI.model.Certificate dbCertificate = certificateRepository.findBySerialNumber(certificate.getSerialNumber().toString());
+                dbCertificate.setIsRevoked(true);
+                certificateRepository.save(dbCertificate);
+            }
+        }
+    }
+
+    @Override
+    public ArrayList<com.example.PKI.model.Certificate> getAllCertificates() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<com.example.PKI.model.Certificate> certificates = new ArrayList<com.example.PKI.model.Certificate>();
+        for ( com.example.PKI.model.Certificate c : certificateRepository.findAll()) {
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber()))
+                certificates.add(c);
+        }
+        return certificates;
+    }
+
+    @Override
+    public boolean isCertificateValid(KeyStore keyStore, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException {
+        Certificate[] certificates = keyStore.getCertificateChain(alias);
+
+        for (int i = certificates.length - 1; i >= 0; i--) {
+            String currentAlias = ((X509Certificate) certificates[i]).getSerialNumber().toString();
+            //KeyStore currentKS = getKeyStoreByAlias(currentAlias);
+
+            // is it revoked
+            if (certificateRepository.findBySerialNumber(currentAlias).isRevoked()) return false;
+
+            // did it expire
+            X509Certificate certificate = (X509Certificate) certificates[i];
+            try {
+                certificate.checkValidity();
+            }
+            catch (CertificateExpiredException e) {
+                return false;
+            }
+            catch (CertificateNotYetValidException e) {
+                return false;
+            }
+
+            X509Certificate parent = (X509Certificate) certificates[i];
+
+            if( i > 0) {
+                X509Certificate child = (X509Certificate) certificates[i - 1];
+
+                try {
+                    child.verify(parent.getPublicKey()); // da li je potpis validan
+                }
+                catch (SignatureException e) {
+                    return false;
+                }
+                catch (InvalidKeyException e) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public KeyStore getKeyStoreByAlias(String alias) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        KeyStore[] keyStores = getKeyStores();
+        for (KeyStore ks : keyStores) {
+            if (ks.containsAlias(alias)) return ks;
+        }
+        return null;
+    }
 
    /* private boolean validate(String alias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
