@@ -8,7 +8,7 @@
     padding: 15px 20px;
     /*15 top and bottom 20 left and right*/
     flex-direction: column;
-    max-height: 300px;
+    max-height: 400px;
     flex-wrap: wrap;
 }
 

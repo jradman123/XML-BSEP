@@ -4,7 +4,6 @@ import com.example.PKI.dto.*;
 import com.example.PKI.model.Certificate;
 import com.example.PKI.model.Subject;
 import com.example.PKI.model.User;
-import org.springframework.http.HttpStatus;
 
 import java.io.*;
 import java.security.*;

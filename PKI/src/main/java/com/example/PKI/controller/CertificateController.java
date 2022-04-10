@@ -73,4 +73,6 @@ public class CertificateController {
     public ResponseEntity<?> getCAsForSigning(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         return new ResponseEntity<ArrayList<User>>(certificateService.getAllValidSignersForDateRange(startDate, endDate), HttpStatus.OK);
     }
+
+
 }

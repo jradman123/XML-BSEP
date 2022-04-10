@@ -7,9 +7,7 @@
             <mat-label>Enter your email</mat-label>
             <input matInput placeholder="pat@example.com" formControlName="email"  required>
          
-            <mat-error *ngIf="
-            subjectForm.controls['email'].errors?.required
-           ||   subjectForm.controls['email'].errors?.email">
+            <mat-error *ngIf=" subjectForm.controls['email'].errors?.required ||  subjectForm.controls['email'].errors?.email">
             {{getErrorMessage()}}</mat-error>
         
           </mat-form-field>

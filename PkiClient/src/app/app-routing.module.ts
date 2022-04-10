@@ -7,6 +7,8 @@ import { AllCertificatesComponent } from './components/all-certificates/all-cert
 import { CreateCertificateComponent } from './components/create-certificate/create-certificate.component';
 import { CreateSubjectComponent } from './components/create-subject/create-subject.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
+import { CertificateChainComponent } from './components/certificate-chain/certificate-chain.component';
+
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -15,7 +17,8 @@ const routes: Routes = [
   { path: 'chome', component: ClientHomeComponent },
   { path: 'createCertificate', component: CreateCertificateComponent },
   { path: 'createSubject', component: CreateSubjectComponent },
-  { path: 'certificate', component: CertificateComponent }
+  { path: 'certificate', component: CertificateComponent },
+  { path: 'chain', component: CertificateChainComponent }
 ];
 
 @NgModule({

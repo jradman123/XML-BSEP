@@ -11,7 +11,6 @@ import com.example.PKI.service.KeyStoreService;
 import com.example.PKI.service.cert.CertificateService;
 import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
 import com.example.PKI.util.keyStoreUtils.KeyStoreWriter;
-import lombok.SneakyThrows;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -32,7 +31,6 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.sql.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -337,6 +335,8 @@ public class CertificateServiceImpl implements CertificateService {
         }
         return users;
     }
+
+
    /* private boolean validate(String alias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         X509Certificate certificate= (X509Certificate) keyStore.getCertificate(alias);
