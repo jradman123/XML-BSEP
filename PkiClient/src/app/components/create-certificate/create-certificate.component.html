@@ -1,0 +1,75 @@
+<div class="container">
+  <div style="width: 80%; color: lightslategray; margin: auto">
+    <h1>Create New Certificate</h1>
+    <hr />
+    <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+      <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+          <ng-template matStepLabel>Pick the certificate type</ng-template>
+          <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <mat-select
+              formControlName="firstCtrl"
+              required
+              #firstCtrl
+              (selectionChange)="changeType($event.value)"
+            >
+              <mat-option value="root">Root</mat-option>
+              <mat-option value="intermediate">Intermediate</mat-option>
+              <mat-option value="client">End-Entity</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperNext (click)="typeNext()">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="secondFormGroup">
+        <form [formGroup]="secondFormGroup">
+          <ng-template matStepLabel>Pick validity timespan</ng-template>
+          <mat-form-field appearance="fill">
+            <mat-label>Valid from - to</mat-label>
+            <mat-date-range-input
+              [rangePicker]="picker"
+              [min]="todayDate"
+              required
+            >
+              <input
+                matStartDate
+                placeholder="Start date"
+                formControlName="start"
+                placeholder="Start date"
+                #dateRangeStart
+              />
+              <input
+                matEndDate
+                placeholder="End date"
+                formControlName="end"
+                placeholder="End date"
+                #dateRangeEnd
+                (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
+              />
+            </mat-date-range-input>
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Choose the issuer</ng-template>
+
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </div>
+</div>
