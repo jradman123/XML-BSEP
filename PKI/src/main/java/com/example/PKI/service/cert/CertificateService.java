@@ -31,4 +31,11 @@ public interface CertificateService {
     ArrayList<Certificate> getAllCertificates() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
 
     ArrayList<Certificate> getAllUsersCertificates(String email);
+
+    ArrayList<Certificate> getAllValidSignersForUser(String email,String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
+
+    void generateCertificateByUser(CertificateDto certificateDto, Subject generatedSubjectData);
+
+    ArrayList<User> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
+
 }

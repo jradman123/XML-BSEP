@@ -28,7 +28,7 @@ public class Certificate {
     private boolean isRevoked;
 
     @Column
-    private String email;
+    private String subjectEmail;
 
     public Certificate() {
     }
@@ -57,11 +57,11 @@ public class Certificate {
         this.isRevoked = isRevoked;
     }
 
-    public String getEmail() {
-        return email;
+    public String getSubjectEmail() {
+        return subjectEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setSubjectEmail(String subjectEmail) {
+        this.subjectEmail = subjectEmail;
     }
 }
