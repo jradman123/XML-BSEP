@@ -16,4 +16,8 @@ export class CertificateService {
   getAllCertificates() : Observable<CertificateView[]> {
     return this.http.get<CertificateView[]>('http://localhost:8443/api/certificate/');
   }
+
+  downloadCertificate(serialNumber : string) {
+    return this.http.post<any>('http://localhost:8443/api/certificate/downloadCertificate',serialNumber);
+  }
 }
