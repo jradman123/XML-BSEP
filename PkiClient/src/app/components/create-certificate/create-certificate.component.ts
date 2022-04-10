@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IssuerData } from 'src/app/interfaces/issuer-data';
+import { SubjectData } from 'src/app/interfaces/subject-data';
 import { CertificateService } from 'src/app/services/CertificateService/certificate.service';
 
 @Component({
@@ -20,12 +21,14 @@ export class CreateCertificateComponent implements OnInit {
   todayDate: Date = new Date();
   potentialIssuers: IssuerData[];
   enableIssuerStep = true;
+  subjects: SubjectData[];
 
   constructor(
     private _formBuilder: FormBuilder,
     private certificateService: CertificateService
   ) {
     this.potentialIssuers = [] as IssuerData[];
+    this.subjects = [] as SubjectData[];
   }
 
   ngOnInit(): void {
@@ -48,6 +51,9 @@ export class CreateCertificateComponent implements OnInit {
   changeType(value: String) {
     this.cType = value;
     console.log('type is ' + value);
+    this.certificateService.getSubjects().subscribe((res) => {
+      this.subjects = res;
+    });
   }
 
   dateRangeChange(
@@ -77,4 +83,6 @@ export class CreateCertificateComponent implements OnInit {
   issuerSelected(matOpr: any) {
     console.log(this.potentialIssuers);
   }
+
+  subjectSelected(matOption1: any) {}
 }

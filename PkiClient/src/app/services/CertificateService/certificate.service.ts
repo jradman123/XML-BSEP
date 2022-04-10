@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CertificateView } from 'src/app/interfaces/certificate-view';
 import { IssuerData } from 'src/app/interfaces/issuer-data';
+import { SubjectData } from 'src/app/interfaces/subject-data';
 
 @Injectable({
   providedIn: 'root',
@@ -26,5 +27,9 @@ export class CertificateService {
         '&endDate=' +
         endDate
     );
+  }
+
+  getSubjects(): Observable<SubjectData[]> {
+    return this.http.get<SubjectData[]>('http://localhost:8443/api/users');
   }
 }

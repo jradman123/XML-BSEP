@@ -102,17 +102,25 @@
       <mat-step [stepControl]="fourthFormGroup">
         <form [formGroup]="fourthFormGroup">
           <ng-template matStepLabel>Pick or fill in the subject</ng-template>
-          <app-create-subject></app-create-subject>
-          <mat-form-field appearance="fill">
-            <div>
-              <hr />
-              <p>Or</p>
-              <mat-select formControlName="fourthCtrl"
-                >Choose a subject</mat-select
-              >
-            </div>
-            <!-- <input matInput placeholder=" " formControlName="fourthCtrl" /> -->
-          </mat-form-field>
+          <div>
+            <app-create-subject></app-create-subject>
+            <hr />
+            <p text-align="justify">Or</p>
+            <mat-form-field appearance="fill">
+              <mat-label>Subject</mat-label>
+              <mat-select formControlName="fourthCtrl">
+                <mat-option
+                  #matOption1
+                  (click)="subjectSelected(matOption1)"
+                  *ngFor="let s of subjects"
+                  value="{{ s.commonName }}"
+                >
+                  {{ s.email }}, CN = {{ s.commonName }}, O =
+                  {{ s.organization }}, C = {{ s.country }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
           <div>
             <button mat-button matStepperPrevious>Back</button>
             <button mat-button matStepperNext>Next</button>
