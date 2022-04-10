@@ -19,6 +19,20 @@ export class AllCertificatesComponent implements OnInit {
     this.getAllCertificates();
   }
 
+  revokeCertificate( serialNumber:string) : void {
+    console.log(serialNumber);
+    this.certificateService.revokeCertificate(serialNumber).subscribe({
+      next: (result) => {
+        this.certificates = result;
+        
+      },
+      error: data => {
+        if (data.error && typeof data.error === "string")
+        console.log("desila se greska")
+      }
+    });
+  }
+
   getAllCertificates() { console.log("usao2") ; this.certificateService.getAllCertificates().subscribe(
     {
       next: (result) => {

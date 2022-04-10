@@ -26,7 +26,7 @@
             (click)="onSubmit(item)">Revoke</button>
             <button id="choose-button" style="background-color: rgb(28, 133, 165); color: white;" mat-button (click)="downloadCertificate(item)">Download</button> -->
 
-            <button mat-flat-button>Revoke</button>
+            <button (click)="revokeCertificate(certificate.serialNumber)" mat-flat-button>Revoke</button>
             <button id="choose-button" mat-button  [disabled]="certificate.isRevoked" >Download</button>
 
             <!-- <button mat-flat-button *ngIf="conflicting" id="choose-button-conflict" (click)="warnKeyUsage()"

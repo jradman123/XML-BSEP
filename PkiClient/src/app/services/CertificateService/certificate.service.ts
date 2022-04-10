@@ -7,6 +7,9 @@ import { CertificateView } from 'src/app/interfaces/certificate-view';
   providedIn: 'root'
 })
 export class CertificateService {
+  revokeCertificate(serialNumber: string) {
+    return this.http.post<any>('http://localhost:8443/api/certificate/revoke',serialNumber);
+  }
 
   constructor(private http: HttpClient) { }
 

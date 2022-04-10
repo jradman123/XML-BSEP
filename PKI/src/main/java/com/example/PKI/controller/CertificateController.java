@@ -44,9 +44,9 @@ public class CertificateController {
     }
 
     @PostMapping("/api/certificate/revoke")
-    public ResponseEntity<?> revokeCertificate(@RequestBody String serialNumber) throws Exception {
+    public ResponseEntity<ArrayList<com.example.PKI.model.Certificate>> revokeCertificate(@RequestBody String serialNumber) throws Exception {
         certificateService.revokeCertificate(serialNumber);
-        return new ResponseEntity<>("All good bbyyyyyyyyyyyyyyy", HttpStatus.OK);
+        return new ResponseEntity<>(certificateService.getAllCertificates(), HttpStatus.OK);
     }
 
     @GetMapping("/api/certificate/")
