@@ -1,7 +1,6 @@
 <div class="container">
   <div style="width: 80%; color: lightslategray; margin: auto">
-    <h1>Create New Certificate</h1>
-    <hr />
+    <h1>Create Certificate</h1>
     <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
       <mat-step [stepControl]="firstFormGroup">
         <form [formGroup]="firstFormGroup">
@@ -103,8 +102,16 @@
       <mat-step [stepControl]="fourthFormGroup">
         <form [formGroup]="fourthFormGroup">
           <ng-template matStepLabel>Pick or fill in the subject</ng-template>
+          <app-create-subject></app-create-subject>
           <mat-form-field appearance="fill">
-            <input matInput placeholder=" " formControlName="fourthCtrl" />
+            <div>
+              <hr />
+              <p>Or</p>
+              <mat-select formControlName="fourthCtrl"
+                >Choose a subject</mat-select
+              >
+            </div>
+            <!-- <input matInput placeholder=" " formControlName="fourthCtrl" /> -->
           </mat-form-field>
           <div>
             <button mat-button matStepperPrevious>Back</button>
