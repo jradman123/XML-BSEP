@@ -6,7 +6,7 @@ import com.example.PKI.model.*;
 import com.example.PKI.model.Certificate;
 import com.example.PKI.model.Subject;
 import com.example.PKI.model.User;
-import com.example.PKI.repository.UserRepository;
+import com.example.PKI.repository.*;
 import com.example.PKI.service.Base64Encoder;
 import com.example.PKI.service.KeyService;
 import com.example.PKI.service.cert.CertificateService;
@@ -85,7 +85,7 @@ public class CertificateController {
         } else {
             return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
+    }
     @GetMapping("/api/certificate/getCAsForSigning")
     public ResponseEntity<?> getCAsForSigning(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         return new ResponseEntity<ArrayList<User>>(certificateService.getAllValidSignersForDateRange(startDate, endDate), HttpStatus.OK);
