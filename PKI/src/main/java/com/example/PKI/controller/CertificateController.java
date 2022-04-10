@@ -10,6 +10,7 @@ import com.example.PKI.repository.*;
 import com.example.PKI.service.Base64Encoder;
 import com.example.PKI.service.KeyService;
 import com.example.PKI.service.cert.CertificateService;
+import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -273,7 +273,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public ArrayList<com.example.PKI.model.Certificate> getAllUsersCertificates(String email) {
-        return (ArrayList<com.example.PKI.model.Certificate>) certificateRepository.findAllByEmail(email);
+        return (ArrayList<com.example.PKI.model.Certificate>) certificateRepository.findAllBySubjectEmail(email);
     }
 
     @Override
