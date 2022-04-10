@@ -20,7 +20,7 @@
             </mat-select>
           </mat-form-field>
           <div>
-            <button mat-button matStepperNext (click)="typeNext()">Next</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -58,17 +58,59 @@
           </mat-form-field>
           <div>
             <button mat-button matStepperPrevious>Back</button>
-            <button mat-button matStepperNext>Next</button>
+            <button mat-button matStepperNext (click)="dateNext()">Next</button>
           </div>
         </form>
       </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Choose the issuer</ng-template>
-
-        <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
-        </div>
+      <ng-template [ngIf]="enableIssuerStep">
+        <mat-step [stepControl]="thirdFormGroup">
+          <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>Pick the issuer</ng-template>
+            <mat-form-field appearance="fill">
+              <mat-selection-list #matList [multiple]="false">
+                <mat-list-option
+                  #matOpr
+                  (click)="issuerSelected(matOpr)"
+                  *ngFor="let issuer of potentialIssuers"
+                  [value]="issuer.id"
+                >
+                  <!-- <p>CN = {{ issuer.commonName }}</p>
+                <br />
+                <p>O = {{ issuer.organization }}</p>
+                <br />
+                <p>C = {{ issuer.country }}</p>
+                <br /> -->
+                  <p>
+                    CN = {{ issuer.commonName }}, O = {{ issuer.organization }},
+                    C = {{ issuer.country }}
+                  </p>
+                </mat-list-option>
+              </mat-selection-list>
+              <input
+                matInput
+                placeholder=" "
+                formControlName="thirdCtrl"
+                readonly
+              />
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+      </ng-template>
+      <mat-step [stepControl]="fourthFormGroup">
+        <form [formGroup]="fourthFormGroup">
+          <ng-template matStepLabel>Pick or fill in the subject</ng-template>
+          <mat-form-field appearance="fill">
+            <input matInput placeholder=" " formControlName="fourthCtrl" />
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
       </mat-step>
     </mat-stepper>
   </div>
