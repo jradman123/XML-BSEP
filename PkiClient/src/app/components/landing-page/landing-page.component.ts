@@ -37,6 +37,8 @@ export class LandingPageComponent implements OnInit {
     };
     this.authService.login(f.value).subscribe({
       next: (x:any) =>{
+        localStorage.setItem('email',x.email);
+        localStorage.setItem('role',x.role);
         console.log(x);
         if(x.role === "user"){
           this._router.navigate(['/chome']);

@@ -22,16 +22,8 @@
           </p>
         </mat-card-content>
         <mat-card-actions>
-            <!-- <button mat-flat-button *ngIf="!conflicting" id="choose-button" style="background-color: rgb(28, 133, 165); color: white;"
-            (click)="onSubmit(item)">Revoke</button>
-            <button id="choose-button" style="background-color: rgb(28, 133, 165); color: white;" mat-button (click)="downloadCertificate(item)">Download</button> -->
-
-            <button (click)="revokeCertificate(certificate.serialNumber)" mat-flat-button>Revoke</button>
-            <button id="choose-button" mat-button (click) = "downloadCertificate(certificate.serialNumber)"  [disabled]="certificate.isRevoked" >Download</button>
-
-            <!-- <button mat-flat-button *ngIf="conflicting" id="choose-button-conflict" (click)="warnKeyUsage()"
-            matTooltip="This certificate does not have some of your currently selected Key Usages and/or Extended Key Usages"
-            matTooltipPosition="below">Choose</button> -->
+            <button *ngIf="admin" (click)="revokeCertificate(certificate.serialNumber)" mat-flat-button>Revoke</button>
+            <button  id="choose-button" mat-button (click) = "downloadCertificate(certificate.serialNumber)"  [disabled]="certificate.isRevoked" >Download</button>
         </mat-card-actions>
       </mat-card>
 </div>
