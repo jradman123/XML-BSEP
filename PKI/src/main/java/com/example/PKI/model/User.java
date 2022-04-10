@@ -18,26 +18,37 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Integer id;
-
     @Column(unique = true, nullable = false)
     private String email;
-
     @Column(nullable = false)
     private String password;
-
     @Column(nullable = false)
     private boolean isAdmin;
-
     @Column(nullable = false)
     private boolean isLoggedIn;
+    @Column
+    private String commonName;
+    @Column
+    private String organization;
+    @Column
+    private String organizationUnit;
+    @Column
+    private String locality;
+    @Column
+    private String country;
     
     public User() {  }
 
-    public User(String email, String password, boolean isAdmin,boolean isLoggedIn) {
+    public User(String email, String password, boolean isAdmin, boolean isLoggedIn, String commonName, String organization, String organizationUnit, String locality, String country) {
         this.email = email;
         this.password = password;
         this.isAdmin = isAdmin;
         this.isLoggedIn = isLoggedIn;
+        this.commonName = commonName;
+        this.organization = organization;
+        this.organizationUnit = organizationUnit;
+        this.locality = locality;
+        this.country = country;
     }
 
     public Integer getId() {
@@ -80,4 +91,44 @@ public class User {
 	public void setLoggedIn(boolean isLoggedIn) {
 		this.isLoggedIn = isLoggedIn;
 	}
+
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    public String getOrganizationUnit() {
+        return organizationUnit;
+    }
+
+    public void setOrganizationUnit(String organizationUnit) {
+        this.organizationUnit = organizationUnit;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 }

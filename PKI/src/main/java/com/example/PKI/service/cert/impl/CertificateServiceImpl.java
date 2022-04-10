@@ -1,26 +1,38 @@
 package com.example.PKI.service.cert.impl;
-
-import com.example.PKI.dto.*;
-import com.example.PKI.model.*;
-import com.example.PKI.repository.*;
-import com.example.PKI.service.*;
+import com.example.PKI.dto.CertificateDto;
+import com.example.PKI.model.CertificateType;
+import com.example.PKI.model.Subject;
+import com.example.PKI.model.User;
+import com.example.PKI.repository.CertificateRepository;
+import com.example.PKI.repository.UserRepository;
+import com.example.PKI.service.KeyService;
+import com.example.PKI.service.KeyStoreService;
 import com.example.PKI.service.cert.CertificateService;
-import org.bouncycastle.asn1.x500.*;
-import org.bouncycastle.asn1.x500.style.*;
-import org.bouncycastle.cert.*;
-import org.bouncycastle.cert.jcajce.*;
-import org.bouncycastle.jce.provider.*;
-import org.bouncycastle.operator.*;
-import org.bouncycastle.operator.jcajce.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.stereotype.*;
+import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
+import com.example.PKI.util.keyStoreUtils.KeyStoreWriter;
+import lombok.SneakyThrows;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.math.*;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.security.*;
-import java.security.cert.*;
 import java.security.cert.Certificate;
+import java.security.cert.*;
 import java.text.*;
+import java.time.*;
 import java.util.*;
 
 @Service
@@ -31,50 +43,99 @@ public class CertificateServiceImpl implements CertificateService {
     @Autowired
     private KeyStoreService keyStoreService;
     @Autowired
-    CertificateRepository repository;
+    private CertificateRepository certificateRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    private BigInteger serialNumber;
+
+    @Autowired
+    private KeyStoreWriter keyStoreWriter;
+
+    @Autowired
+    private KeyStoreReader keyStoreReader;
+
 
     @Override
-    public X509Certificate generateCertificate(SubjectWithPKDto subjectWithPKDto, String issuerSerialNumber) {
-        try{
+    public X509Certificate generateCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws Exception {
+        try {
+
+            if (LocalDate.parse(certificateDto.getEndDate()).compareTo(LocalDate.parse(certificateDto.getStartDate())) < 0) {
+                throw new Exception("END_DATE_BEFORE_START");
+            }
+
+            // TODO: provjeri je l ima usera i issuera u bazii brrrr
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = sdf.parse(certificateDto.getStartDate());
+            Date endDate = sdf.parse(certificateDto.getEndDate());
+
             //ovo istraziti : on koristi SHA256withECDSA
             JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
             Security.addProvider(new BouncyCastleProvider());
-            builder = builder.setProvider("BC");
-            KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(subjectWithPKDto.getSubject().getType()),keyService.getKeyStorePass());
+            builder.setProvider("BC");
+            //TODO: zamijeniti sa readerom eyyy
+            KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass());
 
-            X500Name issuer = null;
-            PrivateKey privKey = null;
-            if(subjectWithPKDto.getSubject().getType().equals("ROOT")){
-                issuer=subjectWithPKDto.getSubject().getX500Name();
-                privKey=subjectWithPKDto.getPrivateKey();
+            X500Name issuer;
+            PrivateKey privateKey;
+            KeyStore issuerKeyStore;
+            String issuerAlias;
+            serialNumber = keyService.getSerialNumber();
+
+            if (certificateDto.getType().equals("ROOT")) {
+                issuerAlias = serialNumber.toString();
+                issuer = generatedSubjectData.getX500Name();
+                issuerKeyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(CertificateType.ROOT.toString()),
+                        keyService.getKeyStorePass());
+                privateKey = generatedSubjectData.getKeyPair().getPrivate();
+            } else {
+                issuerAlias = certificateDto.getIssuerSerialNumber();
+
+                issuerKeyStore = keyStoreReader.getKeyStore(keyService.getKeyStorePath(certificateRepository
+                        .findTypeBySerialNumber(certificateDto.getIssuerSerialNumber()).toString()), keyService.getKeyStorePass());
+
+                issuer = new JcaX509CertificateHolder((X509Certificate) issuerKeyStore.getCertificate(issuerAlias)).getSubject();
+                privateKey = (PrivateKey) issuerKeyStore.getKey(issuerAlias, keyService.getKeyPass().toCharArray());
             }
-            else {
-                X509Certificate issuerCert= (X509Certificate) keyStore.getCertificate(issuerSerialNumber);
-                issuer=new JcaX509CertificateHolder(issuerCert).getSubject();
-                privKey = (PrivateKey) keyStore.getKey(issuerSerialNumber, "key".toCharArray());
-                //boolean valid = validate(issuerSerialNumber); //popraviti metodu da zaista validira issuera
-            }
-
-
-            ContentSigner contentSigner = builder.build(privKey);
+            // signer
+            ContentSigner contentSigner = builder.build(privateKey);
 
             X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer,
-                    subjectWithPKDto.getSubject().getSerialNumber(),
-                    subjectWithPKDto.getSubject().getStartDate(),
-                    subjectWithPKDto.getSubject().getEndDate(),
-                    subjectWithPKDto.getSubject().getX500Name(),
-                    subjectWithPKDto.getSubject().getPublicKey());
+                    serialNumber,
+                    startDate,
+                    endDate,
+                    generatedSubjectData.getX500Name(),
+                    generatedSubjectData.getKeyPair().getPublic());
 
             X509CertificateHolder certHolder = certGen.build(contentSigner);
 
             JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
-            BouncyCastleProvider bcp = new BouncyCastleProvider();
-            certConverter = certConverter.setProvider(bcp);
+            certConverter.setProvider("BC");
 
+            X509Certificate cert = certConverter.getCertificate(certHolder);
+
+            Certificate[] certificateChain;
+            Certificate[] certificates = issuerKeyStore.getCertificateChain(issuerAlias);
+            if (certificates != null) {
+                certificateChain = new Certificate[certificates.length + 1];
+                certificateChain[0] = cert;
+                for (int i = 0; i < certificates.length; i++)
+                    certificateChain[i + 1] = certificates[i];
+            } else
+                certificateChain = new Certificate[]{cert};
+
+            // ja bih ovo uradila on init !!! ovde mi je ruzno TODO
+            keyStoreWriter.loadKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
+            keyStoreWriter.write(cert.getSerialNumber().toString(), generatedSubjectData.getKeyPair().getPrivate(), keyService.getKeyPass(),
+                    certificateChain);
+            keyStoreWriter.saveKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
             //Konvertuje objekat u sertifikat
+
+
             return certConverter.getCertificate(certHolder);
 
-        }catch (CertificateEncodingException e) {
+        } catch (CertificateEncodingException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
@@ -92,95 +153,296 @@ public class CertificateServiceImpl implements CertificateService {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         return null;
     }
 
     @Override
-    public com.example.PKI.model.Certificate saveCertificateDB(SubjectWithPKDto subjectWithPK) {
+    public com.example.PKI.model.Certificate saveCertificateDB(CertificateDto subjectDto, Integer subjectId) {
         CertificateType cerType;
-        if (subjectWithPK.getSubject().getType().equals("ROOT")) {
+        if (subjectDto.getType().equals("ROOT")) {
             cerType = CertificateType.ROOT;
-        } else if (subjectWithPK.getSubject().getType().equals("INTERMEDIATE")) {
+        } else if (subjectDto.getType().equals("INTERMEDIATE")) {
             cerType = CertificateType.INTERMEDIATE;
         } else {
             cerType = CertificateType.CLIENT;
         }
 
-        if (subjectWithPK.getSubject().getStartDate().compareTo(subjectWithPK.getSubject().getEndDate()) < 0) {
+        User subject = userRepository.findById(subjectId).get();
+
+        if (subjectDto.getStartDate().compareTo(subjectDto.getEndDate()) < 0) {
             com.example.PKI.model.Certificate certificate = new com.example.PKI.model.Certificate();
-            certificate.setSerialNumber(subjectWithPK.getSubject().getSerialNumber().toString());
+            certificate.setSerialNumber(serialNumber.toString());
             certificate.setType(cerType);
-            certificate.setValid(true);
-            certificate.setSubjectCommonName(subjectWithPK.getSubject().getCommonName()+" organizacija: "+subjectWithPK.getSubject().getOrganization());
-
-            return repository.save(certificate);
+            certificate.setIsRevoked(false);
+            certificate.setSubjectEmail(subject.getEmail());
+            certificate.setValidFrom(subjectDto.getStartDate());
+            certificate.setValidTo(subjectDto.getEndDate());
+            return certificateRepository.save(certificate);
         }
         return null;
     }
 
     @Override
-    public void createCertificate(SubjectWithPKDto subjectWithPK,String issuerSerialNumber) throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
-        X509Certificate certificate = generateCertificate(subjectWithPK,issuerSerialNumber);
-        KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(subjectWithPK.getSubject().getType()),keyService.getKeyStorePass());
-        keyStoreService.store(keyService.getKeyStorePass(),keyService.getKeyPass(),new Certificate[]{certificate},subjectWithPK.getPrivateKey(), subjectWithPK.getSubject().getAlias(),keyService.getKeyStorePath(subjectWithPK.getSubject().getType()));
-
+    public void createCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws Exception {
+        //User user = userRepository.findById(certificateDto.getSubjectId()).get();
+        X509Certificate certificate = generateCertificate(certificateDto, generatedSubjectData);
     }
 
     @Override
-    public SubjectWithPKDto generateSubjectData(SubjectDto subjectDto) {
-        try {
-            KeyPair keyPairSubject = keyService.generateKeyPair();
+    public X509Certificate getCertificateByAlias(String alias, KeyStore keystore) throws KeyStoreException {
+        X509Certificate certificate = (X509Certificate) keystore.getCertificate(alias);
+        return certificate;
+    }
 
-            //Datumi od kad do kad vazi sertifikat
-            SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
-            /*System.out.println(subjectDto.getStartDate().toString());
-            Date startDate = iso8601Formater.parse(subjectDto.getStartDate().toString());
-            Date endDate = iso8601Formater.parse(subjectDto.getEndDate().toString());*/
-            //da se ne zezam sad s datumima
-            Date startDate = iso8601Formater.parse("2021-12-31");
-            Date endDate = iso8601Formater.parse("2022-12-31");
+    @Override
+    public Subject generateSubjectData(Integer subjectId) {
 
+        User subject = userRepository.findById(subjectId).get();
 
-            //Serijski broj sertifikata
-            subjectDto.setAlias(keyService.getSerialNumber().toString());
-            BigInteger serialNumber = new BigInteger(subjectDto.getAlias());
+        KeyPair keyPairSubject = keyService.generateKeyPair();
 
-            //klasa X500NameBuilder pravi X500Name objekat koji predstavlja podatke o vlasniku
-            X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-            builder.addRDN(BCStyle.CN, subjectDto.getCommonName());
-            //builder.addRDN(BCStyle.SURNAME, "Sladic");
-            //builder.addRDN(BCStyle.GIVENNAME, "Goran");
-            builder.addRDN(BCStyle.O, subjectDto.getOrganization());
-            builder.addRDN(BCStyle.OU, subjectDto.getOrganizationUnit());
-            builder.addRDN(BCStyle.C, subjectDto.getCountry());
-            builder.addRDN(BCStyle.E, subjectDto.getEmail());
-            //UID (USER ID) je ID korisnika
-            //NE ZNAM STA SA OVIM
-            //IZVUCI USERA IZ BAZE KOJI IMA ISTI EMAIL I NJEGOV ID DODJELITI KAO UID?
+        X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+        builder.addRDN(BCStyle.CN, subject.getCommonName());
+        builder.addRDN(BCStyle.O, subject.getOrganization());
+        builder.addRDN(BCStyle.OU, subject.getOrganizationUnit());
+        builder.addRDN(BCStyle.C, subject.getCountry());
+        builder.addRDN(BCStyle.E, subject.getEmail());
 
-            builder.addRDN(BCStyle.UID,subjectDto.getEmail());
+        return new Subject(builder.build(), keyPairSubject);
+    }
 
-            //Kreiraju se podaci za sertifikat, sto ukljucuje:
-            // - javni kljuc koji se vezuje za sertifikat
-            // - podatke o vlasniku
-            // - serijski broj sertifikata
-            // - od kada do kada vazi sertifikat
-            //msm da u subject treba i private key
-            Subject subject = new Subject(keyPairSubject.getPublic(), builder.build(), serialNumber, startDate, endDate,subjectDto.getType(),subjectDto.getAlias(),subjectDto.getCommonName(),subjectDto.getOrganization());
-            return new SubjectWithPKDto(subject,keyPairSubject.getPrivate());
-        } catch (ParseException e) {
-            e.printStackTrace();
+    @Override
+    public void revokeCertificate(String serialNumber) throws Exception {
+
+        com.example.PKI.model.Certificate certificate = certificateRepository.findBySerialNumber(serialNumber);
+        if (certificate != null)
+            if (certificate.isRevoked()) throw new Exception("Certificate is already revoked!");
+
+        revokeAllBelow(serialNumber);
+    }
+
+    private void revokeAllBelow(String serialNumber) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        KeyStore[] keyStores = getKeyStores();
+        for (KeyStore ks : keyStores) revokeAllByKS(ks, serialNumber);
+    }
+
+    private KeyStore[] getKeyStores() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        KeyStore rootKS = keyStoreReader.getKeyStore("roots", "password");
+        KeyStore intermediateKS = keyStoreReader.getKeyStore("intermediates", "password");
+        KeyStore clientKS = keyStoreReader.getKeyStore("clients", "password");
+        return new KeyStore[]{rootKS, intermediateKS, clientKS};
+    }
+
+    private void revokeAllByKS(KeyStore keyStore, String serialNumber) throws KeyStoreException {
+        ArrayList<String> aliases = Collections.list(keyStore.aliases());
+        for (String alias : aliases)
+            checkCertificateChain(keyStore.getCertificateChain(alias), serialNumber);
+    }
+
+    private void checkCertificateChain(Certificate[] certificates, String serialNumber) {
+        int idx = -1;
+        for (int i = 0; i < certificates.length; i++) {
+            if (((X509Certificate) certificates[i]).getSerialNumber().toString().equals(serialNumber)) {
+                idx = i;
+            }
+        }
+
+        if (idx != -1) {
+            for (int i = 0; i <= idx; i++) {
+                X509Certificate certificate = (X509Certificate) certificates[i];
+                com.example.PKI.model.Certificate dbCertificate = certificateRepository.findBySerialNumber(certificate.getSerialNumber().toString());
+                dbCertificate.setIsRevoked(true);
+                certificateRepository.save(dbCertificate);
+            }
+        }
+    }
+
+    @Override
+    public ArrayList<com.example.PKI.model.Certificate> getAllCertificates() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<com.example.PKI.model.Certificate> certificates = new ArrayList<com.example.PKI.model.Certificate>();
+        for ( com.example.PKI.model.Certificate c : certificateRepository.findAll()) {
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber()))
+                certificates.add(c);
+        }
+        return certificates;
+    }
+
+    @Override
+    public ArrayList<com.example.PKI.model.Certificate> getAllValidSignersForUser(String email,String startDate,String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<com.example.PKI.model.Certificate> certificates = new ArrayList<com.example.PKI.model.Certificate>();
+        for ( com.example.PKI.model.Certificate c : certificateRepository.findAllSignersCertByUser(email,startDate,endDate)) {
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber()))
+                certificates.add(c);
+        }
+        return certificates;
+    }
+
+    @Override
+    public boolean isCertificateValid(KeyStore keyStore, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException {
+        Certificate[] certificates = keyStore.getCertificateChain(alias);
+
+        for (int i = certificates.length - 1; i >= 0; i--) {
+            String currentAlias = ((X509Certificate) certificates[i]).getSerialNumber().toString();
+            //KeyStore currentKS = getKeyStoreByAlias(currentAlias);
+
+            // is it revoked
+            if (certificateRepository.findBySerialNumber(currentAlias).isRevoked()) return false;
+
+            // did it expire
+            X509Certificate certificate = (X509Certificate) certificates[i];
+            try {
+                certificate.checkValidity();
+            }
+            catch (CertificateExpiredException e) {
+                return false;
+            }
+            catch (CertificateNotYetValidException e) {
+                return false;
+            }
+
+            X509Certificate parent = (X509Certificate) certificates[i];
+
+            if( i > 0) {
+                X509Certificate child = (X509Certificate) certificates[i - 1];
+
+                try {
+                    child.verify(parent.getPublicKey()); // da li je potpis validan
+                }
+                catch (SignatureException e) {
+                    return false;
+                }
+                catch (InvalidKeyException e) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public KeyStore getKeyStoreByAlias(String alias) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        KeyStore[] keyStores = getKeyStores();
+        for (KeyStore ks : keyStores) {
+            if (ks.containsAlias(alias)) return ks;
         }
         return null;
     }
 
-
+    @Override
+    public ArrayList<User> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<User> users = new ArrayList<User>();
+        for( com.example.PKI.model.Certificate c : certificateRepository.findCertificatesValidForDateRange(startDate, endDate)){
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber())){
+                users.add(userRepository.findByEmail(c.getSubjectEmail()));
+            }
+        }
+        return users;
+    }
    /* private boolean validate(String alias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         X509Certificate certificate= (X509Certificate) keyStore.getCertificate(alias);
         Certificate[] chain=keyStore.getCertificateChain(alias);
         return false;
     }*/
+
+    @Override
+    public void generateCertificateByUser(CertificateDto certificateDto, Subject generatedSubjectData) {
+        try {
+
+            if (LocalDate.parse(certificateDto.getEndDate()).compareTo(LocalDate.parse(certificateDto.getStartDate())) < 0) {
+                throw new Exception("END_DATE_BEFORE_START");
+            }
+            // TODO: provjeri je l ima usera i issuera u bazii brrrr
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = sdf.parse(certificateDto.getStartDate());
+            Date endDate = sdf.parse(certificateDto.getEndDate());
+
+            //ovo istraziti : on koristi SHA256withECDSA
+            JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
+            Security.addProvider(new BouncyCastleProvider());
+            builder.setProvider("BC");
+            //TODO: zamijeniti sa readerom eyyy
+            KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass());
+
+            X500Name issuer;
+            PrivateKey privateKey;
+            KeyStore issuerKeyStore;
+            String issuerAlias;
+
+            serialNumber = keyService.getSerialNumber();
+            issuerAlias = certificateDto.getIssuerSerialNumber();
+            issuerKeyStore = keyStoreReader.getKeyStore(keyService.getKeyStorePath("INTERMEDIATE"), keyService.getKeyStorePass());
+            issuer = new JcaX509CertificateHolder((X509Certificate) issuerKeyStore.getCertificate(issuerAlias)).getSubject();
+            privateKey = (PrivateKey) issuerKeyStore.getKey(issuerAlias, keyService.getKeyPass().toCharArray());
+
+            // signer
+            ContentSigner contentSigner = builder.build(privateKey);
+
+            X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer,
+                    serialNumber,
+                    startDate,
+                    endDate,
+                    generatedSubjectData.getX500Name(),
+                    generatedSubjectData.getKeyPair().getPublic());
+
+            X509CertificateHolder certHolder = certGen.build(contentSigner);
+
+            JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
+            certConverter.setProvider("BC");
+
+            X509Certificate cert = certConverter.getCertificate(certHolder);
+
+            Certificate[] certificateChain;
+            Certificate[] certificates = issuerKeyStore.getCertificateChain(issuerAlias);
+            if (certificates != null) {
+                certificateChain = new Certificate[certificates.length + 1];
+                certificateChain[0] = cert;
+                for (int i = 0; i < certificates.length; i++)
+                    certificateChain[i + 1] = certificates[i];
+            } else
+                certificateChain = new Certificate[]{cert};
+
+            // ja bih ovo uradila on init !!! ovde mi je ruzno TODO
+            keyStoreWriter.loadKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
+            keyStoreWriter.write(cert.getSerialNumber().toString(), generatedSubjectData.getKeyPair().getPrivate(), keyService.getKeyPass(),
+                    certificateChain);
+            keyStoreWriter.saveKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
+            //Konvertuje objekat u sertifikat
+
+
+
+
+        } catch (CertificateEncodingException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (OperatorCreationException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

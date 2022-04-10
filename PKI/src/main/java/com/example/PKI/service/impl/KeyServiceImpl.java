@@ -1,11 +1,10 @@
 package com.example.PKI.service.impl;
 
-import com.example.PKI.service.*;
-import org.springframework.stereotype.*;
+import com.example.PKI.service.KeyService;
+import org.springframework.stereotype.Service;
 
-import java.math.*;
+import java.math.BigInteger;
 import java.security.*;
-import java.security.spec.*;
 
 @Service
 public class KeyServiceImpl implements KeyService {
@@ -23,12 +22,12 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public String getKeyStorePath(String type) {
-        if(type.equals("ROOT")) {
-            return "roots.pks";
-        }else if(type.equals("INTERMEDIATE")){
-            return "intermediates.pks";
-        }else{
-            return "clients.pks";
+        if (type.equals("ROOT")) {
+            return "roots";
+        } else if (type.equals("INTERMEDIATE")) {
+            return "intermediates";
+        } else {
+            return "clients";
         }
     }
 

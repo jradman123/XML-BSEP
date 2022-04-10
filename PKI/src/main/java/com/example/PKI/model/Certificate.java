@@ -12,7 +12,7 @@ public class Certificate {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
 
-    @Column
+    @Column(unique = true)
     private String serialNumber;
 
     @Column
@@ -25,10 +25,10 @@ public class Certificate {
     private String validTo;
  
     @Column
-    private boolean valid;
+    private boolean isRevoked;
 
     @Column
-    private String subjectCommonName;
+    private String subjectEmail;
 
     public Certificate() {
     }
@@ -49,19 +49,19 @@ public class Certificate {
         this.type = type;
     }
 
-    public boolean isValid() {
-        return valid;
+    public boolean isRevoked() {
+        return isRevoked;
     }
 
-    public void setValid(boolean valid) {
-        this.valid = valid;
+    public void setIsRevoked(boolean isRevoked) {
+        this.isRevoked = isRevoked;
     }
 
-    public String getSubjectCommonName() {
-        return subjectCommonName;
+    public String getSubjectEmail() {
+        return subjectEmail;
     }
 
-    public void setSubjectCommonName(String subjectCommonName) {
-        this.subjectCommonName = subjectCommonName;
+    public void setSubjectEmail(String subjectEmail) {
+        this.subjectEmail = subjectEmail;
     }
 }

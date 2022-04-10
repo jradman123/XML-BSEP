@@ -1,0 +1,38 @@
+<div class="container">
+<div id="content" >
+    <mat-card class="example-card" *ngFor="let certificate of certificates">
+        <mat-card-header>
+          <mat-card-title>Certificate information</mat-card-title>
+          <mat-card-subtitle>Serial number: {{certificate?.serialNumber}}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p class="cert-info-p">
+            <b>Valid from </b>{{certificate?.validFrom}}
+          </p>
+          <p class="cert-info-p">
+            <b>Valid to </b>{{certificate?.validTo}}
+          </p>
+        </mat-card-content>
+        <mat-card-content>
+          <p class="cert-info-p">
+            <b>Revoked: </b>
+            <span *ngIf="certificate.isRevoked">Povučen</span>
+            <span *ngIf="!certificate.isRevoked">Nije povučen</span>
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+            <!-- <button mat-flat-button *ngIf="!conflicting" id="choose-button" style="background-color: rgb(28, 133, 165); color: white;"
+            (click)="onSubmit(item)">Revoke</button>
+            <button id="choose-button" style="background-color: rgb(28, 133, 165); color: white;" mat-button (click)="downloadCertificate(item)">Download</button> -->
+
+            <button (click)="revokeCertificate(certificate.serialNumber)" mat-flat-button>Revoke</button>
+            <button id="choose-button" mat-button  [disabled]="certificate.isRevoked" >Download</button>
+
+            <!-- <button mat-flat-button *ngIf="conflicting" id="choose-button-conflict" (click)="warnKeyUsage()"
+            matTooltip="This certificate does not have some of your currently selected Key Usages and/or Extended Key Usages"
+            matTooltipPosition="below">Choose</button> -->
+        </mat-card-actions>
+      </mat-card>
+</div>
+</div>

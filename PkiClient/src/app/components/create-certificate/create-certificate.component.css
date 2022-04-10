@@ -1,0 +1,23 @@
+.mat-stepper-vertical {
+  margin-top: 8px;
+}
+
+.mat-form-field {
+  margin-top: 16px;
+}
+
+::ng-deep .container {
+  font-size: 16px !important;
+}
+
+::ng-deep .mat-selection-list {
+  min-width: 350px !important;
+}
+
+::ng-deep .mat-list-option {
+  min-width: 350px !important;
+}
+
+::ng-deep mat-form-field {
+  min-width: 350px !important;
+}
