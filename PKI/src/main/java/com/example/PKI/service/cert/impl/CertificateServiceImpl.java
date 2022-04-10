@@ -1,43 +1,29 @@
 package com.example.PKI.service.cert.impl;
 
-import com.example.PKI.dto.CertificateDto;
-import com.example.PKI.model.CertificateType;
-import com.example.PKI.model.Subject;
-import com.example.PKI.model.User;
-import com.example.PKI.repository.CertificateRepository;
-import com.example.PKI.repository.UserRepository;
-import com.example.PKI.service.KeyService;
-import com.example.PKI.service.KeyStoreService;
-import com.example.PKI.service.cert.CertificateService;
-import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
-import com.example.PKI.util.keyStoreUtils.KeyStoreWriter;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.X500NameBuilder;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.X509v3CertificateBuilder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.OperatorCreationException;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.example.PKI.dto.*;
+import com.example.PKI.model.*;
+import com.example.PKI.repository.*;
+import com.example.PKI.service.*;
+import com.example.PKI.service.cert.*;
+import com.example.PKI.util.keyStoreUtils.*;
+import org.bouncycastle.asn1.x500.*;
+import org.bouncycastle.asn1.x500.style.*;
+import org.bouncycastle.cert.*;
+import org.bouncycastle.cert.jcajce.*;
+import org.bouncycastle.jce.provider.*;
+import org.bouncycastle.operator.*;
+import org.bouncycastle.operator.jcajce.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
-import java.io.IOException;
-import java.math.BigInteger;
+import java.io.*;
+import java.math.*;
 import java.security.*;
-import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.sql.Array;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.security.cert.*;
+import java.text.*;
+import java.time.*;
+import java.util.*;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -276,6 +262,16 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    public ArrayList<com.example.PKI.model.Certificate> getAllValidSignersForUser(String email,String startDate,String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<com.example.PKI.model.Certificate> certificates = new ArrayList<com.example.PKI.model.Certificate>();
+        for ( com.example.PKI.model.Certificate c : certificateRepository.findAllSignersCertByUser(email,startDate,endDate)) {
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber()))
+                certificates.add(c);
+        }
+        return certificates;
+    }
+
+    @Override
     public boolean isCertificateValid(KeyStore keyStore, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException {
         Certificate[] certificates = keyStore.getCertificateChain(alias);
 
@@ -332,4 +328,101 @@ public class CertificateServiceImpl implements CertificateService {
         Certificate[] chain=keyStore.getCertificateChain(alias);
         return false;
     }*/
+
+    @Override
+    public void generateCertificateByUser(CertificateDto certificateDto, Subject generatedSubjectData) {
+        try {
+
+            if (LocalDate.parse(certificateDto.getEndDate()).compareTo(LocalDate.parse(certificateDto.getStartDate())) < 0) {
+                throw new Exception("END_DATE_BEFORE_START");
+            }
+            // TODO: provjeri je l ima usera i issuera u bazii brrrr
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = sdf.parse(certificateDto.getStartDate());
+            Date endDate = sdf.parse(certificateDto.getEndDate());
+
+            //ovo istraziti : on koristi SHA256withECDSA
+            JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
+            Security.addProvider(new BouncyCastleProvider());
+            builder.setProvider("BC");
+            //TODO: zamijeniti sa readerom eyyy
+            KeyStore keyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass());
+
+            X500Name issuer;
+            PrivateKey privateKey;
+            KeyStore issuerKeyStore;
+            String issuerAlias;
+
+            serialNumber = keyService.getSerialNumber();
+            issuerAlias = certificateDto.getIssuerSerialNumber();
+            issuerKeyStore = keyStoreReader.getKeyStore(keyService.getKeyStorePath("INTERMEDIATE"), keyService.getKeyStorePass());
+            issuer = new JcaX509CertificateHolder((X509Certificate) issuerKeyStore.getCertificate(issuerAlias)).getSubject();
+            privateKey = (PrivateKey) issuerKeyStore.getKey(issuerAlias, keyService.getKeyPass().toCharArray());
+
+            // signer
+            ContentSigner contentSigner = builder.build(privateKey);
+
+            X509v3CertificateBuilder certGen = new JcaX509v3CertificateBuilder(issuer,
+                    serialNumber,
+                    startDate,
+                    endDate,
+                    generatedSubjectData.getX500Name(),
+                    generatedSubjectData.getKeyPair().getPublic());
+
+            X509CertificateHolder certHolder = certGen.build(contentSigner);
+
+            JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
+            certConverter.setProvider("BC");
+
+            X509Certificate cert = certConverter.getCertificate(certHolder);
+
+            Certificate[] certificateChain;
+            Certificate[] certificates = issuerKeyStore.getCertificateChain(issuerAlias);
+            if (certificates != null) {
+                certificateChain = new Certificate[certificates.length + 1];
+                certificateChain[0] = cert;
+                for (int i = 0; i < certificates.length; i++)
+                    certificateChain[i + 1] = certificates[i];
+            } else
+                certificateChain = new Certificate[]{cert};
+
+            // ja bih ovo uradila on init !!! ovde mi je ruzno TODO
+            keyStoreWriter.loadKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
+            keyStoreWriter.write(cert.getSerialNumber().toString(), generatedSubjectData.getKeyPair().getPrivate(), keyService.getKeyPass(),
+                    certificateChain);
+            keyStoreWriter.saveKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
+            //Konvertuje objekat u sertifikat
+
+
+
+
+        } catch (CertificateEncodingException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (OperatorCreationException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

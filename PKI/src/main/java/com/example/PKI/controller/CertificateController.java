@@ -2,8 +2,7 @@ package com.example.PKI.controller;
 
 import com.example.PKI.dto.CertificateDto;
 import com.example.PKI.dto.DownloadCertificateDto;
-import com.example.PKI.model.Certificate;
-import com.example.PKI.model.Subject;
+import com.example.PKI.model.*;
 import com.example.PKI.repository.UserRepository;
 import com.example.PKI.service.Base64Encoder;
 import com.example.PKI.service.KeyService;
@@ -61,5 +60,25 @@ public class CertificateController {
     public ResponseEntity<?> downloadCertificate(@RequestBody DownloadCertificateDto dto) throws Exception {
         base64Encoder.downloadCertificate(dto);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("/api/certificate/getCAsForSigningClientsCertificatesInDateRange")
+    public ResponseEntity<?> getCAsForSigningInDateRange(@RequestParam("email") String email,@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<Certificate> cs = certificateService.getAllValidSignersForUser(email,startDate,endDate);
+        return new ResponseEntity<ArrayList<Certificate>>(cs, HttpStatus.OK);
+    }
+
+    @PostMapping("/api/certificate/generateByClient")
+    public ResponseEntity<String> generateCertificateByClient(@RequestBody CertificateDto certificateDto) throws Exception {
+        Subject generatedSubjectData = certificateService.generateSubjectData(certificateDto.getSubjectId());
+        certificateService.generateCertificateByUser(certificateDto, generatedSubjectData);
+        Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
+        if (certificate != null) {
+            return new ResponseEntity<String>("Success!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
