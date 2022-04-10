@@ -11,6 +11,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ClientNavbarComponent } from './components/client-navbar/client-navbar.component';
+import { AllCertificatesComponent } from './components/all-certificates/all-certificates.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MaterialModule } from './material-module';
+import {MatCardModule} from '@angular/material/card';
  
 @NgModule({
   declarations: [
@@ -19,7 +23,8 @@ import { ClientNavbarComponent } from './components/client-navbar/client-navbar.
     AdminHomeComponent,
     ClientHomeComponent,
     NavbarComponent,
-    ClientNavbarComponent
+    ClientNavbarComponent,
+    AllCertificatesComponent
   ],
   imports: [
     BrowserModule,
@@ -27,7 +32,10 @@ import { ClientNavbarComponent } from './components/client-navbar/client-navbar.
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModule
+    NgbModule,
+    BrowserAnimationsModule,
+    MaterialModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
