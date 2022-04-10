@@ -32,16 +32,16 @@ public class Base64Encoder {
     @Autowired
     private CertificateService certificateService;
 
-    public void downloadCertificate(DownloadCertificateDto dto) throws Exception {
+    public void downloadCertificate(String serialNumber) throws Exception {
 
         // is it revoked?
-        String alias = dto.getSerialNumber();
+        String alias = serialNumber;
 
         KeyStore keyStore = certificateService.getKeyStoreByAlias(alias);
         X509Certificate certificate = certificateService.getCertificateByAlias(alias, keyStore);
         Certificate[] certificates = keyStore.getCertificateChain(alias);
 
-        filepath = DOWNLOAD_PATH + "yoyoyo" + dto.getSerialNumber() + ".p7b";
+        filepath = DOWNLOAD_PATH + "yoyoyo" + serialNumber + ".p7b";
 
         Certificate issuerCertificate = null;
 

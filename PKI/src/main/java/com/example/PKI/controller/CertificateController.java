@@ -2,19 +2,19 @@ package com.example.PKI.controller;
 
 import com.example.PKI.dto.CertificateDto;
 import com.example.PKI.dto.DownloadCertificateDto;
+import com.example.PKI.model.*;
 import com.example.PKI.model.Certificate;
 import com.example.PKI.model.Subject;
 import com.example.PKI.model.User;
-import com.example.PKI.repository.CertificateRepository;
-import com.example.PKI.repository.UserRepository;
+import com.example.PKI.repository.*;
 import com.example.PKI.service.Base64Encoder;
 import com.example.PKI.service.KeyService;
 import com.example.PKI.service.cert.CertificateService;
+import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +35,8 @@ public class CertificateController {
     private UserRepository userRepository;
     @Autowired
     private Base64Encoder base64Encoder;
+    @Autowired
+    private KeyStoreReader keyStoreReader;
 
 
     @Autowired
@@ -53,9 +55,9 @@ public class CertificateController {
     }
 
     @PostMapping("/api/certificate/revoke")
-    public ResponseEntity<?> revokeCertificate(@RequestBody String serialNumber) throws Exception {
+    public ResponseEntity<ArrayList<com.example.PKI.model.Certificate>> revokeCertificate(@RequestBody String serialNumber) throws Exception {
         certificateService.revokeCertificate(serialNumber);
-        return new ResponseEntity<>("All good bbyyyyyyyyyyyyyyy", HttpStatus.OK);
+        return new ResponseEntity<>(certificateService.getAllCertificates(), HttpStatus.OK);
     }
 
     @GetMapping("/api/certificate/")
@@ -64,14 +66,38 @@ public class CertificateController {
     }
 
     @PostMapping("/api/certificate/downloadCertificate")
-    public ResponseEntity<?> downloadCertificate(@RequestBody DownloadCertificateDto dto) throws Exception {
-        base64Encoder.downloadCertificate(dto);
+    public ResponseEntity<?> downloadCertificate(@RequestBody String serialNumber) throws Exception {
+        base64Encoder.downloadCertificate(serialNumber);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/api/certificate/getAllUsersCertificates/{email}")
+    public ResponseEntity<ArrayList<com.example.PKI.model.Certificate>> getAllUsersCertificates(@PathVariable String email) throws Exception {
+        return new ResponseEntity<ArrayList<com.example.PKI.model.Certificate>>(certificateService.getAllUsersCertificates(email),HttpStatus.OK);
+    }
+
+
+    @GetMapping("/api/certificate/getCAsForSigningClientsCertificatesInDateRange")
+    public ResponseEntity<?> getCAsForSigningInDateRange(@RequestParam("email") String email,@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<Certificate> cs = certificateService.getAllValidSignersForUser(email,startDate,endDate);
+        return new ResponseEntity<ArrayList<Certificate>>(cs, HttpStatus.OK);
+    }
+
+    @PostMapping("/api/certificate/generateByClient")
+    public ResponseEntity<String> generateCertificateByClient(@RequestBody CertificateDto certificateDto) throws Exception {
+        Subject generatedSubjectData = certificateService.generateSubjectData(certificateDto.getSubjectId());
+        certificateService.generateCertificateByUser(certificateDto, generatedSubjectData);
+        Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
+        if (certificate != null) {
+            return new ResponseEntity<String>("Success!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/api/certificate/getCAsForSigning")
     public ResponseEntity<?> getCAsForSigning(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         return new ResponseEntity<ArrayList<User>>(certificateService.getAllValidSignersForDateRange(startDate, endDate), HttpStatus.OK);
+
     }
 
 

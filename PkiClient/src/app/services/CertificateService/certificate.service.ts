@@ -8,6 +8,8 @@ import { IssuerData } from 'src/app/interfaces/issuer-data';
   providedIn: 'root',
 })
 export class CertificateService {
+
+  
   constructor(private http: HttpClient) {}
 
   getAllCertificates(): Observable<CertificateView[]> {
@@ -16,6 +18,10 @@ export class CertificateService {
     );
   }
 
+  revokeCertificate(serialNumber: string) {
+    return this.http.post<any>('http://localhost:8443/api/certificate/revoke',serialNumber);
+  }
+  
   getSignersForDateRange(
     startDate: String,
     endDate: String
@@ -26,5 +32,13 @@ export class CertificateService {
         '&endDate=' +
         endDate
     );
+  }
+
+  downloadCertificate(serialNumber : string) {
+    return this.http.post<any>('http://localhost:8443/api/certificate/downloadCertificate',serialNumber);
+  }
+
+  getAllUsersCertificates(email : string) : Observable<CertificateView[]> {
+    return this.http.get<CertificateView[]>('http://localhost:8443/api/certificate/getAllUsersCertificates/' + email);
   }
 }
