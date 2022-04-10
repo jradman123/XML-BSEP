@@ -182,7 +182,7 @@ public class CertificateServiceImpl implements CertificateService {
             certificate.setSerialNumber(serialNumber.toString());
             certificate.setType(cerType);
             certificate.setIsRevoked(false);
-            certificate.setSubjectCommonName(subject.getCommonName() + " " + subject.getOrganization());
+            certificate.setEmail(subject.getEmail());
             certificate.setValidFrom(subjectDto.getStartDate());
             certificate.setValidTo(subjectDto.getEndDate());
             return certificateRepository.save(certificate);
@@ -273,6 +273,11 @@ public class CertificateServiceImpl implements CertificateService {
                 certificates.add(c);
         }
         return certificates;
+    }
+
+    @Override
+    public ArrayList<com.example.PKI.model.Certificate> getAllUsersCertificates(String email) {
+        return (ArrayList<com.example.PKI.model.Certificate>) certificateRepository.findAllByEmail(email);
     }
 
     @Override

@@ -13,4 +13,5 @@ public interface CertificateRepository extends JpaRepositoryImplementation<Certi
 
     @Query(value = "select c.type from certificate c where c.serial_number = ?1", nativeQuery = true)
     CertificateType findTypeBySerialNumber(String serialNumber);
+    Collection<Certificate> findAllByEmail(String email);
 }

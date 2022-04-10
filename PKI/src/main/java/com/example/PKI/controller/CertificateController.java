@@ -6,6 +6,7 @@ import com.example.PKI.model.Certificate;
 import com.example.PKI.repository.UserRepository;
 import com.example.PKI.service.*;
 import com.example.PKI.service.cert.*;
+import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
 import org.bouncycastle.operator.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,8 @@ public class CertificateController {
     private UserRepository userRepository;
     @Autowired
     private Base64Encoder base64Encoder;
+    @Autowired
+    private KeyStoreReader keyStoreReader;
 
 
     @PostMapping("/api/certificate/generate")
@@ -55,8 +58,15 @@ public class CertificateController {
     }
 
     @PostMapping("/api/certificate/downloadCertificate")
-    public ResponseEntity<?> downloadCertificate(@RequestBody DownloadCertificateDto dto) throws Exception {
-        base64Encoder.downloadCertificate(dto);
+    public ResponseEntity<?> downloadCertificate(@RequestBody String serialNumber) throws Exception {
+        base64Encoder.downloadCertificate(serialNumber);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/api/certificate/getAllUsersCertificates/{email}")
+    public ResponseEntity<ArrayList<com.example.PKI.model.Certificate>> getAllUsersCertificates(@PathVariable String email) throws Exception {
+        return new ResponseEntity<ArrayList<com.example.PKI.model.Certificate>>(certificateService.getAllUsersCertificates(email),HttpStatus.OK);
+    }
+
+
 }

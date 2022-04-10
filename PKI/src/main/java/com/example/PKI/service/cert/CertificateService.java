@@ -29,4 +29,6 @@ public interface CertificateService {
     KeyStore getKeyStoreByAlias(String alias) throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
 
     ArrayList<Certificate> getAllCertificates() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
+
+    ArrayList<Certificate> getAllUsersCertificates(String email);
 }
