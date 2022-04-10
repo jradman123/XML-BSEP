@@ -5,6 +5,8 @@ import { AdminHomeComponent } from './components/admin-home/admin-home.component
 import { ClientHomeComponent } from './components/client-home/client-home.component';
 import { AllCertificatesComponent } from './components/all-certificates/all-certificates.component';
 import { CreateCertificateComponent } from './components/create-certificate/create-certificate.component';
+import { CreateSubjectComponent } from './components/create-subject/create-subject.component';
+import { CertificateComponent } from './components/certificate/certificate.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -12,13 +14,15 @@ const routes: Routes = [
   { path: 'allCertificates', component: AllCertificatesComponent },
   { path: 'chome', component: ClientHomeComponent },
   { path: 'createCertificate', component: CreateCertificateComponent },
+  { path: 'createSubject', component: CreateSubjectComponent },
+  { path: 'certificate', component: CertificateComponent }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
 export const routingComponents = [
   LandingPageComponent,
   AdminHomeComponent,

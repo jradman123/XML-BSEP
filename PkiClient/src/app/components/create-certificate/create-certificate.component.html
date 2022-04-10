@@ -1,7 +1,9 @@
 <div class="container">
   <div style="width: 80%; color: lightslategray; margin: auto">
-    <h1>Create New Certificate</h1>
+    <h1>Create New Subject</h1>
+    <app-create-subject></app-create-subject>
     <hr />
+    <h1>Create Certificate</h1>
     <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
       <mat-step [stepControl]="firstFormGroup">
         <form [formGroup]="firstFormGroup">

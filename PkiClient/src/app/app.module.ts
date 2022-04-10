@@ -16,6 +16,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material-module';
 import {MatCardModule} from '@angular/material/card';
 import { CreateCertificateComponent } from './components/create-certificate/create-certificate.component';
+import { CreateSubjectComponent } from './components/create-subject/create-subject.component';
+import { CertificateComponent } from './components/certificate/certificate.component';
  
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { CreateCertificateComponent } from './components/create-certificate/crea
     NavbarComponent,
     ClientNavbarComponent,
     AllCertificatesComponent,
-    CreateCertificateComponent
+    CreateCertificateComponent,
+    CreateSubjectComponent,
+    CertificateComponent
   ],
   imports: [
     BrowserModule,

@@ -17,6 +17,7 @@ export class CreateCertificateComponent implements OnInit {
   todayDate: Date = new Date();
   potentialIssuers: IssuerData[];
 
+
   constructor(private _formBuilder: FormBuilder) {
     this.potentialIssuers = [] as IssuerData[];
   }
