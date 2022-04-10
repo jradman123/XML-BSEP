@@ -9,3 +9,6 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   font-size: 3rem;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
