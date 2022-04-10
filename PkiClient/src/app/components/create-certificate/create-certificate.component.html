@@ -1,7 +1,6 @@
 <div class="container">
   <div style="width: 80%; color: lightslategray; margin: auto">
-    <h1>Create New Certificate</h1>
-    <hr />
+    <h1>Create Certificate</h1>
     <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
       <mat-step [stepControl]="firstFormGroup">
         <form [formGroup]="firstFormGroup">
@@ -20,7 +19,7 @@
             </mat-select>
           </mat-form-field>
           <div>
-            <button mat-button matStepperNext (click)="typeNext()">Next</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
       </mat-step>
@@ -58,17 +57,67 @@
           </mat-form-field>
           <div>
             <button mat-button matStepperPrevious>Back</button>
-            <button mat-button matStepperNext>Next</button>
+            <button mat-button matStepperNext (click)="dateNext()">Next</button>
           </div>
         </form>
       </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Choose the issuer</ng-template>
-
-        <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
-        </div>
+      <ng-template [ngIf]="enableIssuerStep">
+        <mat-step [stepControl]="thirdFormGroup">
+          <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>Pick the issuer</ng-template>
+            <mat-form-field appearance="fill">
+              <mat-selection-list #matList [multiple]="false">
+                <mat-list-option
+                  #matOpr
+                  (click)="issuerSelected(matOpr)"
+                  *ngFor="let issuer of potentialIssuers"
+                  [value]="issuer.id"
+                >
+                  <!-- <p>CN = {{ issuer.commonName }}</p>
+                <br />
+                <p>O = {{ issuer.organization }}</p>
+                <br />
+                <p>C = {{ issuer.country }}</p>
+                <br /> -->
+                  <p>
+                    CN = {{ issuer.commonName }}, O = {{ issuer.organization }},
+                    C = {{ issuer.country }}
+                  </p>
+                </mat-list-option>
+              </mat-selection-list>
+              <input
+                matInput
+                placeholder=" "
+                formControlName="thirdCtrl"
+                readonly
+              />
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+      </ng-template>
+      <mat-step [stepControl]="fourthFormGroup">
+        <form [formGroup]="fourthFormGroup">
+          <ng-template matStepLabel>Pick or fill in the subject</ng-template>
+          <app-create-subject></app-create-subject>
+          <mat-form-field appearance="fill">
+            <div>
+              <hr />
+              <p>Or</p>
+              <mat-select formControlName="fourthCtrl"
+                >Choose a subject</mat-select
+              >
+            </div>
+            <!-- <input matInput placeholder=" " formControlName="fourthCtrl" /> -->
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
       </mat-step>
     </mat-stepper>
   </div>

@@ -3,6 +3,9 @@ package com.example.PKI.controller;
 import com.example.PKI.dto.CertificateDto;
 import com.example.PKI.dto.DownloadCertificateDto;
 import com.example.PKI.model.*;
+import com.example.PKI.model.Certificate;
+import com.example.PKI.model.Subject;
+import com.example.PKI.model.User;
 import com.example.PKI.repository.UserRepository;
 import com.example.PKI.service.Base64Encoder;
 import com.example.PKI.service.KeyService;
@@ -18,6 +21,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -32,6 +36,9 @@ public class CertificateController {
     @Autowired
     private Base64Encoder base64Encoder;
 
+
+    @Autowired
+    private CertificateRepository certificateRepository;
 
     @PostMapping("/api/certificate/generate")
     public ResponseEntity<String> generateCertificate(@RequestBody CertificateDto certificateDto) throws Exception {
@@ -62,8 +69,6 @@ public class CertificateController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
     @GetMapping("/api/certificate/getCAsForSigningClientsCertificatesInDateRange")
     public ResponseEntity<?> getCAsForSigningInDateRange(@RequestParam("email") String email,@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         ArrayList<Certificate> cs = certificateService.getAllValidSignersForUser(email,startDate,endDate);
@@ -80,5 +85,10 @@ public class CertificateController {
         } else {
             return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+    @GetMapping("/api/certificate/getCAsForSigning")
+    public ResponseEntity<?> getCAsForSigning(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        return new ResponseEntity<ArrayList<User>>(certificateService.getAllValidSignersForDateRange(startDate, endDate), HttpStatus.OK);
+
     }
 }

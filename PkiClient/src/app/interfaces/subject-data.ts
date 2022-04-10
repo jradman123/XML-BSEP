@@ -1,4 +1,5 @@
 export interface SubjectData {
+  id: number
   commonName: String;
   organization: String;
   organizationUnit: String;

@@ -1,23 +1,33 @@
 package com.example.PKI.service.cert.impl;
+import com.example.PKI.dto.CertificateDto;
+import com.example.PKI.model.CertificateType;
+import com.example.PKI.model.Subject;
+import com.example.PKI.model.User;
+import com.example.PKI.repository.CertificateRepository;
+import com.example.PKI.repository.UserRepository;
+import com.example.PKI.service.KeyService;
+import com.example.PKI.service.KeyStoreService;
+import com.example.PKI.service.cert.CertificateService;
+import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
+import com.example.PKI.util.keyStoreUtils.KeyStoreWriter;
+import lombok.SneakyThrows;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import com.example.PKI.dto.*;
-import com.example.PKI.model.*;
-import com.example.PKI.repository.*;
-import com.example.PKI.service.*;
-import com.example.PKI.service.cert.*;
-import com.example.PKI.util.keyStoreUtils.*;
-import org.bouncycastle.asn1.x500.*;
-import org.bouncycastle.asn1.x500.style.*;
-import org.bouncycastle.cert.*;
-import org.bouncycastle.cert.jcajce.*;
-import org.bouncycastle.jce.provider.*;
-import org.bouncycastle.operator.*;
-import org.bouncycastle.operator.jcajce.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.stereotype.*;
-
-import java.io.*;
-import java.math.*;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.*;
@@ -168,7 +178,7 @@ public class CertificateServiceImpl implements CertificateService {
             certificate.setSerialNumber(serialNumber.toString());
             certificate.setType(cerType);
             certificate.setIsRevoked(false);
-            certificate.setSubjectCommonName(subject.getCommonName() + " " + subject.getOrganization());
+            certificate.setSubjectEmail(subject.getEmail());
             certificate.setValidFrom(subjectDto.getStartDate());
             certificate.setValidTo(subjectDto.getEndDate());
             return certificateRepository.save(certificate);
@@ -322,6 +332,16 @@ public class CertificateServiceImpl implements CertificateService {
         return null;
     }
 
+    @Override
+    public ArrayList<User> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<User> users = new ArrayList<User>();
+        for( com.example.PKI.model.Certificate c : certificateRepository.findCertificatesValidForDateRange(startDate, endDate)){
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber())){
+                users.add(userRepository.findByEmail(c.getSubjectEmail()));
+            }
+        }
+        return users;
+    }
    /* private boolean validate(String alias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         KeyStore keyStore=keyStoreService.getKeyStore(keyService.getKeyStorePath(),keyService.getKeyStorePass());
         X509Certificate certificate= (X509Certificate) keyStore.getCertificate(alias);
