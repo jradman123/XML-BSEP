@@ -17,9 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -105,6 +103,9 @@ public class CertificateController {
     public ResponseEntity<?> getCAsForSigning(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         return new ResponseEntity<ArrayList<IssuerDto>>(certificateService.getAllValidSignersForDateRange(startDate, endDate), HttpStatus.OK);
     }
-
+    @PostMapping("/api/certificate/isCertificateValid")
+    public ResponseEntity<?> isCertificateValid(@RequestBody String serialNumber) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException, SignatureException, InvalidKeyException {
+        return new ResponseEntity<Boolean>(certificateService.isCertificateValid(certificateService.getKeyStoreByAlias(serialNumber), serialNumber), HttpStatus.OK);
+    }
 
 }

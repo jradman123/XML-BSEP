@@ -21,13 +21,15 @@ export class CertificateService {
     endDate: String
   ): Observable<IssuerData[]> {
     return this.http.get<IssuerData[]>(
-      'http://localhost:8443/api/certificate/getCAsForSigningClientsCertificatesInDateRange?email='+ localStorage.getItem('email') +'&startDate=' +
+      'http://localhost:8443/api/certificate/getCAsForSigningClientsCertificatesInDateRange?email=' +
+        localStorage.getItem('email') +
+        '&startDate=' +
         startDate +
         '&endDate=' +
         endDate
     );
   }
-  
+
   constructor(private http: HttpClient) {}
 
   getAllCertificates(): Observable<CertificateView[]> {
@@ -37,9 +39,12 @@ export class CertificateService {
   }
 
   revokeCertificate(serialNumber: string) {
-    return this.http.post<any>('http://localhost:8443/api/certificate/revoke',serialNumber);
+    return this.http.post<any>(
+      'http://localhost:8443/api/certificate/revoke',
+      serialNumber
+    );
   }
-  
+
   getSignersForDateRange(
     startDate: String,
     endDate: String
@@ -52,16 +57,30 @@ export class CertificateService {
     );
   }
 
-  downloadCertificate(serialNumber : string) {
-    return this.http.post<any>('http://localhost:8443/api/certificate/downloadCertificate',serialNumber);
+  downloadCertificate(serialNumber: string) {
+    return this.http.post<any>(
+      'http://localhost:8443/api/certificate/downloadCertificate',
+      serialNumber
+    );
   }
 
-  getAllUsersCertificates(email : string) : Observable<CertificateView[]> {
-    return this.http.get<CertificateView[]>('http://localhost:8443/api/certificate/getAllUsersCertificates/' + email);
-  
+  validateCertificate(serialNumber: string) {
+    console.log(serialNumber + 'u servisu');
+    return this.http.post<any>(
+      'http://localhost:8443/api/certificate/isCertificateValid',
+      serialNumber
+    );
   }
-  getUsersChainCertificates(email : string) : Observable<CertificateView[][][]> {
-    return this.http.get<CertificateView[][][]>("http://localhost:8443/api/certificate/chains/"+"a@gmail.com");
+
+  getAllUsersCertificates(email: string): Observable<CertificateView[]> {
+    return this.http.get<CertificateView[]>(
+      'http://localhost:8443/api/certificate/getAllUsersCertificates/' + email
+    );
+  }
+  getUsersChainCertificates(email: string): Observable<CertificateView[][][]> {
+    return this.http.get<CertificateView[][][]>(
+      'http://localhost:8443/api/certificate/chains/' + 'a@gmail.com'
+    );
   }
   getSubjects(): Observable<SubjectData[]> {
     return this.http.get<SubjectData[]>('http://localhost:8443/api/users');
@@ -72,5 +91,5 @@ export class CertificateService {
       'http://localhost:8443/api/certificate/generate',
       newCertificate
     );
-    }
+  }
 }
