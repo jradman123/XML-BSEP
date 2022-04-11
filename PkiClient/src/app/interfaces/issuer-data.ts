@@ -6,4 +6,5 @@ export interface IssuerData {
   locality: String;
   country: String;
   email: String;
+  serialNumber: String;
 }

@@ -28,11 +28,7 @@
           <ng-template matStepLabel>Pick validity timespan</ng-template>
           <mat-form-field appearance="fill">
             <mat-label>Valid from - to</mat-label>
-            <mat-date-range-input
-              [rangePicker]="picker"
-              [min]="todayDate"
-              required
-            >
+            <mat-date-range-input [rangePicker]="picker" required>
               <input
                 matStartDate
                 placeholder="Start date"
@@ -102,22 +98,40 @@
       <mat-step [stepControl]="fourthFormGroup">
         <form [formGroup]="fourthFormGroup">
           <ng-template matStepLabel>Pick or fill in the subject</ng-template>
-          <app-create-subject></app-create-subject>
-          <mat-form-field appearance="fill">
-            <div>
-              <hr />
-              <p>Or</p>
-              <mat-select formControlName="fourthCtrl"
-                >Choose a subject</mat-select
-              >
-            </div>
-            <!-- <input matInput placeholder=" " formControlName="fourthCtrl" /> -->
-          </mat-form-field>
+          <div>
+            <app-create-subject
+              (newItemEvent)="addItem($event)"
+            ></app-create-subject>
+            <hr />
+            <p text-align="justify">Or</p>
+            <mat-form-field appearance="fill">
+              <mat-label>Subject</mat-label>
+              <mat-select formControlName="fourthCtrl">
+                <mat-option
+                  #matOption1
+                  (click)="subjectSelected(matOption1)"
+                  *ngFor="let s of subjects"
+                  value="{{ s.id }}"
+                >
+                  {{ s.email }}, CN = {{ s.commonName }}, O =
+                  {{ s.organization }}, C = {{ s.country }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
           <div>
             <button mat-button matStepperPrevious>Back</button>
             <button mat-button matStepperNext>Next</button>
           </div>
         </form>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Done</ng-template>
+        <p>Confirm creating certificate</p>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="create()">Confirm</button>
+        </div>
       </mat-step>
     </mat-stepper>
   </div>

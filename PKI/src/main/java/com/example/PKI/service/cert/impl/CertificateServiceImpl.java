@@ -1,5 +1,6 @@
 package com.example.PKI.service.cert.impl;
 import com.example.PKI.dto.CertificateDto;
+import com.example.PKI.dto.IssuerDto;
 import com.example.PKI.model.CertificateType;
 import com.example.PKI.model.Subject;
 import com.example.PKI.model.User;
@@ -10,7 +11,6 @@ import com.example.PKI.service.KeyStoreService;
 import com.example.PKI.service.cert.CertificateService;
 import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
 import com.example.PKI.util.keyStoreUtils.KeyStoreWriter;
-import lombok.SneakyThrows;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -34,6 +34,11 @@ import java.security.cert.*;
 import java.text.*;
 import java.time.*;
 import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -57,16 +62,12 @@ public class CertificateServiceImpl implements CertificateService {
 
 
     @Override
-    public X509Certificate generateCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws Exception {
+    public com.example.PKI.model.Certificate generateCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws Exception {
         try {
-
-            if (LocalDate.parse(certificateDto.getEndDate()).compareTo(LocalDate.parse(certificateDto.getStartDate())) < 0) {
-                throw new Exception("END_DATE_BEFORE_START");
-            }
 
             // TODO: provjeri je l ima usera i issuera u bazii brrrr
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
             Date startDate = sdf.parse(certificateDto.getStartDate());
             Date endDate = sdf.parse(certificateDto.getEndDate());
 
@@ -83,7 +84,7 @@ public class CertificateServiceImpl implements CertificateService {
             String issuerAlias;
             serialNumber = keyService.getSerialNumber();
 
-            if (certificateDto.getType().equals("ROOT")) {
+            if (certificateDto.getType().equalsIgnoreCase("ROOT")) {
                 issuerAlias = serialNumber.toString();
                 issuer = generatedSubjectData.getX500Name();
                 issuerKeyStore = keyStoreService.getKeyStore(keyService.getKeyStorePath(CertificateType.ROOT.toString()),
@@ -132,8 +133,9 @@ public class CertificateServiceImpl implements CertificateService {
             keyStoreWriter.saveKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
             //Konvertuje objekat u sertifikat
 
+            return saveCertificateDB(certificateDto, certificateDto.getSubjectId());
 
-            return certConverter.getCertificate(certHolder);
+            //return certConverter.getCertificate(certHolder);
 
         } catch (CertificateEncodingException e) {
             e.printStackTrace();
@@ -163,9 +165,9 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public com.example.PKI.model.Certificate saveCertificateDB(CertificateDto subjectDto, Integer subjectId) {
         CertificateType cerType;
-        if (subjectDto.getType().equals("ROOT")) {
+        if (subjectDto.getType().equalsIgnoreCase("ROOT")) {
             cerType = CertificateType.ROOT;
-        } else if (subjectDto.getType().equals("INTERMEDIATE")) {
+        } else if (subjectDto.getType().equalsIgnoreCase("INTERMEDIATE")) {
             cerType = CertificateType.INTERMEDIATE;
         } else {
             cerType = CertificateType.CLIENT;
@@ -187,9 +189,10 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public void createCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws Exception {
+    public com.example.PKI.model.Certificate createCertificate(CertificateDto certificateDto, Subject generatedSubjectData) throws Exception {
         //User user = userRepository.findById(certificateDto.getSubjectId()).get();
-        X509Certificate certificate = generateCertificate(certificateDto, generatedSubjectData);
+        com.example.PKI.model.Certificate certificate = generateCertificate(certificateDto, generatedSubjectData);
+        return certificate;
     }
 
     @Override
@@ -338,11 +341,12 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public ArrayList<User> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
-        ArrayList<User> users = new ArrayList<User>();
+    public ArrayList<IssuerDto> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<IssuerDto> users = new ArrayList<IssuerDto>();
         for( com.example.PKI.model.Certificate c : certificateRepository.findCertificatesValidForDateRange(startDate, endDate)){
+            String mejlic = c.getSubjectEmail();
             if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber())){
-                users.add(userRepository.findByEmail(c.getSubjectEmail()));
+                users.add(new IssuerDto(userRepository.findByEmail(c.getSubjectEmail()), c.getSerialNumber()));
             }
         }
         return users;
