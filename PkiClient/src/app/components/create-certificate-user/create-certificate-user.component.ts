@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IssuerData } from 'src/app/interfaces/issuer-data';
+import { NewCertificate } from 'src/app/interfaces/new-certificate';
+import { SubjectData } from 'src/app/interfaces/subject-data';
 import { CertificateService } from 'src/app/services/CertificateService/certificate.service';
 
 @Component({
@@ -9,7 +11,6 @@ import { CertificateService } from 'src/app/services/CertificateService/certific
   styleUrls: ['./create-certificate-user.component.css']
 })
 export class CreateCertificateUserComponent implements OnInit {
-
   isLinear = false;
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
@@ -21,12 +22,16 @@ export class CreateCertificateUserComponent implements OnInit {
   todayDate: Date = new Date();
   potentialIssuers: IssuerData[];
   enableIssuerStep = true;
+  subjects: SubjectData[];
+  newCertificate: NewCertificate;
 
   constructor(
     private _formBuilder: FormBuilder,
     private certificateService: CertificateService
   ) {
     this.potentialIssuers = [] as IssuerData[];
+    this.subjects = [] as SubjectData[];
+    this.newCertificate = {} as NewCertificate;
   }
 
   ngOnInit(): void {
@@ -48,7 +53,10 @@ export class CreateCertificateUserComponent implements OnInit {
 
   changeType(value: String) {
     this.cType = value;
-    console.log('type is ' + value);
+    this.newCertificate.type = value;
+    this.certificateService.getSubjects().subscribe((res) => {
+      this.subjects = res;
+    });
   }
 
   dateRangeChange(
@@ -66,17 +74,35 @@ export class CreateCertificateUserComponent implements OnInit {
     // service.getCAsForDateRange(this.startDate, this.endDate);
     if (this.cType == 'client' || this.cType == 'intermediate') {
       this.certificateService
-        .getSignersForDateRange(this.startDate, this.endDate)
+        .getSignersForDateRangeByUser(this.startDate, this.endDate)
         .subscribe((res) => {
           this.potentialIssuers = res;
         });
-    } else {
-      this.enableIssuerStep = false;
-    }
+    } 
   }
 
   issuerSelected(matOpr: any) {
-    console.log(this.potentialIssuers);
+    this.newCertificate.issuerId = matOpr.value;
+    this.potentialIssuers.forEach((is) => {
+      if (is.id == matOpr.value)
+        this.newCertificate.issuerSerialNumber = is.serialNumber;
+    });
   }
 
+  subjectSelected(matOption1: any) {
+    this.newCertificate.subjectId = matOption1.value;
+  }
+
+  addItem(newItem: string) {
+    this.newCertificate.subjectId = parseInt(newItem);
+  }
+
+  create() {
+    this.newCertificate.startDate = this.startDate;
+    this.newCertificate.endDate = this.endDate;
+    if (this.newCertificate.issuerId == undefined)
+      this.newCertificate.issuerId = this.newCertificate.subjectId;
+
+    this.certificateService.createCertificateByUser(this.newCertificate).subscribe();
+  }
 }

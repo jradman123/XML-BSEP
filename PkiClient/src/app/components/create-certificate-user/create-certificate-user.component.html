@@ -1,125 +1,137 @@
 <div class="container">
-    <div style="width: 80%; color: lightslategray; margin: auto">
-      <h1>Create Certificate</h1>
-      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
-        <mat-step [stepControl]="firstFormGroup">
-          <form [formGroup]="firstFormGroup">
-            <ng-template matStepLabel>Pick the certificate type</ng-template>
+  <div style="width: 80%; color: lightslategray; margin: auto">
+    <h1>Create Certificate</h1>
+    <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+      <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+          <ng-template matStepLabel>Pick the certificate type</ng-template>
+          <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <mat-select
+              formControlName="firstCtrl"
+              required
+              #firstCtrl
+              (selectionChange)="changeType($event.value)"
+            >
+              <mat-option value="intermediate">Intermediate</mat-option>
+              <mat-option value="client">End-Entity</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [stepControl]="secondFormGroup">
+        <form [formGroup]="secondFormGroup">
+          <ng-template matStepLabel>Pick validity timespan</ng-template>
+          <mat-form-field appearance="fill">
+            <mat-label>Valid from - to</mat-label>
+            <mat-date-range-input [rangePicker]="picker" required>
+              <input
+                matStartDate
+                placeholder="Start date"
+                formControlName="start"
+                placeholder="Start date"
+                #dateRangeStart
+              />
+              <input
+                matEndDate
+                placeholder="End date"
+                formControlName="end"
+                placeholder="End date"
+                #dateRangeEnd
+                (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
+              />
+            </mat-date-range-input>
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext (click)="dateNext()">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <ng-template [ngIf]="enableIssuerStep">
+        <mat-step [stepControl]="thirdFormGroup">
+          <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>Pick the issuer</ng-template>
             <mat-form-field appearance="fill">
-              <mat-label>Type</mat-label>
-              <mat-select
-                formControlName="firstCtrl"
-                required
-                #firstCtrl
-                (selectionChange)="changeType($event.value)"
-              >
-                <mat-option value="root">Root</mat-option>
-                <mat-option value="intermediate">Intermediate</mat-option>
-                <mat-option value="client">End-Entity</mat-option>
+              <mat-selection-list #matList [multiple]="false">
+                <mat-list-option
+                  #matOpr
+                  (click)="issuerSelected(matOpr)"
+                  *ngFor="let issuer of potentialIssuers"
+                  [value]="issuer.id"
+                >
+                  <!-- <p>CN = {{ issuer.commonName }}</p>
+                <br />
+                <p>O = {{ issuer.organization }}</p>
+                <br />
+                <p>C = {{ issuer.country }}</p>
+                <br /> -->
+                  <p>
+                    CN = {{ issuer.commonName }}, O = {{ issuer.organization }},
+                    C = {{ issuer.country }}
+                  </p>
+                </mat-list-option>
+              </mat-selection-list>
+              <input
+                matInput
+                placeholder=" "
+                formControlName="thirdCtrl"
+                readonly
+              />
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </mat-step>
+      </ng-template>
+      <mat-step [stepControl]="fourthFormGroup">
+        <form [formGroup]="fourthFormGroup">
+          <ng-template matStepLabel>Pick or fill in the subject</ng-template>
+          <div>
+            <app-create-subject
+              (newItemEvent)="addItem($event)"
+            ></app-create-subject>
+            <hr />
+            <p text-align="justify">Or</p>
+            <mat-form-field appearance="fill">
+              <mat-label>Subject</mat-label>
+              <mat-select formControlName="fourthCtrl">
+                <mat-option
+                  #matOption1
+                  (click)="subjectSelected(matOption1)"
+                  *ngFor="let s of subjects"
+                  value="{{ s.id }}"
+                >
+                  {{ s.email }}, CN = {{ s.commonName }}, O =
+                  {{ s.organization }}, C = {{ s.country }}</mat-option
+                >
               </mat-select>
             </mat-form-field>
-            <div>
-              <button mat-button matStepperNext>Next</button>
-            </div>
-          </form>
-        </mat-step>
-        <mat-step [stepControl]="secondFormGroup">
-          <form [formGroup]="secondFormGroup">
-            <ng-template matStepLabel>Pick validity timespan</ng-template>
-            <mat-form-field appearance="fill">
-              <mat-label>Valid from - to</mat-label>
-              <mat-date-range-input
-                [rangePicker]="picker"
-                [min]="todayDate"
-                required
-              >
-                <input
-                  matStartDate
-                  placeholder="Start date"
-                  formControlName="start"
-                  placeholder="Start date"
-                  #dateRangeStart
-                />
-                <input
-                  matEndDate
-                  placeholder="End date"
-                  formControlName="end"
-                  placeholder="End date"
-                  #dateRangeEnd
-                  (dateChange)="dateRangeChange(dateRangeStart, dateRangeEnd)"
-                />
-              </mat-date-range-input>
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="picker"
-              ></mat-datepicker-toggle>
-              <mat-date-range-picker #picker></mat-date-range-picker>
-            </mat-form-field>
-            <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext (click)="dateNext()">Next</button>
-            </div>
-          </form>
-        </mat-step>
-        <ng-template [ngIf]="enableIssuerStep">
-          <mat-step [stepControl]="thirdFormGroup">
-            <form [formGroup]="thirdFormGroup">
-              <ng-template matStepLabel>Pick the issuer</ng-template>
-              <mat-form-field appearance="fill">
-                <mat-selection-list #matList [multiple]="false">
-                  <mat-list-option
-                    #matOpr
-                    (click)="issuerSelected(matOpr)"
-                    *ngFor="let issuer of potentialIssuers"
-                    [value]="issuer.id"
-                  >
-                    <!-- <p>CN = {{ issuer.commonName }}</p>
-                  <br />
-                  <p>O = {{ issuer.organization }}</p>
-                  <br />
-                  <p>C = {{ issuer.country }}</p>
-                  <br /> -->
-                    <p>
-                      CN = {{ issuer.commonName }}, O = {{ issuer.organization }},
-                      C = {{ issuer.country }}
-                    </p>
-                  </mat-list-option>
-                </mat-selection-list>
-                <input
-                  matInput
-                  placeholder=" "
-                  formControlName="thirdCtrl"
-                  readonly
-                />
-              </mat-form-field>
-              <div>
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button matStepperNext>Next</button>
-              </div>
-            </form>
-          </mat-step>
-        </ng-template>
-        <mat-step [stepControl]="fourthFormGroup">
-          <form [formGroup]="fourthFormGroup">
-            <ng-template matStepLabel>Pick or fill in the subject</ng-template>
-            <app-create-subject></app-create-subject>
-            <mat-form-field appearance="fill">
-              <div>
-                <hr />
-                <p>Or</p>
-                <mat-select formControlName="fourthCtrl"
-                  >Choose a subject</mat-select
-                >
-              </div>
-              <!-- <input matInput placeholder=" " formControlName="fourthCtrl" /> -->
-            </mat-form-field>
-            <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
-            </div>
-          </form>
-        </mat-step>
-      </mat-stepper>
-    </div>
+          </div>
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Done</ng-template>
+        <p>Confirm creating certificate</p>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="create()">Confirm</button>
+        </div>
+      </mat-step>
+    </mat-stepper>
   </div>
-  
+</div>

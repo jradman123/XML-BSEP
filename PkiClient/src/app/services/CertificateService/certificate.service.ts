@@ -10,7 +10,23 @@ import { SubjectData } from 'src/app/interfaces/subject-data';
   providedIn: 'root',
 })
 export class CertificateService {
-
+  createCertificateByUser(newCertificate: NewCertificate) {
+    return this.http.post<any>(
+      'http://localhost:8443/api/certificate/generateByClient',
+      newCertificate
+    );
+  }
+  getSignersForDateRangeByUser(
+    startDate: String,
+    endDate: String
+  ): Observable<IssuerData[]> {
+    return this.http.get<IssuerData[]>(
+      'http://localhost:8443/api/certificate/getCAsForSigningClientsCertificatesInDateRange?email='+ localStorage.getItem('email') +'&startDate=' +
+        startDate +
+        '&endDate=' +
+        endDate
+    );
+  }
   
   constructor(private http: HttpClient) {}
 

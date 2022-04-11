@@ -33,11 +33,10 @@ public interface CertificateService {
 
     ArrayList<Certificate> getAllUsersCertificates(String email);
 
-    ArrayList<Certificate> getAllValidSignersForUser(String email,String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
+    ArrayList<IssuerDto> getAllValidSignersForUser(String email,String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
 
-    void generateCertificateByUser(CertificateDto certificateDto, Subject generatedSubjectData);
+    com.example.PKI.model.Certificate generateCertificateByUser(CertificateDto certificateDto, Subject generatedSubjectData);
 
-    ArrayList<User> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
-
+    public ArrayList<IssuerDto> getAllValidSignersForDateRangeByUser(String email,String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
     ArrayList<IssuerDto> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException;
 }
