@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -326,8 +327,26 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public ArrayList<IssuerDto> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         ArrayList<IssuerDto> users = new ArrayList<IssuerDto>();
-        for( com.example.PKI.model.Certificate c : certificateRepository.findCertificatesValidForDateRange(startDate, endDate)){
-            String mejlic = c.getSubjectEmail();
+
+        ArrayList<com.example.PKI.model.Certificate> cers = new ArrayList<>();
+        for (com.example.PKI.model.Certificate c : certificateRepository.findAll()) {
+            if(c.getType() == CertificateType.ROOT || c.getType() == CertificateType.INTERMEDIATE){
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+                    Date start = sdf.parse(startDate);
+                    Date ende = sdf.parse(endDate);
+
+                    if( sdf.parse(c.getValidFrom()).compareTo(start) < 0 && sdf.parse(c.getValidTo()).compareTo(ende) > 0)
+                        cers.add(c);
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        //for( com.example.PKI.model.Certificate c : certificateRepository.findCertificatesValidForDateRange(startDate, endDate)){
+        for( com.example.PKI.model.Certificate c : cers){
             if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber())){
                 users.add(new IssuerDto(userRepository.findByEmail(c.getSubjectEmail()), c.getSerialNumber()));
             }
