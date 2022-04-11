@@ -6,11 +6,11 @@ import { SubjectData } from 'src/app/interfaces/subject-data';
 import { CertificateService } from 'src/app/services/CertificateService/certificate.service';
 
 @Component({
-  selector: 'app-create-certificate',
-  templateUrl: './create-certificate.component.html',
-  styleUrls: ['./create-certificate.component.css'],
+  selector: 'app-create-certificate-user',
+  templateUrl: './create-certificate-user.component.html',
+  styleUrls: ['./create-certificate-user.component.css']
 })
-export class CreateCertificateComponent implements OnInit {
+export class CreateCertificateUserComponent implements OnInit {
   isLinear = false;
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
@@ -74,13 +74,11 @@ export class CreateCertificateComponent implements OnInit {
     // service.getCAsForDateRange(this.startDate, this.endDate);
     if (this.cType == 'client' || this.cType == 'intermediate') {
       this.certificateService
-        .getSignersForDateRange(this.startDate, this.endDate)
+        .getSignersForDateRangeByUser(this.startDate, this.endDate)
         .subscribe((res) => {
           this.potentialIssuers = res;
         });
-    } else {
-      this.enableIssuerStep = false;
-    }
+    } 
   }
 
   issuerSelected(matOpr: any) {
@@ -105,6 +103,6 @@ export class CreateCertificateComponent implements OnInit {
     if (this.newCertificate.issuerId == undefined)
       this.newCertificate.issuerId = this.newCertificate.subjectId;
 
-    this.certificateService.createCertificate(this.newCertificate).subscribe();
+    this.certificateService.createCertificateByUser(this.newCertificate).subscribe();
   }
 }

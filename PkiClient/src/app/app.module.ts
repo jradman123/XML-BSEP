@@ -20,6 +20,8 @@ import { CreateSubjectComponent } from './components/create-subject/create-subje
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { CertificateChainComponent } from './components/certificate-chain/certificate-chain.component';
 
+import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
+ 
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,7 +35,7 @@ import { CertificateChainComponent } from './components/certificate-chain/certif
     CreateSubjectComponent,
     CertificateComponent,
     CertificateChainComponent,
-
+    CreateCertificateUserComponent
   ],
   imports: [
     BrowserModule,

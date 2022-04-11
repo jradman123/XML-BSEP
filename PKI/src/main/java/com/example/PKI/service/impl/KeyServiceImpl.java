@@ -22,9 +22,9 @@ public class KeyServiceImpl implements KeyService {
 
     @Override
     public String getKeyStorePath(String type) {
-        if (type.equals("ROOT")) {
+        if (type.equalsIgnoreCase("ROOT")) {
             return "roots";
-        } else if (type.equals("INTERMEDIATE")) {
+        } else if (type.equalsIgnoreCase("INTERMEDIATE")) {
             return "intermediates";
         } else {
             return "clients";

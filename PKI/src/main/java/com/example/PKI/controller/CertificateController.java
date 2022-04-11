@@ -1,6 +1,9 @@
 package com.example.PKI.controller;
 
 import com.example.PKI.dto.CertificateDto;
+import com.example.PKI.dto.DownloadCertificateDto;
+import com.example.PKI.model.*;
+import com.example.PKI.dto.IssuerDto;
 import com.example.PKI.model.Certificate;
 import com.example.PKI.model.Subject;
 import com.example.PKI.model.User;
@@ -18,6 +21,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -42,8 +46,8 @@ public class CertificateController {
     @PostMapping("/api/certificate/generate")
     public ResponseEntity<String> generateCertificate(@RequestBody CertificateDto certificateDto) throws Exception {
         Subject generatedSubjectData = certificateService.generateSubjectData(certificateDto.getSubjectId());
-        certificateService.createCertificate(certificateDto, generatedSubjectData);
-        Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
+        com.example.PKI.model.Certificate certificate = certificateService.createCertificate(certificateDto, generatedSubjectData);
+        //Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
         if (certificate != null) {
             return new ResponseEntity<String>("Success!", HttpStatus.OK);
         } else {
@@ -83,15 +87,14 @@ public class CertificateController {
 
     @GetMapping("/api/certificate/getCAsForSigningClientsCertificatesInDateRange")
     public ResponseEntity<?> getCAsForSigningInDateRange(@RequestParam("email") String email,@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
-        ArrayList<Certificate> cs = certificateService.getAllValidSignersForUser(email,startDate,endDate);
-        return new ResponseEntity<ArrayList<Certificate>>(cs, HttpStatus.OK);
+        return new ResponseEntity<ArrayList<IssuerDto>>(certificateService.getAllValidSignersForDateRangeByUser(email,startDate,endDate), HttpStatus.OK);
     }
 
     @PostMapping("/api/certificate/generateByClient")
     public ResponseEntity<String> generateCertificateByClient(@RequestBody CertificateDto certificateDto) throws Exception {
         Subject generatedSubjectData = certificateService.generateSubjectData(certificateDto.getSubjectId());
-        certificateService.generateCertificateByUser(certificateDto, generatedSubjectData);
-        Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
+        com.example.PKI.model.Certificate certificate = certificateService.generateCertificateByUser(certificateDto, generatedSubjectData);
+        //Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
         if (certificate != null) {
             return new ResponseEntity<String>("Success!", HttpStatus.OK);
         } else {
@@ -100,8 +103,7 @@ public class CertificateController {
     }
     @GetMapping("/api/certificate/getCAsForSigning")
     public ResponseEntity<?> getCAsForSigning(@RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
-        return new ResponseEntity<ArrayList<User>>(certificateService.getAllValidSignersForDateRange(startDate, endDate), HttpStatus.OK);
-
+        return new ResponseEntity<ArrayList<IssuerDto>>(certificateService.getAllValidSignersForDateRange(startDate, endDate), HttpStatus.OK);
     }
 
 
