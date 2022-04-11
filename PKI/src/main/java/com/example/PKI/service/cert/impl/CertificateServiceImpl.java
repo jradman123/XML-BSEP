@@ -286,7 +286,17 @@ public class CertificateServiceImpl implements CertificateService {
         return (ArrayList<com.example.PKI.model.Certificate>) certificateRepository.findAllBySubjectEmail(email);
     }
 
-@Override
+    @Override
+    public ArrayList<IssuerDto> getAllValidSignersForUser(String email,String startDate,String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<IssuerDto> users = new ArrayList<IssuerDto>();
+        for (com.example.PKI.model.Certificate c : certificateRepository.findAllSignersCertByUser(email, startDate, endDate)) {
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber())) {
+                users.add(new IssuerDto(userRepository.findByEmail(email), c.getSerialNumber()));
+            }
+        }
+        return users;
+    }
+    @Override
     public ArrayList<IssuerDto> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         ArrayList<IssuerDto> users = new ArrayList<IssuerDto>();
 
