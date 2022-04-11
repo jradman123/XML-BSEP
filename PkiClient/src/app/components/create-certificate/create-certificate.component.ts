@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IssuerData } from 'src/app/interfaces/issuer-data';
+import { NewCertificate } from 'src/app/interfaces/new-certificate';
 import { SubjectData } from 'src/app/interfaces/subject-data';
 import { CertificateService } from 'src/app/services/CertificateService/certificate.service';
 
@@ -22,6 +23,7 @@ export class CreateCertificateComponent implements OnInit {
   potentialIssuers: IssuerData[];
   enableIssuerStep = true;
   subjects: SubjectData[];
+  newCertificate: NewCertificate;
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -29,6 +31,7 @@ export class CreateCertificateComponent implements OnInit {
   ) {
     this.potentialIssuers = [] as IssuerData[];
     this.subjects = [] as SubjectData[];
+    this.newCertificate = {} as NewCertificate;
   }
 
   ngOnInit(): void {
@@ -50,7 +53,7 @@ export class CreateCertificateComponent implements OnInit {
 
   changeType(value: String) {
     this.cType = value;
-    console.log('type is ' + value);
+    this.newCertificate.type = value;
     this.certificateService.getSubjects().subscribe((res) => {
       this.subjects = res;
     });
@@ -81,8 +84,27 @@ export class CreateCertificateComponent implements OnInit {
   }
 
   issuerSelected(matOpr: any) {
-    console.log(this.potentialIssuers);
+    this.newCertificate.issuerId = matOpr.value;
+    this.potentialIssuers.forEach((is) => {
+      if (is.id == matOpr.value)
+        this.newCertificate.issuerSerialNumber = is.serialNumber;
+    });
   }
 
-  subjectSelected(matOption1: any) {}
+  subjectSelected(matOption1: any) {
+    this.newCertificate.subjectId = matOption1.value;
+  }
+
+  addItem(newItem: string) {
+    this.newCertificate.subjectId = parseInt(newItem);
+  }
+
+  create() {
+    this.newCertificate.startDate = this.startDate;
+    this.newCertificate.endDate = this.endDate;
+    if (this.newCertificate.issuerId == undefined)
+      this.newCertificate.issuerId = this.newCertificate.subjectId;
+
+    this.certificateService.createCertificate(this.newCertificate).subscribe();
+  }
 }

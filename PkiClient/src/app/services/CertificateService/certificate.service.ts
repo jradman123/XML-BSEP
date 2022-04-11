@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CertificateView } from 'src/app/interfaces/certificate-view';
 import { IssuerData } from 'src/app/interfaces/issuer-data';
+import { NewCertificate } from 'src/app/interfaces/new-certificate';
 import { SubjectData } from 'src/app/interfaces/subject-data';
 
 @Injectable({
@@ -31,5 +32,12 @@ export class CertificateService {
 
   getSubjects(): Observable<SubjectData[]> {
     return this.http.get<SubjectData[]>('http://localhost:8443/api/users');
+  }
+
+  createCertificate(newCertificate: NewCertificate): Observable<any> {
+    return this.http.post<any>(
+      'http://localhost:8443/api/certificate/generate',
+      newCertificate
+    );
   }
 }

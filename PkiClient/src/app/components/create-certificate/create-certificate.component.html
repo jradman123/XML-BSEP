@@ -28,11 +28,7 @@
           <ng-template matStepLabel>Pick validity timespan</ng-template>
           <mat-form-field appearance="fill">
             <mat-label>Valid from - to</mat-label>
-            <mat-date-range-input
-              [rangePicker]="picker"
-              [min]="todayDate"
-              required
-            >
+            <mat-date-range-input [rangePicker]="picker" required>
               <input
                 matStartDate
                 placeholder="Start date"
@@ -103,7 +99,9 @@
         <form [formGroup]="fourthFormGroup">
           <ng-template matStepLabel>Pick or fill in the subject</ng-template>
           <div>
-            <app-create-subject></app-create-subject>
+            <app-create-subject
+              (newItemEvent)="addItem($event)"
+            ></app-create-subject>
             <hr />
             <p text-align="justify">Or</p>
             <mat-form-field appearance="fill">
@@ -113,7 +111,7 @@
                   #matOption1
                   (click)="subjectSelected(matOption1)"
                   *ngFor="let s of subjects"
-                  value="{{ s.commonName }}"
+                  value="{{ s.id }}"
                 >
                   {{ s.email }}, CN = {{ s.commonName }}, O =
                   {{ s.organization }}, C = {{ s.country }}</mat-option
@@ -126,6 +124,14 @@
             <button mat-button matStepperNext>Next</button>
           </div>
         </form>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Done</ng-template>
+        <p>Confirm creating certificate</p>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="create()">Confirm</button>
+        </div>
       </mat-step>
     </mat-stepper>
   </div>

@@ -1,52 +1,71 @@
 <section class="container">
-  <form [formGroup]="subjectForm" (ngSubmit)="onFormSubmit()" >
+  <form [formGroup]="subjectForm" (ngSubmit)="onFormSubmit()">
     <div class="together">
       <div class="box">
         <div class="example-container">
           <mat-form-field appearance="fill">
             <mat-label>Enter your email</mat-label>
-            <input matInput placeholder="pat@example.com" formControlName="email"  required>
-         
-            <mat-error *ngIf="
-            subjectForm.controls['email'].errors?.required
-           ||   subjectForm.controls['email'].errors?.email">
-            {{getErrorMessage()}}</mat-error>
-        
+            <input
+              matInput
+              placeholder="pat@example.com"
+              formControlName="email"
+              required
+            />
+
+            <mat-error
+              *ngIf="
+                subjectForm.controls['email'].errors?.required ||
+                subjectForm.controls['email'].errors?.email
+              "
+            >
+              {{ getErrorMessage() }}</mat-error
+            >
           </mat-form-field>
         </div>
         <div class="example-container">
           <mat-form-field appearance="fill">
             <mat-label>Enter your password</mat-label>
-            <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required>
-            <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-              [attr.aria-pressed]="hide">
-              <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            <input
+              matInput
+              [type]="hide ? 'password' : 'text'"
+              formControlName="password"
+              required
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hide = !hide"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hide"
+            >
+              <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
             </button>
           </mat-form-field>
         </div>
         <mat-form-field appearance="fill">
           <mat-label>Common Name</mat-label>
-          <input matInput formControlName="commonName" required>
+          <input matInput formControlName="commonName" required />
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Organization</mat-label>
-          <input matInput formControlName="organization" required>
+          <input matInput formControlName="organization" required />
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Organization Unit</mat-label>
-          <input matInput formControlName="organizationUnit" required>
+          <input matInput formControlName="organizationUnit" required />
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Loacality </mat-label>
-          <input matInput formControlName="locality" required>
+          <input matInput formControlName="locality" required />
         </mat-form-field>
         <mat-form-field appearance="fill">
           <mat-label>Country</mat-label>
-          <input matInput formControlName="country" required>
+          <input matInput formControlName="country" required />
         </mat-form-field>
       </div>
-      <button mat-button class="myButton" mat-raised-button color="primary" >Register</button>
+      <button mat-button class="myButton" mat-raised-button color="primary">
+        Register
+      </button>
     </div>
   </form>
-
 </section>
