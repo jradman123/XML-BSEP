@@ -1,8 +1,6 @@
 package com.example.PKI.controller;
 
 import com.example.PKI.dto.CertificateDto;
-import com.example.PKI.dto.DownloadCertificateDto;
-import com.example.PKI.model.*;
 import com.example.PKI.model.Certificate;
 import com.example.PKI.model.Subject;
 import com.example.PKI.model.User;
@@ -21,7 +19,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -65,6 +62,7 @@ public class CertificateController {
         return new ResponseEntity<ArrayList<Certificate>>(certificateService.getAllCertificates(), HttpStatus.OK);
     }
 
+
     @PostMapping("/api/certificate/downloadCertificate")
     public ResponseEntity<?> downloadCertificate(@RequestBody String serialNumber) throws Exception {
         base64Encoder.downloadCertificate(serialNumber);
@@ -74,6 +72,12 @@ public class CertificateController {
     @GetMapping("/api/certificate/getAllUsersCertificates/{email}")
     public ResponseEntity<ArrayList<com.example.PKI.model.Certificate>> getAllUsersCertificates(@PathVariable String email) throws Exception {
         return new ResponseEntity<ArrayList<com.example.PKI.model.Certificate>>(certificateService.getAllUsersCertificates(email),HttpStatus.OK);
+    }
+    @GetMapping("/api/certificate/chains/{email}")
+    public ArrayList[] getAllCertificateChains(@PathVariable String email) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList[] certificate = certificateService.getAllCertificateChains(email);
+
+        return certificate;
     }
 
 

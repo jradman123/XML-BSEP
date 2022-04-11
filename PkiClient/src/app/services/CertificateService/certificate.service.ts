@@ -41,4 +41,7 @@ export class CertificateService {
   getAllUsersCertificates(email : string) : Observable<CertificateView[]> {
     return this.http.get<CertificateView[]>('http://localhost:8443/api/certificate/getAllUsersCertificates/' + email);
   }
+  getUsersChainCertificates(email : string) : Observable<CertificateView[][][]> {
+    return this.http.get<CertificateView[][][]>("http://localhost:8443/api/certificate/chains/"+"a@gmail.com");
+  }
 }

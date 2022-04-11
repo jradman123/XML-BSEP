@@ -1,4 +1,5 @@
 package com.example.PKI.service.cert.impl;
+
 import com.example.PKI.dto.CertificateDto;
 import com.example.PKI.model.CertificateType;
 import com.example.PKI.model.Subject;
@@ -29,16 +30,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.security.cert.*;
-import java.text.*;
-import java.time.*;
-import java.util.*;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -269,12 +268,13 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public ArrayList<com.example.PKI.model.Certificate> getAllCertificates() throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         ArrayList<com.example.PKI.model.Certificate> certificates = new ArrayList<com.example.PKI.model.Certificate>();
-        for ( com.example.PKI.model.Certificate c : certificateRepository.findAll()) {
+        for (com.example.PKI.model.Certificate c : certificateRepository.findAll()) {
             if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber()))
                 certificates.add(c);
         }
         return certificates;
     }
+
 
     @Override
     public ArrayList<com.example.PKI.model.Certificate> getAllUsersCertificates(String email) {
@@ -282,14 +282,120 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public ArrayList<com.example.PKI.model.Certificate> getAllValidSignersForUser(String email,String startDate,String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+    public ArrayList<com.example.PKI.model.Certificate> getAllValidSignersForUser(String email, String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         ArrayList<com.example.PKI.model.Certificate> certificates = new ArrayList<com.example.PKI.model.Certificate>();
-        for ( com.example.PKI.model.Certificate c : certificateRepository.findAllSignersCertByUser(email,startDate,endDate)) {
+        for (com.example.PKI.model.Certificate c : certificateRepository.findAllSignersCertByUser(email, startDate, endDate)) {
             if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber()))
                 certificates.add(c);
         }
         return certificates;
     }
+
+    @Override
+    public ArrayList[] getAllCertificateChains(String email) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
+        ArrayList<com.example.PKI.model.Certificate> certificates = getAllUsersCertificates(email);
+        ArrayList<com.example.PKI.model.Certificate> certificatesCopy = getAllUsersCertificates(email);
+
+        ArrayList<Certificate[]> intermediateChains = new ArrayList<>();
+        ArrayList<Certificate[]> clientChains = new ArrayList<>();
+        ArrayList<Certificate[]> rootChains = new ArrayList<>();
+        //ArrayList<ArrayList<com.example.PKI.model.Certificate[]>> intermediateModelChains = new ArrayList<>();
+
+        for (com.example.PKI.model.Certificate c : certificates) {
+            if (c.getType() == CertificateType.CLIENT) {
+                String alias = c.getSerialNumber();
+                KeyStore keyStore = getKeyStoreByAlias(alias);
+                Certificate[] chain =  keyStore.getCertificateChain(alias);
+                clientChains.add(chain);
+            }
+        }
+        ArrayList<com.example.PKI.model.Certificate[]> clientModelChains = createModel(clientChains);
+
+        if (clientModelChains != null) {
+            for (com.example.PKI.model.Certificate[] c : clientModelChains) {
+                for (com.example.PKI.model.Certificate cc : c) {
+                    if (certificates.contains(cc)) {
+                        certificatesCopy.remove(cc);
+                    }
+                }
+            }
+        }
+        certificates = certificatesCopy;
+        ///////////////////////////////////////////////////////////////////////////////
+
+        for (com.example.PKI.model.Certificate c : certificates) {
+            if (c.getType() == CertificateType.INTERMEDIATE) {
+                String alias = c.getSerialNumber();
+                KeyStore keyStore = getKeyStoreByAlias(alias);
+                Certificate[] chain =  keyStore.getCertificateChain(alias);
+                intermediateChains.add(chain);
+            }
+        }
+        ArrayList<com.example.PKI.model.Certificate[]> intermediateModelChains = createModel(intermediateChains);
+
+        if (intermediateModelChains != null) {
+            for (com.example.PKI.model.Certificate[] c : intermediateModelChains) {
+                for (com.example.PKI.model.Certificate cc : c) {
+                    if (certificates.contains(cc)) {
+                        certificatesCopy.remove(cc);
+                    }
+                }
+            }
+        }
+        certificates = certificatesCopy;
+        /////////////////////////////
+
+        for (com.example.PKI.model.Certificate c : certificates) {
+            if (c.getType() == CertificateType.ROOT) {
+                String alias = c.getSerialNumber();
+                KeyStore keyStore = getKeyStoreByAlias(alias);
+                Certificate[] chain =  keyStore.getCertificateChain(alias);
+                rootChains.add(chain);
+            }
+        }
+        ArrayList<com.example.PKI.model.Certificate[]> rootModelChains = createModel(intermediateChains);
+
+        return new ArrayList[]{clientModelChains, intermediateModelChains, rootModelChains};
+    }
+
+    private ArrayList<com.example.PKI.model.Certificate[]>  createModel(ArrayList<Certificate[]> intermediateChains) throws CertificateEncodingException {
+        ArrayList<com.example.PKI.model.Certificate[]>  certificatesMega = new ArrayList<>();
+        int i = 0;
+        for(Certificate[] c : intermediateChains){
+            ArrayList<com.example.PKI.model.Certificate> list = new ArrayList<>();
+            for(Certificate cc: c){
+                String currentAlias = ((X509Certificate) cc).getSerialNumber().toString();
+                com.example.PKI.model.Certificate transformed = certificateRepository.findBySerialNumber(currentAlias);
+                list.add(transformed);
+
+            }
+           certificatesMega.add(list.toArray(new com.example.PKI.model.Certificate[i]));
+            i++;
+        }
+        return certificatesMega;
+    }
+
+//    private com.example.PKI.model.Certificate getByName(Certificate cc, ArrayList<com.example.PKI.model.Certificate> certificates) {
+//        for(com.example.PKI.model.Certificate c : certificates) {
+//            X509Certificate transformed = (X509Certificate) cc;
+//            if (((X509Certificate) cc).getSerialNumber().equals(c.getSerialNumber())) {
+//                return c;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    private boolean findByName(Certificate cc, ArrayList<com.example.PKI.model.Certificate> certificates) {
+//
+//        for(com.example.PKI.model.Certificate c : certificates){
+//            X509Certificate transformed = (X509Certificate)cc;
+//            if(((X509Certificate) cc).getSerialNumber().equals(c.getSerialNumber())){
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
 
     @Override
     public boolean isCertificateValid(KeyStore keyStore, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException {
@@ -306,26 +412,22 @@ public class CertificateServiceImpl implements CertificateService {
             X509Certificate certificate = (X509Certificate) certificates[i];
             try {
                 certificate.checkValidity();
-            }
-            catch (CertificateExpiredException e) {
+            } catch (CertificateExpiredException e) {
                 return false;
-            }
-            catch (CertificateNotYetValidException e) {
+            } catch (CertificateNotYetValidException e) {
                 return false;
             }
 
             X509Certificate parent = (X509Certificate) certificates[i];
 
-            if( i > 0) {
+            if (i > 0) {
                 X509Certificate child = (X509Certificate) certificates[i - 1];
 
                 try {
                     child.verify(parent.getPublicKey()); // da li je potpis validan
-                }
-                catch (SignatureException e) {
+                } catch (SignatureException e) {
                     return false;
-                }
-                catch (InvalidKeyException e) {
+                } catch (InvalidKeyException e) {
                     return false;
                 }
             }
@@ -345,13 +447,14 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public ArrayList<User> getAllValidSignersForDateRange(String startDate, String endDate) throws CertificateException, KeyStoreException, IOException, NoSuchAlgorithmException, NoSuchProviderException {
         ArrayList<User> users = new ArrayList<User>();
-        for( com.example.PKI.model.Certificate c : certificateRepository.findCertificatesValidForDateRange(startDate, endDate)){
-            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber())){
+        for (com.example.PKI.model.Certificate c : certificateRepository.findCertificatesValidForDateRange(startDate, endDate)) {
+            if (isCertificateValid(getKeyStoreByAlias(c.getSerialNumber()), c.getSerialNumber())) {
                 users.add(userRepository.findByEmail(c.getSubjectEmail()));
             }
         }
         return users;
     }
+
 
 
    /* private boolean validate(String alias) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
@@ -425,8 +528,6 @@ public class CertificateServiceImpl implements CertificateService {
                     certificateChain);
             keyStoreWriter.saveKeyStore(keyService.getKeyStorePath(certificateDto.getType()), keyService.getKeyStorePass().toCharArray());
             //Konvertuje objekat u sertifikat
-
-
 
 
         } catch (CertificateEncodingException e) {
