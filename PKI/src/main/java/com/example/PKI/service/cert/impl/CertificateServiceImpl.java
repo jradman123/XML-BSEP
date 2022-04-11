@@ -361,6 +361,9 @@ public class CertificateServiceImpl implements CertificateService {
             if (LocalDate.parse(certificateDto.getEndDate()).compareTo(LocalDate.parse(certificateDto.getStartDate())) < 0) {
                 throw new Exception("END_DATE_BEFORE_START");
             }
+            if (certificateDto.getType() == "ROOT") {
+                throw new Exception("CAN_NOT_GENERATE_ROOT");
+            }
             // TODO: provjeri je l ima usera i issuera u bazii brrrr
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

@@ -18,6 +18,7 @@ import {MatCardModule} from '@angular/material/card';
 import { CreateCertificateComponent } from './components/create-certificate/create-certificate.component';
 import { CreateSubjectComponent } from './components/create-subject/create-subject.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
+import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
  
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { CertificateComponent } from './components/certificate/certificate.compo
     AllCertificatesComponent,
     CreateCertificateComponent,
     CreateSubjectComponent,
-    CertificateComponent
+    CertificateComponent,
+    CreateCertificateUserComponent
   ],
   imports: [
     BrowserModule,
