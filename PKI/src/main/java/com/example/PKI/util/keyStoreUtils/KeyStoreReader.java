@@ -37,15 +37,18 @@ public class KeyStoreReader {
 
         } catch (KeyStoreException e) {
             e.printStackTrace();
-        } catch (NoSuchProviderException e) {
+        } /*catch (NoSuchProviderException e) {
             e.printStackTrace();
-        } catch (FileNotFoundException e) {
+        }*/
+        catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (CertificateException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
             e.printStackTrace();
         }
         return null;
@@ -54,8 +57,13 @@ public class KeyStoreReader {
     public KeyStore getKeyStore(String keyStoreFile, String keyStorePass) throws KeyStoreException, NoSuchProviderException, IOException, NoSuchAlgorithmException, CertificateException {
         KeyStore ks = KeyStore.getInstance("JKS", "SUN");
 
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile + ".jks"));
-        ks.load(in, keyStorePass.toCharArray());
+        try{
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(keyStoreFile + ".jks"));
+            ks.load(in, keyStorePass.toCharArray());
+        }catch (FileNotFoundException e){
+            ks.load(null,keyStorePass.toCharArray());
+        }
+
         return ks;
     }
 

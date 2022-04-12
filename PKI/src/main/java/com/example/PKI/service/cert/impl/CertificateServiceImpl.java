@@ -587,9 +587,11 @@ public class CertificateServiceImpl implements CertificateService {
             e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
-        } catch (NoSuchProviderException e) {
+        }
+        /*(NoSuchProviderException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        } */
+        catch (Exception e) {
             e.printStackTrace();
         }
         return null;
