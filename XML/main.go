@@ -10,7 +10,10 @@ import (
 	"os/signal"
 	"time"
 	"user/module/handlers"
+	mymiddleware "user/module/middleware"
 	"user/module/model"
+	"user/module/repository"
+	"user/module/service"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
@@ -73,18 +76,26 @@ func main() {
 	//SetupDatabase()
 
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
-	userHandler := handlers.NewUserHandler(l)
+	repository := repository.NewUserRepository()
+	service := service.NewUserService(l, repository)
+	userHandler := handlers.NewUserHandler(l, *service)
 
-	//TODO : Middleware
 	router := mux.NewRouter()
+	UnauthorizedPostRouter := router.Methods(http.MethodPost).Subrouter()
+	UnauthorizedPostRouter.HandleFunc("/login", userHandler.LoginUser)
+
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", userHandler.GetUsers)
+	getRouter.Use(mymiddleware.ValidateToken)
 
 	putRouter := router.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", userHandler.UpdateUsers)
+	putRouter.Use(mymiddleware.ValidateToken)
 
 	postRouter := router.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/", userHandler.AddUsers)
+	putRouter.Use(mymiddleware.ValidateToken)
+
 	// create a new server
 	s := http.Server{
 		Addr:         ":8080",           // configure the bind address
