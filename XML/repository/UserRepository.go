@@ -41,6 +41,7 @@ func (r UserRepository) GetByUsername(ctx context.Context, username string) (*mo
 func (r UserRepository) CreateUser(ctx context.Context, username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender) string {
 
 	user := model.User{
+		ID:          uuid.New(),
 		Username:    username,
 		Password:    password,
 		Email:       email,

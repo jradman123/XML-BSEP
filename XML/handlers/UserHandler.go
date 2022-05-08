@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -10,6 +11,8 @@ import (
 	"user/module/helpers"
 	"user/module/repository"
 	"user/module/service"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // UserHandler is a http.Handler
@@ -22,6 +25,9 @@ type UserHandler struct {
 
 type ResponseEmail struct {
 	Email string
+}
+type ErrorResponse struct {
+	Err string
 }
 
 func NewUserHandler(l *log.Logger, service service.UserService, jsonConv helpers.JsonConverters, repo repository.UserRepository) *UserHandler {
@@ -50,8 +56,18 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
-
 	}
+	//cuvamo password kao hash neki
+	pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println(err)
+		err := ErrorResponse{
+			Err: "Password Encryption  failed",
+		}
+		json.NewEncoder(rw).Encode(err)
+	}
+
+	newUser.Password = string(pass)
 
 	email := u.repo.CreateUser(nil, newUser.Username, newUser.Password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, newUser.Gender)
 
