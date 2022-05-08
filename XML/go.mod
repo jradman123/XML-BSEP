@@ -17,6 +17,7 @@ require (
 )
 
 require (
+	github.com/euroteltr/rbac v1.0.9
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

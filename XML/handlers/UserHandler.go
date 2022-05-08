@@ -21,7 +21,17 @@ func NewUserHandler(l *log.Logger, service service.UserService) *UserHandler {
 }
 
 func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
+
 	u.l.Println("Handling GET Users")
+	users, err := u.service.GetUsers()
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+	}
+
+	logInResponseJson, _ := json.Marshal(users)
+	rw.WriteHeader(http.StatusOK)
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(logInResponseJson)
 }
 func (u *UserHandler) AddUsers(rw http.ResponseWriter, r *http.Request) {
 	u.l.Println("Handling POST Users")
