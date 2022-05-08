@@ -7,25 +7,65 @@ import (
 	"time"
 	"user/module/auth"
 	"user/module/dto"
+	"user/module/helpers"
+	"user/module/repository"
 	"user/module/service"
 )
 
 // UserHandler is a http.Handler
 type UserHandler struct {
-	l       *log.Logger
-	service service.UserService
+	l        *log.Logger
+	service  service.UserService
+	jsonConv helpers.JsonConverters
+	repo     repository.UserRepository
 }
 
-func NewUserHandler(l *log.Logger, service service.UserService) *UserHandler {
-	return &UserHandler{l, service}
+type ResponseEmail struct {
+	Email string
+}
+
+func NewUserHandler(l *log.Logger, service service.UserService, jsonConv helpers.JsonConverters, repo repository.UserRepository) *UserHandler {
+	return &UserHandler{l, service, jsonConv, repo}
 }
 
 func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 	u.l.Println("Handling GET Users")
 }
-func (u *UserHandler) AddUsers(rw http.ResponseWriter, r *http.Request) {
-	u.l.Println("Handling POST Users")
+func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
+	// u.l.Println("Handling POST Users")
+	// contentType := req.Header.Get("Content-Type")
+	// mediatype, _, err := mime.ParseMediaType(contentType)
+	// if err != nil {
+	// 	http.Error(rw, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+	// if mediatype != "application/json" {
+	// 	http.Error(rw, "expect application/json Content-Type", http.StatusUnsupportedMediaType)
+	// 	return
+	// }
+
+	var newUser dto.NewUser
+	err := json.NewDecoder(req.Body).Decode(&newUser)
+
+	if err != nil {
+
+		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
+
+	}
+
+	email := u.repo.CreateUser(nil, newUser.Username, newUser.Password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, newUser.Gender)
+
+	userEmail := ResponseEmail{
+		Email: email,
+	}
+
+	userEmailJson, _ := json.Marshal(userEmail)
+	rw.WriteHeader(http.StatusOK)
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(userEmailJson)
+
 }
+
 func (u *UserHandler) UpdateUsers(rw http.ResponseWriter, r *http.Request) {
 	u.l.Println("Handling PUT Users")
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 	"user/module/handlers"
+	"user/module/helpers"
 	mymiddleware "user/module/middleware"
 	"user/module/model"
 	"user/module/repository"
@@ -19,6 +19,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq" //na ovom importu se crveni ali bez njega nece da radi
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var (
@@ -34,13 +36,41 @@ var (
 	}
 )
 
-var db *sql.DB
+var db *gorm.DB
 var err error
 
-func SetupDatabase() {
-	//Loading env variables
+func SetupDatabase() *gorm.DB {
+	// //Loading env variables
 
-	//dialect := os.Getenv("DIALECT")
+	// //dialect := os.Getenv("DIALECT")
+	// host := os.Getenv("HOST")
+	// port := os.Getenv("DBPORT")
+	// user := os.Getenv("USER")
+	// dbname := os.Getenv("NAME")
+	// password := os.Getenv("PASSWORD")
+
+	// //dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbName, password, dbPort)
+	// psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	// //Opening connection to DB
+	// //db, err = sql.Open(dialect, dbURI)
+	// db, err := sql.Open("postgres", psqlInfo)
+
+	// if err != nil {
+	// 	log.Fatal(err)
+
+	// } else {
+	// 	fmt.Println("Successfully connected to database!")
+
+	// }
+
+	// //Close connection when the main name finishes
+
+	// defer db.Close()
+
+	// //Make database migrations to databaseif
+	// //db.DropTable(&model.User{})
+	// //db.AutoMigrate(&model.User{}) //This will not remove columns
+	// //db.Create(users) // Use this only once to populate db with data
 	host := os.Getenv("HOST")
 	port := os.Getenv("DBPORT")
 	user := os.Getenv("USER")
@@ -48,10 +78,13 @@ func SetupDatabase() {
 	password := os.Getenv("PASSWORD")
 
 	//dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbName, password, dbPort)
+	//psqlInfo := fmt.Sprintf("host=localhost  user=postgres password=fakultet dbname=xws_project	sslmode=disable")
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
 	//Opening connection to DB
 	//db, err = sql.Open(dialect, dbURI)
-	db, err := sql.Open("postgres", psqlInfo)
+	//j db, err := sql.Open("postgres", psqlInfo)
+	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal(err)
@@ -63,26 +96,36 @@ func SetupDatabase() {
 
 	//Close connection when the main name finishes
 
-	defer db.Close()
+	//j defer db.Close()
 
 	//Make database migrations to databaseif
 	//db.DropTable(&model.User{})
-	//db.AutoMigrate(&model.User{}) //This will not remove columns
+	db.AutoMigrate(&model.User{}) //This will not remove columns
 	//db.Create(users) // Use this only once to populate db with data
 
+	return db
 }
 func main() {
 
-	//SetupDatabase()
+	//ovo postaviti kao promjenljive sistema
+	os.Setenv("HOST", "localhost")
+	os.Setenv("DBPORT", "5432")
+	os.Setenv("USER", "postgres")
+	os.Setenv("PASSWORD", "fakultet")
+	os.Setenv("NAME", "xws_project")
+
+	db = SetupDatabase()
 
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
-	repository := repository.NewUserRepository()
+	jsonConverters := helpers.NewJsonConverters(l)
+	repository := repository.NewUserRepository(db)
 	service := service.NewUserService(l, repository)
-	userHandler := handlers.NewUserHandler(l, *service)
+	userHandler := handlers.NewUserHandler(l, *service, *jsonConverters, repository)
 
 	router := mux.NewRouter()
 	UnauthorizedPostRouter := router.Methods(http.MethodPost).Subrouter()
 	UnauthorizedPostRouter.HandleFunc("/login", userHandler.LoginUser)
+	UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", userHandler.GetUsers)
@@ -92,13 +135,13 @@ func main() {
 	putRouter.HandleFunc("/{id:[0-9]+}", userHandler.UpdateUsers)
 	putRouter.Use(mymiddleware.ValidateToken)
 
-	postRouter := router.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", userHandler.AddUsers)
+	//postRouter := router.Methods(http.MethodPost).Subrouter()
+	//postRouter.HandleFunc("/", userHandler.AddUsers)
 	putRouter.Use(mymiddleware.ValidateToken)
 
 	// create a new server
 	s := http.Server{
-		Addr:         ":8080",           // configure the bind address
+		Addr:         ":8081",           // configure the bind address
 		Handler:      router,            // set the default handler
 		ErrorLog:     l,                 // set the logger for the server
 		ReadTimeout:  5 * time.Second,   // max time to read request from the client
@@ -108,7 +151,7 @@ func main() {
 
 	// start the server
 	go func() {
-		l.Println("Starting server on port 8080")
+		l.Println("Starting server on port 8081")
 
 		err := s.ListenAndServe()
 		if err != nil {

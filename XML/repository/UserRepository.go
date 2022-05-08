@@ -5,6 +5,7 @@ import (
 	"user/module/model"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // type UserRepository interface {
@@ -17,10 +18,11 @@ import (
 // }
 
 type UserRepository struct {
+	db *gorm.DB
 }
 
-func NewUserRepository() UserRepository {
-	return UserRepository{}
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return UserRepository{db: db}
 }
 
 func (r UserRepository) GetByUsername(ctx context.Context, username string) (*model.User, error) {
@@ -34,4 +36,20 @@ func (r UserRepository) GetByUsername(ctx context.Context, username string) (*mo
 		LastName:    "Sparrow",
 		Gender:      model.MALE,
 	}, nil
+}
+
+func (r UserRepository) CreateUser(ctx context.Context, username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender) string {
+
+	user := model.User{
+		Username:    username,
+		Password:    password,
+		Email:       email,
+		PhoneNumber: phone,
+		FirstName:   firstName,
+		LastName:    lastName,
+		Gender:      gender,
+	}
+	r.db.Create(&user)
+
+	return string(user.Email)
 }
