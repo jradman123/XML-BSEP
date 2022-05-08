@@ -72,10 +72,10 @@ func SetupDatabase() *gorm.DB {
 	// //db.AutoMigrate(&model.User{}) //This will not remove columns
 	// //db.Create(users) // Use this only once to populate db with data
 	host := os.Getenv("HOST")
-	port := os.Getenv("DBPORT")
-	user := os.Getenv("USER")
-	dbname := os.Getenv("NAME")
-	password := os.Getenv("PASSWORD")
+	port := os.Getenv("PG_DBPORT")
+	user := os.Getenv("PG_USER")
+	dbname := os.Getenv("XML_DB_NAME")
+	password := os.Getenv("PG_PASSWORD")
 
 	//dbURI := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s port=%s", host, user, dbName, password, dbPort)
 	//psqlInfo := fmt.Sprintf("host=localhost  user=postgres password=fakultet dbname=xws_project	sslmode=disable")
@@ -107,12 +107,12 @@ func SetupDatabase() *gorm.DB {
 }
 func main() {
 
-	//ovo postaviti kao promjenljive sistema
-	os.Setenv("HOST", "localhost")
-	os.Setenv("DBPORT", "5432")
-	os.Setenv("USER", "postgres")
-	os.Setenv("PASSWORD", "fakultet")
-	os.Setenv("NAME", "xws_project")
+	//ovo postaviti kao promjenljive sistema//postavila sam lokalno var al nece opet
+	// os.Setenv("HOST", "localhost")
+	// os.Setenv("PG_DBPORT", "5432")
+	// os.Setenv("PG_USER", "postgres")
+	// os.Setenv("PG_PASSWORD", "fakultet")
+	// os.Setenv("XML_DB_NAME", "xws_project")
 
 	db = SetupDatabase()
 
