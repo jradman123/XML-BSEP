@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 	"time"
-	myerr "user/module/errors"
+	my_err "user/module/errors"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -21,7 +21,7 @@ func GenerateToken(claims *JwtClaims, expirationTime time.Time) (string, error) 
 	mySigningKey := []byte(os.Getenv("SECRET"))
 	tokenString, err := token.SignedString(mySigningKey)
 	if err != nil {
-		return "", &myerr.RequestError{StatusCode: 404, Err: err, Message: "Error generating token"}
+		return "", &my_err.RequestError{StatusCode: 404, Err: err, Message: "Error generating token"}
 	}
 	return tokenString, nil
 }
@@ -34,25 +34,25 @@ func ExtractToken(r *http.Request) string {
 	return ""
 }
 
-func TokenIsValid(tokenString string) error {
+func TokenIsValid(tokenString string) (error, string) {
 	claims, err := VerifyToken(tokenString)
 
 	if err != nil {
-		return &myerr.RequestError{
+		return &my_err.RequestError{
 			StatusCode: http.StatusUnauthorized,
 			Err:        err,
 			Message:    "Token wasn't verified",
-		}
+		}, ""
 	}
 	err = claims.Valid()
 	if err != nil {
-		return &myerr.RequestError{
+		return &my_err.RequestError{
 			StatusCode: http.StatusUnauthorized,
 			Err:        err,
 			Message:    "Calims are not valid",
-		}
+		}, ""
 	}
-	return nil
+	return nil, claims.Username
 }
 
 func VerifyToken(tokenString string) (*JwtClaims, error) {

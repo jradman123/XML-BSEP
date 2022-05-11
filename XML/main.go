@@ -10,11 +10,14 @@ import (
 	"time"
 	"user/module/handlers"
 	"user/module/helpers"
-	mymiddleware "user/module/middleware"
+	my_middleware "user/module/middleware"
 	"user/module/model"
 	"user/module/repository"
 	"user/module/service"
 
+	"github.com/euroteltr/rbac"
+	_ "github.com/euroteltr/rbac"
+	"github.com/euroteltr/rbac/middlewares/echorbac"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -71,6 +74,9 @@ func SetupDatabase() *gorm.DB {
 
 	return db
 }
+
+var R *rbac.RBAC
+
 func main() {
 
 	//ovo postaviti kao promjenljive sistema//postavila sam lokalno var al nece opet
@@ -82,11 +88,41 @@ func main() {
 
 	db = SetupDatabase()
 
+	R := rbac.New(rbac.NewConsoleLogger())
+	adminRole, _ := R.RegisterRole("admin", "Admin role")
+	userRole, _ := R.RegisterRole("user", "User role")
+
+	ApproveAction := rbac.Action("approve") //costume action
+	GetAllAction := rbac.Action("getAll")
+	usersPerm, err := R.RegisterPermission("users", "User resource", rbac.Read, rbac.Create, ApproveAction, GetAllAction)
+	if err != nil {
+		panic(err)
+	}
+
+	// Now load or define roles
+	R.Permit(adminRole.ID, usersPerm, usersPerm.Actions()...) // OVDJE DAJEMO PERMISSION
+	R.Permit(userRole.ID, usersPerm, rbac.Read)
+
+	// Middleware function shorthand
+	isGranted := echorbac.HasRole(R)
+	isGranted(usersPerm)
+
+	fmt.Printf("Admin is granted permission over users : %v\n", R.IsGranted(adminRole.ID, usersPerm, usersPerm.Actions()...)) //should be true
+	//-------------------------------------------------------------------------------------------------//
+
+	//--------jelena-------
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
 	jsonConverters := helpers.NewJsonConverters(l)
 	repository := repository.NewUserRepository(db)
-	service := service.NewUserService(l, repository)
-	userHandler := handlers.NewUserHandler(l, *service, *jsonConverters, repository)
+	userService := service.NewUserService(l, repository)
+	userHandler := handlers.NewUserHandler(l, *userService, *jsonConverters, repository)
+
+	//--------jelena-------
+	//l := log.New(os.Stdout, "products-api ", log.LstdFlags)
+	//repository := repository.NewUserRepository()
+	//userService := service.NewUserService(l, repository)
+	//userHandler := handlers.NewUserHandler(l, *userService)
+	//-----------------------------------------------------------------------------------------------//
 
 	router := mux.NewRouter()
 	UnauthorizedPostRouter := router.Methods(http.MethodPost).Subrouter()
@@ -94,16 +130,17 @@ func main() {
 	UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
+	authMiddleware := my_middleware.NewAuthorizationHandler(*R, usersPerm, usersPerm.Actions(), userService)
+	getRouter.Use(my_middleware.ValidateToken, authMiddleware.PermissionGranted)
 	getRouter.HandleFunc("/", userHandler.GetUsers)
-	getRouter.Use(mymiddleware.ValidateToken)
 
 	putRouter := router.Methods(http.MethodPut).Subrouter()
+	putRouter.Use(my_middleware.ValidateToken)
 	putRouter.HandleFunc("/{id:[0-9]+}", userHandler.UpdateUsers)
-	putRouter.Use(mymiddleware.ValidateToken)
 
-	//postRouter := router.Methods(http.MethodPost).Subrouter()
-	//postRouter.HandleFunc("/", userHandler.AddUsers)
-	putRouter.Use(mymiddleware.ValidateToken)
+	postRouter := router.Methods(http.MethodPost).Subrouter()
+	putRouter.Use(my_middleware.ValidateToken)
+	postRouter.HandleFunc("/", userHandler.AddUsers)
 
 	// create a new server
 	s := http.Server{
