@@ -69,7 +69,10 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 
 	newUser.Password = string(pass)
 
-	email := u.repo.CreateUser(nil, newUser.Username, newUser.Password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, newUser.Gender)
+	//zakucana rola za sad
+	var role = "REGISTERED_USER"
+
+	email := u.repo.CreateUser(nil, newUser.Username, newUser.Password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, newUser.Gender, role)
 
 	userEmail := ResponseEmail{
 		Email: email,

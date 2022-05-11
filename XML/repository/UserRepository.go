@@ -38,7 +38,7 @@ func (r UserRepository) GetByUsername(ctx context.Context, username string) (*mo
 	}, nil
 }
 
-func (r UserRepository) CreateUser(ctx context.Context, username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender) string {
+func (r UserRepository) CreateUser(ctx context.Context, username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role string) string {
 
 	user := model.User{
 		ID:          uuid.New(),
@@ -49,6 +49,7 @@ func (r UserRepository) CreateUser(ctx context.Context, username string, passwor
 		FirstName:   firstName,
 		LastName:    lastName,
 		Gender:      gender,
+		Role:        role,
 	}
 	r.db.Create(&user)
 
