@@ -154,7 +154,7 @@ func main() {
 
 	// start the server
 	go func() {
-		l.Println("Starting server on port 8081")
+		l.Println("Starting server on port 8082")
 
 		err := s.ListenAndServe()
 		if err != nil {
