@@ -16,31 +16,31 @@ import (
 	"user/module/service"
 
 	"github.com/euroteltr/rbac"
-	_ "github.com/euroteltr/rbac"
 	"github.com/euroteltr/rbac/middlewares/echorbac"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq" //na ovom importu se crveni ali bez njega nece da radi
+	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var (
-	users = &model.User{
-		ID:          uuid.New(),
-		Username:    "Jack",
-		Password:    "abc123",
-		Email:       "jack@gmail.com",
-		PhoneNumber: "123123",
-		FirstName:   "Jack",
-		LastName:    "Sparrow",
-		Gender:      model.MALE,
-	}
-)
+// var (
+// 	users = &model.User{
+// 		ID:          uuid.New(),
+// 		Username:    "Jack",
+// 		Password:    "abc123",
+// 		Email:       "jack@gmail.com",
+// 		PhoneNumber: "123123",
+// 		FirstName:   "Jack",
+// 		LastName:    "Sparrow",
+// 		Gender:      model.MALE,
+// 	}
+// )
 
 var db *gorm.DB
-var err error
+
+//var err error
 
 func SetupDatabase() *gorm.DB {
 
@@ -73,6 +73,18 @@ func SetupDatabase() *gorm.DB {
 	//db.Create(users) // Use this only once to populate db with data
 
 	return db
+}
+
+func initPasswordUtil() *helpers.PasswordUtil {
+	return &helpers.PasswordUtil{}
+}
+
+func initRegisteredUserRepo(database *gorm.DB) *repository.RegisteredUserRepository {
+	return &repository.RegisteredUserRepository{DB: database}
+}
+
+func initRegisterUserService(repo *repository.RegisteredUserRepository) *service.RegisteredUserService {
+	return &service.RegisteredUserService{Repo: repo}
 }
 
 var R *rbac.RBAC
@@ -112,10 +124,14 @@ func main() {
 
 	//--------jelena-------
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
+	validator := validator.New()
 	jsonConverters := helpers.NewJsonConverters(l)
 	repository := repository.NewUserRepository(db)
+	registerdUserRepo := initRegisteredUserRepo(db)
 	userService := service.NewUserService(l, repository)
-	userHandler := handlers.NewUserHandler(l, *userService, *jsonConverters, repository)
+	registerUserService := initRegisterUserService(registerdUserRepo)
+	passwordUtil := initPasswordUtil()
+	userHandler := handlers.NewUserHandler(l, userService, registerUserService, jsonConverters, &repository, validator, passwordUtil)
 
 	//--------jelena-------
 	//l := log.New(os.Stdout, "products-api ", log.LstdFlags)

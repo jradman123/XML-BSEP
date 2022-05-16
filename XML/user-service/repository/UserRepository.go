@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"user/module/model"
 
 	"github.com/google/uuid"
@@ -66,22 +67,10 @@ func (r UserRepository) GetByUsername(ctx context.Context, username string) (*mo
 	}, nil
 }
 
-func (r UserRepository) CreateUser(ctx context.Context, username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role string) string {
-
-	user := model.User{
-		ID:          uuid.New(),
-		Username:    username,
-		Password:    password,
-		Email:       email,
-		PhoneNumber: phone,
-		FirstName:   firstName,
-		LastName:    lastName,
-		Gender:      gender,
-		Role:        role,
-	}
-	r.db.Create(&user)
-
-	return string(user.Email)
+func (r UserRepository) CreateRegisteredUser(ctx context.Context, user *model.User) (string, error) {
+	result := r.db.Create(&user)
+	fmt.Print(result)
+	return string(user.Email), nil
 }
 
 func (r UserRepository) UserExists(username string) error {
