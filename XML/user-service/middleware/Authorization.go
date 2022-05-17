@@ -2,7 +2,9 @@ package middleware
 
 import (
 	"context"
+	"log"
 	"net/http"
+	"os"
 
 	my_auth "user/module/auth"
 	"user/module/service"
@@ -29,6 +31,7 @@ func ValidateToken(next http.Handler) http.Handler {
 
 		tokenString := my_auth.ExtractToken(r)
 		err, username := my_auth.TokenIsValid(tokenString)
+
 		if err != nil {
 			http.Error(rw, "Error middleware validating token: "+err.Error()+"\n", http.StatusUnauthorized)
 			return
@@ -44,7 +47,9 @@ func ValidateToken(next http.Handler) http.Handler {
 func (handler *AuthorizationHandler) PermissionGranted(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		username, _ := r.Context().Value(KeyUser{}).(string)
+		l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 
+		l.Printf("USERNAME FORM CONTEXT:" + username)
 		err := handler.UserService.UserExists(username)
 		if err != nil {
 			http.Error(rw, err.Error()+"\n", http.StatusUnauthorized)
@@ -52,6 +57,7 @@ func (handler *AuthorizationHandler) PermissionGranted(next http.Handler) http.H
 		}
 
 		userRole, err := handler.UserService.GetUserRole(username)
+
 		if err != nil {
 			http.Error(rw, err.Error()+"\n", http.StatusUnauthorized)
 			return

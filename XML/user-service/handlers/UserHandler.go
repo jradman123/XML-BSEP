@@ -73,7 +73,6 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(&newUser)
 
 	if err != nil {
-		//	rw.WriteHeader(http.StatusBadRequest)
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest) //400
 	}
 
@@ -152,15 +151,42 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 	var loginRequest dto.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
-
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
+		return
 
+	}
+
+	user, err := u.service.GetByUsername(context.TODO(), loginRequest.Username)
+	if err != nil {
+		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
+		return
+
+	}
+
+	salt, err := u.service.GetUserSalt(loginRequest.Username)
+	u.l.Printf("so:" + salt)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = u.passwordUtil.ValidateLoginPassword(salt, user.Password, loginRequest.Password)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	var claims = &auth.JwtClaims{}
 	claims.Username = loginRequest.Username
-	claims.Roles = []string{"admin", "user"}
 
+	userRoles, err := u.service.GetUserRole(loginRequest.Username)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+
+	}
+
+	claims.Roles = append(claims.Roles, userRoles)
 	var tokenCreationTime = time.Now().UTC()
 	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 
@@ -168,6 +194,8 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+
 	}
 
 	logInResponse := dto.LogInResponseDto{

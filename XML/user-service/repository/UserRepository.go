@@ -2,21 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"user/module/model"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
-
-// type UserRepository interface {
-// 	Create(ctx context.Context, user *model.User) //(*mongo.InsertOneResult, error)
-// 	Update(ctx context.Context, user *model.User) //(*mongo.UpdateResult, error)
-// 	GetByID(ctx context.Context, id string)       //(*model.User, error)
-// 	GetByUsername(ctx context.Context, username string) (*model.User, error)
-// 	GetAllRolesByUserId(ctx context.Context, userId string) //([]model.Role, error)
-// 	PhysicalDelete(ctx context.Context, userId string)      //(*mongo.DeleteResult, error)
-// }
 
 type UserRepository struct {
 	db *gorm.DB
@@ -26,45 +17,19 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return UserRepository{db: db}
 }
 
-var userList = []*model.User{
-	{
-		ID:          uuid.MustParse("cfa067e6-614c-4ca7-9d0b-012fcb01f9fa"),
-		Username:    "Jack",
-		Password:    "abc123",
-		Email:       "jack@gmail.com",
-		PhoneNumber: "123123",
-		FirstName:   "Jack",
-		LastName:    "Sparrow",
-		Gender:      model.MALE,
-	},
-	{
-		ID:          uuid.MustParse("8d4f1e1a-9897-4226-b8f4-1b2aef73457c"),
-		Username:    "Tim",
-		Password:    "abc123",
-		Email:       "mina@gmail.com",
-		PhoneNumber: "123123",
-		FirstName:   "Tim",
-		LastName:    "Burton",
-		Gender:      model.MALE,
-	},
-}
-
-func (r UserRepository) GetUsers() ([]*model.User, error) {
-
-	return userList, nil
+func (r UserRepository) GetUsers() ([]model.User, error) {
+	var users []model.User
+	r.db.Select("*").Find(&users)
+	return users, nil
 
 }
 func (r UserRepository) GetByUsername(ctx context.Context, username string) (*model.User, error) {
-	return &model.User{
-		ID:          uuid.New(),
-		Username:    "Jack",
-		Password:    "abc123",
-		Email:       "jack@gmail.com",
-		PhoneNumber: "123123",
-		FirstName:   "Jack",
-		LastName:    "Sparrow",
-		Gender:      model.MALE,
-	}, nil
+	user := &model.User{}
+	if r.db.First(&user, "username = ?", username).RowsAffected == 0 {
+		return nil, errors.New("User not found")
+
+	}
+	return user, nil
 }
 
 func (r UserRepository) CreateRegisteredUser(ctx context.Context, user *model.User) (string, error) {
@@ -74,8 +39,31 @@ func (r UserRepository) CreateRegisteredUser(ctx context.Context, user *model.Us
 }
 
 func (r UserRepository) UserExists(username string) error {
+	if r.db.First(&model.User{}, "username = ?", username).RowsAffected == 0 {
+		return errors.New("User does not exist")
+
+	}
 	return nil
 }
+
+func (r UserRepository) GetUserSalt(username string) (string, error) {
+	var result string = ""
+	r.db.Table("users").Select("salt").Where("username = ?", username).Scan(&result)
+	if result == "" {
+		return "", errors.New("User salt not found!")
+	}
+	return result, nil
+}
+
 func (r UserRepository) GetUserRole(username string) (string, error) {
-	return "admin", nil
+	var result int
+	r.db.Table("users").Select("role").Where("username = ?", username).Scan(&result)
+
+	if result == 1 {
+		return "user", nil
+	}
+	if result == 2 {
+		return "admin", nil
+	}
+	return "", errors.New("User role not found for username" + username)
 }

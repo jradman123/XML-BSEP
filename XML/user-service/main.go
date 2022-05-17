@@ -25,22 +25,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// var (
-// 	users = &model.User{
-// 		ID:          uuid.New(),
-// 		Username:    "Jack",
-// 		Password:    "abc123",
-// 		Email:       "jack@gmail.com",
-// 		PhoneNumber: "123123",
-// 		FirstName:   "Jack",
-// 		LastName:    "Sparrow",
-// 		Gender:      model.MALE,
-// 	}
-// )
-
 var db *gorm.DB
-
-//var err error
 
 func SetupDatabase() *gorm.DB {
 
@@ -51,9 +36,6 @@ func SetupDatabase() *gorm.DB {
 	password := os.Getenv("PG_PASSWORD")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	//Opening connection to DB
-	//j db, err := sql.Open("postgres", psqlInfo)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 
 	if err != nil {
@@ -64,11 +46,6 @@ func SetupDatabase() *gorm.DB {
 
 	}
 
-	//Close connection when the main name finishes
-
-	//j defer db.Close()
-
-	//Make database migrations to databaseif
 	db.AutoMigrate(&model.User{}) //This will not remove columns
 	//db.Create(users) // Use this only once to populate db with data
 
@@ -90,13 +67,6 @@ func initRegisterUserService(repo *repository.RegisteredUserRepository) *service
 var R *rbac.RBAC
 
 func main() {
-
-	//ovo postaviti kao promjenljive sistema//postavila sam lokalno var al nece opet
-	// os.Setenv("HOST", "localhost")
-	// os.Setenv("PG_DBPORT", "5432")
-	// os.Setenv("PG_USER", "postgres")
-	// os.Setenv("PG_PASSWORD", "fakultet")
-	// os.Setenv("XML_DB_NAME", "xws_project")
 
 	db = SetupDatabase()
 
@@ -189,6 +159,7 @@ func main() {
 	log.Println("Got signal:", sig)
 
 	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 	s.Shutdown(ctx)
 }
