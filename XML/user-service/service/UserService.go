@@ -17,7 +17,7 @@ type UserService struct {
 func NewUserService(l *log.Logger, repository repository.UserRepository) *UserService {
 	return &UserService{l, repository}
 }
-func (u UserService) GetUsers() ([]*model.User, error) {
+func (u UserService) GetUsers() ([]model.User, error) {
 
 	users, err := u.userRepository.GetUsers()
 	if err != nil {
@@ -33,20 +33,31 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 
 	if err != nil {
 		u.l.Println("Invalid username")
-		return nil, errors.New("Invalid username")
+		return nil, err
 	}
 
-	return user, err
+	return user, nil
 }
 
+//GetUserSalt
+
+func (u UserService) GetUserSalt(username string) (string, error) {
+
+	salt, err := u.userRepository.GetUserSalt(username)
+
+	if err != nil {
+		return "", err
+	}
+	return salt, nil
+}
 func (u UserService) UserExists(username string) error {
 
 	err := u.userRepository.UserExists(username)
 
 	if err != nil {
-		return errors.New("User doesn't exist")
+		return err
 	}
-	return err
+	return nil
 }
 
 func (u UserService) GetUserRole(username string) (string, error) {
@@ -54,7 +65,7 @@ func (u UserService) GetUserRole(username string) (string, error) {
 	role, err := u.userRepository.GetUserRole(username)
 
 	if err != nil {
-		return "", errors.New("Couldn't get user role ")
+		return "", err
 	}
 	return role, nil
 }

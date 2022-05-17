@@ -1,6 +1,10 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 //rola za sad samo string
 type User struct {
@@ -12,5 +16,8 @@ type User struct {
 	FirstName   string    `json:"firstName" gorm:"not null"`
 	LastName    string    `json:"lastName" gorm:"not null"`
 	Gender      Gender    `json:"gender" gorm:"not null"`
-	Role        string    `json:"role" gorm:"not null"`
+	Role        UserType  `json:"role" gorm:"not null"`
+	Salt        string    `json:"salt" gorm:"not null"`
+	IsConfirmed bool      `json:"is_confirmed" gorm:"not null"`
+	DateOfBirth time.Time `json:"dateOfBirth" gorm:"not null"`
 }
