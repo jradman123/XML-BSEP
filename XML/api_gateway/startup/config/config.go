@@ -3,6 +3,7 @@ package config
 type Config struct {
 	Port     string
 	UserHost string
+	UserPort string
 }
 
 func NewConfig() *Config {

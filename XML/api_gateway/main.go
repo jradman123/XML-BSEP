@@ -1,8 +1,8 @@
 package main
 
 import (
-	config "api-gateway/module/startup"
-	startup "api-gateway/module/startup/config"
+	startup "gateway/module/startup"
+	config "gateway/module/startup/config"
 )
 
 func main() {
