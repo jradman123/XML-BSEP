@@ -43,7 +43,6 @@ public class UserController {
         }
         LoggedUserDto logedUser = new LoggedUserDto(loginDTO.getEmail(), "error");
         return new ResponseEntity<LoggedUserDto>(logedUser, HttpStatus.BAD_REQUEST);
-
     }
 
     @CrossOrigin(origins = "http://localhost:4200")

@@ -1,6 +1,7 @@
 package com.example.PKI.dto;
 
 import lombok.Data;
+import java.util.*;
 
 @Data
 public class UserDto {
@@ -20,4 +21,8 @@ public class UserDto {
     public String locality;
 
     public String country;
+
+    public String recoveryMail;
+
+    public List<String> securityQuestions;
 }

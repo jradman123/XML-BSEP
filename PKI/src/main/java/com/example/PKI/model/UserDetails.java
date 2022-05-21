@@ -13,7 +13,8 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     public UserDetails(User user) {
         this.user = user;
-        authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
+        for (Permission p : user.getPermissions())
+            authorities.add(new SimpleGrantedAuthority(p.getName()));
     }
 
     public User getUser() {
@@ -37,7 +38,7 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override

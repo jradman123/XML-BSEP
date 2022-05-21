@@ -1,13 +1,11 @@
 package com.example.PKI.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.*;
 
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Data
 @Entity
@@ -36,14 +34,20 @@ public class User {
     private String locality;
     @Column
     private String country;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_permission",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Permission> permissions;
 
     public User() {  }
 
-    public User(String email, String password, Role role, boolean isActivated, String commonName, String organization, String organizationUnit, String locality, String country) {
+    public User(String email, String password, String commonName, String organization, String organizationUnit, String locality, String country) {
         this.email = email;
         this.password = password;
-        this.role = role;
-        this.isActivated = isActivated;
+        this.role = Role.UserOrdinary;
+        this.isActivated = false;
         this.commonName = commonName;
         this.organization = organization;
         this.organizationUnit = organizationUnit;
