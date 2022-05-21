@@ -55,16 +55,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
 
-                .authorizeRequests()//.antMatchers("/auth/login").permitAll()
-                //.antMatchers("/auth/signup").permitAll()
+                .authorizeRequests().antMatchers("/api/createSubject").permitAll()
+                .antMatchers("/api/login").permitAll()
                 .antMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
                 .antMatchers("/api/foo").permitAll()		// /api/foo
-                //.antMatchers("/requests/**").hasRole("Admin")
                 .anyRequest().authenticated().and()
-
                 .cors().and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class);
-        http.csrf().disable();
+                http.csrf().disable();
     }
 
     // Definisanje konfiguracije koja utice na generalnu bezbednost aplikacije
@@ -74,7 +72,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Zahtevi koji se mecuju za web.ignoring().antMatchers() nemaju pristup SecurityContext-u
 
         // Dozvoljena POST metoda na ruti /auth/login, za svaki drugi tip HTTP metode greska je 401 Unauthorized
-        //web.ignoring().antMatchers(HttpMethod.POST, "/auth/login");
+        web.ignoring().antMatchers(HttpMethod.POST, "/api/login");
+        web.ignoring().antMatchers(HttpMethod.POST, "/api/createObject");
+
 
         // Ovim smo dozvolili pristup statickim resursima aplikacije
         web.ignoring().antMatchers(HttpMethod.GET, "/", "/webjars/**", "/*.html", "favicon.ico", "/**/*.html",
