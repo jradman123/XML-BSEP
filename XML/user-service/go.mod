@@ -23,6 +23,7 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/mattevans/pwned-passwords v0.5.0 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.18 // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 )

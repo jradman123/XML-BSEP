@@ -15,6 +15,7 @@ import (
 	"user/module/repository"
 	"user/module/service"
 
+	hibp "github.com/mattevans/pwned-passwords"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
@@ -29,6 +30,7 @@ type UserHandler struct {
 	repo            *repository.UserRepository
 	validator       *validator.Validate
 	passwordUtil    *helpers.PasswordUtil
+	pwnedClient     *hibp.Client
 }
 
 type ResponseEmail struct {
@@ -39,8 +41,8 @@ type ErrorResponse struct {
 }
 
 func NewUserHandler(l *log.Logger, service *service.UserService, registerService *service.RegisteredUserService, jsonConv *helpers.JsonConverters, repo *repository.UserRepository, validator *validator.Validate,
-	passwordUtil *helpers.PasswordUtil) *UserHandler {
-	return &UserHandler{l, service, registerService, jsonConv, repo, validator, passwordUtil}
+	passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client) *UserHandler {
+	return &UserHandler{l, service, registerService, jsonConv, repo, validator, passwordUtil, pwnedClient}
 }
 
 func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
@@ -218,5 +220,42 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(logInResponseJson)
+
+}
+
+func (u *UserHandler) CheckIfPwned(rw http.ResponseWriter, r *http.Request) {
+
+	u.l.Println("Handling PWNED PASSWORD")
+	var pwnedPassword dto.PwnedPasswordRequest
+	err := json.NewDecoder(r.Body).Decode(&pwnedPassword)
+	if err != nil {
+		http.Error(rw, "Error decoding PwnedPasswordRequest:"+err.Error(), http.StatusBadRequest)
+		return
+
+	}
+
+	pwned, err := u.pwnedClient.Compromised(pwnedPassword.PwnedPassword)
+	if err != nil {
+		http.Error(rw, "Error checkinf if password is pwaned!"+err.Error(), http.StatusBadRequest)
+		u.l.Println(pwnedPassword.PwnedPassword)
+	}
+
+	pwnedResponse := dto.PwnedResponse{
+		IsPwned: pwned,
+		Message: "",
+	}
+
+	if pwned {
+		// Oh dear! 😱 -- You should avoid using that password
+		fmt.Print("Found to be compromised")
+		pwnedResponse.Message = "Password is pwned,please chose another one!"
+	} else {
+		pwnedResponse.Message = "Password is OK!"
+	}
+
+	pwnedResponseJson, _ := json.Marshal(pwnedResponse)
+	rw.WriteHeader(http.StatusOK)
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(pwnedResponseJson)
 
 }

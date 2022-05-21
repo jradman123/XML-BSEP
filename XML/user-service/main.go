@@ -20,6 +20,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq" //na ovom importu se crveni ali bez njega nece da radi
+	hibp "github.com/mattevans/pwned-passwords"
 	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -93,6 +94,7 @@ func main() {
 	//-------------------------------------------------------------------------------------------------//
 
 	//--------jelena-------
+	pwnedClient := hibp.NewClient()
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
 	validator := validator.New()
 	jsonConverters := helpers.NewJsonConverters(l)
@@ -101,7 +103,7 @@ func main() {
 	userService := service.NewUserService(l, repository)
 	registerUserService := initRegisterUserService(registerdUserRepo)
 	passwordUtil := initPasswordUtil()
-	userHandler := handlers.NewUserHandler(l, userService, registerUserService, jsonConverters, &repository, validator, passwordUtil)
+	userHandler := handlers.NewUserHandler(l, userService, registerUserService, jsonConverters, &repository, validator, passwordUtil, pwnedClient)
 
 	//--------jelena-------
 	//l := log.New(os.Stdout, "products-api ", log.LstdFlags)
@@ -114,6 +116,7 @@ func main() {
 	UnauthorizedPostRouter := router.Methods(http.MethodPost).Subrouter()
 	UnauthorizedPostRouter.HandleFunc("/login", userHandler.LoginUser)
 	UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
+	UnauthorizedPostRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	authMiddleware := my_middleware.NewAuthorizationHandler(*R, usersPerm, usersPerm.Actions(), userService)
@@ -127,6 +130,7 @@ func main() {
 	postRouter := router.Methods(http.MethodPost).Subrouter()
 	putRouter.Use(my_middleware.ValidateToken)
 	postRouter.HandleFunc("/", userHandler.AddUsers)
+	postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 
 	// create a new server
 	s := http.Server{
