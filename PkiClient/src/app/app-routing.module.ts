@@ -13,9 +13,27 @@ import { CreateCertificateUserComponent} from './components/create-certificate-u
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
-  { path: 'ahome', component: AdminHomeComponent },
-  { path: 'allCertificates', component: AllCertificatesComponent },
-  { path: 'chome', component: ClientHomeComponent },
+  { path: 'ahome', component: AdminHomeComponent ,
+    children: [
+    {
+      path: '', component: AllCertificatesComponent
+    },
+    { path: 'createCertificate', component: CreateCertificateComponent },
+    { path: 'createSubject', component: CreateSubjectComponent },
+    { path: 'certificate', component: CertificateComponent },
+    { path: 'chain', component: CertificateChainComponent },
+    { path: 'createCertificateUser', component: CreateCertificateUserComponent }
+
+
+  ]
+  },
+  { path: 'chome', component: ClientHomeComponent,
+    children: [
+    {
+      path: '', component: AllCertificatesComponent
+    }
+  ]
+  },
   { path: 'createCertificate', component: CreateCertificateComponent },
   { path: 'createSubject', component: CreateSubjectComponent },
   { path: 'certificate', component: CertificateComponent },
