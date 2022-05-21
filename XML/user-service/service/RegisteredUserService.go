@@ -1,6 +1,14 @@
 package service
 
 import (
+	"errors"
+	"fmt"
+	"math/rand"
+	"net"
+	"net/smtp"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 	"user/module/model"
 	"user/module/repository"
@@ -9,7 +17,25 @@ import (
 )
 
 type RegisteredUserService struct {
-	Repo *repository.RegisteredUserRepository
+	Repo      *repository.RegisteredUserRepository
+	EmailRepo *repository.EmailVerificationRepository
+}
+
+func (service *RegisteredUserService) ActivateUserAccount(username string) (bool, error) {
+	user, err := service.Repo.GetByUsername(username)
+	if err != nil {
+		return false, err
+	}
+	user.IsConfirmed = true
+	service.Repo.ActivateUserAccount(user)
+	editedUser, er := service.Repo.GetByUsername(username)
+	if er != nil {
+		return false, er
+	}
+	if !editedUser.IsConfirmed {
+		return false, errors.New("user not activated")
+	}
+	return true, nil
 }
 
 func (service *RegisteredUserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, dateOfBirth time.Time, question string, answer string) (string, error) {
@@ -34,6 +60,9 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	}
 
 	//TODO: send confirmation mail
+	sendConfirmationMail(user.Email, user.Username, service)
+
+	//TODO: send confirmation mail
 	//koriste redis bazu gdje privremeno cuvaju zahteve za registraciju
 	//a ovo sto serijalizuju mzd kasnije tek upisuju u bazu
 	//expiration  := 1000000000 * 3600 * 2 //2h
@@ -50,4 +79,92 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	// 	return err
 	// }
 	return mail, nil
+}
+
+func sendConfirmationMail(email string, username string, service *RegisteredUserService) error {
+	var err = checkEmailValid(email)
+	if err != nil {
+		return errors.New("email format invalid")
+	}
+	var er = checkEmailDomain(email)
+	if er != nil {
+		return errors.New("email domain invalid")
+	}
+	rand.Seed(time.Now().UnixNano())
+	rn := rand.Intn(100000)
+	emailVerification := model.EmailVerification{
+		Username: username,
+		Email:    email,
+		VerCode:  rn,
+	}
+
+	e := service.EmailRepo.Create(&emailVerification)
+	if e != nil {
+		return errors.New("error saving emailVerification")
+	}
+
+	go emailVerCode(rn, email) //valjda ne cekamo da se zavrsi
+
+	return nil
+}
+
+func checkEmailValid(email string) error {
+	// check email syntax is valid
+	//func MustCompile(str string) *Regexp
+	emailRegex, err := regexp.Compile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	if err != nil {
+		fmt.Println(err)
+		return errors.New("sorry, something went wrong")
+	}
+	rg := emailRegex.MatchString(email)
+	if rg != true {
+		return errors.New("email address is not a valid syntax, please check again")
+	}
+	// check email length
+	if len(email) < 4 {
+		return errors.New("email length is too short")
+	}
+	if len(email) > 253 {
+		return errors.New("email length is too long")
+	}
+	return nil
+}
+func checkEmailDomain(email string) error {
+	i := strings.Index(email, "@")
+	host := email[i+1:]
+	// func LookupMX(name string) ([]*MX, error)
+	_, err := net.LookupMX(host)
+	if err != nil {
+		err = errors.New("eould not find email's domain server, please chack and try again")
+		return err
+	}
+	return nil
+}
+func emailVerCode(rn int, toEmail string) error {
+	// sender data
+	//from := os.Getenv("FromEmailAddr") //ex: "John.Doe@gmail.com"
+	//password := os.Getenv("SMTPpwd")   // ex: "ieiemcjdkejspqz"
+	from := ""
+	password := ""
+	// receiver address privided through toEmail argument
+	to := []string{toEmail}
+	// smtp - Simple Mail Transfer Protocol
+	host := "smtp.gmail.com"
+	port := "587"
+	address := host + ":" + port
+	// message
+	subject := "Subject: Email Verification Code\r\n\r\n"
+	verCode := strconv.Itoa(rn)
+	fmt.Println("verCode:", verCode)
+	body := "verification code: " + verCode
+	fmt.Println("body:", body)
+	message := []byte(subject + body)
+	// athentication data
+	// func PlainAuth(identity, username, password, host string) Auth
+	auth := smtp.PlainAuth("", from, password, host)
+	// send mail
+	// func SendMail(addr string, a Auth, from string, to []string, msg []byte) error
+	fmt.Println("message:", string(message))
+	err := smtp.SendMail(address, auth, from, to, message)
+	return err
 }

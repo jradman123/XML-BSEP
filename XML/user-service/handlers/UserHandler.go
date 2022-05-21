@@ -33,11 +33,18 @@ type UserHandler struct {
 	pwnedClient     *hibp.Client
 }
 
+type UsernameRequest struct {
+	Username string
+}
 type ResponseEmail struct {
 	Email string
 }
 type ErrorResponse struct {
 	Err string
+}
+type ActivationResponse struct {
+	Username  string
+	Activated bool
 }
 
 func NewUserHandler(l *log.Logger, service *service.UserService, registerService *service.RegisteredUserService, jsonConv *helpers.JsonConverters, repo *repository.UserRepository, validator *validator.Validate,
@@ -59,10 +66,48 @@ func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(logInResponseJson)
 }
 
+func (u *UserHandler) ActivateUserAccount(rw http.ResponseWriter, req *http.Request) {
+	u.l.Println("Handling POST Users")
+
+	var username UsernameRequest
+	err := json.NewDecoder(req.Body).Decode(&username)
+	if err != nil {
+		http.Error(rw, "Error decoding request:"+err.Error(), http.StatusBadRequest) //400
+	}
+	policy := bluemonday.UGCPolicy()
+	username.Username = strings.TrimSpace(policy.Sanitize(username.Username))
+	if username.Username == "" {
+		http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return
+	}
+	var er error
+	_, er = u.service.GetByUsername(context.TODO(), username.Username)
+	if er == nil {
+		http.Error(rw, "User with entered username already exists! error:"+er.Error(), http.StatusConflict) //409
+	}
+
+	activated, e := u.registerService.ActivateUserAccount(username.Username)
+	if e != nil {
+		http.Error(rw, e.Error(), http.StatusConflict) //409
+	}
+	if !activated {
+		http.Error(rw, "Account activation failed!", http.StatusConflict) //409
+	}
+
+	activation := ActivationResponse{
+		Username:  username.Username,
+		Activated: true,
+	}
+
+	activationJson, _ := json.Marshal(activation)
+	rw.WriteHeader(http.StatusOK)
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(activationJson)
+}
+
 //create registered user function
 func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	u.l.Println("Handling POST Users")
-	//TODO: Ask yourself a question and answer it
 
 	var newUser dto.NewUser
 	err := json.NewDecoder(req.Body).Decode(&newUser)
