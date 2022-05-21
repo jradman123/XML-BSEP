@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+option go_package = "common/module/user_service";
+
+package user_service;
+import "google/api/annotations.proto";
+
+service UserService{
+
+  rpc RegisterUser(RegisterUserRequest) returns(RegisterResponse) {
+    option (google.api.http) = {
+      post: "/users/register"
+      body: "newUser"
+    };
+  }
+
+  rpc Login(LoginUserRequest) returns(LoginResponse) {
+    option (google.api.http) = {
+      post: "/users/login"
+      body: "usernamePass"
+    };
+  }
+  rpc GetAllRequest(EmptyRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      post: "/users"
+    };
+  }
+  rpc UpdateUserRequest(UpdateRequest) returns(UpdateUserResponse) {
+    option (google.api.http) = {
+      post: "/users/{id}"
+    };
+  }
+}
+message GetAllResponse {
+  repeated User users = 1;
+}
+message UpdateRequest{
+  string id = 1;
+}
+message EmptyRequest{}
+
+message LoginUserRequest {
+  UsernamePass usernamePass = 1;
+}
+
+message RegisterUserRequest {
+  User newUser = 1;
+}
+
+message UsernamePass {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+}
+
+message RegisterUserResponse {
+  string userEmail = 1;
+}
+message UpdateUserResponse {
+  User updatedUser = 1;
+}
+
+message User {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  string firstName = 5;
+  string lastName = 6;
+  string gender = 7;
+  string dateOfBirth = 8;
+}
+
+message RegisterResponse{
+  User user = 1;
+}
