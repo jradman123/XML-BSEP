@@ -33,25 +33,17 @@ public class UserController {
     public ResponseEntity<LoggedUserDto> login(@RequestBody LoginDto loginDTO) {
         User user = userService.findByEmail(loginDTO.getEmail());
         if (userService.login(loginDTO)) {
-            if (user.isAdmin()) {
+           // if (user.isAdmin()) {
                 LoggedUserDto logedUser = new LoggedUserDto(loginDTO.getEmail(), "admin");
                 return new ResponseEntity<LoggedUserDto>(logedUser, HttpStatus.OK);
-            } else {
+            /*} else {
                 LoggedUserDto logedUser = new LoggedUserDto(loginDTO.getEmail(), "user");
                 return new ResponseEntity<LoggedUserDto>(logedUser, HttpStatus.OK);
-            }
+            }*/
         }
         LoggedUserDto logedUser = new LoggedUserDto(loginDTO.getEmail(), "error");
         return new ResponseEntity<LoggedUserDto>(logedUser, HttpStatus.BAD_REQUEST);
 
-    }
-
-    @CrossOrigin(origins = "http://localhost:4200")
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody LoginDto loginDTO) {
-        User user = userService.findByEmail(loginDTO.getEmail());
-        userService.logout(user.getEmail());
-        return new ResponseEntity<String>("Success logout", HttpStatus.OK);
     }
 
     @CrossOrigin(origins = "http://localhost:4200")

@@ -22,19 +22,13 @@ public class UserServiceImpl implements UserService {
     public boolean login(LoginDto user) {
         User foundUser = userRepository.findByEmail(user.getEmail());
         if (foundUser.getPassword().equals(user.getPassword())) {
-            foundUser.setLoggedIn(true);
+            //foundUser.setLoggedIn(true);
             userRepository.save(foundUser);
             return true;
         }
         return false;
     }
 
-    @Override
-    public void logout(String email) {
-        User foundUser = userRepository.findByEmail(email);
-        foundUser.setLoggedIn(false);
-        userRepository.save(foundUser);
-    }
 
     @Override
     public User findByEmail(String email) {
@@ -43,10 +37,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        User user = new User(userDto.getEmail(), userDto.getPassword(), false, false, userDto.getCommonName(),
+       /* User user = new User(userDto.getEmail(), userDto.getPassword(), false, false, userDto.getCommonName(),
                 userDto.getOrganization(), userDto.getOrganizationUnit(), userDto.getLocality(), userDto.getCountry());
         userRepository.save(user);
-        userDto.setId(user.getId());
+        userDto.setId(user.getId());*/
         return userDto;
     }
 

@@ -13,8 +13,8 @@ import lombok.Data;
 @Entity
 @Table(name="users")
 public class User {
-	
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Integer id;
@@ -23,9 +23,9 @@ public class User {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private boolean isAdmin;
-    @Column(nullable = false)
-    private boolean isLoggedIn;
+    private Role role;
+    @Column
+    private boolean isActivated;
     @Column
     private String commonName;
     @Column
@@ -36,14 +36,14 @@ public class User {
     private String locality;
     @Column
     private String country;
-    
+
     public User() {  }
 
-    public User(String email, String password, boolean isAdmin, boolean isLoggedIn, String commonName, String organization, String organizationUnit, String locality, String country) {
+    public User(String email, String password, Role role, boolean isActivated, String commonName, String organization, String organizationUnit, String locality, String country) {
         this.email = email;
         this.password = password;
-        this.isAdmin = isAdmin;
-        this.isLoggedIn = isLoggedIn;
+        this.role = role;
+        this.isActivated = isActivated;
         this.commonName = commonName;
         this.organization = organization;
         this.organizationUnit = organizationUnit;
@@ -75,22 +75,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-	public boolean isLoggedIn() {
-		return isLoggedIn;
-	}
-
-	public void setLoggedIn(boolean isLoggedIn) {
-		this.isLoggedIn = isLoggedIn;
-	}
 
     public String getCommonName() {
         return commonName;
@@ -130,5 +114,21 @@ public class User {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isActivated() {
+        return isActivated;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
     }
 }
