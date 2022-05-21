@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 	"user/module/auth"
 	"user/module/dto"
@@ -14,6 +15,7 @@ import (
 	"user/module/repository"
 	"user/module/service"
 
+	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -57,17 +59,8 @@ func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 
 //create registered user function
 func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
-	// u.l.Println("Handling POST Users")
-	// contentType := req.Header.Get("Content-Type")
-	// mediatype, _, err := mime.ParseMediaType(contentType)
-	// if err != nil {
-	// 	http.Error(rw, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-	// if mediatype != "application/json" {
-	// 	http.Error(rw, "expect application/json Content-Type", http.StatusUnsupportedMediaType)
-	// 	return
-	// }
+	u.l.Println("Handling POST Users")
+	//TODO: Ask yourself a question and answer it
 
 	var newUser dto.NewUser
 	err := json.NewDecoder(req.Body).Decode(&newUser)
@@ -81,24 +74,63 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 
 	}
 
+	policy := bluemonday.UGCPolicy()
+	//sanitize everything
+	newUser.Username = strings.TrimSpace(policy.Sanitize(newUser.Username))
+	newUser.FirstName = strings.TrimSpace(policy.Sanitize(newUser.FirstName))
+	newUser.LastName = strings.TrimSpace(policy.Sanitize(newUser.LastName))
+	newUser.Email = strings.TrimSpace(policy.Sanitize(newUser.Email))
+	newUser.Password = strings.TrimSpace(policy.Sanitize(newUser.Password))
+	newUser.Gender = strings.TrimSpace(policy.Sanitize(newUser.Gender))
+	newUser.DateOfBirth = strings.TrimSpace(policy.Sanitize(newUser.DateOfBirth))
+	newUser.PhoneNumber = strings.TrimSpace(policy.Sanitize(newUser.PhoneNumber))
+
+	if newUser.Username == "" || newUser.FirstName == "" || newUser.LastName == "" ||
+		newUser.Gender == "" || newUser.DateOfBirth == "" || newUser.PhoneNumber == "" ||
+		newUser.Password == "" || newUser.Email == "" {
+		http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return
+	}
+
 	var er error
 	_, er = u.service.GetByUsername(context.TODO(), newUser.Username)
-	if er != nil {
+	if er == nil {
 		http.Error(rw, "User with entered username already exists! error:"+err.Error(), http.StatusConflict) //409
 	}
 
-	salt := ""
-	password := ""
+	var hashedSaltedPassword = ""
 	validPassword := u.passwordUtil.IsValidPassword(newUser.Password)
 
 	if validPassword {
 		//PASSWORD SALT
-		salt, password = u.passwordUtil.GeneratePasswordWithSalt(newUser.Password)
+		//salt, password = u.passwordUtil.GeneratePasswordWithSalt(newUser.Password)
+		//cuvamo password kao hash neki
+		pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+		if err != nil {
+			fmt.Println(err)
+			err := ErrorResponse{
+				Err: "Password Encryption  failed",
+			}
+			json.NewEncoder(rw).Encode(err)
+		}
+
+		hashedSaltedPassword = string(pass)
 
 	} else {
 		http.Error(rw, "Password format is not valid! error:"+err.Error(), http.StatusBadRequest) //400
 		return
 	}
+
+	answer, err := bcrypt.GenerateFromPassword([]byte(newUser.HashedAnswer), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println(err)
+		err := ErrorResponse{
+			Err: "Answer Encryption  failed",
+		}
+		json.NewEncoder(rw).Encode(err)
+	}
+
+	newUser.HashedAnswer = string(answer)
 
 	gender := model.OTHER
 	switch newUser.Gender {
@@ -108,24 +140,11 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 		gender = model.FEMALE
 	}
 
-	//cuvamo password kao hash neki
-	pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
-	if err != nil {
-		fmt.Println(err)
-		err := ErrorResponse{
-			Err: "Password Encryption  failed",
-		}
-		json.NewEncoder(rw).Encode(err)
-	}
-
-	newUser.Password = string(pass)
-
 	//zakucana rola za sad
 	//	var role = "REGISTERED_USER"
-	//var salt = ""
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, newUser.DateOfBirth)
-	email, er := u.registerService.CreateRegisteredUser(newUser.Username, password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, salt, dateOfBirth)
+	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.Question, newUser.HashedAnswer)
 
 	if er != nil {
 		http.Error(rw, "Failed creating registered user! error:"+er.Error(), http.StatusExpectationFailed) //
@@ -163,14 +182,7 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	}
 
-	salt, err := u.service.GetUserSalt(loginRequest.Username)
-	u.l.Printf("so:" + salt)
-	if err != nil {
-		http.Error(rw, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = u.passwordUtil.ValidateLoginPassword(salt, user.Password, loginRequest.Password)
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return

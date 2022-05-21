@@ -82,3 +82,8 @@ func (util *PasswordUtil) CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
+
+func Hash(password string) ([]byte, error) {
+
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+}

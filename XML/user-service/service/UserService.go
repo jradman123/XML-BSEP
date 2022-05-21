@@ -33,7 +33,7 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 
 	if err != nil {
 		u.l.Println("Invalid username")
-		return nil, err
+		return user, err //ovdje mi je pucalo ako vratim nil,err nzm zasto
 	}
 
 	return user, nil
