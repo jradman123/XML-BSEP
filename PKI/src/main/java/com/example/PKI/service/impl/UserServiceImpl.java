@@ -7,6 +7,7 @@ import com.example.PKI.model.User;
 import com.example.PKI.repository.PermissionRepository;
 import com.example.PKI.repository.UserRepository;
 import com.example.PKI.service.UserService;
+import com.example.PKI.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,14 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
     private PermissionRepository permissionRepository;
+    private VerificationTokenService verificationTokenService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder pe, PermissionRepository pr) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder pe, PermissionRepository pr,VerificationTokenService vts) {
         this.userRepository = userRepository;
         this.passwordEncoder = pe;
         this.permissionRepository = pr;
+        this.verificationTokenService = vts;
     }
 
     @Override
@@ -56,8 +59,17 @@ public class UserServiceImpl implements UserService {
 
         User created = userRepository.save(newUser);
         userDto.setId(created.getId());
+        verificationTokenService.sendVerificationToken(created);
 
         return userDto;
+    }
+
+    @Override
+    public User activateAccount(User user) {
+        User userDb = findByEmail(user.getEmail());
+        userDb.setActivated(true);
+        User saved = userRepository.save(userDb);
+        return saved;
     }
 
 

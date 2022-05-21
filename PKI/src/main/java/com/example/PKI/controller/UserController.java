@@ -4,9 +4,12 @@ import com.example.PKI.dto.*;
 import com.example.PKI.model.Role;
 import com.example.PKI.model.User;
 import com.example.PKI.model.UserDetails;
+import com.example.PKI.model.VerificationToken;
 import com.example.PKI.repository.UserRepository;
+import com.example.PKI.repository.VerificationTokenRepository;
 import com.example.PKI.security.TokenUtils;
 import com.example.PKI.service.UserService;
+import com.example.PKI.service.VerificationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @RestController
@@ -34,6 +38,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private VerificationTokenService verificationTokenService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -68,5 +75,29 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<?> getAll() {
         return new ResponseEntity<ArrayList<User>>((ArrayList<User>) userRepository.findAll(), HttpStatus.OK);
+    }
+
+    @CrossOrigin(origins = "*")
+    @GetMapping("/confirmAccount/{token}")
+    public ResponseEntity<String> confirmAccount(@PathVariable String token) {
+        VerificationToken verificationToken = verificationTokenService.findByToken(token);
+        User user = verificationToken.getUser();
+        if(verificationToken.getExpiryDate().isBefore(LocalDate.now())){
+            verificationTokenService.deleteById(verificationToken.getId());
+            verificationTokenService.sendVerificationToken(user);
+            return  new ResponseEntity<>("Confirmation link is expired,we sent you new one.Please check you mail box.",HttpStatus.BAD_REQUEST);
+        }
+        User activated = userService.activateAccount(user);
+        verificationTokenService.deleteById(verificationToken.getId());
+        if(activated.isActivated()) {
+            return new ResponseEntity<>("Account is activated.", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+
+
+
     }
 }

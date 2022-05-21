@@ -8,6 +8,6 @@ public interface UserService {
     boolean login(LoginDto loginDTO);
 
     User findByEmail(String email);
-
     UserDto createUser(UserDto userDto);
+    User activateAccount(User user);
 }
