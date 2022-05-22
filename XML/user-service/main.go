@@ -132,6 +132,7 @@ func main() {
 	UnauthorizedPostRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 	UnauthorizedPostRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
 	UnauthorizedPostRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
+	UnauthorizedPostRouter.HandleFunc("/newRecoveredPass", userHandler.CreateNewPassword)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	authMiddleware := my_middleware.NewAuthorizationHandler(*R, usersPerm, usersPerm.Actions(), userService)
@@ -148,6 +149,7 @@ func main() {
 	postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 	postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
 	postRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
+	postRouter.HandleFunc("/newRecoveredPass", userHandler.CreateNewPassword)
 
 	// create a new server
 	s := http.Server{
