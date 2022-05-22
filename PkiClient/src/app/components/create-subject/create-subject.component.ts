@@ -22,6 +22,7 @@ export class CreateSubjectComponent implements OnInit {
     organizationUnit: new FormControl(),
     locality: new FormControl(),
     country: new FormControl(),
+    recoveryMail : new FormControl()
   });
 
   getErrorMessage() {
