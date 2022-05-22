@@ -14,6 +14,7 @@ import (
 	"user/module/repository"
 
 	"github.com/google/uuid"
+	"gopkg.in/gomail.v2"
 )
 
 type RegisteredUserService struct {
@@ -21,21 +22,46 @@ type RegisteredUserService struct {
 	EmailRepo *repository.EmailVerificationRepository
 }
 
-func (service *RegisteredUserService) ActivateUserAccount(username string) (bool, error) {
-	user, err := service.Repo.GetByUsername(username)
-	if err != nil {
-		return false, err
+func (service *RegisteredUserService) ActivateUserAccount(username string, verCode int) (bool, error) {
+
+	var codeInfoForUsername *model.EmailVerification
+	var dbEr error
+	codeInfoForUsername, dbEr = service.EmailRepo.GetVerificationByUsername(username)
+
+	if dbEr != nil {
+		return false, dbEr
 	}
-	user.IsConfirmed = true
-	service.Repo.ActivateUserAccount(user)
-	editedUser, er := service.Repo.GetByUsername(username)
-	if er != nil {
-		return false, er
+	fmt.Println("verCode:", codeInfoForUsername.VerCode)
+
+	if codeInfoForUsername.VerCode == verCode {
+		//kao dala sam kodu trajanje od 1h
+		if codeInfoForUsername.Time.Add(time.Hour).After(time.Now()) {
+			//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
+			user, err := service.Repo.GetByUsername(username)
+			if err != nil {
+				return false, err
+			}
+			user.IsConfirmed = true
+			service.Repo.ActivateUserAccount(user)
+			editedUser, er := service.Repo.GetByUsername(username)
+			if er != nil {
+				return false, er
+			}
+			if !editedUser.IsConfirmed {
+				return false, errors.New("user not activated")
+			}
+			return true, nil
+
+		} else {
+			return false, errors.New("code expired")
+		}
+
+	} else {
+		return false, errors.New("wrong code")
 	}
-	if !editedUser.IsConfirmed {
-		return false, errors.New("user not activated")
-	}
-	return true, nil
+
+	//OVO TEK NAKON IZVRSI PROVJERU DA LI SE KODOVI POKLAPAJU
+
 }
 
 func (service *RegisteredUserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, dateOfBirth time.Time, question string, answer string) (string, error) {
@@ -60,7 +86,37 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	}
 
 	//TODO: send confirmation mail
-	sendConfirmationMail(user.Email, user.Username, service)
+	//	sendConfirmationMail(user.Email, user.Username, service)
+
+	var er = checkEmailValid(email)
+	if er != nil {
+		return mail, errors.New("email format invalid")
+	}
+	var domEr = checkEmailDomain(email)
+	if domEr != nil {
+		return mail, errors.New("email domain invalid")
+	}
+	rand.Seed(time.Now().UnixNano())
+	rn := rand.Intn(100000)
+	emailVerification := model.EmailVerification{
+		Username: username,
+		Email:    email,
+		VerCode:  rn,
+		Time:     time.Now(),
+	}
+	fmt.Println(emailVerification)
+
+	e := service.EmailRepo.Create(&emailVerification)
+	fmt.Println(e)
+	if e != nil {
+		return mail, errors.New("error saving emailVerification")
+	}
+
+	//emailVerCode(rn, email) //valjda ne cekamo da se zavrsi
+	mailError := sendCodeWithMail(rn, email)
+	fmt.Println(mailError)
+	fmt.Println("UBICU SE ")
+	println(mailError)
 
 	//TODO: send confirmation mail
 	//koriste redis bazu gdje privremeno cuvaju zahteve za registraciju
@@ -81,32 +137,33 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	return mail, nil
 }
 
-func sendConfirmationMail(email string, username string, service *RegisteredUserService) error {
-	var err = checkEmailValid(email)
-	if err != nil {
-		return errors.New("email format invalid")
-	}
-	var er = checkEmailDomain(email)
-	if er != nil {
-		return errors.New("email domain invalid")
-	}
-	rand.Seed(time.Now().UnixNano())
-	rn := rand.Intn(100000)
-	emailVerification := model.EmailVerification{
-		Username: username,
-		Email:    email,
-		VerCode:  rn,
-	}
+// func sendConfirmationMail(email string, username string, service *RegisteredUserService) error {
+// 	var err = checkEmailValid(email)
+// 	if err != nil {
+// 		return errors.New("email format invalid")
+// 	}
+// 	var er = checkEmailDomain(email)
+// 	if er != nil {
+// 		return errors.New("email domain invalid")
+// 	}
+// 	rand.Seed(time.Now().UnixNano())
+// 	rn := rand.Intn(100000)
+// 	emailVerification := model.EmailVerification{
+// 		Username: username,
+// 		Email:    email,
+// 		VerCode:  rn,
+// 		Time:     time.Now(),
+// 	}
 
-	e := service.EmailRepo.Create(&emailVerification)
-	if e != nil {
-		return errors.New("error saving emailVerification")
-	}
+// 	e := service.EmailRepo.Create(&emailVerification)
+// 	if e != nil {
+// 		return errors.New("error saving emailVerification")
+// 	}
 
-	go emailVerCode(rn, email) //valjda ne cekamo da se zavrsi
+// 	go emailVerCode(rn, email) //valjda ne cekamo da se zavrsi
 
-	return nil
-}
+// 	return nil
+// }
 
 func checkEmailValid(email string) error {
 	// check email syntax is valid
@@ -117,7 +174,7 @@ func checkEmailValid(email string) error {
 		return errors.New("sorry, something went wrong")
 	}
 	rg := emailRegex.MatchString(email)
-	if rg != true {
+	if !rg {
 		return errors.New("email address is not a valid syntax, please check again")
 	}
 	// check email length
@@ -140,12 +197,33 @@ func checkEmailDomain(email string) error {
 	}
 	return nil
 }
+
+func sendCodeWithMail(code int, toEmail string) error {
+
+	msg := gomail.NewMessage()
+	msg.SetHeader("From", "bespxml@gmail.com")
+	msg.SetHeader("To", toEmail)
+	msg.SetHeader("Subject", "Verification code:"+string(code))
+	msg.SetBody("text/html", "<b>Welcome to DISLINKT</b>")
+	//	msg.Attach("/home/User/cat.jpg")
+
+	n := gomail.NewDialer("smtp.gmail.com", 587, "bespxml@gmail.com", "ohdearLord!")
+
+	fmt.Println("SENDING MAIL SECOND WAY HEHE ")
+	// Send the email
+	if err := n.DialAndSend(msg); err != nil {
+		return err
+	}
+	return nil
+}
+
 func emailVerCode(rn int, toEmail string) error {
 	// sender data
 	//from := os.Getenv("FromEmailAddr") //ex: "John.Doe@gmail.com"
 	//password := os.Getenv("SMTPpwd")   // ex: "ieiemcjdkejspqz"
-	from := ""
-	password := ""
+	fmt.Println("SALJEMOOOOO MEEEEEEJJJJLLLLL")
+	from := "bespxml@gmail.com"
+	password := "ohdearLord!"
 	// receiver address privided through toEmail argument
 	to := []string{toEmail}
 	// smtp - Simple Mail Transfer Protocol
@@ -166,5 +244,12 @@ func emailVerCode(rn int, toEmail string) error {
 	// func SendMail(addr string, a Auth, from string, to []string, msg []byte) error
 	fmt.Println("message:", string(message))
 	err := smtp.SendMail(address, auth, from, to, message)
+	fmt.Println(err)
+	fmt.Println("MEJLLL POSLAAAAT")
 	return err
+}
+
+func (u *RegisteredUserService) UsernameExists(username string) bool {
+
+	return u.Repo.UsernameExists(username)
 }

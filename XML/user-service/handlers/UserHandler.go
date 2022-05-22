@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 	"user/module/auth"
@@ -33,8 +34,9 @@ type UserHandler struct {
 	pwnedClient     *hibp.Client
 }
 
-type UsernameRequest struct {
+type ActivateAccountWithCodeRequest struct {
 	Username string
+	Code     string
 }
 type ResponseEmail struct {
 	Email string
@@ -57,6 +59,7 @@ func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 	u.l.Println("Handling GET Users")
 	users, err := u.service.GetUsers()
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 	}
 
@@ -67,35 +70,48 @@ func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) ActivateUserAccount(rw http.ResponseWriter, req *http.Request) {
-	u.l.Println("Handling POST Users")
+	u.l.Println("Handling ACTIVATING ACCOUNT POST ")
 
-	var username UsernameRequest
-	err := json.NewDecoder(req.Body).Decode(&username)
+	var requestBody ActivateAccountWithCodeRequest
+	err := json.NewDecoder(req.Body).Decode(&requestBody)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, "Error decoding request:"+err.Error(), http.StatusBadRequest) //400
 	}
 	policy := bluemonday.UGCPolicy()
-	username.Username = strings.TrimSpace(policy.Sanitize(username.Username))
-	if username.Username == "" {
+	requestBody.Username = strings.TrimSpace(policy.Sanitize(requestBody.Username))
+	requestBody.Code = strings.TrimSpace(policy.Sanitize(requestBody.Code))
+
+	var code int
+	code, convertError := strconv.Atoi(requestBody.Code)
+	if convertError != nil {
+		fmt.Println(convertError)
+		http.Error(rw, "Error converting code from string to int! error:"+convertError.Error(), http.StatusConflict) //409
+	}
+
+	if requestBody.Username == "" {
+		fmt.Println("usrnname empty or xss")
 		http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return
 	}
-	var er error
-	_, er = u.service.GetByUsername(context.TODO(), username.Username)
-	if er == nil {
-		http.Error(rw, "User with entered username already exists! error:"+er.Error(), http.StatusConflict) //409
+	var exists = u.registerService.UsernameExists(requestBody.Username)
+	if !exists {
+		fmt.Println(exists)
+		http.Error(rw, "No user with such username!", http.StatusConflict) //409
 	}
 
-	activated, e := u.registerService.ActivateUserAccount(username.Username)
+	activated, e := u.registerService.ActivateUserAccount(requestBody.Username, code)
 	if e != nil {
+		fmt.Println(e)
 		http.Error(rw, e.Error(), http.StatusConflict) //409
 	}
 	if !activated {
+		fmt.Println("account activation failed")
 		http.Error(rw, "Account activation failed!", http.StatusConflict) //409
 	}
 
 	activation := ActivationResponse{
-		Username:  username.Username,
+		Username:  requestBody.Username,
 		Activated: true,
 	}
 
@@ -113,10 +129,12 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(&newUser)
 
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest) //400
 	}
 
 	if err := u.validator.Struct(&newUser); err != nil {
+		fmt.Println(err)
 		http.Error(rw, "New user dto fields aren't entered in valid format! error:"+err.Error(), http.StatusExpectationFailed) //400
 
 	}
@@ -135,14 +153,15 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	if newUser.Username == "" || newUser.FirstName == "" || newUser.LastName == "" ||
 		newUser.Gender == "" || newUser.DateOfBirth == "" || newUser.PhoneNumber == "" ||
 		newUser.Password == "" || newUser.Email == "" {
+		fmt.Println("fields are empty or xss")
 		http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return
 	}
 
-	var er error
-	_, er = u.service.GetByUsername(context.TODO(), newUser.Username)
-	if er == nil {
-		http.Error(rw, "User with entered username already exists! error:"+err.Error(), http.StatusConflict) //409
+	exists := u.registerService.UsernameExists(newUser.Username)
+	if exists {
+		fmt.Println(exists)
+		http.Error(rw, "User with entered username already exists!", http.StatusConflict) //409
 	}
 
 	var hashedSaltedPassword = ""
@@ -164,6 +183,7 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 		hashedSaltedPassword = string(pass)
 
 	} else {
+		fmt.Println("Password format is not valid!")
 		http.Error(rw, "Password format is not valid! error:"+err.Error(), http.StatusBadRequest) //400
 		return
 	}
@@ -194,6 +214,7 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.Question, newUser.HashedAnswer)
 
 	if er != nil {
+		fmt.Println(er)
 		http.Error(rw, "Failed creating registered user! error:"+er.Error(), http.StatusExpectationFailed) //
 		return
 	}
@@ -217,6 +238,7 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 	var loginRequest dto.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
 		return
 
@@ -224,6 +246,7 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	user, err := u.service.GetByUsername(context.TODO(), loginRequest.Username)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 
@@ -231,6 +254,7 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -240,6 +264,7 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	userRoles, err := u.service.GetUserRole(loginRequest.Username)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -252,6 +277,7 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 	token, err := auth.GenerateToken(claims, tokenExpirationTime)
 
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -274,6 +300,7 @@ func (u *UserHandler) CheckIfPwned(rw http.ResponseWriter, r *http.Request) {
 	var pwnedPassword dto.PwnedPasswordRequest
 	err := json.NewDecoder(r.Body).Decode(&pwnedPassword)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, "Error decoding PwnedPasswordRequest:"+err.Error(), http.StatusBadRequest)
 		return
 
@@ -281,6 +308,7 @@ func (u *UserHandler) CheckIfPwned(rw http.ResponseWriter, r *http.Request) {
 
 	pwned, err := u.pwnedClient.Compromised(pwnedPassword.PwnedPassword)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(rw, "Error checkinf if password is pwaned!"+err.Error(), http.StatusBadRequest)
 		u.l.Println(pwnedPassword.PwnedPassword)
 	}

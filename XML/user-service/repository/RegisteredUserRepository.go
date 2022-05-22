@@ -31,3 +31,10 @@ func (r *RegisteredUserRepository) GetByUsername(username string) (*model.User, 
 	}
 	return user, nil
 }
+func (r *RegisteredUserRepository) UsernameExists(username string) bool {
+	err := r.DB.First(&model.User{}, "username = ?", username)
+	return err.Error == nil
+	// if r.DB.First(&model.User{}, "username = ?", username).RowsAffected == 0 {
+	// 	return errors.New("user does not exist")
+	// }
+}

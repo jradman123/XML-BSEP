@@ -61,9 +61,13 @@ func initPasswordUtil() *helpers.PasswordUtil {
 func initRegisteredUserRepo(database *gorm.DB) *repository.RegisteredUserRepository {
 	return &repository.RegisteredUserRepository{DB: database}
 }
+func initEmailVerificationRepo(database *gorm.DB) *repository.EmailVerificationRepository {
+	return &repository.EmailVerificationRepository{DB: database}
+}
 
-func initRegisterUserService(repo *repository.RegisteredUserRepository) *service.RegisteredUserService {
-	return &service.RegisteredUserService{Repo: repo}
+func initRegisterUserService(repo *repository.RegisteredUserRepository, verRepo *repository.EmailVerificationRepository) *service.RegisteredUserService {
+	return &service.RegisteredUserService{Repo: repo,
+		EmailRepo: verRepo}
 }
 
 var R *rbac.RBAC
@@ -101,8 +105,9 @@ func main() {
 	jsonConverters := helpers.NewJsonConverters(l)
 	repository := repository.NewUserRepository(db)
 	registerdUserRepo := initRegisteredUserRepo(db)
+	emailVerificationRepo := initEmailVerificationRepo(db)
 	userService := service.NewUserService(l, repository)
-	registerUserService := initRegisterUserService(registerdUserRepo)
+	registerUserService := initRegisterUserService(registerdUserRepo, emailVerificationRepo)
 	passwordUtil := initPasswordUtil()
 	userHandler := handlers.NewUserHandler(l, userService, registerUserService, jsonConverters, &repository, validator, passwordUtil, pwnedClient)
 
@@ -118,6 +123,7 @@ func main() {
 	UnauthorizedPostRouter.HandleFunc("/login", userHandler.LoginUser)
 	UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
 	UnauthorizedPostRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
+	UnauthorizedPostRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	authMiddleware := my_middleware.NewAuthorizationHandler(*R, usersPerm, usersPerm.Actions(), userService)
@@ -132,6 +138,7 @@ func main() {
 	putRouter.Use(my_middleware.ValidateToken)
 	postRouter.HandleFunc("/", userHandler.AddUsers)
 	postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
+	postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
 
 	// create a new server
 	s := http.Server{
