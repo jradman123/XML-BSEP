@@ -1,0 +1,191 @@
+<div class="container" >
+    <mat-card>
+      <mat-card-title>Registration</mat-card-title>
+      <br/><br/>
+      <mat-card-content>
+      <div class="container" [formGroup]="createForm" >
+        <br />
+        <div class="separateMe">
+          <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Common name</mat-label>
+              <input matInput formControlName="commonName" />
+              <mat-error
+                *ngIf="
+                  createForm?.get('commonName')?.valid &&
+                  createForm?.get('commonName')?.touched &&
+                  createForm?.get('commonName')?.errors?.required
+                "
+                >Common name is required.</mat-error
+              >
+              <mat-error>Invalid input</mat-error>
+            </mat-form-field>
+            </div>
+            <div style="width: 100%; display: flex"></div>
+            <mat-form-field appearance="fill">
+              <mat-label>Organization</mat-label>
+              <input matInput formControlName="organization" />
+              <mat-error
+                *ngIf="
+                  createForm?.get('organization')?.valid &&
+                  createForm?.get('organization')?.touched &&
+                  createForm?.get('organization')?.errors?.required
+                "
+                >Organization is required.</mat-error
+              >
+              <mat-error>Invalid input</mat-error>
+            </mat-form-field>
+          </div>
+    
+          <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Organization unit</mat-label>
+              <input matInput formControlName="organizationUnit" />
+              <mat-error
+                *ngIf="
+                  !createForm?.get('organizationUnit')?.valid &&
+                  createForm?.get('organizationUnit')?.touched &&
+                  createForm?.get('organizationUnit')?.errors?.required
+                "
+                >Organization unit is required</mat-error
+              >
+            </mat-form-field>
+            </div>
+            <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Locality</mat-label>
+              <input matInput formControlName="locality" />
+              <mat-error
+                *ngIf="
+                  !createForm?.get('locality')?.valid &&
+                  createForm?.get('locality')?.touched &&
+                  createForm?.get('locality')?.errors?.required
+                "
+                >Locality is required</mat-error
+              >
+            </mat-form-field>
+            </div>
+            <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Country</mat-label>
+              <input matInput formControlName="country" />
+              <mat-error
+                *ngIf="
+                  !createForm?.get('country')?.valid &&
+                  createForm?.get('country')?.touched &&
+                  createForm?.get('country')?.errors?.required
+                "
+                >Country is required</mat-error
+              >
+            </mat-form-field>
+            </div>
+    
+          <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" />
+              <mat-error
+                *ngIf="
+                  !createForm?.get('email')?.valid &&
+                  createForm?.get('email')?.touched &&
+                  createForm?.get('email')?.errors?.required
+                "
+                >Email is required</mat-error
+              >
+              <mat-error
+                *ngIf="
+                  !createForm?.get('email')?.valid &&
+                  createForm?.get('email')?.touched &&
+                  createForm?.get('email')?.errors?.email
+                "
+                >Invalid email!</mat-error
+              >
+            </mat-form-field>
+            </div>
+            <div style="width: 100%; display: flex">
+                <mat-form-field appearance="fill">
+                  <mat-label>Recovery email address</mat-label>
+                  <input matInput formControlName="recoveryMail" />
+                  <mat-error
+                    *ngIf="
+                      !createForm?.get('email')?.valid &&
+                      createForm?.get('email')?.touched &&
+                      createForm?.get('email')?.errors?.required
+                    "
+                    >Recovery mail is required</mat-error
+                  >
+                  <mat-error
+                    *ngIf="
+                      !createForm?.get('email')?.valid &&
+                      createForm?.get('email')?.touched &&
+                      createForm?.get('email')?.errors?.email
+                    "
+                    >Invalid email!</mat-error
+                  >
+                </mat-form-field>
+                </div>
+          <div style="width: 100%; display: flex">
+          <mat-form-field appearance="fill">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              (input)="onPasswordInput()"
+            />
+            <mat-error
+              *ngIf="
+                !createForm?.get('password')?.valid &&
+                createForm?.get('password')?.touched &&
+                createForm?.get('password')?.errors?.required 
+
+              "
+              >Password is required</mat-error
+            >
+            <mat-error
+              *ngIf="
+                !createForm?.get('password')?.valid &&
+                createForm?.get('password')?.touched &&
+                createForm?.get('password')?.errors?.minlength
+              "
+              >Password must be at least 8 characters long</mat-error
+            >
+          </mat-form-field>
+          </div>
+          <div style="width: 100%; display: flex">
+          <mat-form-field appearance="fill">
+            <mat-label>Confirm Password</mat-label>
+            <input
+              type="password"
+              matInput
+              formControlName="passConfirmed"
+              (input)="onPasswordInput()"
+            />
+            <mat-error
+              *ngIf="
+                !createForm?.get('passConfirmed')?.valid &&
+                createForm?.get('passConfirmed')?.touched &&
+                createForm?.get('passConfirmed')?.errors?.required
+              "
+              >Password is required</mat-error
+            >
+            <mat-error *ngIf="!passMatch">Passwords does not match! </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <br /><br />
+        <div >
+          <button
+            mat-raised-button
+            (click)="onSubmit()"
+            color="primary"
+            class="icon-display"
+          >
+            Register
+          </button>
+        </div>
+        </div>
+      </mat-card-content>
+      </mat-card>
+      <br />
+    

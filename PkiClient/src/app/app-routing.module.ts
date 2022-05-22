@@ -10,9 +10,11 @@ import { CertificateComponent } from './components/certificate/certificate.compo
 import { CertificateChainComponent } from './components/certificate-chain/certificate-chain.component';
 
 import { CreateCertificateUserComponent} from './components/create-certificate-user/create-certificate-user.component';
+import { RegistrationComponent } from './components/registration/registration.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
+  { path: 'registration', component: RegistrationComponent},
   { path: 'ahome', component: AdminHomeComponent ,
     children: [
     {

@@ -49,6 +49,7 @@ export class CreateSubjectComponent implements OnInit {
       country: this.subjectForm.get('country')?.value,
       email: this.subjectForm.get('email')?.value,
       password: this.subjectForm.get('password')?.value,
+      recoveryMail : this.subjectForm.get('recoveryMail')?.value
     };
     console.log(this.subject);
     this.userService.createSubject(this.subject).subscribe(
