@@ -12,4 +12,5 @@ public interface UserService {
     UserDto createUser(UserDto userDto);
     User activateAccount(User user);
     void changePassword(String email, ChangePasswordDto changePasswordDto);
+    void resetPassword(String email,String newPassword);
 }

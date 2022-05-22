@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         User newUser = new User(userDto.getEmail(), passwordEncoder.encode(userDto.getPassword()),
                 userDto.getCommonName(), userDto.getOrganization(), userDto.getOrganizationUnit(),
-                userDto.getLocality(), userDto.getCountry());
+                userDto.getLocality(), userDto.getCountry(),userDto.getRecoveryMail());
 
         List<Permission> permissions = new ArrayList<Permission>();
         permissions.add(permissionRepository.findByName("user_download"));
@@ -80,6 +80,13 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         }
 
+        userRepository.save(user);
+    }
+
+    @Override
+    public void resetPassword(String email, String newPassword) {
+        User user = findByEmail(email);
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 

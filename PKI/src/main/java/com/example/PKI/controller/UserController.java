@@ -106,4 +106,38 @@ public class UserController {
     }
 
 
+    @CrossOrigin(origins = "http://localhost:4200")
+    //ovoj metodi mogu svi da pristupe
+    @PostMapping(value = "/checkRecoveryEmail")
+    public ResponseEntity<String> checkRecoveryEmail(@RequestBody RequestCheckDto request) {
+        User user = userService.findByEmail(request.getEmail());
+        if(user.getRecoveryEmail().equals(request.getRecoveryEmail())){
+            customTokenService.sendResetPasswordToken(user);
+            return new ResponseEntity<>("Check your email.",HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("Entered recovery email is not valid!", HttpStatus.BAD_REQUEST);
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    //ovoj metodi mogu svi da pristupe
+    @PostMapping(value = "/checkCode")
+    public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
+        User user = userService.findByEmail(checkCodeDto.getEmail());
+        CustomToken token = customTokenService.findByUser(user);
+        if(customTokenService.checkResetPasswordCode(checkCodeDto.getCode(),token.getToken())){
+            return new ResponseEntity<>("Success!",HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    //ovoj metodi mogu svi da pristupe
+    @PostMapping(value = "/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        userService.resetPassword(resetPasswordDto.getEmail(),resetPasswordDto.getNewPassword());
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
 }

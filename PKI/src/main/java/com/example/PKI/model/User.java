@@ -34,6 +34,8 @@ public class User {
     private String locality;
     @Column
     private String country;
+    @Column(nullable = false)
+    private String recoveryEmail;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_permission",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -43,7 +45,7 @@ public class User {
 
     public User() {  }
 
-    public User(String email, String password, String commonName, String organization, String organizationUnit, String locality, String country) {
+    public User(String email, String password, String commonName, String organization, String organizationUnit, String locality, String country,String recoveryEmail) {
         this.email = email;
         this.password = password;
         this.role = Role.UserOrdinary;
@@ -53,6 +55,7 @@ public class User {
         this.organizationUnit = organizationUnit;
         this.locality = locality;
         this.country = country;
+        this.recoveryEmail = recoveryEmail;
     }
 
     public Integer getId() {
@@ -134,5 +137,13 @@ public class User {
 
     public void setActivated(boolean activated) {
         isActivated = activated;
+    }
+
+    public String getRecoveryEmail() {
+        return recoveryEmail;
+    }
+
+    public void setRecoveryEmail(String recoveryEmail) {
+        this.recoveryEmail = recoveryEmail;
     }
 }

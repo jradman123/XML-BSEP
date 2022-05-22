@@ -37,4 +37,5 @@ public class LoggedUserDto {
     public void setToken(UserTokenState token) {
         this.token = token;
     }
+
 }
