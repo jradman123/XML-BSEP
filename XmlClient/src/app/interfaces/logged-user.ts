@@ -1,6 +1,6 @@
 import { UserTokenState } from "./user-token-state";
 
-export interface LogedUser {
+export interface LoggedUser {
     email : string;
     role : string;
     token : UserTokenState;

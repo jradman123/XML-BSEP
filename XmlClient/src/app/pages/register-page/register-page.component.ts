@@ -29,41 +29,36 @@ export class RegisterPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.createForm = this.formBuilder.group({
-      commonName: new FormControl('', [
+      Username: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^[A-Za-z][A-Za-z0-9_]{7,29}$'),
+      ]),
+      PhoneNumber: new FormControl(null, [
+        Validators.required,
+        Validators.pattern('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'),
+      ]),
+      FirstName: new FormControl(null, [
         Validators.required,
         Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ ]*$'),
       ]),
-      organization: new FormControl(null, [
+      LastName: new FormControl(null, [
         Validators.required,
         Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ ]*$'),
       ]),
-      organizationUnit: new FormControl(null, [
+      Email: new FormControl(null, [Validators.required, Validators.email]),
+      RecoveryEmail: new FormControl(null, [Validators.required, Validators.email]),
+       Password: new FormControl(null
+      , [
         Validators.required,
-        Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ ]*$'),
-      ]),
-      locality: new FormControl(null, [
-        Validators.required,
-        Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ ]*$'),
-      ]),
-      country: new FormControl(null, [
-        Validators.required,
-        Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ ]*$'),
-      ]),
-      email: new FormControl(null, [Validators.required, Validators.email]),
-      recoveryMail: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, [
-        Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(30),
         Validators.pattern(
-          '^(?=.[a-z])(?=.[A-Z])(?=.[0-9])(?=.[!"#$@%&()<>+_|~]).$'
+          '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,30}$'
         )]),
-      passConfirmed: new FormControl(null, [
-        Validators.required,
-        Validators.minLength(10),
-        Validators.maxLength(30),
-        Validators.pattern(
-          '^(?=.[a-z])(?=.[A-Z])(?=.[0-9])(?=.[!"#$@%&()<>+_|~]).$'
+       passConfirmed: new FormControl(null, 
+        [
+          Validators.required,
+          Validators.pattern(
+            '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,30}$'
+      
         )]),
     });
 
@@ -71,7 +66,7 @@ export class RegisterPageComponent implements OnInit {
 
   onPasswordInput(): void {
     this.passMatch =
-      this.createForm.value.password === this.createForm.value.passConfirmed;
+      this.createForm.value.Password === this.createForm.value.passConfirmed;
   }
 
   onSubmit(): void {
@@ -95,13 +90,15 @@ export class RegisterPageComponent implements OnInit {
 
   createUser(): void {
     
-      this.newUser.commonName = this.createForm.value.commonName;
-      this.newUser.organization = this.createForm.value.organization;
-      this.newUser.organizationUnit = this.createForm.value.organizationUnit;
-      this.newUser.locality = this.createForm.value.locality;
-      this.newUser.country = this.createForm.value.country;
-      this.newUser.email = this.createForm.value.email;
-      this.newUser.recoveryMail = this.createForm.value.recoveryMail;
-      this.newUser.password = this.createForm.value.password;
+      this.newUser.Username = this.createForm.value.Username;
+      this.newUser.Password = this.createForm.value.Password;
+      this.newUser.Email = this.createForm.value.Email;
+      this.newUser.RecoveryEmail = this.createForm.value.RecoveryEmail;
+ 
+      this.newUser.PhoneNumber = this.createForm.value.PhoneNumber;
+      this.newUser.FirstName = this.createForm.value.FirstName;
+      this.newUser.LastName = this.createForm.value.LastName;
+      // this.newUser.DateOfBirth = this.createForm.value.DateOfBirth;
+      // this.newUser.Gender = this.createForm.value.Gender;
   }
 }
