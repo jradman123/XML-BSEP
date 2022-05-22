@@ -48,6 +48,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatTreeModule } from '@angular/material/tree';
+import { UserHomeComponent } from './pages/user-home/user-home.component';
 
 
 @NgModule({
@@ -58,7 +59,8 @@ import { MatTreeModule } from '@angular/material/tree';
     RegisterPageComponent,
     UnauthenticatedHeaderComponent,
     AuthenticatedHeaderComponent,
-    FooterComponent
+    FooterComponent,
+    UserHomeComponent
   ],
   imports: [
     BrowserModule,

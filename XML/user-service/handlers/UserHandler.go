@@ -378,6 +378,8 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	logInResponse := dto.LogInResponseDto{
 		Token: token,
+		Role : "User",
+		Email : user.Email
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)
