@@ -5,7 +5,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NewPassword } from 'src/app/interfaces/new-password';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-reset-password',
@@ -16,8 +18,14 @@ export class ResetPasswordComponent implements OnInit {
   passMatch: boolean = false;
   createForm!: FormGroup;
   newPasswordDto!: NewPassword;
+  divVisible: boolean = false;
+  kodic!: string;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private userService: UserService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.newPasswordDto = {} as NewPassword;
@@ -42,13 +50,22 @@ export class ResetPasswordComponent implements OnInit {
     });
   }
 
+  verify() {
+    this.userService.checkCode(this.kodic).subscribe((res) => {});
+    this.divVisible = true;
+  }
+  onCodeInput(event: any): void {}
+
   onPasswordInput(): void {
     this.passMatch =
       this.createForm.value.password === this.createForm.value.passConfirmed;
   }
 
   onSubmit(): void {
-    //this.newPasswordDto.email = localStorage.getItem('email');
-    this.newPasswordDto.newPassword = this.createForm.value.password;
+    //this.newPasswordDto.newPassword = this.createForm.value.password;
+    this.userService
+      .changePassword(this.createForm.value.password)
+      .subscribe((res) => {});
+    this.router.navigate(['/']);
   }
 }

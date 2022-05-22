@@ -74,7 +74,7 @@ public class CustomTokenServiceImpl implements CustomTokenService {
         CustomToken customToken = createResetPasswordToken(user);
         String passwordCode = customToken.getToken();
         saveToken(customToken);
-        emailSenderService.sendEmail(user.getEmail(),"Reset password", "Following code is your new temporary " +
+        emailSenderService.sendEmail(user.getRecoveryEmail(),"Reset password", "Following code is your new temporary " +
                 "password \nCode : " + passwordCode);
 
 

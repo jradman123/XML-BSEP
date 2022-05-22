@@ -10,6 +10,7 @@ import com.example.PKI.security.TokenUtils;
 import com.example.PKI.service.UserService;
 import com.example.PKI.service.CustomTokenService;
 import com.github.nbaars.pwnedpasswords4j.client.PwnedPasswordChecker;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -107,8 +108,13 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping(value = "/sendCode")
+    public ResponseEntity<?> sendCode(@RequestBody String email) {
+        User user = userService.findByEmail(email);
+        customTokenService.sendResetPasswordToken(user);
+        return ResponseEntity.accepted().build();
+    }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     //ovoj metodi mogu svi da pristupe
     @PostMapping(value = "/checkRecoveryEmail")
     public ResponseEntity<String> checkRecoveryEmail(@RequestBody RequestCheckDto request) {
@@ -117,12 +123,9 @@ public class UserController {
             customTokenService.sendResetPasswordToken(user);
             return new ResponseEntity<>("Check your email.", HttpStatus.OK);
         }
-
         return new ResponseEntity<>("Entered recovery email is not valid!", HttpStatus.BAD_REQUEST);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    //ovoj metodi mogu svi da pristupe
     @PostMapping(value = "/checkCode")
     public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
         User user = userService.findByEmail(checkCodeDto.getEmail());
@@ -134,8 +137,7 @@ public class UserController {
         return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    //ovoj metodi mogu svi da pristupe
+
     @PostMapping(value = "/resetPassword")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         userService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getNewPassword());

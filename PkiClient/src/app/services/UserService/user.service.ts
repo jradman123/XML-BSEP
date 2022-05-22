@@ -11,6 +11,17 @@ import { SubjectData } from 'src/app/interfaces/subject-data';
 export class UserService {
   constructor(private _http: HttpClient) {}
 
+  checkCode(verCode: string): Observable<any> {
+    return this._http.post<any>('http://localhost:8443/api/checkCode', {
+      email: localStorage.getItem('email'),
+      code: verCode,
+    });
+  }
+
+  sendCode(email: string): Observable<any> {
+    return this._http.post<any>('http://localhost:8443/api/sendCode', email);
+  }
+
   createSubject(newSubject: SubjectData): Observable<any> {
     return this._http.post<any>(
       'http://localhost:8443/api/createSubject',
@@ -22,10 +33,10 @@ export class UserService {
     return this._http.post('http://localhost:8443/api/login', model);
   }
 
-  changePassword(newPassword: NewPassword): Observable<any> {
-    return this._http.put<any>(
-      'http://localhost:8443/api/createSubject',
-      newPassword
-    );
+  changePassword(newPassword: string): Observable<any> {
+    return this._http.post<any>('http://localhost:8443/api/resetPassword', {
+      email: localStorage.getItem('email'),
+      newPassword: newPassword,
+    });
   }
 }
