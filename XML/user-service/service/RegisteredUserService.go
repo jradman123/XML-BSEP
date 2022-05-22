@@ -31,7 +31,7 @@ func (service *RegisteredUserService) CreateNewPassword(username string, newPass
 
 	if dbEr != nil {
 		fmt.Println(dbEr)
-		fmt.Println("FAK MAJ LAJF 1")
+
 		return false, dbEr
 	}
 	fmt.Println("verCode:", passwordRecoveryRequest.RecoveryCode)
@@ -210,8 +210,6 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 		Role:          role,
 		IsConfirmed:   false,
 		DateOfBirth:   dateOfBirth,
-		Question:      question,
-		HashedAnswer:  answer,
 		RecoveryEmail: recoveryMail,
 	}
 	mail, err := service.Repo.CreateRegisteredUser(&user)
@@ -332,57 +330,6 @@ func checkEmailDomain(email string) error {
 	}
 	return nil
 }
-
-// func sendCodeWithMail(code int, toEmail string) error {
-
-// 	msg := gomail.NewMessage()
-// 	msg.SetHeader("From", "bespxml@gmail.com")
-// 	msg.SetHeader("To", toEmail)
-// 	msg.SetHeader("Subject", "Verification code:"+string(code))
-// 	msg.SetBody("text/html", "<b>Welcome to DISLINKT</b>")
-// 	//	msg.Attach("/home/User/cat.jpg")
-
-// 	n := gomail.NewDialer("smtp.gmail.com", 587, "bespxml@gmail.com", "ohdearLord!")
-
-// 	fmt.Println("SENDING MAIL SECOND WAY HEHE ")
-// 	// Send the email
-// 	if err := n.DialAndSend(msg); err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
-
-// func emailVerCode(rn int, toEmail string) error {
-// 	// sender data
-// 	//from := os.Getenv("FromEmailAddr") //ex: "John.Doe@gmail.com"
-// 	//password := os.Getenv("SMTPpwd")   // ex: "ieiemcjdkejspqz"
-// 	fmt.Println("SALJEMOOOOO MEEEEEEJJJJLLLLL")
-// 	from := "bespxml@gmail.com"
-// 	password := "ohdearLord!"
-// 	// receiver address privided through toEmail argument
-// 	to := []string{toEmail}
-// 	// smtp - Simple Mail Transfer Protocol
-// 	host := "smtp.gmail.com"
-// 	port := "587"
-// 	address := host + ":" + port
-// 	// message
-// 	subject := "Subject: Email Verification Code\r\n\r\n"
-// 	verCode := strconv.Itoa(rn)
-// 	fmt.Println("verCode:", verCode)
-// 	body := "verification code: " + verCode
-// 	fmt.Println("body:", body)
-// 	message := []byte(subject + body)
-// 	// athentication data
-// 	// func PlainAuth(identity, username, password, host string) Auth
-// 	auth := smtp.PlainAuth("", from, password, host)
-// 	// send mail
-// 	// func SendMail(addr string, a Auth, from string, to []string, msg []byte) error
-// 	fmt.Println("message:", string(message))
-// 	err := smtp.SendMail(address, auth, from, to, message)
-// 	fmt.Println(err)
-// 	fmt.Println("MEJLLL POSLAAAAT")
-// 	return err
-// }
 
 func (u *RegisteredUserService) UsernameExists(username string) bool {
 

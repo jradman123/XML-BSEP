@@ -13,22 +13,21 @@ require (
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/go-playground/locales v0.14.0
+	github.com/go-playground/universal-translator v0.18.0
+	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/labstack/echo v3.3.10+incompatible
+	github.com/mattevans/pwned-passwords v0.5.0
+	github.com/microcosm-cc/bluemonday v1.0.18
+	github.com/trycourier/courier-go/v2 v2.5.0
+	gopkg.in/go-playground/validator.v9 v9.31.0
 )
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/go-playground/locales v0.14.0 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/mattevans/pwned-passwords v0.5.0 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.18 // indirect
-	github.com/trycourier/courier-go/v2 v2.5.0 // indirect
-	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
-	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
 
 require (

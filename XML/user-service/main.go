@@ -19,7 +19,7 @@ import (
 	"github.com/euroteltr/rbac/middlewares/echorbac"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq" //na ovom importu se crveni ali bez njega nece da radi
+	_ "github.com/lib/pq"
 	hibp "github.com/mattevans/pwned-passwords"
 	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/driver/postgres"
