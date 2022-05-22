@@ -13,7 +13,7 @@ type RegisteredUserRepository struct {
 }
 
 func (r *RegisteredUserRepository) ActivateUserAccount(user *model.User) {
-	result := r.DB.Update("is_confirmed", true)
+	result := r.DB.Model(&user).Update("is_confirmed", true)
 	fmt.Print(result)
 }
 

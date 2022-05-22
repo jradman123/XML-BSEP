@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -14,6 +15,7 @@ import (
 	"user/module/repository"
 
 	"github.com/google/uuid"
+	"github.com/trycourier/courier-go/v2"
 	"gopkg.in/gomail.v2"
 )
 
@@ -29,34 +31,52 @@ func (service *RegisteredUserService) ActivateUserAccount(username string, verCo
 	codeInfoForUsername, dbEr = service.EmailRepo.GetVerificationByUsername(username)
 
 	if dbEr != nil {
+		fmt.Println(dbEr)
+		fmt.Println("FAK MAJ LAJF 1")
 		return false, dbEr
 	}
 	fmt.Println("verCode:", codeInfoForUsername.VerCode)
 
 	if codeInfoForUsername.VerCode == verCode {
 		//kao dala sam kodu trajanje od 1h
+		fmt.Println("kod se poklapa")
 		if codeInfoForUsername.Time.Add(time.Hour).After(time.Now()) {
+			fmt.Println("vreme se uklapa")
 			//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
 			user, err := service.Repo.GetByUsername(username)
 			if err != nil {
+				fmt.Println(err)
+				fmt.Println("error u get by username kod ucitavanja usera")
 				return false, err
 			}
 			user.IsConfirmed = true
+			var help string
+			if user.IsConfirmed {
+				help = "true"
+			} else {
+				help = "false"
+			}
+			fmt.Println("novo stanje isConfirmed : " + help)
 			service.Repo.ActivateUserAccount(user)
 			editedUser, er := service.Repo.GetByUsername(username)
 			if er != nil {
+				fmt.Println(er)
+				fmt.Println("FAK MAJ LAJF 2")
 				return false, er
 			}
 			if !editedUser.IsConfirmed {
+				fmt.Println("FAK MAJ LAJF 3")
 				return false, errors.New("user not activated")
 			}
 			return true, nil
 
 		} else {
+			fmt.Println("istekao kod")
 			return false, errors.New("code expired")
 		}
 
 	} else {
+		fmt.Println("ne valjda kod")
 		return false, errors.New("wrong code")
 	}
 
@@ -113,10 +133,12 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	}
 
 	//emailVerCode(rn, email) //valjda ne cekamo da se zavrsi
-	mailError := sendCodeWithMail(rn, email)
-	fmt.Println(mailError)
-	fmt.Println("UBICU SE ")
-	println(mailError)
+	// mailError := sendCodeWithMail(rn, email)
+	// fmt.Println(mailError)
+	// fmt.Println("UBICU SE ")
+	// println(mailError)
+
+	sendMailWithCourier(email, strconv.Itoa(rn))
 
 	//TODO: send confirmation mail
 	//koriste redis bazu gdje privremeno cuvaju zahteve za registraciju
@@ -135,6 +157,33 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	// 	return err
 	// }
 	return mail, nil
+}
+
+func sendMailWithCourier(email string, code string) {
+	client := courier.CreateClient("pk_prod_0FQXVBPMDHMZ3VJ3WN6CYC12KNMH", nil)
+	fmt.Println(code)
+	requestID, err := client.SendMessage(
+		context.Background(),
+		courier.SendMessageRequestBody{
+			Message: map[string]interface{}{
+				"to": map[string]string{
+					"email": email,
+				},
+				"content": map[string]string{
+					"title": "Avtivation code",
+					"body":  "Welcome to Dislinkt! Here is your activation code:" + code,
+				},
+				"data": map[string]string{
+					"joke": "What did C++ say to C? You have no class.",
+					"code": code,
+				},
+			},
+		})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(requestID)
 }
 
 // func sendConfirmationMail(email string, username string, service *RegisteredUserService) error {
