@@ -13,7 +13,7 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     public UserDetails(User user) {
         this.user = user;
-        for (Permission p : user.getPermissions())
+        for (Authority p : user.getAuthorities())
             authorities.add(new SimpleGrantedAuthority(p.getName()));
     }
 

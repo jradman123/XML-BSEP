@@ -3,9 +3,9 @@ package com.example.PKI.service.impl;
 import com.example.PKI.dto.ChangePasswordDto;
 import com.example.PKI.dto.LoginDto;
 import com.example.PKI.dto.UserDto;
-import com.example.PKI.model.Permission;
+import com.example.PKI.model.Authority;
 import com.example.PKI.model.User;
-import com.example.PKI.repository.PermissionRepository;
+import com.example.PKI.repository.AuthorityRepository;
 import com.example.PKI.repository.UserRepository;
 import com.example.PKI.service.UserService;
 import com.example.PKI.service.CustomTokenService;
@@ -20,14 +20,14 @@ public class UserServiceImpl implements UserService {
 
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
-    private PermissionRepository permissionRepository;
+    private AuthorityRepository authorityRepository;
     private CustomTokenService verificationTokenService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder pe, PermissionRepository pr, CustomTokenService vts) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder pe, AuthorityRepository pr, CustomTokenService vts) {
         this.userRepository = userRepository;
         this.passwordEncoder = pe;
-        this.permissionRepository = pr;
+        this.authorityRepository = pr;
         this.verificationTokenService = vts;
     }
 
@@ -53,10 +53,10 @@ public class UserServiceImpl implements UserService {
                 userDto.getCommonName(), userDto.getOrganization(), userDto.getOrganizationUnit(),
                 userDto.getLocality(), userDto.getCountry(),userDto.getRecoveryMail());
 
-        List<Permission> permissions = new ArrayList<Permission>();
-        permissions.add(permissionRepository.findByName("user_download"));
-        permissions.add(permissionRepository.findByName("user_read"));
-        newUser.setPermissions(permissions);
+        List<Authority> authorities = new ArrayList<Authority>();
+        authorities.add(authorityRepository.findByName("user_download"));
+        authorities.add(authorityRepository.findByName("user_read"));
+        newUser.setAuthorities(authorities);
 
         User created = userRepository.save(newUser);
         userDto.setId(created.getId());

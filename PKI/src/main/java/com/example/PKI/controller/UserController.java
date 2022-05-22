@@ -13,6 +13,7 @@ import com.github.nbaars.pwnedpasswords4j.client.PwnedPasswordChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping(value = "/api")
 public class UserController {
@@ -50,7 +52,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
     public ResponseEntity<LoggedUserDto> login(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
@@ -66,8 +67,6 @@ public class UserController {
         return ResponseEntity.ok(loggedUserDto);
     }
 
-
-    //@CrossOrigin(origins = "*")
     @PostMapping("/createSubject")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
         UserDto newUser = userService.createUser(userDto);
@@ -75,13 +74,12 @@ public class UserController {
         return new ResponseEntity<UserDto>(newUser, HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @PreAuthorize("hasRole('ADMIN') || hasRole('USER_ROOT') || hasRole('USER_INTERMEDIATE')")
     @GetMapping("/users")
     public ResponseEntity<?> getAll() {
         return new ResponseEntity<ArrayList<User>>((ArrayList<User>) userRepository.findAll(), HttpStatus.OK);
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/confirmAccount/{token}")
     public ResponseEntity<String> confirmAccount(@PathVariable String token) {
         CustomToken verificationToken = customTokenService.findByToken(token);

@@ -37,11 +37,11 @@ public class User {
     @Column(nullable = false)
     private String recoveryEmail;
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_permission",
+    @JoinTable(name = "user_authorities",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id"))
+            inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     @Fetch(value = FetchMode.SUBSELECT)
-    private List<Permission> permissions;
+    private List<Authority> authorities;
 
     public User() {  }
 

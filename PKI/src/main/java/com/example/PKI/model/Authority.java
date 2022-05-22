@@ -5,8 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "permission")
-public class Permission implements GrantedAuthority {
+@Table(name = "authorities")
+public class Authority implements GrantedAuthority {
 
     @Id
     @Column
@@ -16,12 +16,12 @@ public class Permission implements GrantedAuthority {
     @Column
     private String name;
 
-    public Permission(Long id, String name) {
+    public Authority(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Permission() {
+    public Authority() {
     }
 
     public Long getId() {
