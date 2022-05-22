@@ -23,6 +23,7 @@ import { CertificateChainComponent } from './components/certificate-chain/certif
 import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
 import { JwtInterceptor } from './JwtInterceptor/jwt-interceptor';
 import { RegistrationComponent } from './components/registration/registration.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
  
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { RegistrationComponent } from './components/registration/registration.co
     CertificateComponent,
     CertificateChainComponent,
     CreateCertificateUserComponent,
-    RegistrationComponent
+    RegistrationComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

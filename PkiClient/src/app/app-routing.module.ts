@@ -11,6 +11,7 @@ import { CertificateChainComponent } from './components/certificate-chain/certif
 
 import { CreateCertificateUserComponent} from './components/create-certificate-user/create-certificate-user.component';
 import { RegistrationComponent } from './components/registration/registration.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -24,18 +25,19 @@ const routes: Routes = [
     { path: 'createSubject', component: CreateSubjectComponent },
     { path: 'certificate', component: CertificateComponent },
     { path: 'chain', component: CertificateChainComponent },
-    { path: 'createCertificateUser', component: CreateCertificateUserComponent }
+    { path: 'createCertificateUser', component: CreateCertificateUserComponent },
+    { path: 'changePassword', component: ChangePasswordComponent}
 
 
   ]
   },
   { path: 'chome', component: ClientHomeComponent,
     children: [
-    {
-      path: '', component: AllCertificatesComponent
-    }
+    {path: '', component: AllCertificatesComponent},
+   { path: 'changePassword', component: ChangePasswordComponent}
+    
   ]
-  },
+},
   { path: 'createCertificate', component: CreateCertificateComponent },
   { path: 'createSubject', component: CreateSubjectComponent },
   { path: 'certificate', component: CertificateComponent },

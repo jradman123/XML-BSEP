@@ -110,7 +110,7 @@
                     *ngIf="
                       !createForm?.get('email')?.valid &&
                       createForm?.get('email')?.touched &&
-                      createForm?.get('email')?.errors?.required
+                      createForm?.get('email')?.errors?.required 
                     "
                     >Recovery mail is required</mat-error
                   >
@@ -143,12 +143,20 @@
               >Password is required</mat-error
             >
             <mat-error
-              *ngIf="
-                !createForm?.get('password')?.valid &&
-                createForm?.get('password')?.touched &&
-                createForm?.get('password')?.errors?.minlength
-              "
-              >Password must be at least 8 characters long</mat-error
+                *ngIf="
+                  !createForm?.get('password')?.valid &&
+                  createForm?.get('password')?.touched &&
+                  createForm?.get('password')?.errors?.pattern
+                "
+                >Password is not strong enough!</mat-error
+              >
+              <mat-error
+                *ngIf="
+                  !createForm?.get('password')?.valid &&
+                  createForm?.get('password')?.touched &&
+                  createForm?.get('password')?.errors?.minlength
+                "
+                >10 characters please!</mat-error
             >
           </mat-form-field>
           </div>

@@ -43,4 +43,8 @@ export class UserService {
       })
     );
   }
+
+  changePassword(data: any) {
+    return this._http.put(`http://localhost:8443/api/changePassword`, data)
+  }
 }

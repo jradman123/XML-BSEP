@@ -55,14 +55,14 @@ export class RegistrationComponent implements OnInit {
         Validators.minLength(10),
         Validators.maxLength(30),
         Validators.pattern(
-          '^(?=.[a-z])(?=.[A-Z])(?=.[0-9])(?=.[!"#$@%&()<>+_|~]).$'
+          '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!"#$@%&()*<>+_|~]).*$'
         )]),
       passConfirmed: new FormControl(null, [
         Validators.required,
         Validators.minLength(10),
         Validators.maxLength(30),
         Validators.pattern(
-          '^(?=.[a-z])(?=.[A-Z])(?=.[0-9])(?=.[!"#$@%&()<>+_|~]).$'
+          '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!"#$@%&()*<>+_|~]).*$'
         )]),
     });
 
