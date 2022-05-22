@@ -49,6 +49,7 @@ func SetupDatabase() *gorm.DB {
 
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.EmailVerification{}) //This will not remove columns
+	db.AutoMigrate(&model.PasswordRecoveryRequest{})
 	//db.Create(users) // Use this only once to populate db with data
 
 	return db
@@ -65,9 +66,14 @@ func initEmailVerificationRepo(database *gorm.DB) *repository.EmailVerificationR
 	return &repository.EmailVerificationRepository{DB: database}
 }
 
-func initRegisterUserService(repo *repository.RegisteredUserRepository, verRepo *repository.EmailVerificationRepository) *service.RegisteredUserService {
+func initPasswordRecoveryRepo(database *gorm.DB) *repository.PasswordRecoveryRepository {
+	return &repository.PasswordRecoveryRepository{DB: database}
+}
+
+func initRegisterUserService(repo *repository.RegisteredUserRepository, verRepo *repository.EmailVerificationRepository, recoveryRepo *repository.PasswordRecoveryRepository) *service.RegisteredUserService {
 	return &service.RegisteredUserService{Repo: repo,
-		EmailRepo: verRepo}
+		EmailRepo:    verRepo,
+		RecoveryRepo: recoveryRepo}
 }
 
 var R *rbac.RBAC
@@ -106,8 +112,9 @@ func main() {
 	repository := repository.NewUserRepository(db)
 	registerdUserRepo := initRegisteredUserRepo(db)
 	emailVerificationRepo := initEmailVerificationRepo(db)
+	passwordRecoveryRepo := initPasswordRecoveryRepo(db)
 	userService := service.NewUserService(l, repository)
-	registerUserService := initRegisterUserService(registerdUserRepo, emailVerificationRepo)
+	registerUserService := initRegisterUserService(registerdUserRepo, emailVerificationRepo, passwordRecoveryRepo)
 	passwordUtil := initPasswordUtil()
 	userHandler := handlers.NewUserHandler(l, userService, registerUserService, jsonConverters, &repository, validator, passwordUtil, pwnedClient)
 
@@ -124,6 +131,7 @@ func main() {
 	UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
 	UnauthorizedPostRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 	UnauthorizedPostRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
+	UnauthorizedPostRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	authMiddleware := my_middleware.NewAuthorizationHandler(*R, usersPerm, usersPerm.Actions(), userService)
@@ -139,6 +147,7 @@ func main() {
 	postRouter.HandleFunc("/", userHandler.AddUsers)
 	postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 	postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
+	postRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
 
 	// create a new server
 	s := http.Server{

@@ -50,7 +50,7 @@ func (r UserRepository) GetUserSalt(username string) (string, error) {
 	var result string = ""
 	r.db.Table("users").Select("salt").Where("username = ?", username).Scan(&result)
 	if result == "" {
-		return "", errors.New("user salt not found!")
+		return "", errors.New("user salt not found")
 	}
 	return result, nil
 }

@@ -34,6 +34,10 @@ type UserHandler struct {
 	pwnedClient     *hibp.Client
 }
 
+type PassRecoveryForUser struct {
+	Username string
+}
+
 type ActivateAccountWithCodeRequest struct {
 	Username string
 	Code     string
@@ -67,6 +71,83 @@ func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(logInResponseJson)
+}
+
+func (u *UserHandler) CreateNewPassword(rw http.ResponseWriter, r *http.Request) {
+
+	u.l.Println("Handling PASSWORD RECCOVERY ")
+
+	var requestBody dto.NewRecoveryPasword
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(rw, "Error decoding request:"+err.Error(), http.StatusBadRequest) //400
+	}
+	policy := bluemonday.UGCPolicy()
+	requestBody.Username = strings.TrimSpace(policy.Sanitize(requestBody.Username))
+	requestBody.NewPassword = strings.TrimSpace(policy.Sanitize(requestBody.NewPassword))
+	requestBody.Code = strings.TrimSpace(policy.Sanitize(requestBody.Code))
+
+	if requestBody.Username == "" || requestBody.NewPassword == "" || requestBody.Code == "" {
+		fmt.Println("usrnname empty or xss")
+		http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return
+	}
+	var exists = u.registerService.UsernameExists(requestBody.Username)
+	if !exists {
+		fmt.Println(exists)
+		http.Error(rw, "No user with such username!", http.StatusConflict) //409
+	}
+
+	///////////////////////////
+
+	////////////////////
+
+	passChanged, err := u.registerService.CreateNewPassword(requestBody.Username, requestBody.NewPassword, requestBody.Code)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusConflict) //409
+	}
+	if !passChanged {
+		http.Error(rw, "error changing password", http.StatusConflict) //409
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Header().Set("Content-Type", "application/json")
+	//redirect na login
+
+}
+
+func (u *UserHandler) RecoverPasswordRequest(rw http.ResponseWriter, r *http.Request) {
+	u.l.Println("Handling PASSWORD RECCOVERY ")
+
+	var requestBody PassRecoveryForUser
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(rw, "Error decoding request:"+err.Error(), http.StatusBadRequest) //400
+	}
+	policy := bluemonday.UGCPolicy()
+	requestBody.Username = strings.TrimSpace(policy.Sanitize(requestBody.Username))
+
+	if requestBody.Username == "" {
+		fmt.Println("usrnname empty or xss")
+		http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return
+	}
+	var exists = u.registerService.UsernameExists(requestBody.Username)
+	if !exists {
+		fmt.Println(exists)
+		http.Error(rw, "No user with such username!", http.StatusConflict) //409
+	}
+	////////////////////
+
+	codeSent := u.registerService.SendCodeToRecoveryMail(requestBody.Username)
+	if !codeSent {
+		http.Error(rw, "error sending code to recovery mail", http.StatusConflict) //409
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	rw.Header().Set("Content-Type", "application/json")
 }
 
 func (u *UserHandler) ActivateUserAccount(rw http.ResponseWriter, req *http.Request) {
@@ -149,10 +230,14 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	newUser.Gender = strings.TrimSpace(policy.Sanitize(newUser.Gender))
 	newUser.DateOfBirth = strings.TrimSpace(policy.Sanitize(newUser.DateOfBirth))
 	newUser.PhoneNumber = strings.TrimSpace(policy.Sanitize(newUser.PhoneNumber))
+	newUser.RecoveryEmail = strings.TrimSpace(policy.Sanitize(newUser.RecoveryEmail))
+	newUser.Question = strings.TrimSpace(policy.Sanitize(newUser.Question))
+	newUser.HashedAnswer = strings.TrimSpace(policy.Sanitize(newUser.HashedAnswer))
 
 	if newUser.Username == "" || newUser.FirstName == "" || newUser.LastName == "" ||
 		newUser.Gender == "" || newUser.DateOfBirth == "" || newUser.PhoneNumber == "" ||
-		newUser.Password == "" || newUser.Email == "" {
+		newUser.Password == "" || newUser.Email == "" || newUser.Question == "" ||
+		newUser.HashedAnswer == "" || newUser.RecoveryEmail == "" {
 		fmt.Println("fields are empty or xss")
 		http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return
@@ -211,7 +296,7 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	//	var role = "REGISTERED_USER"
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, newUser.DateOfBirth)
-	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.Question, newUser.HashedAnswer)
+	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.Question, newUser.HashedAnswer, newUser.RecoveryEmail)
 
 	if er != nil {
 		fmt.Println(er)
@@ -250,6 +335,14 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 
+	}
+	fmt.Println("NE MOGU VISEEEEE")
+
+	fmt.Println(user.IsConfirmed)
+	if !user.IsConfirmed {
+		fmt.Println("NIIJE AKTIVIRAN NALOF")
+		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
+		return
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))

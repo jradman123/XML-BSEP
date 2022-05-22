@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
-	"net/smtp"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,12 +15,128 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/trycourier/courier-go/v2"
-	"gopkg.in/gomail.v2"
 )
 
 type RegisteredUserService struct {
-	Repo      *repository.RegisteredUserRepository
-	EmailRepo *repository.EmailVerificationRepository
+	Repo         *repository.RegisteredUserRepository
+	EmailRepo    *repository.EmailVerificationRepository
+	RecoveryRepo *repository.PasswordRecoveryRepository
+}
+
+func (service *RegisteredUserService) CreateNewPassword(username string, newPassword string, code string) (bool, error) {
+
+	var passwordRecoveryRequest *model.PasswordRecoveryRequest
+	var dbEr error
+	passwordRecoveryRequest, dbEr = service.RecoveryRepo.GetRequestByUsername(username)
+
+	if dbEr != nil {
+		fmt.Println(dbEr)
+		fmt.Println("FAK MAJ LAJF 1")
+		return false, dbEr
+	}
+	fmt.Println("verCode:", passwordRecoveryRequest.RecoveryCode)
+	///////////////
+
+	var codeInt, convErr = strconv.Atoi(code)
+	if convErr != nil {
+		return false, errors.New("error converting code to int")
+	}
+	if passwordRecoveryRequest.RecoveryCode == codeInt {
+		//kao dala sam kodu trajanje od 1h
+		fmt.Println("kod se poklapa")
+		if passwordRecoveryRequest.Time.Add(time.Minute * 3).After(time.Now()) {
+			fmt.Println("vreme se uklapa")
+			//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
+			user, err := service.Repo.GetByUsername(username)
+			if err != nil {
+				fmt.Println(err)
+				fmt.Println("error u get by username kod ucitavanja usera")
+				return false, err
+			}
+
+			fmt.Println(user.Username)
+			//CHANGE PASSWORD
+
+			// var hashedSaltedPassword = ""
+			// validPassword := u.passwordUtil.IsValidPassword(password)
+
+			// if validPassword {
+			// 	//PASSWORD SALT
+			// 	//salt, password = u.passwordUtil.GeneratePasswordWithSalt(newUser.Password)
+			// 	//cuvamo password kao hash neki
+			// 	pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+			// 	if err != nil {
+			// 		fmt.Println(err)
+			// 		err := ErrorResponse{
+			// 			Err: "Password Encryption  failed",
+			// 		}
+			// 		json.NewEncoder(rw).Encode(err)
+			// 	}
+
+			// 	hashedSaltedPassword = string(pass)
+
+			// } else {
+			// 	fmt.Println("Password format is not valid!")
+			// 	http.Error(rw, "Password format is not valid! error:"+err.Error(), http.StatusBadRequest) //400
+			// 	return
+			// }
+
+			/////////
+
+			//service.Repo.ActivateUserAccount(user)
+			_, er := service.Repo.GetByUsername(username)
+			if er != nil {
+				fmt.Println(er)
+				fmt.Println("FAK MAJ LAJF 2")
+				return false, er
+			}
+			return true, nil
+
+		} else {
+			fmt.Println("istekao kod")
+			return false, errors.New("code expired")
+		}
+
+	} else {
+		fmt.Println("ne valjda kod")
+		return false, errors.New("wrong code")
+	}
+	////////////////////
+	return true, nil
+}
+
+func (service *RegisteredUserService) SendCodeToRecoveryMail(username string) bool {
+	user, err := service.Repo.GetByUsername(username)
+
+	if err != nil {
+		return false
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	rn := rand.Intn(100000)
+	recovery := model.PasswordRecoveryRequest{
+		ID:            uuid.New(),
+		Username:      username,
+		Email:         user.Email,
+		RecoveryEmail: user.RecoveryEmail,
+		IsUsed:        false,
+		Time:          time.Now(),
+		RecoveryCode:  rn,
+	}
+
+	fmt.Println(recovery)
+
+	e := service.RecoveryRepo.Create(&recovery)
+
+	fmt.Println(e)
+	if e != nil {
+		return false
+	}
+
+	//mzd staviti da ovo vraca bool i da ima parametar poruku i zaglavlje
+	sendMailWithCourier(user.RecoveryEmail, strconv.Itoa(rn), "Password recovery code", "Here is your code:")
+	return true
+
 }
 
 func (service *RegisteredUserService) ActivateUserAccount(username string, verCode int) (bool, error) {
@@ -80,25 +195,24 @@ func (service *RegisteredUserService) ActivateUserAccount(username string, verCo
 		return false, errors.New("wrong code")
 	}
 
-	//OVO TEK NAKON IZVRSI PROVJERU DA LI SE KODOVI POKLAPAJU
-
 }
 
-func (service *RegisteredUserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, dateOfBirth time.Time, question string, answer string) (string, error) {
+func (service *RegisteredUserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, dateOfBirth time.Time, question string, answer string, recoveryMail string) (string, error) {
 	user := model.User{
-		ID:           uuid.New(),
-		Username:     username,
-		Password:     password,
-		Email:        email,
-		PhoneNumber:  phone,
-		FirstName:    firstName,
-		LastName:     lastName,
-		Gender:       gender,
-		Role:         role,
-		IsConfirmed:  false,
-		DateOfBirth:  dateOfBirth,
-		Question:     question,
-		HashedAnswer: answer,
+		ID:            uuid.New(),
+		Username:      username,
+		Password:      password,
+		Email:         email,
+		PhoneNumber:   phone,
+		FirstName:     firstName,
+		LastName:      lastName,
+		Gender:        gender,
+		Role:          role,
+		IsConfirmed:   false,
+		DateOfBirth:   dateOfBirth,
+		Question:      question,
+		HashedAnswer:  answer,
+		RecoveryEmail: recoveryMail,
 	}
 	mail, err := service.Repo.CreateRegisteredUser(&user)
 	if err != nil {
@@ -138,7 +252,7 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	// fmt.Println("UBICU SE ")
 	// println(mailError)
 
-	sendMailWithCourier(email, strconv.Itoa(rn))
+	sendMailWithCourier(email, strconv.Itoa(rn), "Activation code", "Welcome to Dislinkt! Here is your activation code:")
 
 	//TODO: send confirmation mail
 	//koriste redis bazu gdje privremeno cuvaju zahteve za registraciju
@@ -159,7 +273,7 @@ func (service *RegisteredUserService) CreateRegisteredUser(username string, pass
 	return mail, nil
 }
 
-func sendMailWithCourier(email string, code string) {
+func sendMailWithCourier(email string, code string, subject string, body string) {
 	client := courier.CreateClient("pk_prod_0FQXVBPMDHMZ3VJ3WN6CYC12KNMH", nil)
 	fmt.Println(code)
 	requestID, err := client.SendMessage(
@@ -170,8 +284,8 @@ func sendMailWithCourier(email string, code string) {
 					"email": email,
 				},
 				"content": map[string]string{
-					"title": "Avtivation code",
-					"body":  "Welcome to Dislinkt! Here is your activation code:" + code,
+					"title": subject,
+					"body":  body + code,
 				},
 				"data": map[string]string{
 					"joke": "What did C++ say to C? You have no class.",
@@ -185,34 +299,6 @@ func sendMailWithCourier(email string, code string) {
 	}
 	fmt.Println(requestID)
 }
-
-// func sendConfirmationMail(email string, username string, service *RegisteredUserService) error {
-// 	var err = checkEmailValid(email)
-// 	if err != nil {
-// 		return errors.New("email format invalid")
-// 	}
-// 	var er = checkEmailDomain(email)
-// 	if er != nil {
-// 		return errors.New("email domain invalid")
-// 	}
-// 	rand.Seed(time.Now().UnixNano())
-// 	rn := rand.Intn(100000)
-// 	emailVerification := model.EmailVerification{
-// 		Username: username,
-// 		Email:    email,
-// 		VerCode:  rn,
-// 		Time:     time.Now(),
-// 	}
-
-// 	e := service.EmailRepo.Create(&emailVerification)
-// 	if e != nil {
-// 		return errors.New("error saving emailVerification")
-// 	}
-
-// 	go emailVerCode(rn, email) //valjda ne cekamo da se zavrsi
-
-// 	return nil
-// }
 
 func checkEmailValid(email string) error {
 	// check email syntax is valid
@@ -247,56 +333,56 @@ func checkEmailDomain(email string) error {
 	return nil
 }
 
-func sendCodeWithMail(code int, toEmail string) error {
+// func sendCodeWithMail(code int, toEmail string) error {
 
-	msg := gomail.NewMessage()
-	msg.SetHeader("From", "bespxml@gmail.com")
-	msg.SetHeader("To", toEmail)
-	msg.SetHeader("Subject", "Verification code:"+string(code))
-	msg.SetBody("text/html", "<b>Welcome to DISLINKT</b>")
-	//	msg.Attach("/home/User/cat.jpg")
+// 	msg := gomail.NewMessage()
+// 	msg.SetHeader("From", "bespxml@gmail.com")
+// 	msg.SetHeader("To", toEmail)
+// 	msg.SetHeader("Subject", "Verification code:"+string(code))
+// 	msg.SetBody("text/html", "<b>Welcome to DISLINKT</b>")
+// 	//	msg.Attach("/home/User/cat.jpg")
 
-	n := gomail.NewDialer("smtp.gmail.com", 587, "bespxml@gmail.com", "ohdearLord!")
+// 	n := gomail.NewDialer("smtp.gmail.com", 587, "bespxml@gmail.com", "ohdearLord!")
 
-	fmt.Println("SENDING MAIL SECOND WAY HEHE ")
-	// Send the email
-	if err := n.DialAndSend(msg); err != nil {
-		return err
-	}
-	return nil
-}
+// 	fmt.Println("SENDING MAIL SECOND WAY HEHE ")
+// 	// Send the email
+// 	if err := n.DialAndSend(msg); err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
-func emailVerCode(rn int, toEmail string) error {
-	// sender data
-	//from := os.Getenv("FromEmailAddr") //ex: "John.Doe@gmail.com"
-	//password := os.Getenv("SMTPpwd")   // ex: "ieiemcjdkejspqz"
-	fmt.Println("SALJEMOOOOO MEEEEEEJJJJLLLLL")
-	from := "bespxml@gmail.com"
-	password := "ohdearLord!"
-	// receiver address privided through toEmail argument
-	to := []string{toEmail}
-	// smtp - Simple Mail Transfer Protocol
-	host := "smtp.gmail.com"
-	port := "587"
-	address := host + ":" + port
-	// message
-	subject := "Subject: Email Verification Code\r\n\r\n"
-	verCode := strconv.Itoa(rn)
-	fmt.Println("verCode:", verCode)
-	body := "verification code: " + verCode
-	fmt.Println("body:", body)
-	message := []byte(subject + body)
-	// athentication data
-	// func PlainAuth(identity, username, password, host string) Auth
-	auth := smtp.PlainAuth("", from, password, host)
-	// send mail
-	// func SendMail(addr string, a Auth, from string, to []string, msg []byte) error
-	fmt.Println("message:", string(message))
-	err := smtp.SendMail(address, auth, from, to, message)
-	fmt.Println(err)
-	fmt.Println("MEJLLL POSLAAAAT")
-	return err
-}
+// func emailVerCode(rn int, toEmail string) error {
+// 	// sender data
+// 	//from := os.Getenv("FromEmailAddr") //ex: "John.Doe@gmail.com"
+// 	//password := os.Getenv("SMTPpwd")   // ex: "ieiemcjdkejspqz"
+// 	fmt.Println("SALJEMOOOOO MEEEEEEJJJJLLLLL")
+// 	from := "bespxml@gmail.com"
+// 	password := "ohdearLord!"
+// 	// receiver address privided through toEmail argument
+// 	to := []string{toEmail}
+// 	// smtp - Simple Mail Transfer Protocol
+// 	host := "smtp.gmail.com"
+// 	port := "587"
+// 	address := host + ":" + port
+// 	// message
+// 	subject := "Subject: Email Verification Code\r\n\r\n"
+// 	verCode := strconv.Itoa(rn)
+// 	fmt.Println("verCode:", verCode)
+// 	body := "verification code: " + verCode
+// 	fmt.Println("body:", body)
+// 	message := []byte(subject + body)
+// 	// athentication data
+// 	// func PlainAuth(identity, username, password, host string) Auth
+// 	auth := smtp.PlainAuth("", from, password, host)
+// 	// send mail
+// 	// func SendMail(addr string, a Auth, from string, to []string, msg []byte) error
+// 	fmt.Println("message:", string(message))
+// 	err := smtp.SendMail(address, auth, from, to, message)
+// 	fmt.Println(err)
+// 	fmt.Println("MEJLLL POSLAAAAT")
+// 	return err
+// }
 
 func (u *RegisteredUserService) UsernameExists(username string) bool {
 
