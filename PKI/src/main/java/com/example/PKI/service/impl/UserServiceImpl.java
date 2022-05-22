@@ -1,5 +1,6 @@
 package com.example.PKI.service.impl;
 
+import com.example.PKI.dto.ChangePasswordDto;
 import com.example.PKI.dto.LoginDto;
 import com.example.PKI.dto.UserDto;
 import com.example.PKI.model.Permission;
@@ -70,6 +71,16 @@ public class UserServiceImpl implements UserService {
         userDb.setActivated(true);
         User saved = userRepository.save(userDb);
         return saved;
+    }
+
+    @Override
+    public void changePassword(String email, ChangePasswordDto changePasswordDto) {
+        User user = findByEmail(email);
+        if (passwordEncoder.matches(changePasswordDto.getCurrentPassword(),user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+        }
+
+        userRepository.save(user);
     }
 
 

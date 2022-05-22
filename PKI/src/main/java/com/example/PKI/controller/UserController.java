@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Array;
 import java.time.LocalDate;
@@ -94,10 +95,14 @@ public class UserController {
         }else{
             return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
-
-
-
-
+    @CrossOrigin(origins = "http://localhost:4200")
+   //ovo moze da radi bilo koji ulogovani korisnik
+    @PutMapping(value = "/changePassword")
+    public ResponseEntity<HttpStatus> changePassword(@RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
+        String token = tokenUtils.getToken(request);
+        userService.changePassword(tokenUtils.getEmailFromToken(token), changePasswordDto);
+        return ResponseEntity.noContent().build();
     }
 }
