@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { LoginService } from 'src/app/services/login.service';
 import { Router } from '@angular/router';
+import { UserService } from 'src/app/services/UserService/user.service';
 @Component({
   selector: 'app-landing-page',
   templateUrl: './landing-page.component.html',
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 export class LandingPageComponent implements OnInit {
 
   sub! : Subscription;
-  constructor(private authService: LoginService,private _router: Router,) { 
+  constructor(private authService: UserService,private _router: Router,) { 
     
   }
 
