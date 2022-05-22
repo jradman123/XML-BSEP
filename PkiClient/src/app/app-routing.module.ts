@@ -9,43 +9,53 @@ import { CreateSubjectComponent } from './components/create-subject/create-subje
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { CertificateChainComponent } from './components/certificate-chain/certificate-chain.component';
 
-import { CreateCertificateUserComponent} from './components/create-certificate-user/create-certificate-user.component';
+import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
-  { path: 'ahome', component: AdminHomeComponent ,
+  {
+    path: 'ahome',
+    component: AdminHomeComponent,
     children: [
-    {
-      path: '', component: AllCertificatesComponent
-    },
-    { path: 'createCertificate', component: CreateCertificateComponent },
-    { path: 'createSubject', component: CreateSubjectComponent },
-    { path: 'certificate', component: CertificateComponent },
-    { path: 'chain', component: CertificateChainComponent },
-    { path: 'createCertificateUser', component: CreateCertificateUserComponent }
-
-
-  ]
+      {
+        path: '',
+        component: AllCertificatesComponent,
+      },
+      { path: 'createCertificate', component: CreateCertificateComponent },
+      { path: 'createSubject', component: CreateSubjectComponent },
+      { path: 'certificate', component: CertificateComponent },
+      { path: 'chain', component: CertificateChainComponent },
+      {
+        path: 'createCertificateUser',
+        component: CreateCertificateUserComponent,
+      },
+    ],
   },
-  { path: 'chome', component: ClientHomeComponent,
+
+  {
+    path: 'chome',
+    component: ClientHomeComponent,
     children: [
-    {
-      path: '', component: AllCertificatesComponent
-    }
-  ]
+      {
+        path: '',
+        component: AllCertificatesComponent,
+      },
+    ],
   },
   { path: 'createCertificate', component: CreateCertificateComponent },
   { path: 'createSubject', component: CreateSubjectComponent },
   { path: 'certificate', component: CertificateComponent },
   { path: 'chain', component: CertificateChainComponent },
-  { path: 'createCertificateUser', component: CreateCertificateUserComponent }
+  { path: 'createCertificateUser', component: CreateCertificateUserComponent },
+  { path: 'resetPassword', component: ResetPasswordComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
 export const routingComponents = [
   LandingPageComponent,
   AdminHomeComponent,

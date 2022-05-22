@@ -2,14 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { LogedUser } from 'src/app/interfaces/loged-user';
+import { NewPassword } from 'src/app/interfaces/new-password';
 import { SubjectData } from 'src/app/interfaces/subject-data';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
-
-  constructor(private _http: HttpClient) { }
+  constructor(private _http: HttpClient) {}
 
   createSubject(newSubject: SubjectData): Observable<any> {
     return this._http.post<any>(
@@ -20,5 +20,12 @@ export class UserService {
 
   login(model: LogedUser): any {
     return this._http.post('http://localhost:8443/api/login', model);
+  }
+
+  changePassword(newPassword: NewPassword): Observable<any> {
+    return this._http.put<any>(
+      'http://localhost:8443/api/createSubject',
+      newPassword
+    );
   }
 }
