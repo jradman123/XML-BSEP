@@ -4,12 +4,22 @@ import (
 	userGw "common/module/proto/user_service"
 	"context"
 	"fmt"
+	"gateway/module/application/helpers"
+	"gateway/module/application/services"
+	"gateway/module/domain/model"
+	"gateway/module/domain/repositories"
+	"gateway/module/infrastructure/handlers"
+	"gateway/module/infrastructure/persistance"
 	cfg "gateway/module/startup/config"
 	runtime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"gopkg.in/go-playground/validator.v9"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Server struct {
@@ -26,6 +36,7 @@ func NewServer(config *cfg.Config) *Server {
 	server.initCustomHandlers()
 	return server
 }
+
 func (server *Server) initHandlers() {
 	//Povezuje sa grpc generisanim fajlovima
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -41,8 +52,49 @@ func (server *Server) initHandlers() {
 //Gateway ima svoje endpointe
 func (server *Server) initCustomHandlers() {
 
+	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
+	userRepo := server.InitUserRepo(db)
+	userService := server.InitUserService(l, userRepo)
+
+	validator := validator.New()
+	db = server.SetupDatabase()
+	passwordUtil := &helpers.PasswordUtil{}
+	authHandler := handlers.NewAuthenticationHandler(l, userService, validator, passwordUtil)
+	authHandler.Init(server.mux)
 }
 
 func (server *Server) Start() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), server.mux))
+}
+
+func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository) *services.UserService {
+	return services.NewUserService(l, repo)
+}
+func (server *Server) InitUserRepo(d *gorm.DB) repositories.UserRepository {
+	return persistance.NewUserRepositoryImpl(db)
+}
+
+var db *gorm.DB
+
+func (server *Server) SetupDatabase() *gorm.DB {
+
+	host := os.Getenv("HOST")
+	port := os.Getenv("PG_DBPORT")
+	user := os.Getenv("PG_USER")
+	dbname := os.Getenv("XML_DB_NAME")
+	password := os.Getenv("PG_PASSWORD")
+
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
+
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Println("Successfully connected to database!")
+	}
+
+	db.AutoMigrate(&model.User{}) //This will not remove columns
+	//db.Create(users) // Use this only once to populate db with data
+
+	return db
 }
