@@ -16,18 +16,19 @@ service UserService{
 
   rpc Login(LoginUserRequest) returns(LoginResponse) {
     option (google.api.http) = {
-      post: "/users/login"
+      post: "/users/login/user"
       body: "usernamePass"
     };
   }
-  rpc GetAllRequest(EmptyRequest) returns(GetAllResponse) {
+  rpc GetAll(EmptyRequest) returns(GetAllResponse) {
     option (google.api.http) = {
-      post: "/users"
+      get: "/users"
     };
   }
-  rpc UpdateUserRequest(UpdateRequest) returns(UpdateUserResponse) {
+  rpc UpdateUser(UpdateRequest) returns(UpdateUserResponse) {
     option (google.api.http) = {
       post: "/users/{id}"
+      body: "updatedUser"
     };
   }
 }
@@ -36,6 +37,7 @@ message GetAllResponse {
 }
 message UpdateRequest{
   string id = 1;
+  User updatedUser = 2;
 }
 message EmptyRequest{}
 
@@ -77,3 +79,4 @@ message User {
 message RegisterResponse{
   User user = 1;
 }
+

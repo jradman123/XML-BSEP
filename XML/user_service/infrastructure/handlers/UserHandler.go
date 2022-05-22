@@ -18,26 +18,14 @@ type UserHandler struct {
 	passwordUtil *helpers.PasswordUtil
 }
 
-func (u UserHandler) mustEmbedUnimplementedUserServiceServer() {
+func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
+	u.l.Println("Handling MustEmbedUnimplementedUserServiceServer Users")
 	//TODO implement me
 	panic("implement me")
 }
 
-func NewUserHandler(l *log.Logger, service *services.UserService, jsonConv *helpers.JsonConverters, validator *validator.Validate,
-	passwordUtil *helpers.PasswordUtil) *UserHandler {
-	return &UserHandler{l, service, jsonConv, validator, passwordUtil}
-}
-
-func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserRequest) (*pb.RegisterResponse, error) {
-	return &pb.RegisterResponse{User: nil}, nil
-}
-
-func (u UserHandler) Login(ctx context.Context, request *pb.LoginUserRequest) (*pb.LoginResponse, error) {
-
-	return &pb.LoginResponse{Token: ""}, nil
-}
-
-func (u UserHandler) GetAllRequest(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
+func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
+	u.l.Println("Handling GetAllRequest Users")
 	users, err := u.service.GetUsers()
 	if err != nil {
 		return nil, err
@@ -52,6 +40,22 @@ func (u UserHandler) GetAllRequest(ctx context.Context, request *pb.EmptyRequest
 	return response, nil
 }
 
-func (u UserHandler) UpdateUserRequest(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
+func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
+	u.l.Println("Handling UpdateUserRequest Users")
 	return &pb.UpdateUserResponse{UpdatedUser: nil}, nil
+}
+
+func NewUserHandler(l *log.Logger, service *services.UserService, jsonConv *helpers.JsonConverters, validator *validator.Validate,
+	passwordUtil *helpers.PasswordUtil) *UserHandler {
+	return &UserHandler{l, service, jsonConv, validator, passwordUtil}
+}
+
+func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserRequest) (*pb.RegisterResponse, error) {
+	u.l.Println("Handling RegisterUser Users")
+	return &pb.RegisterResponse{User: nil}, nil
+}
+
+func (u UserHandler) Login(ctx context.Context, request *pb.LoginUserRequest) (*pb.LoginResponse, error) {
+	u.l.Println("Handling LOGIN Users")
+	return &pb.LoginResponse{Token: ""}, nil
 }

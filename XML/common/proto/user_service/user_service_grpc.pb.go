@@ -24,8 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	GetAllRequest(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
-	UpdateUserRequest(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	GetAll(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 }
 
 type userServiceClient struct {
@@ -54,18 +54,18 @@ func (c *userServiceClient) Login(ctx context.Context, in *LoginUserRequest, opt
 	return out, nil
 }
 
-func (c *userServiceClient) GetAllRequest(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
+func (c *userServiceClient) GetAll(ctx context.Context, in *EmptyRequest, opts ...grpc.CallOption) (*GetAllResponse, error) {
 	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, "/user_service.UserService/GetAllRequest", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateUserRequest(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+func (c *userServiceClient) UpdateUser(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
 	out := new(UpdateUserResponse)
-	err := c.cc.Invoke(ctx, "/user_service.UserService/UpdateUserRequest", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/UpdateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,9 +78,9 @@ func (c *userServiceClient) UpdateUserRequest(ctx context.Context, in *UpdateReq
 type UserServiceServer interface {
 	RegisterUser(context.Context, *RegisterUserRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginUserRequest) (*LoginResponse, error)
-	GetAllRequest(context.Context, *EmptyRequest) (*GetAllResponse, error)
-	UpdateUserRequest(context.Context, *UpdateRequest) (*UpdateUserResponse, error)
-	mustEmbedUnimplementedUserServiceServer()
+	GetAll(context.Context, *EmptyRequest) (*GetAllResponse, error)
+	UpdateUser(context.Context, *UpdateRequest) (*UpdateUserResponse, error)
+	MustEmbedUnimplementedUserServiceServer()
 }
 
 // UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
@@ -93,19 +93,19 @@ func (UnimplementedUserServiceServer) RegisterUser(context.Context, *RegisterUse
 func (UnimplementedUserServiceServer) Login(context.Context, *LoginUserRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedUserServiceServer) GetAllRequest(context.Context, *EmptyRequest) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllRequest not implemented")
+func (UnimplementedUserServiceServer) GetAll(context.Context, *EmptyRequest) (*GetAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateUserRequest(context.Context, *UpdateRequest) (*UpdateUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserRequest not implemented")
+func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
-func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
+func (UnimplementedUserServiceServer) MustEmbedUnimplementedUserServiceServer() {}
 
 // UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to UserServiceServer will
 // result in compilation errors.
 type UnsafeUserServiceServer interface {
-	mustEmbedUnimplementedUserServiceServer()
+	MustEmbedUnimplementedUserServiceServer()
 }
 
 func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
@@ -148,38 +148,38 @@ func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetAllRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmptyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetAllRequest(ctx, in)
+		return srv.(UserServiceServer).GetAll(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user_service.UserService/GetAllRequest",
+		FullMethod: "/user_service.UserService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetAllRequest(ctx, req.(*EmptyRequest))
+		return srv.(UserServiceServer).GetAll(ctx, req.(*EmptyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_UpdateUserRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _UserService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).UpdateUserRequest(ctx, in)
+		return srv.(UserServiceServer).UpdateUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user_service.UserService/UpdateUserRequest",
+		FullMethod: "/user_service.UserService/UpdateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UpdateUserRequest(ctx, req.(*UpdateRequest))
+		return srv.(UserServiceServer).UpdateUser(ctx, req.(*UpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -200,12 +200,12 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_Login_Handler,
 		},
 		{
-			MethodName: "GetAllRequest",
-			Handler:    _UserService_GetAllRequest_Handler,
+			MethodName: "GetAll",
+			Handler:    _UserService_GetAll_Handler,
 		},
 		{
-			MethodName: "UpdateUserRequest",
-			Handler:    _UserService_UpdateUserRequest_Handler,
+			MethodName: "UpdateUser",
+			Handler:    _UserService_UpdateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
