@@ -8,7 +8,7 @@ import com.example.PKI.model.User;
 import com.example.PKI.repository.PermissionRepository;
 import com.example.PKI.repository.UserRepository;
 import com.example.PKI.service.UserService;
-import com.example.PKI.service.VerificationTokenService;
+import com.example.PKI.service.CustomTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,10 +21,10 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
     private PermissionRepository permissionRepository;
-    private VerificationTokenService verificationTokenService;
+    private CustomTokenService verificationTokenService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder pe, PermissionRepository pr,VerificationTokenService vts) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder pe, PermissionRepository pr, CustomTokenService vts) {
         this.userRepository = userRepository;
         this.passwordEncoder = pe;
         this.permissionRepository = pr;
