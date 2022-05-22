@@ -24,5 +24,5 @@ public class UserDto {
 
     public String recoveryMail;
 
-    public List<String> securityQuestions;
+    public boolean isPawned;
 }
