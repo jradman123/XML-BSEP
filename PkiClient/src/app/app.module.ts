@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -22,6 +22,9 @@ import { CertificateChainComponent } from './components/certificate-chain/certif
 
 import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { JwtInterceptor } from './JwtInterceptor/jwt-interceptor';
+import { RegistrationComponent } from './components/registration/registration.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,8 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
     CertificateChainComponent,
     CreateCertificateUserComponent,
     ResetPasswordComponent,
+    RegistrationComponent,
+    ChangePasswordComponent,
   ],
   imports: [
     BrowserModule,
@@ -50,7 +55,10 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
     MaterialModule,
     MatCardModule,
   ],
-  providers: [],
+  providers: [
+    HttpClientModule,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

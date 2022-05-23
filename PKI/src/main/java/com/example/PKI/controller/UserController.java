@@ -75,7 +75,7 @@ public class UserController {
         return new ResponseEntity<UserDto>(newUser, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasRole('USER_ROOT') || hasRole('USER_INTERMEDIATE')")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER_ROOT') || hasAuthority('USER_INTERMEDIATE')")
     @GetMapping("/users")
     public ResponseEntity<?> getAll() {
         return new ResponseEntity<ArrayList<User>>((ArrayList<User>) userRepository.findAll(), HttpStatus.OK);

@@ -55,7 +55,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
 
-                .authorizeRequests().antMatchers("/api/*").permitAll()
+                .authorizeRequests().antMatchers("/api/login").permitAll()
+                .antMatchers("/api/confirmAccount/*").permitAll()
+                .antMatchers("/api/changePassword").permitAll()
+                .antMatchers("/api/sendCode").permitAll()
+                .antMatchers("/api/createSubject").permitAll()
+                .antMatchers("/api/checkCode").permitAll()
+                .antMatchers("/api/resetPassword").permitAll()
                 .antMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
                 .antMatchers("/api/foo").permitAll()		// /api/foo
                 .anyRequest().authenticated().and()
