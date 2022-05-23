@@ -23,7 +23,7 @@ export class LandingPageComponent implements OnInit {
   forgotPass() {
     console.log(this.emaill);
     this.authService.sendCode(this.emaill).subscribe();
-    localStorage.setItem('email', this.emaill);
+    localStorage.setItem('emailForReset', this.emaill);
     this._router.navigate(['/resetPassword']);
   }
   onSubmit(f: NgForm) {

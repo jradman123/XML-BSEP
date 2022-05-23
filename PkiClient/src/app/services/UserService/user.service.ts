@@ -16,7 +16,7 @@ export class UserService {
 
   checkCode(verCode: string): Observable<any> {
     return this._http.post<any>('http://localhost:8443/api/checkCode', {
-      email: localStorage.getItem('email'),
+      email: localStorage.getItem('emailForReset'),
       code: verCode,
     });
   }
@@ -60,7 +60,7 @@ export class UserService {
 
   resetPassword(newPassword: string): Observable<any> {
     return this._http.post<any>('http://localhost:8443/api/resetPassword', {
-      email: localStorage.getItem('email'),
+      email: localStorage.getItem('emailForReset'),
       newPassword: newPassword,
     });
   }
