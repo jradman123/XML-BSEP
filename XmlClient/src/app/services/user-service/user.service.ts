@@ -35,6 +35,7 @@ export class UserService {
           localStorage.setItem('currentUser', JSON.stringify(response));
           localStorage.setItem('role' ,response.role)
           localStorage.setItem('email' ,response.email)
+          localStorage.setItem('username' ,response.username)
           this.currentUserSubject.next(response);
         }
         return this.user;

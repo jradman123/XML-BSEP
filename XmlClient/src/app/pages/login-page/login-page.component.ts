@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth-service/auth.service';
+import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
   selector: 'app-login-page',
@@ -15,7 +16,7 @@ export class LoginPageComponent implements OnInit {
   
 
   constructor(
-    private authService: AuthService,
+    private authService: UserService,
     private _snackBar: MatSnackBar,
     private _router: Router) { }
 

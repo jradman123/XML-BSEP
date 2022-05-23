@@ -49,6 +49,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatTreeModule } from '@angular/material/tree';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
+import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 
 
 @NgModule({
@@ -114,7 +115,7 @@ import { UserHomeComponent } from './pages/user-home/user-home.component';
     MatInputModule,
     MatRippleModule,
   ],
-  providers: [],
+  providers: [ HttpClientModule, { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
