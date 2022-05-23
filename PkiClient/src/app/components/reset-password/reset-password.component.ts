@@ -64,7 +64,7 @@ export class ResetPasswordComponent implements OnInit {
   onSubmit(): void {
     //this.newPasswordDto.newPassword = this.createForm.value.password;
     this.userService
-      .changePassword(this.createForm.value.password)
+      .resetPassword(this.createForm.value.password)
       .subscribe((res) => {});
     this.router.navigate(['/']);
   }

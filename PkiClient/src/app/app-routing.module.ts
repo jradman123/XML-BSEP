@@ -8,12 +8,14 @@ import { CreateCertificateComponent } from './components/create-certificate/crea
 import { CreateSubjectComponent } from './components/create-subject/create-subject.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { CertificateChainComponent } from './components/certificate-chain/certificate-chain.component';
-
-import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
+import { RegistrationComponent } from './components/registration/registration.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
+  { path: 'registration', component: RegistrationComponent },
   {
     path: 'ahome',
     component: AdminHomeComponent,
@@ -30,6 +32,7 @@ const routes: Routes = [
         path: 'createCertificateUser',
         component: CreateCertificateUserComponent,
       },
+      { path: 'changePassword', component: ChangePasswordComponent },
     ],
   },
 
@@ -37,10 +40,8 @@ const routes: Routes = [
     path: 'chome',
     component: ClientHomeComponent,
     children: [
-      {
-        path: '',
-        component: AllCertificatesComponent,
-      },
+      { path: '', component: AllCertificatesComponent },
+      { path: 'changePassword', component: ChangePasswordComponent },
     ],
   },
   { path: 'createCertificate', component: CreateCertificateComponent },
