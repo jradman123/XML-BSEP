@@ -33,6 +33,7 @@
             <mat-error>Invalid input</mat-error>
           </mat-form-field>
         </div>
+      
         <div style="width: 100%; display: flex">
           <mat-form-field appearance="fill">
             <mat-label>LastName</mat-label>
@@ -43,6 +44,22 @@
                     createForm?.get('LastName')?.errors?.['required']
                   ">LastName is required</mat-error>
           </mat-form-field>
+        </div>
+        <div style="width: 100%; display: flex">
+          <div class="form-group">
+            <mat-label>Gender</mat-label>
+            <div class="row">
+              <label class="md-check">
+                <input type="radio" value="female" name="Gender" formControlName="Gender">
+                Female
+              </label>
+
+              <label class="md-check">
+                <input type="radio" value="male" name="Gender" formControlName="Gender">
+                Male
+              </label>
+            </div>
+          </div>
         </div>
         <div style="width: 100%; display: flex">
           <mat-form-field appearance="fill">
@@ -70,6 +87,15 @@
                   createForm?.get('Email')?.touched &&
                   createForm?.get('Email')?.errors?.['email']
                 ">Invalid email!</mat-error>
+          </mat-form-field>
+        </div>
+        <div style="width: 100%; display: flex">
+          <mat-form-field appearance="fill">
+            <mat-label>Date of birth</mat-label>
+            <input matInput  formControlName="DateOfBirth" [matDatepicker]="picker">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
         </div>
         <div style="width: 100%; display: flex">

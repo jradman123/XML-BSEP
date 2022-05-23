@@ -1,13 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	gorilla_handlers "github.com/gorilla/handlers"
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
-	"time"
 	"user/module/handlers"
 	"user/module/helpers"
 	my_middleware "user/module/middleware"
@@ -128,7 +126,8 @@ func main() {
 	router := mux.NewRouter()
 	UnauthorizedPostRouter := router.Methods(http.MethodPost).Subrouter()
 	UnauthorizedPostRouter.HandleFunc("/login", userHandler.LoginUser)
-	UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
+	//UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
+	router.HandleFunc("/register", userHandler.AddUsers).Methods("POST")
 	UnauthorizedPostRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 	UnauthorizedPostRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
 	UnauthorizedPostRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
@@ -142,45 +141,45 @@ func main() {
 	putRouter.Use(my_middleware.ValidateToken)
 	putRouter.HandleFunc("/{id:[0-9]+}", userHandler.UpdateUsers)
 
-	postRouter := router.Methods(http.MethodPost).Subrouter()
-	putRouter.Use(my_middleware.ValidateToken)
-	postRouter.HandleFunc("/", userHandler.AddUsers)
-	postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
-	postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
-	postRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
+	credentials := gorilla_handlers.AllowCredentials()
+	methods := gorilla_handlers.AllowedMethods([]string{"POST"})
 
-	// create a new server
-	s := http.Server{
-		Addr:         ":8082",           // configure the bind address
-		Handler:      router,            // set the default handler
-		ErrorLog:     l,                 // set the logger for the server
-		ReadTimeout:  5 * time.Second,   // max time to read request from the client
-		WriteTimeout: 10 * time.Second,  // max time to write response to the client
-		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
-	}
+	origins := gorilla_handlers.AllowedOrigins([]string{"http://localhost:4200"})
+	log.Fatal(http.ListenAndServe(":8082", gorilla_handlers.CORS(credentials, methods, origins)(router)))
+
+	//
+	//// create a new server
+	//s := http.Server{
+	//	Addr:         ":8082",           // configure the bind address
+	//	Handler:      router,            // set the default handler
+	//	ErrorLog:     l,                 // set the logger for the server
+	//	ReadTimeout:  5 * time.Second,   // max time to read request from the client
+	//	WriteTimeout: 10 * time.Second,  // max time to write response to the client
+	//	IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
+	//}
 
 	// start the server
-	go func() {
-		l.Println("Starting server on port 8082")
-
-		err := s.ListenAndServe()
-		if err != nil {
-			l.Printf("Error starting server: %s\n", err)
-			os.Exit(1)
-		}
-	}()
-
-	// trap sigterm or interupt and gracefully shutdown the server
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, os.Kill)
-
-	// Block until a signal is received.
-	sig := <-c
-	log.Println("Got signal:", sig)
-
-	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-	s.Shutdown(ctx)
+	//go func() {
+	//	l.Println("Starting server on port 8082")
+	//
+	//	err := s.ListenAndServe()
+	//	if err != nil {
+	//		l.Printf("Error starting server: %s\n", err)
+	//		os.Exit(1)
+	//	}
+	//}()
+	//
+	//// trap sigterm or interupt and gracefully shutdown the server
+	//c := make(chan os.Signal, 1)
+	//signal.Notify(c, os.Interrupt)
+	//signal.Notify(c, os.Kill)
+	//
+	//// Block until a signal is received.
+	//sig := <-c
+	//log.Println("Got signal:", sig)
+	//
+	//// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
+	//ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	//defer cancel()
+	//s.Shutdown(ctx)
 }

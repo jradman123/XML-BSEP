@@ -25,7 +25,9 @@ require (
 
 require (
 	github.com/aymerick/douceur v0.2.0 // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
+	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )

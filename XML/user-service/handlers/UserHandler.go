@@ -201,11 +201,16 @@ func (u *UserHandler) ActivateUserAccount(rw http.ResponseWriter, req *http.Requ
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(activationJson)
 }
+func enableCors(rw *http.ResponseWriter) {
+	(*rw).Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+	(*rw).Header().Set("Access-Control-Allow-Methods", " GET, POST, PATCH, PUT, DELETE, OPTIONS")
+	(*rw).Header().Set("Access-Control-Allow-Headers", " Origin, Content-Type, X-Auth-Token")
+}
 
 //create registered user function
 func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	u.l.Println("Handling POST Users")
-
+	enableCors(&rw)
 	var newUser dto.NewUser
 	err := json.NewDecoder(req.Body).Decode(&newUser)
 
@@ -231,13 +236,10 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	newUser.DateOfBirth = strings.TrimSpace(policy.Sanitize(newUser.DateOfBirth))
 	newUser.PhoneNumber = strings.TrimSpace(policy.Sanitize(newUser.PhoneNumber))
 	newUser.RecoveryEmail = strings.TrimSpace(policy.Sanitize(newUser.RecoveryEmail))
-	newUser.Question = strings.TrimSpace(policy.Sanitize(newUser.Question))
-	newUser.HashedAnswer = strings.TrimSpace(policy.Sanitize(newUser.HashedAnswer))
 
 	if newUser.Username == "" || newUser.FirstName == "" || newUser.LastName == "" ||
 		newUser.Gender == "" || newUser.DateOfBirth == "" || newUser.PhoneNumber == "" ||
-		newUser.Password == "" || newUser.Email == "" || newUser.Question == "" ||
-		newUser.HashedAnswer == "" || newUser.RecoveryEmail == "" {
+		newUser.Password == "" || newUser.Email == "" || newUser.RecoveryEmail == "" {
 		fmt.Println("fields are empty or xss")
 		http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return
@@ -273,17 +275,6 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	answer, err := bcrypt.GenerateFromPassword([]byte(newUser.HashedAnswer), bcrypt.DefaultCost)
-	if err != nil {
-		fmt.Println(err)
-		err := ErrorResponse{
-			Err: "Answer Encryption  failed",
-		}
-		json.NewEncoder(rw).Encode(err)
-	}
-
-	newUser.HashedAnswer = string(answer)
-
 	gender := model.OTHER
 	switch newUser.Gender {
 	case "MALE":
@@ -296,7 +287,7 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	//	var role = "REGISTERED_USER"
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, newUser.DateOfBirth)
-	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.Question, newUser.HashedAnswer, newUser.RecoveryEmail)
+	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.RecoveryEmail)
 
 	if er != nil {
 		fmt.Println(er)
@@ -308,8 +299,10 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	userEmailJson, _ := json.Marshal(userEmail)
+
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "http://localhost:4200/")
 	rw.Write(userEmailJson)
 
 }
@@ -378,8 +371,8 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	logInResponse := dto.LogInResponseDto{
 		Token: token,
-		Role : "User",
-		Email : user.Email
+		Role:  "User",
+		Email: user.Email,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)

@@ -33,6 +33,7 @@ export class RegisterPageComponent implements OnInit {
         Validators.required,
         Validators.pattern('^[A-Za-z][A-Za-z0-9_]{7,29}$'),
       ]),
+      Gender: new FormControl(''),
       PhoneNumber: new FormControl(null, [
         Validators.required,
         Validators.pattern('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$'),
@@ -60,6 +61,10 @@ export class RegisterPageComponent implements OnInit {
             '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,30}$'
       
         )]),
+        DateOfBirth: new FormControl(null, 
+          [
+            Validators.required,
+           ]),
     });
 
   }
@@ -70,9 +75,11 @@ export class RegisterPageComponent implements OnInit {
   }
 
   onSubmit(): void {
+    
       this.createUser();
       this.authService.registerUser(this.newUser).subscribe(
         (res) => {
+         
           this.router.navigate(['/']);
           this._snackBar.open(
             'Your registration request has been sumbitted. Please check your email and confirm your email adress to activate your account.',
@@ -98,7 +105,7 @@ export class RegisterPageComponent implements OnInit {
       this.newUser.PhoneNumber = this.createForm.value.PhoneNumber;
       this.newUser.FirstName = this.createForm.value.FirstName;
       this.newUser.LastName = this.createForm.value.LastName;
-      // this.newUser.DateOfBirth = this.createForm.value.DateOfBirth;
-      // this.newUser.Gender = this.createForm.value.Gender;
+      this.newUser.DateOfBirth = this.createForm.value.DateOfBirth;
+      this.newUser.Gender = this.createForm.value.Gender;
   }
 }

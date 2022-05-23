@@ -10,7 +10,5 @@ type NewUser struct {
 	LastName      string `json:"lastName" validate:"required,alpha,min=2,max=35"`
 	Gender        string `json:"gender" validate:"oneof=MALE FEMALE OTHER"`
 	DateOfBirth   string `json:"dateOfBirth" validate:"required"`
-	Question      string `json:"question" validate:"required"`
-	HashedAnswer  string `json:"hashedAnswer" validate:"required"`
 	RecoveryEmail string `json:"recoveryEmail" validate:"required,email"`
 }

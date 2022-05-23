@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth-service/auth.service';
+import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
   selector: 'app-login-page',
@@ -15,7 +15,7 @@ export class LoginPageComponent implements OnInit {
   
 
   constructor(
-    private authService: AuthService,
+    private authService: UserService,
     private _snackBar: MatSnackBar,
     private _router: Router) { }
 
@@ -26,7 +26,6 @@ export class LoginPageComponent implements OnInit {
 
     const loginObserver = {
       next: (x: any) => {
-        //WhateverPassword
         console.log(x);
         this._router.navigate(['/']);
         this._snackBar.open("Welcome!", "Dismiss");
