@@ -22,6 +22,13 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:4200")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+}
+
 // UserHandler is a http.Handler
 type UserHandler struct {
 	l               *log.Logger
@@ -59,7 +66,7 @@ func NewUserHandler(l *log.Logger, service *service.UserService, registerService
 }
 
 func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
-
+	enableCors(&rw)
 	u.l.Println("Handling GET Users")
 	users, err := u.service.GetUsers()
 	if err != nil {
@@ -74,7 +81,7 @@ func (u *UserHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) CreateNewPassword(rw http.ResponseWriter, r *http.Request) {
-
+	enableCors(&rw)
 	u.l.Println("Handling PASSWORD RECCOVERY ")
 
 	var requestBody dto.NewRecoveryPasword
@@ -119,7 +126,7 @@ func (u *UserHandler) CreateNewPassword(rw http.ResponseWriter, r *http.Request)
 
 func (u *UserHandler) RecoverPasswordRequest(rw http.ResponseWriter, r *http.Request) {
 	u.l.Println("Handling PASSWORD RECCOVERY ")
-
+	enableCors(&rw)
 	var requestBody PassRecoveryForUser
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
 	if err != nil {
@@ -152,7 +159,7 @@ func (u *UserHandler) RecoverPasswordRequest(rw http.ResponseWriter, r *http.Req
 
 func (u *UserHandler) ActivateUserAccount(rw http.ResponseWriter, req *http.Request) {
 	u.l.Println("Handling ACTIVATING ACCOUNT POST ")
-
+	enableCors(&rw)
 	var requestBody ActivateAccountWithCodeRequest
 	err := json.NewDecoder(req.Body).Decode(&requestBody)
 	if err != nil {
@@ -205,7 +212,7 @@ func (u *UserHandler) ActivateUserAccount(rw http.ResponseWriter, req *http.Requ
 //create registered user function
 func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	u.l.Println("Handling POST Users")
-
+	enableCors(&rw)
 	var newUser dto.NewUser
 	err := json.NewDecoder(req.Body).Decode(&newUser)
 
@@ -231,13 +238,10 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	newUser.DateOfBirth = strings.TrimSpace(policy.Sanitize(newUser.DateOfBirth))
 	newUser.PhoneNumber = strings.TrimSpace(policy.Sanitize(newUser.PhoneNumber))
 	newUser.RecoveryEmail = strings.TrimSpace(policy.Sanitize(newUser.RecoveryEmail))
-	newUser.Question = strings.TrimSpace(policy.Sanitize(newUser.Question))
-	newUser.HashedAnswer = strings.TrimSpace(policy.Sanitize(newUser.HashedAnswer))
 
 	if newUser.Username == "" || newUser.FirstName == "" || newUser.LastName == "" ||
 		newUser.Gender == "" || newUser.DateOfBirth == "" || newUser.PhoneNumber == "" ||
-		newUser.Password == "" || newUser.Email == "" || newUser.Question == "" ||
-		newUser.HashedAnswer == "" || newUser.RecoveryEmail == "" {
+		newUser.Password == "" || newUser.Email == "" || newUser.RecoveryEmail == "" {
 		fmt.Println("fields are empty or xss")
 		http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return
@@ -273,16 +277,16 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	answer, err := bcrypt.GenerateFromPassword([]byte(newUser.HashedAnswer), bcrypt.DefaultCost)
-	if err != nil {
-		fmt.Println(err)
-		err := ErrorResponse{
-			Err: "Answer Encryption  failed",
-		}
-		json.NewEncoder(rw).Encode(err)
-	}
+	// answer, err := bcrypt.GenerateFromPassword([]byte(newUser.HashedAnswer), bcrypt.DefaultCost)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	err := ErrorResponse{
+	// 		Err: "Answer Encryption  failed",
+	// 	}
+	// 	json.NewEncoder(rw).Encode(err)
+	// }
 
-	newUser.HashedAnswer = string(answer)
+	// newUser.HashedAnswer = string(answer)
 
 	gender := model.OTHER
 	switch newUser.Gender {
@@ -296,7 +300,7 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 	//	var role = "REGISTERED_USER"
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, newUser.DateOfBirth)
-	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.Question, newUser.HashedAnswer, newUser.RecoveryEmail)
+	email, er := u.registerService.CreateRegisteredUser(newUser.Username, hashedSaltedPassword, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, dateOfBirth, newUser.RecoveryEmail)
 
 	if er != nil {
 		fmt.Println(er)
@@ -315,9 +319,14 @@ func (u *UserHandler) AddUsers(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (u *UserHandler) UpdateUsers(rw http.ResponseWriter, r *http.Request) {
+	enableCors(&rw)
 	u.l.Println("Handling PUT Users")
 }
 func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
+	//enableCors(&rw)
+	//rw.Header().Set("Access-Control-Allow-Origin", "https://localhost:4200")
+	//rw.Header().Set("Access-Control-Allow-Headers", "authentication, content-type")
+	// rw.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	u.l.Println("Handling LOGIN Users")
 
 	var loginRequest dto.LoginRequest
@@ -376,10 +385,21 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 
 	}
 
+	var roleString string
+
+	if user.Role == model.ADMIN {
+		roleString = "ADMIN"
+	} else if user.Role == model.AGENT {
+		roleString = "AGENT"
+	} else if user.Role == model.REGISTERED_USER {
+		roleString = "REGISTERED_USER"
+	}
+
 	logInResponse := dto.LogInResponseDto{
-		Token: token,
-		Role : "User",
-		Email : user.Email
+		Token:    token,
+		Role:     roleString,
+		Email:    user.Email,
+		Username: user.Username,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)
@@ -390,7 +410,7 @@ func (u *UserHandler) LoginUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserHandler) CheckIfPwned(rw http.ResponseWriter, r *http.Request) {
-
+	enableCors(&rw)
 	u.l.Println("Handling PWNED PASSWORD")
 	var pwnedPassword dto.PwnedPasswordRequest
 	err := json.NewDecoder(r.Body).Decode(&pwnedPassword)

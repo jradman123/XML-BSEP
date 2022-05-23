@@ -102,7 +102,7 @@ func (service *RegisteredUserService) CreateNewPassword(username string, newPass
 		return false, errors.New("wrong code")
 	}
 	////////////////////
-	return true, nil
+	//return true, nil
 }
 
 func (service *RegisteredUserService) SendCodeToRecoveryMail(username string) bool {
@@ -197,7 +197,7 @@ func (service *RegisteredUserService) ActivateUserAccount(username string, verCo
 
 }
 
-func (service *RegisteredUserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, dateOfBirth time.Time, question string, answer string, recoveryMail string) (string, error) {
+func (service *RegisteredUserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, dateOfBirth time.Time, recoveryMail string) (string, error) {
 	user := model.User{
 		ID:            uuid.New(),
 		Username:      username,

@@ -18,6 +18,7 @@ import (
 	"github.com/euroteltr/rbac"
 	"github.com/euroteltr/rbac/middlewares/echorbac"
 	_ "github.com/go-sql-driver/mysql"
+	gorilaHan "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	hibp "github.com/mattevans/pwned-passwords"
@@ -126,12 +127,22 @@ func main() {
 	//-----------------------------------------------------------------------------------------------//
 
 	router := mux.NewRouter()
-	UnauthorizedPostRouter := router.Methods(http.MethodPost).Subrouter()
+
+	//
+
+	//headers := gorilaHan.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization", "Access-Control-Allow-Headers"})
+	//methods := gorilaHan.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	//origins := gorilaHan.AllowedOrigins([]string{"https://localhost:4200"})
+	//a := gorilaHan.AllowCredentials()
+	//http.ListenAndServe(":8082", gorilaHan.CORS(headers, methods, origins)(router))
+	//
+	UnauthorizedPostRouter := router.Methods(http.MethodPost, http.MethodOptions).Subrouter()
 	UnauthorizedPostRouter.HandleFunc("/login", userHandler.LoginUser)
 	UnauthorizedPostRouter.HandleFunc("/register", userHandler.AddUsers)
 	UnauthorizedPostRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
 	UnauthorizedPostRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
 	UnauthorizedPostRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
+	UnauthorizedPostRouter.HandleFunc("/newRecoveredPass", userHandler.CreateNewPassword)
 
 	getRouter := router.Methods(http.MethodGet).Subrouter()
 	authMiddleware := my_middleware.NewAuthorizationHandler(*R, usersPerm, usersPerm.Actions(), userService)
@@ -145,24 +156,27 @@ func main() {
 	postRouter := router.Methods(http.MethodPost).Subrouter()
 	putRouter.Use(my_middleware.ValidateToken)
 	postRouter.HandleFunc("/", userHandler.AddUsers)
-	postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
-	postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
-	postRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
+	//postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
+	//postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
+	//postRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
+	//
 
+	ch := gorilaHan.CORS(gorilaHan.AllowedOrigins([]string{"https://localhost:4200"}))
 	// create a new server
 	s := http.Server{
 		Addr:         ":8082",           // configure the bind address
-		Handler:      router,            // set the default handler
+		Handler:      ch(router),        // set the default handler
 		ErrorLog:     l,                 // set the logger for the server
 		ReadTimeout:  5 * time.Second,   // max time to read request from the client
 		WriteTimeout: 10 * time.Second,  // max time to write response to the client
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
+
 	}
 
 	// start the server
 	go func() {
 		l.Println("Starting server on port 8082")
-
+		//http.ListenAndServe(":8082", gorilaHan.CORS(headers, methods, origins)(router))
 		err := s.ListenAndServe()
 		if err != nil {
 			l.Printf("Error starting server: %s\n", err)
@@ -183,4 +197,18 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	s.Shutdown(ctx)
+}
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")                                                            // 允许访问所有域，可以换成具体url，注意仅具体url才能带cookie信息
+		w.Header().Add("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token") //header的类型
+		w.Header().Add("Access-Control-Allow-Credentials", "true")                                                    //设置为true，允许ajax异步请求带cookie信息
+		w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")                             //允许请求方法
+		w.Header().Set("content-type", "application/json;charset=UTF-8")                                              //返回数据格式是json
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
