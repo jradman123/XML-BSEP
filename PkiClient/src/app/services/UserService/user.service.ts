@@ -64,4 +64,8 @@ export class UserService {
       newPassword: newPassword,
     });
   }
+
+  public get currentUserValue(): LogedUser {
+    return this.currentUserSubject.value;
+}
 }

@@ -12,6 +12,7 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { CreateCertificateUserComponent } from './components/create-certificate-user/create-certificate-user.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { AuthGuard } from './AuthGuard/AuthGuard';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
@@ -23,16 +24,18 @@ const routes: Routes = [
       {
         path: '',
         component: AllCertificatesComponent,
+         canActivate: [AuthGuard]
       },
-      { path: 'createCertificate', component: CreateCertificateComponent },
-      { path: 'createSubject', component: CreateSubjectComponent },
-      { path: 'certificate', component: CertificateComponent },
-      { path: 'chain', component: CertificateChainComponent },
+      { path: 'createCertificate', component: CreateCertificateComponent, canActivate: [AuthGuard] },
+      { path: 'createSubject', component: CreateSubjectComponent, canActivate: [AuthGuard] },
+      { path: 'certificate', component: CertificateComponent , canActivate: [AuthGuard]},
+      { path: 'chain', component: CertificateChainComponent ,  canActivate: [AuthGuard] },
       {
         path: 'createCertificateUser',
         component: CreateCertificateUserComponent,
+        canActivate: [AuthGuard]
       },
-      { path: 'changePassword', component: ChangePasswordComponent },
+      { path: 'changePassword', component: ChangePasswordComponent, canActivate: [AuthGuard] },
     ],
   },
 
@@ -40,15 +43,15 @@ const routes: Routes = [
     path: 'chome',
     component: ClientHomeComponent,
     children: [
-      { path: '', component: AllCertificatesComponent },
-      { path: 'changePassword', component: ChangePasswordComponent },
+      { path: '', component: AllCertificatesComponent, canActivate: [AuthGuard] },
+      { path: 'changePassword', component: ChangePasswordComponent , canActivate: [AuthGuard]},
     ],
   },
-  { path: 'createCertificate', component: CreateCertificateComponent },
-  { path: 'createSubject', component: CreateSubjectComponent },
-  { path: 'certificate', component: CertificateComponent },
-  { path: 'chain', component: CertificateChainComponent },
-  { path: 'createCertificateUser', component: CreateCertificateUserComponent },
+  { path: 'createCertificate', component: CreateCertificateComponent, canActivate: [AuthGuard] },
+  { path: 'createSubject', component: CreateSubjectComponent , canActivate: [AuthGuard]},
+  { path: 'certificate', component: CertificateComponent, canActivate: [AuthGuard] },
+  { path: 'chain', component: CertificateChainComponent, canActivate: [AuthGuard] },
+  { path: 'createCertificateUser', component: CreateCertificateUserComponent , canActivate: [AuthGuard]},
   { path: 'resetPassword', component: ResetPasswordComponent },
 ];
 
