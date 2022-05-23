@@ -23,7 +23,7 @@ type RegisteredUserService struct {
 	RecoveryRepo *repository.PasswordRecoveryRepository
 }
 
-func (service *RegisteredUserService) CreateNewPassword(username string, newPassword string, code string) (bool, error) {
+func (service *RegisteredUserService) CreateNewPassword(username string, newHashedPassword string, code string) (bool, error) {
 
 	var passwordRecoveryRequest *model.PasswordRecoveryRequest
 	var dbEr error
@@ -45,52 +45,38 @@ func (service *RegisteredUserService) CreateNewPassword(username string, newPass
 		//kao dala sam kodu trajanje od 1h
 		fmt.Println("kod se poklapa")
 		if passwordRecoveryRequest.Time.Add(time.Minute * 3).After(time.Now()) {
-			fmt.Println("vreme se uklapa")
-			//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
-			user, err := service.Repo.GetByUsername(username)
-			if err != nil {
-				fmt.Println(err)
-				fmt.Println("error u get by username kod ucitavanja usera")
-				return false, err
+			if !passwordRecoveryRequest.IsUsed {
+				fmt.Println("vreme se uklapa")
+				//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
+				user, err := service.Repo.GetByUsername(username)
+				if err != nil {
+					fmt.Println(err)
+					fmt.Println("error u get by username kod ucitavanja usera")
+					return false, err
+				}
+
+				fmt.Println(user.Username)
+
+				//sacuvati izmjene korisnika,tj izmjenjen password
+				changePassErr := service.Repo.ChangePassword(user, newHashedPassword)
+				if changePassErr != nil {
+					fmt.Println("error pri cuvanju novog pass")
+					return false, changePassErr
+				}
+				//staviti iskoristen kod na true
+
+				//service.Repo.ActivateUserAccount(user)
+				_, er := service.Repo.GetByUsername(username)
+				if er != nil {
+					fmt.Println(er)
+					fmt.Println("FAK MAJ LAJF 2")
+					return false, er
+				}
+				return true, nil
+			} else {
+				fmt.Println("kod iskoristen")
+				return false, errors.New("code used")
 			}
-
-			fmt.Println(user.Username)
-			//CHANGE PASSWORD
-
-			// var hashedSaltedPassword = ""
-			// validPassword := u.passwordUtil.IsValidPassword(password)
-
-			// if validPassword {
-			// 	//PASSWORD SALT
-			// 	//salt, password = u.passwordUtil.GeneratePasswordWithSalt(newUser.Password)
-			// 	//cuvamo password kao hash neki
-			// 	pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
-			// 	if err != nil {
-			// 		fmt.Println(err)
-			// 		err := ErrorResponse{
-			// 			Err: "Password Encryption  failed",
-			// 		}
-			// 		json.NewEncoder(rw).Encode(err)
-			// 	}
-
-			// 	hashedSaltedPassword = string(pass)
-
-			// } else {
-			// 	fmt.Println("Password format is not valid!")
-			// 	http.Error(rw, "Password format is not valid! error:"+err.Error(), http.StatusBadRequest) //400
-			// 	return
-			// }
-
-			/////////
-
-			//service.Repo.ActivateUserAccount(user)
-			_, er := service.Repo.GetByUsername(username)
-			if er != nil {
-				fmt.Println(er)
-				fmt.Println("FAK MAJ LAJF 2")
-				return false, er
-			}
-			return true, nil
 
 		} else {
 			fmt.Println("istekao kod")
@@ -101,8 +87,6 @@ func (service *RegisteredUserService) CreateNewPassword(username string, newPass
 		fmt.Println("ne valjda kod")
 		return false, errors.New("wrong code")
 	}
-	////////////////////
-	//return true, nil
 }
 
 func (service *RegisteredUserService) SendCodeToRecoveryMail(username string) bool {

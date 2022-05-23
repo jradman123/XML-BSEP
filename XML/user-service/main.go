@@ -156,10 +156,10 @@ func main() {
 	postRouter := router.Methods(http.MethodPost).Subrouter()
 	putRouter.Use(my_middleware.ValidateToken)
 	postRouter.HandleFunc("/", userHandler.AddUsers)
-	//postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
-	//postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
-	//postRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
-	//
+	// postRouter.HandleFunc("/pwnedPassword", userHandler.CheckIfPwned)
+	// postRouter.HandleFunc("/activateAccount", userHandler.ActivateUserAccount)
+	// postRouter.HandleFunc("/recoverPasswordRequest", userHandler.RecoverPasswordRequest)
+	// postRouter.HandleFunc("/newRecoveredPass", userHandler.CreateNewPassword)
 
 	ch := gorilaHan.CORS(gorilaHan.AllowedOrigins([]string{"https://localhost:4200"}))
 	// create a new server

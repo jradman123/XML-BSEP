@@ -97,7 +97,7 @@ func (u *UserHandler) CreateNewPassword(rw http.ResponseWriter, r *http.Request)
 
 	if requestBody.Username == "" || requestBody.NewPassword == "" || requestBody.Code == "" {
 		fmt.Println("usrnname empty or xss")
-		http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		http.Error(rw, "Field empty or xss attack happened! error:", http.StatusExpectationFailed) //400
 		return
 	}
 	var exists = u.registerService.UsernameExists(requestBody.Username)
@@ -107,10 +107,32 @@ func (u *UserHandler) CreateNewPassword(rw http.ResponseWriter, r *http.Request)
 	}
 
 	///////////////////////////
+	var hashedSaltedPassword = ""
+	validPassword := u.passwordUtil.IsValidPassword(requestBody.NewPassword)
 
+	if validPassword {
+		//PASSWORD SALT
+		//salt, password = u.passwordUtil.GeneratePasswordWithSalt(newUser.Password)
+		//cuvamo password kao hash neki
+		pass, err := bcrypt.GenerateFromPassword([]byte(requestBody.NewPassword), bcrypt.DefaultCost)
+		if err != nil {
+			fmt.Println(err)
+			err := ErrorResponse{
+				Err: "Password Encryption  failed",
+			}
+			json.NewEncoder(rw).Encode(err)
+		}
+
+		hashedSaltedPassword = string(pass)
+
+	} else {
+		fmt.Println("Password format is not valid!")
+		http.Error(rw, "Password format is not valid! error:"+err.Error(), http.StatusBadRequest) //400
+		return
+	}
 	////////////////////
 
-	passChanged, err := u.registerService.CreateNewPassword(requestBody.Username, requestBody.NewPassword, requestBody.Code)
+	passChanged, err := u.registerService.CreateNewPassword(requestBody.Username, hashedSaltedPassword, requestBody.Code)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusConflict) //409
 	}
