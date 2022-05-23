@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoggedUserDto> login(
+    public ResponseEntity<LoggedUserDto> login(@Valid
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -69,7 +70,7 @@ public class UserController {
     }
 
     @PostMapping("/createSubject")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto newUser = userService.createUser(userDto);
         newUser.isPawned = checker.check(userDto.getPassword());
         return new ResponseEntity<UserDto>(newUser, HttpStatus.OK);

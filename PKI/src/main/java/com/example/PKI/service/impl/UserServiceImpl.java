@@ -54,8 +54,7 @@ public class UserServiceImpl implements UserService {
                 userDto.getLocality(), userDto.getCountry(),userDto.getRecoveryMail());
 
         List<Authority> authorities = new ArrayList<Authority>();
-        authorities.add(authorityRepository.findByName("user_download"));
-        authorities.add(authorityRepository.findByName("user_read"));
+        authorities.add(authorityRepository.findByName("USER_END_ENTITY"));
         newUser.setAuthorities(authorities);
 
         User created = userRepository.save(newUser);

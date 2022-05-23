@@ -54,7 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
-
                 .authorizeRequests().antMatchers("/api/login").permitAll()
                 .antMatchers("/api/confirmAccount/*").permitAll()
                 .antMatchers("/api/changePassword").permitAll()
@@ -66,7 +65,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/foo").permitAll()		// /api/foo
                 .anyRequest().authenticated().and()
                 .cors().and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class);
+                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class)
+                .headers()
+                // xss protection can detect what looks like xss and blocks it - browser wont render if it sees it
+                .xssProtection()
+                .and()
+                .contentSecurityPolicy("script-src 'self'")
+                .and();
                 http.csrf().disable();
     }
 
