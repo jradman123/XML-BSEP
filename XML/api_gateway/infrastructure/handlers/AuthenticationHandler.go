@@ -31,11 +31,11 @@ func NewAuthenticationHandler(l *log.Logger, service *services.UserService, vali
 }
 
 func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
-	err := mux.HandlePath("GET", "/users/login", a.LoginUser)
+	err := mux.HandlePath("POST", "/users/login/user", a.LoginUser)
 	if err != nil {
 		panic(err)
 	}
-	err = mux.HandlePath("GET", "/users/login", a.RegisterUser)
+	err = mux.HandlePath("POST", "/users/register/user", a.RegisterUser)
 	if err != nil {
 		panic(err)
 	}
@@ -119,9 +119,8 @@ func (a AuthenticationHandler) RegisterUser(rw http.ResponseWriter, r *http.Requ
 
 	}
 
-	var er error
-	_, er = a.service.GetByUsername(context.TODO(), newUser.Username)
-	if er != nil {
+	err = a.service.UserExists(newUser.Username)
+	if err == nil {
 		http.Error(rw, "User with entered username already exists! error:"+err.Error(), http.StatusConflict) //409
 	}
 
@@ -161,7 +160,7 @@ func (a AuthenticationHandler) RegisterUser(rw http.ResponseWriter, r *http.Requ
 	//var salt = ""
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, newUser.DateOfBirth)
-	email, er := a.service.CreateRegisteredUser(newUser.Username, password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.REGISTERED_USER, salt, dateOfBirth)
+	email, er := a.service.CreateRegisteredUser(newUser.Username, password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.Regular, salt, dateOfBirth)
 
 	if er != nil {
 		http.Error(rw, "Failed creating registered user! error:"+er.Error(), http.StatusExpectationFailed) //

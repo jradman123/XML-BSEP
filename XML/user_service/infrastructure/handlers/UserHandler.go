@@ -47,13 +47,3 @@ func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) 
 	u.l.Println("Handling UpdateUser Users")
 	return &pb.UpdateUserResponse{UpdatedUser: nil}, nil
 }
-
-func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserRequest) (*pb.RegisterResponse, error) {
-	u.l.Println("Handling RegisterUser Users")
-	return &pb.RegisterResponse{User: nil}, nil
-}
-
-func (u UserHandler) Login(ctx context.Context, request *pb.LoginUserRequest) (*pb.LoginResponse, error) {
-	u.l.Println("Handling Login Users")
-	return &pb.LoginResponse{Token: ""}, nil
-}

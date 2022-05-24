@@ -1,8 +1,10 @@
 package startup
 
 import (
-	user "common/module/proto/user_service"
+	"common/module/interceptor"
+	userProto "common/module/proto/user_service"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
@@ -50,8 +52,15 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
-	user.RegisterUserServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
+
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(server.config.PublicKey))
+	if err != nil {
+		log.Fatalf("failed to parse public key: %v", err)
+	}
+	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
+
+	userProto.RegisterUserServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}

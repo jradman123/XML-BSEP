@@ -7,19 +7,6 @@ import "google/api/annotations.proto";
 
 service UserService{
 
-  rpc RegisterUser(RegisterUserRequest) returns(RegisterResponse) {
-    option (google.api.http) = {
-      post: "/users/register"
-      body: "newUser"
-    };
-  }
-
-  rpc Login(LoginUserRequest) returns(LoginResponse) {
-    option (google.api.http) = {
-      post: "/users/login/user"
-      body: "usernamePass"
-    };
-  }
   rpc GetAll(EmptyRequest) returns(GetAllResponse) {
     option (google.api.http) = {
       get: "/users"
@@ -41,26 +28,11 @@ message UpdateRequest{
 }
 message EmptyRequest{}
 
-message LoginUserRequest {
-  UsernamePass usernamePass = 1;
-}
-
-message RegisterUserRequest {
-  User newUser = 1;
-}
-
 message UsernamePass {
   string username = 1;
   string password = 2;
 }
 
-message LoginResponse {
-  string token = 1;
-}
-
-message RegisterUserResponse {
-  string userEmail = 1;
-}
 message UpdateUserResponse {
   User updatedUser = 1;
 }
@@ -74,9 +46,5 @@ message User {
   string lastName = 6;
   string gender = 7;
   string dateOfBirth = 8;
-}
-
-message RegisterResponse{
-  User user = 1;
 }
 

@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
+	uuid "github.com/google/uuid"
 	"log"
 	"time"
 	"user/module/domain/model"
@@ -18,6 +18,7 @@ type UserService struct {
 func NewUserService(l *log.Logger, repository repositories.UserRepository) *UserService {
 	return &UserService{l, repository}
 }
+
 func (u UserService) GetUsers() ([]model.User, error) {
 
 	users, err := u.userRepository.GetUsers()
@@ -28,6 +29,7 @@ func (u UserService) GetUsers() ([]model.User, error) {
 	return users, err
 
 }
+
 func (u UserService) GetByUsername(ctx context.Context, username string) (*model.User, error) {
 
 	user, err := u.userRepository.GetByUsername(ctx, username)
@@ -40,8 +42,6 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 	return user, nil
 }
 
-//GetUserSalt
-
 func (u UserService) GetUserSalt(username string) (string, error) {
 
 	salt, err := u.userRepository.GetUserSalt(username)
@@ -51,6 +51,7 @@ func (u UserService) GetUserSalt(username string) (string, error) {
 	}
 	return salt, nil
 }
+
 func (u UserService) UserExists(username string) error {
 
 	err := u.userRepository.UserExists(username)
@@ -70,7 +71,7 @@ func (u UserService) GetUserRole(username string) (string, error) {
 	}
 	return role, nil
 }
-func (u UserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, salt string, dateOfBirth time.Time) (string, error) {
+func (u UserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.Role, salt string, dateOfBirth time.Time) (string, error) {
 	user := model.User{
 		ID:          uuid.New(),
 		Username:    username,

@@ -40,7 +40,7 @@ func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (string, erro
 
 func (r UserRepositoryImpl) UserExists(username string) error {
 	if r.db.First(&model.User{}, "username = ?", username).RowsAffected == 0 {
-		return errors.New("User does not exist")
+		return errors.New("user does not exist")
 
 	}
 	return nil
@@ -59,11 +59,14 @@ func (r UserRepositoryImpl) GetUserRole(username string) (string, error) {
 	var result int
 	r.db.Table("users").Select("role").Where("username = ?", username).Scan(&result)
 
+	if result == 0 {
+		return "Regular", nil
+	}
 	if result == 1 {
-		return "user", nil
+		return "Admin", nil
 	}
 	if result == 2 {
-		return "admin", nil
+		return "Agent", nil
 	}
 	return "", errors.New("User role not found for username" + username)
 }

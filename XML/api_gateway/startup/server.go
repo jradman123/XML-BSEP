@@ -11,6 +11,7 @@ import (
 	"gateway/module/infrastructure/handlers"
 	"gateway/module/infrastructure/persistance"
 	cfg "gateway/module/startup/config"
+	gorilla_handlers "github.com/gorilla/handlers"
 	runtime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -53,18 +54,30 @@ func (server *Server) initHandlers() {
 func (server *Server) initCustomHandlers() {
 
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
+	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
 	userService := server.InitUserService(l, userRepo)
 
 	validator := validator.New()
-	db = server.SetupDatabase()
+
 	passwordUtil := &helpers.PasswordUtil{}
 	authHandler := handlers.NewAuthenticationHandler(l, userService, validator, passwordUtil)
 	authHandler.Init(server.mux)
 }
 
 func (server *Server) Start() {
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), server.mux))
+	cors := gorilla_handlers.CORS(
+		gorilla_handlers.AllowedOrigins([]string{"https://localhost:4200", "https://localhost:4200/**", "http://localhost:4200", "http://localhost:4200/**", "http://localhost:8080/**"}),
+		gorilla_handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		gorilla_handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "Authorization", "Access-Control-Allow-Origin", "*"}),
+		gorilla_handlers.AllowCredentials(),
+	)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), cors(muxMiddleware(server))))
+}
+func muxMiddleware(server *Server) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server.mux.ServeHTTP(w, r)
+	})
 }
 
 func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository) *services.UserService {

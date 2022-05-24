@@ -5,6 +5,7 @@ import (
 	"gateway/module/domain/model"
 	"gateway/module/domain/repositories"
 	"github.com/google/uuid"
+
 	"log"
 	"time"
 )
@@ -28,7 +29,17 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 	return user, nil
 }
 
-func (u UserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.UserType, salt string, dateOfBirth time.Time) (string, error) {
+func (u UserService) UserExists(username string) error {
+
+	err := u.userRepository.UserExists(username)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u UserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.Role, salt string, dateOfBirth time.Time) (string, error) {
 	user := model.User{
 		ID:          uuid.New(),
 		Username:    username,
