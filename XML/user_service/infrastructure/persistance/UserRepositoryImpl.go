@@ -32,15 +32,17 @@ func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) 
 	return user, nil
 }
 
-func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (string, error) {
+func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (*model.User, error) {
 	result := r.db.Create(&user)
 	fmt.Print(result)
-	return string(user.Email), nil
+	regUser := &model.User{}
+	r.db.First(&regUser, user.ID)
+	return regUser, nil
 }
 
 func (r UserRepositoryImpl) UserExists(username string) error {
 	if r.db.First(&model.User{}, "username = ?", username).RowsAffected == 0 {
-		return errors.New("User does not exist")
+		return errors.New("user does not exist")
 
 	}
 	return nil

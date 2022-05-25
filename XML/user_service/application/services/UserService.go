@@ -3,8 +3,14 @@ package services
 import (
 	"context"
 	"errors"
-	uuid "github.com/google/uuid"
+	"fmt"
+	"github.com/trycourier/courier-go/v2"
 	"log"
+	"math/rand"
+	"net"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
@@ -13,10 +19,11 @@ import (
 type UserService struct {
 	l              *log.Logger
 	userRepository repositories.UserRepository
+	emailRepo      repositories.EmailVerificationRepository
 }
 
-func NewUserService(l *log.Logger, repository repositories.UserRepository) *UserService {
-	return &UserService{l, repository}
+func NewUserService(l *log.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository) *UserService {
+	return &UserService{l, repository, emailRepo}
 }
 
 func (u UserService) GetUsers() ([]model.User, error) {
@@ -71,24 +78,97 @@ func (u UserService) GetUserRole(username string) (string, error) {
 	}
 	return role, nil
 }
-func (u UserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.Role, salt string, dateOfBirth time.Time) (string, error) {
-	user := model.User{
-		ID:          uuid.New(),
-		Username:    username,
-		Password:    password,
-		Email:       email,
-		PhoneNumber: phone,
-		FirstName:   firstName,
-		LastName:    lastName,
-		Gender:      gender,
-		Role:        role,
-		IsConfirmed: false,
-		Salt:        salt,
-		DateOfBirth: dateOfBirth,
+func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error) {
+
+	var er = checkEmailValid(user.Email)
+	if er != nil {
+		return nil, errors.New("email format invalid")
 	}
-	mail, err := u.userRepository.CreateRegisteredUser(&user)
+	var domEr = checkEmailDomain(user.Email)
+	if domEr != nil {
+		return nil, errors.New("email domain invalid")
+	}
+	//TODO:ZAMENITI TOKENOM
+	rand.Seed(time.Now().UnixNano())
+	rn := rand.Intn(100000)
+	emailVerification := model.EmailVerification{
+		Username: user.Username,
+		Email:    user.Email,
+		VerCode:  rn,
+		Time:     time.Now(),
+	}
+	fmt.Println(emailVerification)
+
+	_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
+	fmt.Println(e)
+	if e != nil {
+		return nil, errors.New("error saving emailVerification")
+	}
+
+	sendMailWithCourier(user.Email, strconv.Itoa(rn), "Activation code", "Welcome to Dislinkt! Here is your activation code:")
+
+	regUser, err := u.userRepository.CreateRegisteredUser(user)
 	if err != nil {
-		return mail, err
+		return regUser, err
 	}
-	return mail, nil
+	return regUser, nil
+}
+
+func checkEmailValid(email string) error {
+	// check email syntax is valid
+	//func MustCompile(str string) *Regexp
+	emailRegex, err := regexp.Compile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	if err != nil {
+		fmt.Println(err)
+		return errors.New("sorry, something went wrong")
+	}
+	rg := emailRegex.MatchString(email)
+	if !rg {
+		return errors.New("email address is not a valid syntax, please check again")
+	}
+	// check email length
+	if len(email) < 4 {
+		return errors.New("email length is too short")
+	}
+	if len(email) > 253 {
+		return errors.New("email length is too long")
+	}
+	return nil
+}
+func checkEmailDomain(email string) error {
+	i := strings.Index(email, "@")
+	host := email[i+1:]
+	// func LookupMX(name string) ([]*MX, error)
+	_, err := net.LookupMX(host)
+	if err != nil {
+		err = errors.New("eould not find email's domain server, please chack and try again")
+		return err
+	}
+	return nil
+}
+func sendMailWithCourier(email string, code string, subject string, body string) {
+	client := courier.CreateClient("pk_prod_0FQXVBPMDHMZ3VJ3WN6CYC12KNMH", nil)
+	fmt.Println(code)
+	requestID, err := client.SendMessage(
+		context.Background(),
+		courier.SendMessageRequestBody{
+			Message: map[string]interface{}{
+				"to": map[string]string{
+					"email": email,
+				},
+				"content": map[string]string{
+					"title": subject,
+					"body":  body + code,
+				},
+				"data": map[string]string{
+					"joke": "What did C++ say to C? You have no class.",
+					"code": code,
+				},
+			},
+		})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(requestID)
 }

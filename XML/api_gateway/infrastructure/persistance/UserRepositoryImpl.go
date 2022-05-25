@@ -3,7 +3,6 @@ package persistance
 import (
 	"context"
 	"errors"
-	"fmt"
 	"gateway/module/domain/model"
 	"gateway/module/domain/repositories"
 	"gorm.io/gorm"
@@ -32,11 +31,11 @@ func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) 
 	return user, nil
 }
 
-func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (string, error) {
-	result := r.db.Create(&user)
-	fmt.Print(result)
-	return string(user.Email), nil
-}
+//func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (string, error) {
+//	result := r.db.Create(&user)
+//	fmt.Print(result)
+//	return string(user.Email), nil
+//}
 
 func (r UserRepositoryImpl) UserExists(username string) error {
 	if r.db.First(&model.User{}, "username = ?", username).RowsAffected == 0 {

@@ -18,6 +18,13 @@ service UserService{
       body: "updatedUser"
     };
   }
+
+  rpc RegisterUser(RegisterUserRequest) returns(RegisterUserResponse) {
+    option (google.api.http) = {
+      post: "/users/register/user"
+      body: "userRequest"
+    };
+  }
 }
 message GetAllResponse {
   repeated User users = 1;
@@ -45,6 +52,39 @@ message User {
   string firstName = 5;
   string lastName = 6;
   string gender = 7;
-  string dateOfBirth = 8;
+  string role = 8;
+  string dateOfBirth = 9;
+  string recoveryEmail = 10;
+  bool isConfirmed = 11;
 }
 
+message RegisterUserRequest {
+  RegisterUser userRequest = 1;
+}
+
+message RegisterUserResponse {
+  RegisteredUser registeredUser = 1;
+
+}
+message RegisteredUser{
+  string username = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+}
+
+message RegisterUser {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  string firstName = 5;
+  string lastName = 6;
+  string gender = 7;
+  string dateOfBirth = 8;
+  string recoveryEmail = 9;
+}
+
+message Proba {
+  string pls = 1;
+}

@@ -36,7 +36,8 @@ func (server *Server) Start() {
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
-	userService := server.InitUserService(l, userRepo)
+	emailVerRepo := server.InitEmailVerRepo(db)
+	userService := server.InitUserService(l, userRepo, emailVerRepo)
 
 	validator := validator.New()
 	jsonConverters := helpers.NewJsonConverters(l)
@@ -71,12 +72,16 @@ func (server *Server) InitUserHandler(l *log.Logger, userService *services.UserS
 	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil)
 }
 
-func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository) *services.UserService {
-	return services.NewUserService(l, repo)
+func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository) *services.UserService {
+	return services.NewUserService(l, repo, emailRepo)
 }
 
 func (server *Server) InitUserRepo(d *gorm.DB) repositories.UserRepository {
 	return persistance.NewUserRepositoryImpl(db)
+}
+
+func (server *Server) InitEmailVerRepo(d *gorm.DB) repositories.EmailVerificationRepository {
+	return persistance.NewEmailVerificationRepositoryImpl(db)
 }
 
 var db *gorm.DB
@@ -99,6 +104,7 @@ func (server *Server) SetupDatabase() *gorm.DB {
 	}
 
 	db.AutoMigrate(&model.User{}) //This will not remove columns
+	db.AutoMigrate(&model.EmailVerification{})
 	//db.Create(users) // Use this only once to populate db with data
 
 	return db

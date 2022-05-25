@@ -4,10 +4,7 @@ import (
 	"context"
 	"gateway/module/domain/model"
 	"gateway/module/domain/repositories"
-	"github.com/google/uuid"
-
 	"log"
-	"time"
 )
 
 type UserService struct {
@@ -39,27 +36,27 @@ func (u UserService) UserExists(username string) error {
 	return nil
 }
 
-func (u UserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.Role, salt string, dateOfBirth time.Time) (string, error) {
-	user := model.User{
-		ID:          uuid.New(),
-		Username:    username,
-		Password:    password,
-		Email:       email,
-		PhoneNumber: phone,
-		FirstName:   firstName,
-		LastName:    lastName,
-		Gender:      gender,
-		Role:        role,
-		IsConfirmed: false,
-		Salt:        salt,
-		DateOfBirth: dateOfBirth,
-	}
-	mail, err := u.userRepository.CreateRegisteredUser(&user)
-	if err != nil {
-		return mail, err
-	}
-	return mail, nil
-}
+//func (u UserService) CreateRegisteredUser(username string, password string, email string, phone string, firstName string, lastName string, gender model.Gender, role model.Role, salt string, dateOfBirth time.Time) (string, error) {
+//	user := model.User{
+//		ID:          uuid.New(),
+//		Username:    username,
+//		Password:    password,
+//		Email:       email,
+//		PhoneNumber: phone,
+//		FirstName:   firstName,
+//		LastName:    lastName,
+//		Gender:      gender,
+//		Role:        role,
+//		IsConfirmed: false,
+//		Salt:        salt,
+//		DateOfBirth: dateOfBirth,
+//	}
+//	mail, err := u.userRepository.CreateRegisteredUser(&user)
+//	if err != nil {
+//		return mail, err
+//	}
+//	return mail, nil
+//}
 
 func (u UserService) GetUserRole(username string) (string, error) {
 	role, err := u.userRepository.GetUserRole(username)
