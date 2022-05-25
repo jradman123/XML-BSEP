@@ -50,18 +50,15 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	if err != nil {
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
 		return
-
 	}
 
 	user, err := a.service.GetByUsername(context.TODO(), loginRequest.Username)
 	if err != nil {
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
-
 	}
 
 	salt, err := a.service.GetUserSalt(loginRequest.Username)
-	a.l.Printf("so:" + salt)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
@@ -145,7 +142,6 @@ func (a AuthenticationHandler) RegisterUser(rw http.ResponseWriter, r *http.Requ
 		gender = model.FEMALE
 	}
 
-	//cuvamo password kao hash neki
 	pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
 	if err != nil {
 		fmt.Println(err)
@@ -155,9 +151,6 @@ func (a AuthenticationHandler) RegisterUser(rw http.ResponseWriter, r *http.Requ
 
 	newUser.Password = string(pass)
 
-	//zakucana rola za sad
-	//	var role = "REGISTERED_USER"
-	//var salt = ""
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, newUser.DateOfBirth)
 	email, er := a.service.CreateRegisteredUser(newUser.Username, password, newUser.Email, newUser.PhoneNumber, newUser.FirstName, newUser.LastName, gender, model.Regular, salt, dateOfBirth)
@@ -176,7 +169,6 @@ func (a AuthenticationHandler) RegisterUser(rw http.ResponseWriter, r *http.Requ
 	rw.Write(userEmailJson)
 }
 
-//??????????//
 type ResponseEmail struct {
 	Email string
 }
