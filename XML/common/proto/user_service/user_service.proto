@@ -25,7 +25,27 @@ service UserService{
       body: "userRequest"
     };
   }
+
+  rpc ActivateUserAccount(ActivationRequest) returns(ActivationResponse) {
+    option (google.api.http) = {
+      post: "/users/activate/user"
+      body: "account"
+    };
+  }
 }
+
+message ActivationRequest{
+  ActivateAccount account = 1;
+}
+message ActivateAccount{
+  string username = 1;
+  string code = 2;
+}
+message ActivationResponse{
+  string username = 1;
+  bool activated = 2;
+}
+
 message GetAllResponse {
   repeated User users = 1;
 }
@@ -83,8 +103,4 @@ message RegisterUser {
   string gender = 7;
   string dateOfBirth = 8;
   string recoveryEmail = 9;
-}
-
-message Proba {
-  string pls = 1;
 }

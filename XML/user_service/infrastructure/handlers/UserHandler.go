@@ -32,6 +32,10 @@ func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
 	u.l.Println("Handling MustEmbedUnimplementedUserServiceServer Users")
 }
 
+func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error){
+	u.l.Println("Handling ActivateUserAccount ")
+	return nil, nil
+}
 func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
 	u.l.Println("Handling GetAll Users")
 	users, err := u.service.GetUsers()
