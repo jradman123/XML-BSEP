@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+option go_package = "common/module/user_service";
+
+package user_service;
+import "google/api/annotations.proto";
+
+service UserService{
+
+  rpc GetAll(EmptyRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/users"
+    };
+  }
+  rpc UpdateUser(UpdateRequest) returns(UpdateUserResponse) {
+    option (google.api.http) = {
+      post: "/users/{id}"
+      body: "updatedUser"
+    };
+  }
+
+  rpc RegisterUser(RegisterUserRequest) returns(RegisterUserResponse) {
+    option (google.api.http) = {
+      post: "/users/register/user"
+      body: "userRequest"
+    };
+  }
+
+  rpc ActivateUserAccount(ActivationRequest) returns(ActivationResponse) {
+    option (google.api.http) = {
+      post: "/users/activate/user"
+      body: "account"
+    };
+  }
+}
+
+message ActivationRequest{
+  ActivateAccount account = 1;
+}
+message ActivateAccount{
+  string username = 1;
+  string code = 2;
+}
+message ActivationResponse{
+  string username = 1;
+  bool activated = 2;
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+message UpdateRequest{
+  string id = 1;
+  User updatedUser = 2;
+}
+message EmptyRequest{}
+
+message UsernamePass {
+  string username = 1;
+  string password = 2;
+}
+
+message UpdateUserResponse {
+  User updatedUser = 1;
+}
+
+message User {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  string firstName = 5;
+  string lastName = 6;
+  string gender = 7;
+  string role = 8;
+  string dateOfBirth = 9;
+  string recoveryEmail = 10;
+  bool isConfirmed = 11;
+}
+
+message RegisterUserRequest {
+  RegisterUser userRequest = 1;
+}
+
+message RegisterUserResponse {
+  RegisteredUser registeredUser = 1;
+
+}
+message RegisteredUser{
+  string username = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+}
+
+message RegisterUser {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  string firstName = 5;
+  string lastName = 6;
+  string gender = 7;
+  string dateOfBirth = 8;
+  string recoveryEmail = 9;
+}
