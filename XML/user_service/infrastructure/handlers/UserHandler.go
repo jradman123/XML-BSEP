@@ -40,13 +40,10 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 	//TODO:dodati validaciju u obliku regexa, spreciti injection napad
 	err := u.validator.Struct(requstDto)
 	if err != nil {
-
-		u.l.Println("1111111111111")
 		u.l.Println(err)
 		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, err
 		//http.Error(rw, "New user dto fields aren't entered in valid format! error:"+err.Error(), http.StatusExpectationFailed) //400
 	}
-	u.l.Println("222222222222222")
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything
 	requstDto.Username = strings.TrimSpace(policy.Sanitize(requstDto.Username))
@@ -56,14 +53,12 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 		//http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, errors.New("fields are empty or xss happened")
 	}
-	u.l.Println("3333333333")
 	existsErr := u.service.UserExists(requstDto.Username)
 	if existsErr != nil {
 		u.l.Println(existsErr)
 		//http.Error(rw, "User with entered username already exists!", http.StatusConflict) //409
 		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, existsErr
 	}
-	u.l.Println("444444444444")
 	var code int
 	code, convertError := strconv.Atoi(requstDto.Code)
 	if convertError != nil {
@@ -71,14 +66,12 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, convertError
 		//http.Error(rw, "Error converting code from string to int! error:"+convertError.Error(), http.StatusConflict) //409
 	}
-	u.l.Println("555555")
 	activated, e := u.service.ActivateUserAccount(requstDto.Username, code)
 	if e != nil {
 		u.l.Println(e)
 		//http.Error(rw, e.Error(), http.StatusConflict) //409
 		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, e
 	}
-	u.l.Println("6666666")
 	if !activated {
 		u.l.Println("account activation failed")
 		//http.Error(rw, "Account activation failed!", http.StatusConflict) //409
@@ -102,7 +95,6 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 	}
 	return response, nil
 }
-
 func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
 	u.l.Println("Handling UpdateUser Users")
 
@@ -171,4 +163,42 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 	}
 
 	return &pb.RegisterUserResponse{RegisteredUser: api.MapUserToPbResponseUser(registeredUser)}, nil
+}
+
+func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request *pb.PasswordRecoveryRequest) (*pb.PasswordRecoveryResponse, error) {
+
+	u.l.Println("Handling PASSWORD RECCOVERY ")
+	//TODO: injection
+	var requestUsername = request.Username.Username
+	policy := bluemonday.UGCPolicy()
+	requestUsername = strings.TrimSpace(policy.Sanitize(requestUsername))
+
+	if requestUsername == "" {
+		fmt.Println("usrnname empty or xss")
+		//http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return &pb.PasswordRecoveryResponse{CodeSent: false}, errors.New("fields are empty or xss happened")
+	}
+	existsErr := u.service.UserExists(requestUsername)
+	if existsErr != nil {
+		u.l.Println(existsErr)
+		//http.Error(rw, "User with entered username already exists!", http.StatusConflict) //409
+		return &pb.PasswordRecoveryResponse{CodeSent: false}, existsErr
+	}
+
+	codeSent, codeErr := u.service.SendCodeToRecoveryMail(requestUsername)
+	if codeErr != nil {
+		u.l.Println(codeErr)
+		//http.Error(rw, e.Error(), http.StatusConflict) //409
+		return &pb.PasswordRecoveryResponse{CodeSent: false}, codeErr
+	}
+	if !codeSent {
+		u.l.Println("account activation failed")
+		//http.Error(rw, "Account activation failed!", http.StatusConflict) //409
+		return &pb.PasswordRecoveryResponse{CodeSent: false}, errors.New("account activation failed")
+	}
+
+	return &pb.PasswordRecoveryResponse{CodeSent: true}, nil
+}
+func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswordRequest) (*pb.NewPasswordResponse, error) {
+	return nil, nil
 }

@@ -9,7 +9,7 @@ import (
 
 type JwtClaims struct {
 	Username string   `json:"username,omitempty"`
-	Role     []string `json:"roles,omitempty"`
+	Roles    []string `json:"roles,omitempty"`
 	jwt.StandardClaims
 	/**
 	Audience  string `json:"aud,omitempty"`

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/trycourier/courier-go/v2"
 	"log"
 	"math/rand"
@@ -20,10 +21,11 @@ type UserService struct {
 	l              *log.Logger
 	userRepository repositories.UserRepository
 	emailRepo      repositories.EmailVerificationRepository
+	recoveryRepo   repositories.PasswordRecoveryRequestRepository
 }
 
-func NewUserService(l *log.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository) *UserService {
-	return &UserService{l, repository, emailRepo}
+func NewUserService(l *log.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
+	return &UserService{l, repository, emailRepo, recoveryRepo}
 }
 
 func (u UserService) GetUsers() ([]model.User, error) {
@@ -92,6 +94,7 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
 	emailVerification := model.EmailVerification{
+		ID:       uuid.New(),
 		Username: user.Username,
 		Email:    user.Email,
 		VerCode:  rn,
@@ -169,6 +172,45 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 		fmt.Println("ne valjda kod")
 		return false, errors.New("wrong code")
 	}
+}
+
+func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
+
+	user, err := u.userRepository.GetByUsername(context.TODO(), username)
+
+	if err != nil {
+		return false, err
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	rn := rand.Intn(100000)
+	recovery := model.PasswordRecoveryRequest{
+		ID:            uuid.New(),
+		Username:      username,
+		Email:         user.Email,
+		RecoveryEmail: user.RecoveryEmail,
+		IsUsed:        false,
+		Time:          time.Now(),
+		RecoveryCode:  rn,
+	}
+
+	fmt.Println(recovery)
+
+	//obrisi prethodni zahtev ako postoji jer eto da uvijek samo poslednji ima u bazi
+	deleteErr := u.recoveryRepo.ClearOutRequestsForUsername(username)
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+	_, e := u.recoveryRepo.CreatePasswordRecoveryRequest(&recovery)
+
+	fmt.Println(e)
+	if e != nil {
+		return false, e
+	}
+
+	//mzd staviti da ovo vraca bool i da ima parametar poruku i zaglavlje
+	sendMailWithCourier(user.RecoveryEmail, strconv.Itoa(rn), "Password recovery code", "Here is your code:")
+	return true, nil
 }
 
 func checkEmailValid(email string) error {
