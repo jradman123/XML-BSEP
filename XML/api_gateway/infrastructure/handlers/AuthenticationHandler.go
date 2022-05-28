@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"common/module/interceptor"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -64,7 +65,7 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var claims = &auth.JwtClaims{}
+	var claims = &interceptor.JwtClaims{}
 	claims.Username = loginRequest.Username
 
 	userRoles, err := a.service.GetUserRole(loginRequest.Username)

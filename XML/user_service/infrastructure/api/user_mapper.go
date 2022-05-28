@@ -2,6 +2,7 @@ package api
 
 import (
 	pb "common/module/proto/user_service"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 	"user/module/domain/dto"
@@ -53,6 +54,7 @@ func MapDtoToUser(userPb *dto.NewUser) *model.User {
 }
 
 func MapPbUserToNewUserDto(userPb *pb.RegisterUserRequest) *dto.NewUser {
+	fmt.Printf("Eo ga userPb: %v", userPb)
 	userD := &dto.NewUser{
 		FirstName:     userPb.UserRequest.FirstName,
 		LastName:      userPb.UserRequest.LastName,
