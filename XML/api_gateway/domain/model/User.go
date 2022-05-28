@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-//rola za sad samo string
 type User struct {
 	ID            uuid.UUID `json:"id" gorm:"index:idx_name,unique"`
 	Username      string    `json:"username" gorm:"unique;not null"`

@@ -1,5 +1,8 @@
 package dto
 
 type LogInResponseDto struct {
-	Token string
+	Token    string
+	Role     string
+	Email    string
+	Username string
 }

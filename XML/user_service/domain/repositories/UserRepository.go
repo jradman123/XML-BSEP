@@ -12,4 +12,5 @@ type UserRepository interface {
 	UserExists(username string) error
 	GetUserSalt(username string) (string, error)
 	GetUserRole(username string) (string, error)
+	ActivateUserAccount(user *model.User) (bool, error)
 }

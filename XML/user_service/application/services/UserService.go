@@ -114,6 +114,63 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 	return regUser, nil
 }
 
+func (u UserService) ActivateUserAccount(username string, verCode int) (bool, error) {
+
+	var codeInfoForUsername *model.EmailVerification
+	var dbEr error
+	codeInfoForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username)
+
+	if dbEr != nil {
+		fmt.Println(dbEr)
+		fmt.Println("FAK MAJ LAJF 1")
+		return false, dbEr
+	}
+	fmt.Println("verCode:", codeInfoForUsername.VerCode)
+
+	if codeInfoForUsername.VerCode == verCode {
+		//kao dala sam kodu trajanje od 1h
+		fmt.Println("kod se poklapa")
+		if codeInfoForUsername.Time.Add(time.Hour).After(time.Now()) {
+			fmt.Println("vreme se uklapa")
+			//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
+			user, err := u.userRepository.GetByUsername(context.TODO(), username)
+			if err != nil {
+				fmt.Println(err)
+				fmt.Println("error u get by username kod ucitavanja usera")
+				return false, err
+			}
+			user.IsConfirmed = true
+			var help string
+			if user.IsConfirmed {
+				help = "true"
+			} else {
+				help = "false"
+			}
+			fmt.Println("novo stanje isConfirmed : " + help)
+			activated, actErr := u.userRepository.ActivateUserAccount(user)
+			//editedUser, er := u.userRepository.GetByUsername(context.TODO(), username)
+			if actErr != nil {
+				fmt.Println(actErr)
+				fmt.Println("error while activating user(repo)")
+				return false, actErr
+			}
+			if !activated {
+				fmt.Println("user activation failed")
+				return false, errors.New("user not activated")
+			}
+			return true, nil
+
+		} else {
+			fmt.Println("istekao kod")
+			return false, errors.New("code expired")
+		}
+
+	} else {
+		fmt.Println("ne valjda kod")
+		return false, errors.New("wrong code")
+	}
+}
+
 func checkEmailValid(email string) error {
 	// check email syntax is valid
 	//func MustCompile(str string) *Regexp

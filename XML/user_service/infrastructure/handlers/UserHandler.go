@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
+	"strconv"
 	"strings"
 	"user/module/application/helpers"
 	"user/module/application/services"
@@ -32,9 +33,59 @@ func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
 	u.l.Println("Handling MustEmbedUnimplementedUserServiceServer Users")
 }
 
-func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error){
+func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error) {
 	u.l.Println("Handling ActivateUserAccount ")
-	return nil, nil
+	//TODO:mzd dodati provjeru da li se uspelo ok mapirati?
+	requstDto := api.MapPbToUserActivateRequest(request)
+	//TODO:dodati validaciju u obliku regexa, spreciti injection napad
+	err := u.validator.Struct(requstDto)
+	if err != nil {
+
+		u.l.Println("1111111111111")
+		u.l.Println(err)
+		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, err
+		//http.Error(rw, "New user dto fields aren't entered in valid format! error:"+err.Error(), http.StatusExpectationFailed) //400
+	}
+	u.l.Println("222222222222222")
+	policy := bluemonday.UGCPolicy()
+	//sanitize everything
+	requstDto.Username = strings.TrimSpace(policy.Sanitize(requstDto.Username))
+	requstDto.Code = strings.TrimSpace(policy.Sanitize(requstDto.Code))
+	if requstDto.Username == "" || requstDto.Code == "" {
+		u.l.Println("fields are empty or xss")
+		//http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, errors.New("fields are empty or xss happened")
+	}
+	u.l.Println("3333333333")
+	existsErr := u.service.UserExists(requstDto.Username)
+	if existsErr != nil {
+		u.l.Println(existsErr)
+		//http.Error(rw, "User with entered username already exists!", http.StatusConflict) //409
+		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, existsErr
+	}
+	u.l.Println("444444444444")
+	var code int
+	code, convertError := strconv.Atoi(requstDto.Code)
+	if convertError != nil {
+		u.l.Println(convertError)
+		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, convertError
+		//http.Error(rw, "Error converting code from string to int! error:"+convertError.Error(), http.StatusConflict) //409
+	}
+	u.l.Println("555555")
+	activated, e := u.service.ActivateUserAccount(requstDto.Username, code)
+	if e != nil {
+		u.l.Println(e)
+		//http.Error(rw, e.Error(), http.StatusConflict) //409
+		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, e
+	}
+	u.l.Println("6666666")
+	if !activated {
+		u.l.Println("account activation failed")
+		//http.Error(rw, "Account activation failed!", http.StatusConflict) //409
+		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, errors.New("account activation failed")
+	}
+	u.l.Println("skoro pa kraj")
+	return &pb.ActivationResponse{Activated: activated, Username: requstDto.Username}, nil
 }
 func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
 	u.l.Println("Handling GetAll Users")

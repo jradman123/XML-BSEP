@@ -13,6 +13,15 @@ type UserRepositoryImpl struct {
 	db *gorm.DB
 }
 
+func (r UserRepositoryImpl) ActivateUserAccount(user *model.User) (bool, error) {
+	result := r.db.Model(&user).Update("is_confirmed", true)
+	fmt.Print(result)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}
+
 func NewUserRepositoryImpl(db *gorm.DB) repositories.UserRepository {
 	return &UserRepositoryImpl{db: db}
 }

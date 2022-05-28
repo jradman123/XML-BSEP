@@ -84,3 +84,11 @@ func mapGenderToModel(gender string) model.Gender {
 	}
 	return model.OTHER
 }
+
+func MapPbToUserActivateRequest(request *pb.ActivationRequest) *dto.UserActivateRequest {
+	requestDTO := &dto.UserActivateRequest{
+		Code:     request.Account.Code,
+		Username: request.Account.Username,
+	}
+	return requestDTO
+}
