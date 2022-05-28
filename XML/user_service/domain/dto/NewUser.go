@@ -2,7 +2,7 @@ package dto
 
 //register new user dto
 type NewUser struct {
-	Username      string `json:"username" validate:"required,min=2,max=30" `
+	Username      string `json:"username"`
 	Password      string `json:"password" validate:"required,min=10,max=30"`
 	Email         string `json:"email" validate:"required,email"`
 	PhoneNumber   string `json:"phoneNumber" validate:"required"`
