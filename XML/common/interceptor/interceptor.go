@@ -108,7 +108,7 @@ func TokenIsValid(ctx context.Context, tokenString string) (error, []string) {
 		fmt.Println("CLAIMS NOT VALID")
 		return status.Errorf(codes.Unauthenticated, "Unauthorized"), nil
 	}
-	return nil, claims.Role
+	return nil, claims.Roles
 }
 
 func VerifyToken(tokenString string) (*JwtClaims, error) {

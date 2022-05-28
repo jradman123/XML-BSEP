@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/trycourier/courier-go/v2"
 	"log"
 	"math/rand"
@@ -92,6 +93,7 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
 	emailVerification := model.EmailVerification{
+		ID:       uuid.New(),
 		Username: user.Username,
 		Email:    user.Email,
 		VerCode:  rn,
