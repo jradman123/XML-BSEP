@@ -80,6 +80,7 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 	u.l.Println("skoro pa kraj")
 	return &pb.ActivationResponse{Activated: activated, Username: requstDto.Username}, nil
 }
+
 func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
 	u.l.Println("Handling GetAll Users")
 	users, err := u.service.GetUsers()
@@ -95,11 +96,13 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 	}
 	return response, nil
 }
+
 func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
 	u.l.Println("Handling UpdateUser Users")
 
 	return &pb.UpdateUserResponse{UpdatedUser: nil}, nil
 }
+
 func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error) {
 	//	fmt.Println(request.UserRequest.Email)
 	u.l.Println("Handling RegisterUser")
@@ -199,6 +202,63 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 
 	return &pb.PasswordRecoveryResponse{CodeSent: true}, nil
 }
+
 func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswordRequest) (*pb.NewPasswordResponse, error) {
-	return nil, nil
+
+	u.l.Println("Handling RecoverPassword handler ")
+	//TODO:mzd dodati provjeru da li se uspelo ok mapirati?
+	requestDto := api.MapPbToNewPasswordRequestDto(request)
+
+	err := u.validator.Struct(requestDto)
+	if err != nil {
+		u.l.Println(err)
+		return &pb.NewPasswordResponse{PasswordChanged: false}, err
+		//http.Error(rw, "New user dto fields aren't entered in valid format! error:"+err.Error(), http.StatusExpectationFailed) //400
+	}
+	policy := bluemonday.UGCPolicy()
+	//sanitize everything
+	requestDto.Username = strings.TrimSpace(policy.Sanitize(requestDto.Username))
+	requestDto.Code = strings.TrimSpace(policy.Sanitize(requestDto.Code))
+	requestDto.NewPassword = strings.TrimSpace(policy.Sanitize(requestDto.NewPassword))
+	if requestDto.Username == "" || requestDto.Code == "" || requestDto.NewPassword == "" {
+		u.l.Println("fields are empty or xss")
+		//http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("fields are empty or xss happened")
+	}
+
+	existsErr := u.service.UserExists(requestDto.Username)
+	if existsErr != nil {
+		u.l.Println(existsErr)
+		//http.Error(rw, "User with entered username already exists!", http.StatusConflict) //409
+		return &pb.NewPasswordResponse{PasswordChanged: false}, existsErr
+	}
+	///////////////////
+	var hashedSaltedPassword = ""
+	validPassword := u.passwordUtil.IsValidPassword(requestDto.NewPassword)
+
+	if validPassword {
+		pass, err := bcrypt.GenerateFromPassword([]byte(requestDto.NewPassword), bcrypt.DefaultCost)
+		if err != nil {
+			fmt.Println(err)
+			return &pb.NewPasswordResponse{PasswordChanged: false}, err
+		}
+
+		hashedSaltedPassword = string(pass)
+
+	} else {
+		fmt.Println("Password format is not valid!")
+		//http.Error(rw, "Password format is not valid! error:"+err.Error(), http.StatusBadRequest) //400
+		//return
+		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("password format is not valid")
+	}
+	passChanged, err := u.service.CreateNewPassword(requestDto.Username, hashedSaltedPassword, requestDto.Code)
+	if err != nil {
+		//http.Error(rw, err.Error(), http.StatusConflict) //409
+		return &pb.NewPasswordResponse{PasswordChanged: false}, err
+	}
+	if !passChanged {
+		//http.Error(rw, "error changing password", http.StatusConflict) //409
+		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("error changing password")
+	}
+	return &pb.NewPasswordResponse{PasswordChanged: true}, nil
 }

@@ -213,6 +213,72 @@ func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
 	return true, nil
 }
 
+func (u UserService) CreateNewPassword(username string, newHashedPassword string, code string) (bool, error) {
+
+	var passwordRecoveryRequest *model.PasswordRecoveryRequest
+	var dbEr error
+	passwordRecoveryRequest, dbEr = u.recoveryRepo.GetPasswordRecoveryRequestByUsername(username)
+
+	if dbEr != nil {
+		fmt.Println(dbEr)
+
+		return false, dbEr
+	}
+	fmt.Println("verCode:", passwordRecoveryRequest.RecoveryCode)
+	///////////////
+
+	var codeInt, convErr = strconv.Atoi(code)
+	if convErr != nil {
+		return false, errors.New("error converting code to int")
+	}
+	if passwordRecoveryRequest.RecoveryCode == codeInt {
+		//kao dala sam kodu trajanje od 1h
+		fmt.Println("kod se poklapa")
+		if passwordRecoveryRequest.Time.Add(time.Minute * 3).After(time.Now()) {
+			if !passwordRecoveryRequest.IsUsed {
+				fmt.Println("vreme se uklapa")
+				//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
+				user, err := u.userRepository.GetByUsername(context.TODO(), username)
+				if err != nil {
+					fmt.Println(err)
+					fmt.Println("error u get by username kod ucitavanja usera")
+					return false, err
+				}
+
+				fmt.Println(user.Username)
+
+				//sacuvati izmjene korisnika,tj izmjenjen password
+				changePassErr := u.userRepository.ChangePassword(user, newHashedPassword)
+				if changePassErr != nil {
+					fmt.Println("error pri cuvanju novog pass")
+					return false, changePassErr
+				}
+				//staviti iskoristen kod na true
+
+				//service.Repo.ActivateUserAccount(user)
+				_, er := u.userRepository.GetByUsername(context.TODO(), username)
+				if er != nil {
+					fmt.Println(er)
+					fmt.Println("FAK MAJ LAJF 2")
+					return false, er
+				}
+				return true, nil
+			} else {
+				fmt.Println("kod iskoristen")
+				return false, errors.New("code used")
+			}
+
+		} else {
+			fmt.Println("istekao kod")
+			return false, errors.New("code expired")
+		}
+
+	} else {
+		fmt.Println("ne valjda kod")
+		return false, errors.New("wrong code")
+	}
+}
+
 func checkEmailValid(email string) error {
 	// check email syntax is valid
 	//func MustCompile(str string) *Regexp
