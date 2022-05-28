@@ -1,4 +1,4 @@
-package auth
+package interceptor
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 
 type JwtClaims struct {
 	Username string   `json:"username,omitempty"`
-	Roles    []string `json:"roles,omitempty"`
+	Role     []string `json:"roles,omitempty"`
 	jwt.StandardClaims
 	/**
 	Audience  string `json:"aud,omitempty"`

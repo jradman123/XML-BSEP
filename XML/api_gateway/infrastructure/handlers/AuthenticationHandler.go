@@ -49,28 +49,14 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	if err != nil {
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
 		return
-
 	}
 
 	user, err := a.service.GetByUsername(context.TODO(), loginRequest.Username)
 	if err != nil {
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
-
 	}
 
-	//salt, err := a.service.GetUserSalt(loginRequest.Username)
-	//a.l.Printf("so:" + salt)
-	//if err != nil {
-	//	http.Error(rw, err.Error(), http.StatusBadRequest)
-	//	return
-	//}
-
-	//err = a.passwordUtil.ValidateLoginPassword(salt, user.Password, loginRequest.Password)
-	//if err != nil {
-	//	http.Error(rw, err.Error(), http.StatusBadRequest)
-	//	return
-	//}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
 		fmt.Println(err)
@@ -121,4 +107,5 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(logInResponseJson)
+
 }
