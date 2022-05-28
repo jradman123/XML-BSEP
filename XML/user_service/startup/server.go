@@ -7,6 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
+	hibp "github.com/mattevans/pwned-passwords"
 	"google.golang.org/grpc"
 	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/driver/postgres"
@@ -34,6 +35,7 @@ func NewServer(config *config.Config) *Server {
 }
 func (server *Server) Start() {
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
+	pwnedClient := hibp.NewClient()
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
 	emailVerRepo := server.InitEmailVerRepo(db)
@@ -43,7 +45,7 @@ func (server *Server) Start() {
 	validator := validator.New()
 	jsonConverters := helpers.NewJsonConverters(l)
 	utils := helpers.PasswordUtil{}
-	userHandler := server.InitUserHandler(l, userService, validator, jsonConverters, &utils)
+	userHandler := server.InitUserHandler(l, userService, validator, jsonConverters, &utils, pwnedClient)
 
 	server.StartGrpcServer(userHandler)
 
@@ -69,8 +71,8 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 }
 
 func (server *Server) InitUserHandler(l *log.Logger, userService *services.UserService, validator *validator.Validate,
-	jsonConverters *helpers.JsonConverters, passwordUtil *helpers.PasswordUtil) *handlers.UserHandler {
-	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil)
+	jsonConverters *helpers.JsonConverters, passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client) *handlers.UserHandler {
+	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil, pwnedClient)
 }
 
 func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {

@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	hibp "github.com/mattevans/pwned-passwords"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
@@ -22,11 +23,12 @@ type UserHandler struct {
 	jsonConv     *helpers.JsonConverters
 	validator    *validator.Validate
 	passwordUtil *helpers.PasswordUtil
+	pwnedClient  *hibp.Client
 }
 
 func NewUserHandler(l *log.Logger, service *services.UserService, jsonConv *helpers.JsonConverters, validator *validator.Validate,
-	passwordUtil *helpers.PasswordUtil) *UserHandler {
-	return &UserHandler{l, service, jsonConv, validator, passwordUtil}
+	passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client) *UserHandler {
+	return &UserHandler{l, service, jsonConv, validator, passwordUtil, pwnedClient}
 }
 
 func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
@@ -261,4 +263,35 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("error changing password")
 	}
 	return &pb.NewPasswordResponse{PasswordChanged: true}, nil
+}
+
+func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest) (*pb.PwnedResponse, error) {
+
+	u.l.Println("Handling PWNED PASSWORD")
+	pwnedPassword := request.Password.Password
+	policy := bluemonday.UGCPolicy()
+	//sanitize everything
+	pwnedPassword = strings.TrimSpace(policy.Sanitize(pwnedPassword))
+	if pwnedPassword == "" {
+		u.l.Println("fields are empty or xss")
+		//http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
+		return &pb.PwnedResponse{Pwned: true, Message: "fields are empty or xss happened"}, errors.New("fields are empty or xss happened")
+	}
+
+	pwned, err := u.pwnedClient.Compromised(pwnedPassword)
+	if err != nil {
+		fmt.Println(err)
+		u.l.Println(pwnedPassword)
+		return &pb.PwnedResponse{Pwned: pwned, Message: "error checking if password is pwned"}, errors.New("error checkinf if password is pwaned")
+	}
+	var mess string
+	if pwned {
+		// Oh dear! 😱 -- You should avoid using that password
+		fmt.Print("Found to be compromised")
+		mess = "Password is pwned,please chose another one!"
+	} else {
+		mess = "Password is OK!"
+	}
+	return &pb.PwnedResponse{Pwned: pwned, Message: mess}, nil
+
 }

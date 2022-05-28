@@ -46,10 +46,22 @@ service UserService{
       body: "recovery"
     };
   }
+
+  rpc PwnedPassword(PwnedRequest) returns(PwnedResponse) {
+    option (google.api.http) = {
+      post: "/users/pwnedPassword/password"
+      body: "password"
+    };
+  }
 }
 
 message NewPasswordRequest{
   PasswordRecovery recovery = 1;
+}
+
+message PwnedResponse {
+  bool pwned = 1;
+  string message = 2;
 }
 
 message PasswordRecovery {
@@ -61,11 +73,18 @@ message NewPasswordResponse{
   bool passwordChanged = 1;
 }
 
+message PwnedRequest {
+  Password password = 1;
+}
+
 message PasswordRecoveryRequest {
   Username username = 1;
 }
 message Username {
   string username = 1;
+}
+message Password {
+  string password = 1;
 }
 
 message PasswordRecoveryResponse{
