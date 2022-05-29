@@ -26,6 +26,9 @@ type UserServiceClient interface {
 	UpdateUser(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	RegisterUser(ctx context.Context, in *RegisterUserRequest, opts ...grpc.CallOption) (*RegisterUserResponse, error)
 	ActivateUserAccount(ctx context.Context, in *ActivationRequest, opts ...grpc.CallOption) (*ActivationResponse, error)
+	SendRequestForPasswordRecovery(ctx context.Context, in *PasswordRecoveryRequest, opts ...grpc.CallOption) (*PasswordRecoveryResponse, error)
+	RecoverPassword(ctx context.Context, in *NewPasswordRequest, opts ...grpc.CallOption) (*NewPasswordResponse, error)
+	PwnedPassword(ctx context.Context, in *PwnedRequest, opts ...grpc.CallOption) (*PwnedResponse, error)
 }
 
 type userServiceClient struct {
@@ -72,6 +75,33 @@ func (c *userServiceClient) ActivateUserAccount(ctx context.Context, in *Activat
 	return out, nil
 }
 
+func (c *userServiceClient) SendRequestForPasswordRecovery(ctx context.Context, in *PasswordRecoveryRequest, opts ...grpc.CallOption) (*PasswordRecoveryResponse, error) {
+	out := new(PasswordRecoveryResponse)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/SendRequestForPasswordRecovery", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) RecoverPassword(ctx context.Context, in *NewPasswordRequest, opts ...grpc.CallOption) (*NewPasswordResponse, error) {
+	out := new(NewPasswordResponse)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/RecoverPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) PwnedPassword(ctx context.Context, in *PwnedRequest, opts ...grpc.CallOption) (*PwnedResponse, error) {
+	out := new(PwnedResponse)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/PwnedPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -80,6 +110,9 @@ type UserServiceServer interface {
 	UpdateUser(context.Context, *UpdateRequest) (*UpdateUserResponse, error)
 	RegisterUser(context.Context, *RegisterUserRequest) (*RegisterUserResponse, error)
 	ActivateUserAccount(context.Context, *ActivationRequest) (*ActivationResponse, error)
+	SendRequestForPasswordRecovery(context.Context, *PasswordRecoveryRequest) (*PasswordRecoveryResponse, error)
+	RecoverPassword(context.Context, *NewPasswordRequest) (*NewPasswordResponse, error)
+	PwnedPassword(context.Context, *PwnedRequest) (*PwnedResponse, error)
 	MustEmbedUnimplementedUserServiceServer()
 }
 
@@ -98,6 +131,15 @@ func (UnimplementedUserServiceServer) RegisterUser(context.Context, *RegisterUse
 }
 func (UnimplementedUserServiceServer) ActivateUserAccount(context.Context, *ActivationRequest) (*ActivationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ActivateUserAccount not implemented")
+}
+func (UnimplementedUserServiceServer) SendRequestForPasswordRecovery(context.Context, *PasswordRecoveryRequest) (*PasswordRecoveryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendRequestForPasswordRecovery not implemented")
+}
+func (UnimplementedUserServiceServer) RecoverPassword(context.Context, *NewPasswordRequest) (*NewPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecoverPassword not implemented")
+}
+func (UnimplementedUserServiceServer) PwnedPassword(context.Context, *PwnedRequest) (*PwnedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PwnedPassword not implemented")
 }
 func (UnimplementedUserServiceServer) MustEmbedUnimplementedUserServiceServer() {}
 
@@ -184,6 +226,60 @@ func _UserService_ActivateUserAccount_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_SendRequestForPasswordRecovery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PasswordRecoveryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SendRequestForPasswordRecovery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/SendRequestForPasswordRecovery",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SendRequestForPasswordRecovery(ctx, req.(*PasswordRecoveryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_RecoverPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).RecoverPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/RecoverPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).RecoverPassword(ctx, req.(*NewPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_PwnedPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PwnedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).PwnedPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/PwnedPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).PwnedPassword(ctx, req.(*PwnedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +302,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ActivateUserAccount",
 			Handler:    _UserService_ActivateUserAccount_Handler,
+		},
+		{
+			MethodName: "SendRequestForPasswordRecovery",
+			Handler:    _UserService_SendRequestForPasswordRecovery_Handler,
+		},
+		{
+			MethodName: "RecoverPassword",
+			Handler:    _UserService_RecoverPassword_Handler,
+		},
+		{
+			MethodName: "PwnedPassword",
+			Handler:    _UserService_PwnedPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

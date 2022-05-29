@@ -1,23 +1,22 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
-  selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.css']
+  selector: 'app-recover-pass-request',
+  templateUrl: './recover-pass-request.component.html',
+  styleUrls: ['./recover-pass-request.component.css']
 })
-export class LoginPageComponent implements OnInit {
-
-  
+export class RecoverPassRequestComponent implements OnInit {
 
   constructor(
     private authService: UserService,
     private _snackBar: MatSnackBar,
-    private _router: Router) { }
+    private _router: Router
+    ) { }
 
   ngOnInit(): void {
   }
@@ -27,16 +26,15 @@ export class LoginPageComponent implements OnInit {
     const loginObserver = {
       next: (x: any) => {
         console.log(x);
-        this._router.navigate(['/']);
-        this._snackBar.open("Welcome!", "Dismiss");
+        this._router.navigate(['recover']);
+        this._snackBar.open("Your code is sent to recovery mail!", "Dismiss");
       },
       error: (err: HttpErrorResponse) => {
        
-        this._snackBar.open(err.error , 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss');
       },
     };
-    this.authService.login(f.value).subscribe(loginObserver);
+    this.authService.recoverPassRequest(f.value).subscribe(loginObserver);
   }
 
 }
-

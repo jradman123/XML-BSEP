@@ -57,6 +57,11 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	if !user.IsConfirmed {
+		fmt.Println("account not activated")
+		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
+		return
+	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {

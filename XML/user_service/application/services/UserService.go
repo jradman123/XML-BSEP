@@ -21,10 +21,11 @@ type UserService struct {
 	l              *log.Logger
 	userRepository repositories.UserRepository
 	emailRepo      repositories.EmailVerificationRepository
+	recoveryRepo   repositories.PasswordRecoveryRequestRepository
 }
 
-func NewUserService(l *log.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository) *UserService {
-	return &UserService{l, repository, emailRepo}
+func NewUserService(l *log.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
+	return &UserService{l, repository, emailRepo, recoveryRepo}
 }
 
 func (u UserService) GetUsers() ([]model.User, error) {
@@ -161,6 +162,111 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 				return false, errors.New("user not activated")
 			}
 			return true, nil
+
+		} else {
+			fmt.Println("istekao kod")
+			return false, errors.New("code expired")
+		}
+
+	} else {
+		fmt.Println("ne valjda kod")
+		return false, errors.New("wrong code")
+	}
+}
+
+func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
+
+	user, err := u.userRepository.GetByUsername(context.TODO(), username)
+
+	if err != nil {
+		return false, err
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	rn := rand.Intn(100000)
+	recovery := model.PasswordRecoveryRequest{
+		ID:            uuid.New(),
+		Username:      username,
+		Email:         user.Email,
+		RecoveryEmail: user.RecoveryEmail,
+		IsUsed:        false,
+		Time:          time.Now(),
+		RecoveryCode:  rn,
+	}
+
+	fmt.Println(recovery)
+
+	//obrisi prethodni zahtev ako postoji jer eto da uvijek samo poslednji ima u bazi
+	deleteErr := u.recoveryRepo.ClearOutRequestsForUsername(username)
+	if deleteErr != nil {
+		return false, deleteErr
+	}
+	_, e := u.recoveryRepo.CreatePasswordRecoveryRequest(&recovery)
+
+	fmt.Println(e)
+	if e != nil {
+		return false, e
+	}
+
+	//mzd staviti da ovo vraca bool i da ima parametar poruku i zaglavlje
+	sendMailWithCourier(user.RecoveryEmail, strconv.Itoa(rn), "Password recovery code", "Here is your code:")
+	return true, nil
+}
+
+func (u UserService) CreateNewPassword(username string, newHashedPassword string, code string) (bool, error) {
+
+	var passwordRecoveryRequest *model.PasswordRecoveryRequest
+	var dbEr error
+	passwordRecoveryRequest, dbEr = u.recoveryRepo.GetPasswordRecoveryRequestByUsername(username)
+
+	if dbEr != nil {
+		fmt.Println(dbEr)
+
+		return false, dbEr
+	}
+	fmt.Println("verCode:", passwordRecoveryRequest.RecoveryCode)
+	///////////////
+
+	var codeInt, convErr = strconv.Atoi(code)
+	if convErr != nil {
+		return false, errors.New("error converting code to int")
+	}
+	if passwordRecoveryRequest.RecoveryCode == codeInt {
+		//kao dala sam kodu trajanje od 1h
+		fmt.Println("kod se poklapa")
+		if passwordRecoveryRequest.Time.Add(time.Minute * 3).After(time.Now()) {
+			if !passwordRecoveryRequest.IsUsed {
+				fmt.Println("vreme se uklapa")
+				//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
+				user, err := u.userRepository.GetByUsername(context.TODO(), username)
+				if err != nil {
+					fmt.Println(err)
+					fmt.Println("error u get by username kod ucitavanja usera")
+					return false, err
+				}
+
+				fmt.Println(user.Username)
+
+				//sacuvati izmjene korisnika,tj izmjenjen password
+				changePassErr := u.userRepository.ChangePassword(user, newHashedPassword)
+				if changePassErr != nil {
+					fmt.Println("error pri cuvanju novog pass")
+					return false, changePassErr
+				}
+				//staviti iskoristen kod na true
+
+				//service.Repo.ActivateUserAccount(user)
+				_, er := u.userRepository.GetByUsername(context.TODO(), username)
+				if er != nil {
+					fmt.Println(er)
+					fmt.Println("FAK MAJ LAJF 2")
+					return false, er
+				}
+				return true, nil
+			} else {
+				fmt.Println("kod iskoristen")
+				return false, errors.New("code used")
+			}
 
 		} else {
 			fmt.Println("istekao kod")

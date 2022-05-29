@@ -94,3 +94,12 @@ func MapPbToUserActivateRequest(request *pb.ActivationRequest) *dto.UserActivate
 	}
 	return requestDTO
 }
+
+func MapPbToNewPasswordRequestDto(request *pb.NewPasswordRequest) *dto.NewRecoveryPasswordRequest {
+	requestDto := &dto.NewRecoveryPasswordRequest{
+		Username:    request.Recovery.Username,
+		NewPassword: request.Recovery.Password,
+		Code:        request.Recovery.Code,
+	}
+	return requestDto
+}

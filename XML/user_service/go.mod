@@ -10,6 +10,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.6
+	github.com/mattevans/pwned-passwords v0.5.0
 	github.com/microcosm-cc/bluemonday v1.0.18
 	github.com/trycourier/courier-go/v2 v2.5.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519

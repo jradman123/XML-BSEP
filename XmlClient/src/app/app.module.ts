@@ -49,6 +49,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatTreeModule } from '@angular/material/tree';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
+import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
+import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
+import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
 
 
 
@@ -61,7 +64,10 @@ import { UserHomeComponent } from './pages/user-home/user-home.component';
     UnauthenticatedHeaderComponent,
     AuthenticatedHeaderComponent,
     FooterComponent,
-    UserHomeComponent
+    UserHomeComponent,
+    RecoverPassRequestComponent,
+    RecoverPassComponent,
+    ActivateAccountComponent
   ],
   imports: [
     BrowserModule,

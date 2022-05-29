@@ -1,0 +1,51 @@
+<div class="container">
+    <app-unauthenticated-header></app-unauthenticated-header>
+    <router-outlet></router-outlet>
+    <br><br>
+    <mat-card>
+        <mat-card-title>Recover password</mat-card-title>
+        <br /><br />
+        <mat-card-content>
+            <div class="container" [formGroup]="createForm">
+                <br />
+                <div class="separateMe">
+                    <div style="width: 100%; display: flex">
+                        <mat-form-field appearance="fill">
+                            <mat-label> Username </mat-label>
+                            <input matInput formControlName="Username" />
+                            <mat-error *ngIf="
+                                createForm?.get('Username')?.valid &&
+                                createForm?.get('Username')?.touched &&
+                                createForm?.get('Username')?.errors?.['required']
+                                ">Username is required.
+                            </mat-error>
+                            <mat-error>Username must be more than 7 characters long </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div style="width: 100%; display: flex">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Code</mat-label>
+                            <input matInput formControlName="Code" />
+                            <mat-error *ngIf="
+                                createForm?.get('Code')?.valid &&
+                                createForm?.get('Code')?.touched &&
+                                createForm?.get('Code')?.errors?.['required']
+                                ">Code is required.
+                            </mat-error>
+                            <mat-error>Invalid input</mat-error>
+                        </mat-form-field>
+                    </div>
+                    <br /><br />
+                    <div>
+                        <button mat-raised-button (click)="onSubmit()" style="color: white;
+                             background: rgb(17, 16, 16)" class="icon-display">
+                            Activate account
+                        </button>
+                    </div>
+                </div>
+                
+            </div>           
+        </mat-card-content>
+    </mat-card>
+    <br />
+</div>

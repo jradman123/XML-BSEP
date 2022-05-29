@@ -32,6 +32,63 @@ service UserService{
       body: "account"
     };
   }
+
+  rpc SendRequestForPasswordRecovery(PasswordRecoveryRequest) returns(PasswordRecoveryResponse) {
+    option (google.api.http) = {
+      post: "/users/recoveryRequest/user"
+      body: "username"
+    };
+  }
+
+  rpc RecoverPassword(NewPasswordRequest) returns(NewPasswordResponse) {
+    option (google.api.http) = {
+      post: "/users/recover/user"
+      body: "recovery"
+    };
+  }
+
+  rpc PwnedPassword(PwnedRequest) returns(PwnedResponse) {
+    option (google.api.http) = {
+      post: "/users/pwnedPassword/password"
+      body: "password"
+    };
+  }
+}
+
+message NewPasswordRequest{
+  PasswordRecovery recovery = 1;
+}
+
+message PwnedResponse {
+  bool pwned = 1;
+  string message = 2;
+}
+
+message PasswordRecovery {
+  string username = 1;
+  string password = 2;
+  string code = 3;
+}
+message NewPasswordResponse{
+  bool passwordChanged = 1;
+}
+
+message PwnedRequest {
+  Password password = 1;
+}
+
+message PasswordRecoveryRequest {
+  Username username = 1;
+}
+message Username {
+  string username = 1;
+}
+message Password {
+  string password = 1;
+}
+
+message PasswordRecoveryResponse{
+  bool codeSent = 1;
 }
 
 message ActivationRequest{
