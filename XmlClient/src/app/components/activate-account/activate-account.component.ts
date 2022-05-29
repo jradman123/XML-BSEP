@@ -49,7 +49,7 @@ export class ActivateAccountComponent implements OnInit {
         
         this.router.navigate(['/login']);
         this._snackBar.open(
-          'Your password has been changed!',
+          'Your account has been activated!',
           'Dismiss'
         );
       },
