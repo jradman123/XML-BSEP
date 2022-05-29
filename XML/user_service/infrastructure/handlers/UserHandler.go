@@ -268,6 +268,7 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest) (*pb.PwnedResponse, error) {
 
 	u.l.Println("Handling PWNED PASSWORD")
+	u.l.Println(request.Password.Password)
 	pwnedPassword := request.Password.Password
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything

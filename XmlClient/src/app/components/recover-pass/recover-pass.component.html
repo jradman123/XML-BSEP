@@ -54,6 +54,7 @@
                                 ">Password must be at least 8 characters long
                             </mat-error>
                         </mat-form-field>
+                        
                     </div>
                     <div style="width: 100%; display: flex">
                         <mat-form-field appearance="fill">
@@ -68,6 +69,9 @@
                             <mat-error *ngIf="!passMatch">Passwords does not match! </mat-error>
                         </mat-form-field>
                     </div>
+                    <button type="button" (click)="checkPwned()" mdbBtn color="light" mdbWavesEffect>Check if your password i pwned!</button>
+                    <div  *ngIf="pwned==1" class="alert alert-success" role="alert">{{alertMessage}}</div>
+                    <div  *ngIf="pwned==2" class="alert alert-warning" role="alert">{{alertMessage}}</div>
         
                     <br /><br />
                     <div>

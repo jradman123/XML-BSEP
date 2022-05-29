@@ -5,7 +5,8 @@ import { UserService } from '../../services/user-service/user.service'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NewPass } from 'src/app/interfaces/new-pass';
-
+import { PwnedResponse } from 'src/app/interfaces/pwned-response';
+import { Password } from 'src/app/interfaces/password';
 @Component({
   selector: 'app-recover-pass',
   templateUrl: './recover-pass.component.html',
@@ -17,6 +18,9 @@ export class RecoverPassComponent implements OnInit {
   formData!: FormData;
   passMatch: boolean = false;
   recoverPass!: NewPass;
+  alertMessage!: string;
+  pwned!: number;
+  passwordForCheck!: Password;
   constructor(
     private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
@@ -24,6 +28,9 @@ export class RecoverPassComponent implements OnInit {
     private authService: UserService
   ) { 
     this.recoverPass = {} as NewPass;
+    this.alertMessage = ""
+    this.pwned = 0
+    this.passwordForCheck = {} as Password;
   }
 
   ngOnInit(): void {
@@ -78,6 +85,31 @@ export class RecoverPassComponent implements OnInit {
 
     }
     this.authService.recoverPass(this.recoverPass).subscribe(registerObserver)
+  }
+
+  checkPwned(){
+    console.log(this.pwned);
+    const registerObserver = {
+      next: (pwnedResponse: PwnedResponse) => { 
+        if(pwnedResponse.pwned) {
+          this.pwned = 2;
+          this.alertMessage = pwnedResponse.message;
+        }else{
+          this.pwned = 1;
+          this.alertMessage = pwnedResponse.message;
+        }
+        this._snackBar.open(
+          pwnedResponse.message,
+          'Dismiss'
+        );
+      },
+      error: (err: HttpErrorResponse) => {
+        this._snackBar.open(err.error + "!", 'Dismiss');
+      }
+
+    }
+    this.passwordForCheck.password = this.createForm.value.Password;
+    this.authService.passIsPwned(this.passwordForCheck).subscribe(registerObserver)
   }
 
   createRequest(): void {

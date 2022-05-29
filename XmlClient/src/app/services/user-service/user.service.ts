@@ -5,6 +5,8 @@ import { ActivateAccount } from 'src/app/interfaces/activate-account';
 import { LoggedUser } from 'src/app/interfaces/logged-user';
 import { LoginRequest } from 'src/app/interfaces/login-request';
 import { NewPass } from 'src/app/interfaces/new-pass';
+import { Password } from 'src/app/interfaces/password';
+import { PwnedResponse } from 'src/app/interfaces/pwned-response';
 import { UserData } from 'src/app/interfaces/subject-data';
 
 @Injectable({
@@ -14,6 +16,7 @@ export class UserService {
   private currentUserSubject: BehaviorSubject<LoggedUser>;
   public currentUser: Observable<LoggedUser>;
   private user!: LoggedUser;
+  private pwnedResponse!: PwnedResponse;
 
 
   constructor(private _http: HttpClient) {
@@ -75,9 +78,10 @@ export class UserService {
        recoverPass);
   }
 
-  passIsPwned(pass: any) {
+  passIsPwned(pass: Password): Observable<PwnedResponse>  {
+    console.log(pass.password)
     return this._http.post<any>(
-      'http://localhost:9090/users/pwnedPassword/user',
+      'http://localhost:9090/users/pwnedPassword/password',
        pass);
   }
   
