@@ -8,6 +8,7 @@ import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { AuthGuard } from './AuthGuard/AuthGuard';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
+import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
 
 const routes: Routes = [
   {
@@ -23,16 +24,20 @@ const routes: Routes = [
     component: RegisterPageComponent
   },
   {
-    path: "userHome",
-    component: UserHomeComponent , canActivate: [AuthGuard]
-  },
-  {
     path: "recoverRequest",
     component: RecoverPassRequestComponent 
   },
   {
     path: "recover",
     component: RecoverPassComponent 
+  },
+  {
+    path: "activate",
+    component: ActivateAccountComponent 
+  },
+  {
+    path: "userHome",
+    component: UserHomeComponent , canActivate: [AuthGuard]
   }
 ];
 

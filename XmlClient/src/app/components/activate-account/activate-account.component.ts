@@ -4,27 +4,27 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user-service/user.service'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NewPass } from 'src/app/interfaces/new-pass';
+import { ActivateAccount } from 'src/app/interfaces/activate-account';
 
 @Component({
-  selector: 'app-recover-pass',
-  templateUrl: './recover-pass.component.html',
-  styleUrls: ['./recover-pass.component.css']
+  selector: 'app-activate-account',
+  templateUrl: './activate-account.component.html',
+  styleUrls: ['./activate-account.component.css']
 })
-export class RecoverPassComponent implements OnInit {
+export class ActivateAccountComponent implements OnInit {
 
+  errorMessage!: string;
   createForm!: FormGroup;
   formData!: FormData;
-  passMatch: boolean = false;
-  recoverPass!: NewPass;
+  activateAccount!: ActivateAccount;
   constructor(
     private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     private router: Router,
     private authService: UserService
-  ) { 
-    this.recoverPass = {} as NewPass;
-  }
+  ) {
+    this.activateAccount = {}  as ActivateAccount;
+   }
 
   ngOnInit(): void {
     this.createForm = this.formBuilder.group({
@@ -36,32 +36,13 @@ export class RecoverPassComponent implements OnInit {
         Validators.required,
         Validators.pattern('^[0-9]*$'),
       ]),
-       Password: new FormControl(null
-        , [
-          Validators.required,
-          Validators.minLength(10),
-          Validators.pattern(
-            '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,30}$'
-          )]),
-      passConfirmed: new FormControl(null,
-        [
-          Validators.required,
-          Validators.minLength(10),
-          Validators.pattern(
-            '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,30}$'
-
-          )]),
     });
-  }
-  onPasswordInput(): void {
-    this.passMatch =
-      this.createForm.value.Password === this.createForm.value.passConfirmed;
   }
 
   onSubmit(): void {
 
     this.createRequest();
-    console.log(this.recoverPass);
+    console.log(this.activateAccount);
     const registerObserver = {
       next: () => {
        
@@ -77,13 +58,12 @@ export class RecoverPassComponent implements OnInit {
       }
 
     }
-    this.authService.recoverPass(this.recoverPass).subscribe(registerObserver)
+    this.authService.activateAccount(this.activateAccount).subscribe(registerObserver)
   }
 
   createRequest(): void {
-
-    this.recoverPass.password = this.createForm.value.Password;
-    this.recoverPass.username = this.createForm.value.Username;
-    this.recoverPass.code = this.createForm.value.Code;
+    this.activateAccount.username = this.createForm.value.Username;
+    this.activateAccount.code = this.createForm.value.Code;
   }
+
 }

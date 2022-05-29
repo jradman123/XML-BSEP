@@ -1,15 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
+import { ActivateAccount } from 'src/app/interfaces/activate-account';
 import { LoggedUser } from 'src/app/interfaces/logged-user';
 import { LoginRequest } from 'src/app/interfaces/login-request';
+import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-
   private currentUserSubject: BehaviorSubject<LoggedUser>;
   public currentUser: Observable<LoggedUser>;
   private user!: LoggedUser;
@@ -60,6 +61,30 @@ export class UserService {
   loggedIn(): boolean {
     const token = localStorage.getItem('token');
     return true;
+  }
+
+  recoverPass(recoverPass: NewPass) {
+    return this._http.post<any>(
+      'http://localhost:9090/users/recover/user',
+       recoverPass);
+  }
+
+  recoverPassRequest(recoverPass: any) {
+    return this._http.post<any>(
+      'http://localhost:9090/users/recoveryRequest/user',
+       recoverPass);
+  }
+
+  passIsPwned(pass: any) {
+    return this._http.post<any>(
+      'http://localhost:9090/users/pwnedPassword/user',
+       pass);
+  }
+  
+  activateAccount(activateData: ActivateAccount) {
+    return this._http.post<any>(
+      'http://localhost:9090/users/activate/user',
+       activateData);
   }
 
 }
