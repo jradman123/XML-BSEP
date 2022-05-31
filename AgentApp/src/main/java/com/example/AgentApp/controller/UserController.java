@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/users")
@@ -27,7 +28,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('REGISTERED_USER') or hasAuthority('OWNER')")
     @PutMapping(value = "/changePassword")
-    public ResponseEntity<HttpStatus> changePassword(@RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
+    public ResponseEntity<HttpStatus> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
         String token = tokenUtils.getToken(request);
         userService.changePassword(tokenUtils.getUsernameFromToken(token), changePasswordDto);
         return ResponseEntity.noContent().build();

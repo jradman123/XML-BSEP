@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -44,7 +45,6 @@ public class AuthenticationController {
     private CustomTokenService customTokenService;
 
 
-
     @PostMapping("/login")
     public ResponseEntity<LoggedUserDto> login(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
@@ -61,7 +61,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> addUser(@RequestBody RegistrationRequestDto userRequest, UriComponentsBuilder ucBuilder) throws UnknownHostException, ParseException {
+    public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationRequestDto userRequest, UriComponentsBuilder ucBuilder) throws UnknownHostException, ParseException {
         User existUser = this.userService.findByUsername(userRequest.getUsername());
 
         if (existUser != null) {
@@ -69,10 +69,10 @@ public class AuthenticationController {
         }
 
         User savedUser = userService.addUser(userRequest);
-        if(savedUser != null){
-            return new ResponseEntity<>("SUCCESS!" , HttpStatus.CREATED);
+        if (savedUser != null) {
+            return new ResponseEntity<>("SUCCESS!", HttpStatus.CREATED);
         }
-        return new ResponseEntity<>("ERROR!" ,HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("ERROR!", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/confirmAccount/{token}")
@@ -94,19 +94,25 @@ public class AuthenticationController {
     }
 
 
+    @PostMapping(value = "/sendCode")
+    public ResponseEntity<?> sendCode(@RequestBody String email) {
+        User user = userService.findByEmail(email);
+        customTokenService.sendResetPasswordToken(user);
+        return ResponseEntity.accepted().build();
+    }
+
     @PostMapping(value = "/checkRecoveryEmail")
-    public ResponseEntity<String> checkRecoveryEmail(@RequestBody RequestCheckDto request) {
+    public ResponseEntity<String> checkRecoveryEmail(@Valid @RequestBody RequestCheckDto request) {
         User user = userService.findByEmail(request.getEmail());
         if (user.getRecoveryEmail().equals(request.getRecoveryEmail())) {
             customTokenService.sendResetPasswordToken(user);
             return new ResponseEntity<>("Check your email.", HttpStatus.OK);
         }
-
         return new ResponseEntity<>("Entered recovery email is not valid!", HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping(value = "/checkCode")
-    public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
+    public ResponseEntity<String> checkCode(@Valid @RequestBody CheckCodeDto checkCodeDto) {
         User user = userService.findByEmail(checkCodeDto.getEmail());
         CustomToken token = customTokenService.findByUser(user);
         if (customTokenService.checkResetPasswordCode(checkCodeDto.getCode(), token.getToken())) {
@@ -116,10 +122,10 @@ public class AuthenticationController {
         return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
     }
 
+
     @PostMapping(value = "/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
         userService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getNewPassword());
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }
-
