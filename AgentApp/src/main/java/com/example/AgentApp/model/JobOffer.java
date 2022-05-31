@@ -25,19 +25,6 @@ public class JobOffer {
     @ElementCollection(targetClass = String.class)
     private List<String> otherRequirements;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "offer", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<SalaryComment> salaryComments;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "offer", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Interview> interviews;
-
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "offer", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Comment> comments;
 
 }
