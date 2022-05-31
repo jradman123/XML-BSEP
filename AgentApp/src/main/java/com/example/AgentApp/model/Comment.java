@@ -13,8 +13,8 @@ public class Comment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "offer_id")
-    private JobOffer offer;
+    @JoinColumn(name = "company_id")
+    private Company company;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
