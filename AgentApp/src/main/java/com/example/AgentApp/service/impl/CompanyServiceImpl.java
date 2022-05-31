@@ -23,4 +23,10 @@ public class CompanyServiceImpl implements CompanyService {
         System.out.println("sacuvana kompanija pod id-jem:" + company.getId());
         return company;
     }
+
+    @Override
+    public Company getById(Long id) {
+        return companyRepository.findById(id).orElseThrow(() -> new RuntimeException("There is no company with id " + id));
+    }
+
 }

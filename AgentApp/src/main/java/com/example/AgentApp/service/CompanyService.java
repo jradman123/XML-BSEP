@@ -7,4 +7,5 @@ import org.springframework.stereotype.*;
 @Service
 public interface CompanyService {
     Company createCompany(NewCompanyRequestDto companyDto);
+    Company getById(Long id);
 }
