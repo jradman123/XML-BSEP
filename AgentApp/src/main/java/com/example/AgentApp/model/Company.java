@@ -26,78 +26,27 @@ public class Company {
     @Column(nullable = false)
     private CompanyStatus companyStatus;
 
-    @Column(nullable = false)
-    private String contactInfo;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "company_info_id", referencedColumnName = "id")
+    private CompanyInfo companyInfo;
 
     @Column(nullable = false)
     private String companyPolicy;
 
-    public Company() {
-    }
+    @Column(nullable = false)
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<SalaryComment> salaryComments;
 
-    public Company(User owner, CompanyStatus companyStatus, String contactInfo, String companyPolicy) {
-        this.owner = owner;
-        this.jobOffers = new ArrayList<JobOffer>();
-        this.companyStatus = companyStatus;
-        this.contactInfo = contactInfo;
-        this.companyPolicy = companyPolicy;
-    }
+    @Column(nullable = false)
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Interview> interviews;
 
-    public Company(User owner, List<JobOffer> jobOffers, CompanyStatus companyStatus, String contactInfo, String companyPolicy) {
-        this.owner = owner;
-        this.jobOffers = jobOffers;
-        this.companyStatus = companyStatus;
-        this.contactInfo = contactInfo;
-        this.companyPolicy = companyPolicy;
-    }
+    @Column(nullable = false)
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Comment> comments;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public List<JobOffer> getJobOffers() {
-        return jobOffers;
-    }
-
-    public void setJobOffers(List<JobOffer> jobOffers) {
-        this.jobOffers = jobOffers;
-    }
-
-    public CompanyStatus getCompanyStatus() {
-        return companyStatus;
-    }
-
-    public void setCompanyStatus(CompanyStatus companyStatus) {
-        this.companyStatus = companyStatus;
-    }
-
-    public String getContactInfo() {
-        return contactInfo;
-    }
-
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-
-    public String getCompanyPolicy() {
-        return companyPolicy;
-    }
-
-    public void setCompanyPolicy(String companyPolicy) {
-        this.companyPolicy = companyPolicy;
-    }
-    
     
 }

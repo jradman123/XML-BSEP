@@ -17,7 +17,15 @@ public class CompanyMapper {
         User owner = userRepository.findByUsername(dto.ownerUsername);
         Company company = new Company();
         company.setCompanyStatus(CompanyStatus.PENDING);
-        company.setContactInfo(dto.contactInfo);
+        company.setCompanyInfo(new CompanyInfo());
+        company.getCompanyInfo().setCountryOfOrigin(dto.countryOfOrigin);
+        company.getCompanyInfo().setFounded(dto.founded);
+        company.getCompanyInfo().setHeadquarters(dto.headquarters);
+        company.getCompanyInfo().setIndustry(dto.industry);
+        company.getCompanyInfo().setName(dto.companyName);
+        company.getCompanyInfo().setOffices(dto.offices);
+        company.getCompanyInfo().setWebsite(dto.companyWebsite);
+        company.getCompanyInfo().setNoOfEmpl(dto.noOfEmpl);
         company.setCompanyPolicy(dto.companyPolicy);
         company.setOwner(owner);
         return company;
@@ -26,7 +34,7 @@ public class CompanyMapper {
     public NewCompanyResponseDto mapToCompanyCreateResponse(Company company){
         NewCompanyResponseDto response = new NewCompanyResponseDto();
         response.companyPolicy = company.getCompanyPolicy();
-        response.contactInfo = company.getContactInfo();
+       // response.contactInfo = company.getContactInfo();
         response.companyStatus = company.getCompanyStatus();
         response.message = "Request for creating company is created!";
         return response;

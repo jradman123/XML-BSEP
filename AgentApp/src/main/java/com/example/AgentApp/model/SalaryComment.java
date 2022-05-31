@@ -16,8 +16,8 @@ public class SalaryComment {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "offer_id")
-    private JobOffer offer;
+    @JoinColumn(name = "company_id")
+    private Company company;
 
     @Column(nullable = false)
     private String position;
