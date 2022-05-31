@@ -1,0 +1,32 @@
+<div class="container">
+    <div class="col-12 text-center">
+      <h3>Register your company </h3>
+      <hr />
+    </div>
+    <div class="col-12">
+      <form id="fbForm">
+        <div>
+          <mat-form-field appearance="fill" style="width: 100%">
+            <mat-label>Opis Firme?</mat-label>
+            <textarea
+              id="text"
+              matInput
+              (change)="doTextareaValueChange($event)"
+              required
+            ></textarea>
+          </mat-form-field>
+        </div>
+     
+        <button
+          id="submitRequest"
+         
+         
+          (click)="submitRequest()"
+          class="btn btn-success text-center"
+          
+        >
+          Registruj
+        </button>
+      </form>
+    </div>
+  </div>

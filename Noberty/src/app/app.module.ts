@@ -13,6 +13,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthHeaderComponent } from './components/auth-header/auth-header.component';
 import { MatCardModule } from '@angular/material/card';
+import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CompanyRegisterComponent } from './components/company-register/company-register.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MaterialModule } from './material/material.module';
+
 
 
 @NgModule({
@@ -24,15 +30,22 @@ import { MatCardModule } from '@angular/material/card';
     HomePageComponent,
     UnauthHeaderComponent,
     FooterComponent,
-    AuthHeaderComponent
+    AuthHeaderComponent,
+    CompaniesListComponent,
+    CompanyRegisterComponent,
+
   ],
   imports: [
     BrowserModule,
     MatCardModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    NgbModule
+    NgbModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MaterialModule
   ],
+
   providers: [],
   bootstrap: [AppComponent]
 })

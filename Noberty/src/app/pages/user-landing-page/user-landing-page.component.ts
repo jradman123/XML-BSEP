@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { CompanyRegisterComponent } from 'src/app/components/company-register/company-register.component';
+
 
 @Component({
   selector: 'app-user-landing-page',
@@ -7,9 +10,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserLandingPageComponent implements OnInit {
 
-  constructor() { }
+  constructor(public matDialog: MatDialog) { }
 
   ngOnInit(): void {
   }
-
+  openModal(): void {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = 'modal-component';
+    dialogConfig.height = '400px';
+    dialogConfig.width = '500px';
+    this.matDialog.open(CompanyRegisterComponent, dialogConfig);
+  }
 }
