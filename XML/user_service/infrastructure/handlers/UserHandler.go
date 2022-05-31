@@ -26,13 +26,13 @@ type UserHandler struct {
 	pwnedClient  *hibp.Client
 }
 
+func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
+	u.l.Println("Handling MustEmbedUnimplementedUserServiceServer Users")
+}
+
 func NewUserHandler(l *log.Logger, service *services.UserService, jsonConv *helpers.JsonConverters, validator *validator.Validate,
 	passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client) *UserHandler {
 	return &UserHandler{l, service, jsonConv, validator, passwordUtil, pwnedClient}
-}
-
-func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
-	u.l.Println("Handling MustEmbedUnimplementedUserServiceServer Users")
 }
 
 func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error) {

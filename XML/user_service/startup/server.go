@@ -62,8 +62,8 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 		log.Fatalf("failed to parse public key: %v", err)
 	}
 	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
 
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
 	userProto.RegisterUserServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)

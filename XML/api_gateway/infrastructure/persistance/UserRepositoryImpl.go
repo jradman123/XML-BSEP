@@ -25,17 +25,11 @@ func (r UserRepositoryImpl) GetUsers() ([]model.User, error) {
 func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) (*model.User, error) {
 	user := &model.User{}
 	if r.db.First(&user, "username = ?", username).RowsAffected == 0 {
-		return nil, errors.New("User not found")
+		return nil, errors.New("user not found")
 
 	}
 	return user, nil
 }
-
-//func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (string, error) {
-//	result := r.db.Create(&user)
-//	fmt.Print(result)
-//	return string(user.Email), nil
-//}
 
 func (r UserRepositoryImpl) UserExists(username string) error {
 	if r.db.First(&model.User{}, "username = ?", username).RowsAffected == 0 {

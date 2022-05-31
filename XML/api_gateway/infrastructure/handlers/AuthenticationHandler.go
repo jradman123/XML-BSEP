@@ -35,11 +35,6 @@ func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
 	if err != nil {
 		panic(err)
 	}
-	//err = mux.HandlePath("POST", "/users/register/user", a.RegisterUser)
-	//if err != nil {
-	//	panic(err)
-	//}
-
 }
 
 func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
