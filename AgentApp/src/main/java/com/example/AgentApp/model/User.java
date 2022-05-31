@@ -70,5 +70,19 @@ public class User {
     @ToString.Exclude
     private List<Comment> comments;
 
+    public User(String username, String password, String email, String recoveryEmail, String phoneNumber, String firstName, String lastName, Date dateOfBirth, Gender gender, UserRole role, boolean isConfirmed) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.recoveryEmail = recoveryEmail;
+        this.phoneNumber = phoneNumber;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.role = role;
+        this.isConfirmed = isConfirmed;
+    }
 
+    public User(){}
 }
