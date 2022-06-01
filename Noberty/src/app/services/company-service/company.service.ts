@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { NewCompanyRequestDto } from 'src/app/interfaces/new-company-request-dto';
 import { environment } from 'src/environments/environment';
 
@@ -19,4 +20,9 @@ export class CompanyService {
   }
 
   constructor(private http : HttpClient) { }
+
+  getAlCompaniesForUser() : Observable<any>{
+    return this.http.get(`${this.apiServerUrl}/company/getAllForUser`);
+
+  }
 }

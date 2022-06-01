@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 
 @Component({
   selector: 'app-company-list-view',
@@ -7,9 +7,13 @@ import { ICompanyInfo } from 'src/app/interfaces/company-info';
   styleUrls: ['./company-list-view.component.css']
 })
 export class CompanyListViewComponent implements OnInit {
-  @Input() 
-  items!:ICompanyInfo[]
-  constructor() { }
+  @Input()
+  items!:CompanyResponseDto[]
+
+  
+  constructor() { 
+  
+  }
 
   ngOnInit(): void {
   }
