@@ -15,18 +15,18 @@ export class CompaniesListComponent implements OnInit {
     this.items = [{
       name: "Endava",
       site: "string",
-      headquaters: "string",
+      headquaters: "Novi Sad",
       founded: "string",
       industry: "Software Outsourcing",
       employees: 1000,
       origin: "string",
-      offices: "Beograd, Novi Sad, Kragujevac, Čača"
+      offices: "Beograd, Novi Sad, Kragujevac, Čačak"
     },
     
     {
       name: "Levi9 Technology Services",
       site: "string",
-      headquaters: "string",
+      headquaters: "Wienna",
       founded: "string",
       industry: "Software Outsourcing",
       employees: 800,
@@ -36,7 +36,7 @@ export class CompaniesListComponent implements OnInit {
     {
       name: "Synechron",
       site: "string",
-      headquaters: "string",
+      headquaters: "London",
       founded: "string",
       industry: "IT Services",
       employees: 500,

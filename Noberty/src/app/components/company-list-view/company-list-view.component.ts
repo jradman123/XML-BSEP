@@ -8,7 +8,7 @@ import { ICompanyInfo } from 'src/app/interfaces/company-info';
 })
 export class CompanyListViewComponent implements OnInit {
   @Input() 
-  items!:ICompanyInfo[]
+  item!:ICompanyInfo
   constructor() { }
 
   ngOnInit(): void {
