@@ -1,13 +1,12 @@
 package com.example.AgentApp.mapper;
 
-import com.example.AgentApp.dto.CommentDto;
-import com.example.AgentApp.model.Comment;
-import com.example.AgentApp.model.User;
+import com.example.AgentApp.dto.*;
+import com.example.AgentApp.model.*;
 import com.example.AgentApp.repository.CompanyRepository;
 import com.example.AgentApp.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class CommentMapper {
@@ -28,4 +27,19 @@ public class CommentMapper {
         return comment;
     }
 
+    public List<CommentResponseDto> mapToDtos(Set<Comment> allCommentsForCompany) {
+        List<CommentResponseDto> commentDtos = new ArrayList<CommentResponseDto>();
+        for (Comment comment: allCommentsForCompany) {
+            commentDtos.add(mapToDto(comment));
+        }
+        return commentDtos;
+    }
+
+    private CommentResponseDto mapToDto(Comment comment) {
+        CommentResponseDto commentResponseDto = new CommentResponseDto();
+        commentResponseDto.comment = comment.getComment();
+        commentResponseDto.userUsername = comment.getUser().getUsername();
+        commentResponseDto.companyId = comment.getCompany().getId();
+        return commentResponseDto;
+    }
 }

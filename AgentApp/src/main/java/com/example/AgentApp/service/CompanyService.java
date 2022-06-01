@@ -19,4 +19,5 @@ public interface CompanyService {
 
     List<Company> getAllCompaniesWithStatus(CompanyStatus status);
     Company getById(Long id);
+
 }

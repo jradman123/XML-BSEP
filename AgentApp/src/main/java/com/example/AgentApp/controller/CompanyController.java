@@ -5,6 +5,7 @@ import com.example.AgentApp.enums.*;
 import com.example.AgentApp.mapper.*;
 import com.example.AgentApp.model.*;
 import com.example.AgentApp.service.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +20,18 @@ public class CompanyController {
     private final CompanyMapper companyMapper;
     private final CommentMapper commentMapper;
     private final CommentService commentService;
+    private final UserService userService;
+    private final SalaryCommentMapper salaryCommentMapper;
+    private final SalaryCommentService salaryCommentService;
 
-    public CompanyController(CommentMapper commentMapper, CompanyMapper companyMapper, CompanyService companyService, CommentService commentService) {
+    public CompanyController(CommentMapper commentMapper, CompanyMapper companyMapper, CompanyService companyService, CommentService commentService, UserService userService, SalaryCommentMapper salaryCommentMapper, SalaryCommentService salaryCommentService) {
         this.commentMapper = commentMapper;
         this.companyMapper = companyMapper;
         this.companyService = companyService;
         this.commentService = commentService;
+        this.userService = userService;
+        this.salaryCommentMapper = salaryCommentMapper;
+        this.salaryCommentService = salaryCommentService;
     }
 
     @GetMapping("")
@@ -103,12 +110,57 @@ public class CompanyController {
     }
 
 
+//    @PostMapping("/comment")
+//    public ResponseEntity<Object> leaveAComment(@RequestBody CommentDto commentDto){
+//        Company company = companyService.getById(commentDto.getCompanyId());
+//        Comment comment = commentMapper.toEntity(commentDto);
+//        comment.setCompany(company);
+//        return ResponseEntity.ok(commentService.create(comment));
+//    }
+
     @PostMapping("/comment")
-    public ResponseEntity<Object> leaveAComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<?> leaveAComment(@RequestBody CommentDto commentDto){
         Company company = companyService.getById(commentDto.getCompanyId());
         Comment comment = commentMapper.toEntity(commentDto);
+        User user = userService.findByUsername(commentDto.userUsername);
         comment.setCompany(company);
-        return ResponseEntity.ok(commentService.create(comment));
+        comment.setUser(user);
+        Comment savedComment = commentService.create(comment);
+        Set<Comment> allCommentsForCompany = commentService.getAllForCompany(commentDto.getCompanyId());
+        if (comment != null && allCommentsForCompany != null){
+            return new ResponseEntity<List<CommentResponseDto>>(commentMapper.mapToDtos(allCommentsForCompany), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Failed to add comment for company!", HttpStatus.CONFLICT);
+    }
+
+    @GetMapping("{id}/comments")
+    public ResponseEntity<?> allComments(@PathVariable Long id){
+        Set<Comment> allCommentsForCompany = commentService.getAllForCompany(id);
+        if (allCommentsForCompany != null){
+            return new ResponseEntity<List<CommentResponseDto>>(commentMapper.mapToDtos(allCommentsForCompany), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Failed to get all comments for company!", HttpStatus.CONFLICT);
+    }
+
+    @PostMapping("/salaryComment")
+    public  ResponseEntity<?> leaveSalaryComment(@RequestBody SalaryCommentRequestDto commentDto){
+        Company company = companyService.getById(commentDto.companyID);
+        SalaryComment comment = salaryCommentMapper.mapToEntity(commentDto);
+        SalaryComment savedComment = salaryCommentService.create(comment);
+        Set<SalaryComment> allCommentsForCompany = salaryCommentService.getAllForCompany(commentDto.companyID);
+        if (comment != null && allCommentsForCompany != null){
+            return new ResponseEntity<List<SalaryCommentResponseDto>>(salaryCommentMapper.mapToDtos(allCommentsForCompany), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Failed to add salary comment for company!", HttpStatus.CONFLICT);
+    }
+
+    @GetMapping("{id}/salaryComments")
+    public ResponseEntity<?> allSalaryComments(@PathVariable Long id){
+        Set<SalaryComment> allCommentsForCompany = salaryCommentService.getAllForCompany(id);
+        if ( allCommentsForCompany != null){
+            return new ResponseEntity<List<SalaryCommentResponseDto>>(salaryCommentMapper.mapToDtos(allCommentsForCompany), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Failed to add salary comment for company!", HttpStatus.CONFLICT);
     }
 
 }
