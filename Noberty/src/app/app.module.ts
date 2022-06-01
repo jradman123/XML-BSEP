@@ -25,6 +25,7 @@ import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CompanyListViewComponent } from './components/company-list-view/company-list-view.component';
 import { CompanyViewComponent } from './components/company-view/company-view.component';
+import { CommentComponent } from './components/comment/comment.component';
 
 
 
@@ -43,6 +44,7 @@ import { CompanyViewComponent } from './components/company-view/company-view.com
     CompanyRegisterComponent,
     CompanyListViewComponent,
     CompanyViewComponent,
+    CommentComponent,
 
   ],
   imports: [
