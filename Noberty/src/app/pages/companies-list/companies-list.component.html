@@ -3,9 +3,11 @@
     <div>
         <app-auth-header></app-auth-header>
     </div>
-<br><br><br><br><br><br>
-<h2>Companies list</h2>
+    <br><br><br><br><br><br>
+    <h2>Companies list</h2>
     <div class="sectionOverflow">
-        <app-company-list-view [items]="items" class="profile"></app-company-list-view>
+        <div *ngFor="let item of items">
+            <app-company-list-view [item]="item" class="profile"></app-company-list-view>
+        </div>
     </div>
 </div>

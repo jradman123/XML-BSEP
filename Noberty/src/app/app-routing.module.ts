@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { InterviewComponent } from './components/interview/interview.component';
 import { SalaryCommentComponent } from './components/salary-comment/salary-comment.component';
 import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
-
+import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
@@ -33,6 +33,10 @@ const routes: Routes = [
   {
     path: "companies",
     component: CompaniesListComponent
+  },
+  {
+    path: "company",
+    component: CompanyProfileComponent
   },
   
 ];
