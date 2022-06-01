@@ -1,0 +1,8 @@
+.image{
+    height:-webkit-fill-available; 
+    background-size:cover;
+    width:auto;
+    background-image:url("../../../assets/wallpaper.jpg"); 
+    background-position:10% 10%;
+    background-position: fill;
+  }

@@ -1,0 +1,69 @@
+.image {
+  height: -webkit-fill-available;
+  background-size: cover;
+  width: auto;
+  height: 40%;
+  background-image: url("../../../assets/wallpaper.jpg");
+  background-position: 23% 23%;
+  background-position: fill;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+}
+
+.profile {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  height: 100%;
+  width: 35%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  padding: 50px;
+
+}
+
+.rowData {
+  display: flex;
+  flex-direction: column;
+  border-left: 30px;
+}
+
+.main {
+  display: flex;
+  height: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+}
+.buttons{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+.mybtn {
+  width: 1000px;
+  flex-shrink: wrap;
+}
+@media (max-width: 1000px) {
+  .main{
+     display: block;
+      text-align: center;
+  }
+  .profile{
+    display: block;
+    text-align: center;
+  }
+}

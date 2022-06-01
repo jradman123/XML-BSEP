@@ -65,7 +65,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/company/**").permitAll()  //ovo je privremeno
                 .anyRequest().authenticated().and()
                 .cors().and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class);
+                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class)
+                .headers()
+                // xss protection can detect what looks like xss and blocks it - browser wont render if it sees it
+                .xssProtection()
+                .and()
+                .contentSecurityPolicy("script-src 'self'")
+                .and();
         http.csrf().disable();
     }
 
