@@ -36,7 +36,7 @@ export class LoginPageComponent implements OnInit {
           next: (x:any) => {
              this._snackBar.open("     Welcome","Dismiss");
              
-                // this._router.navigate(['/nekiDashboard']);
+                this._router.navigate(['/user/landing']);
           },
            error: (err:any) => {
              this._snackBar.open("Email or password are incorrect.Try again,please.","Dismiss"); 

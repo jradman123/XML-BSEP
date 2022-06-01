@@ -6,6 +6,7 @@ import { LoggedUserDto } from 'src/app/interfaces/logged-user-dto';
 import { NewUser } from 'src/app/interfaces/new-user';
 import { environment } from 'src/environments/environment';
 import { map } from 'rxjs/operators';
+import { UserInformationResponseDto } from 'src/app/interfaces/user-information-response-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -90,5 +91,9 @@ checkCode(verCode: string): Observable<any> {
     username: localStorage.getItem('usernamee'),
     code: verCode,
   });
+}
+
+getUserInformation() : Observable<any>{
+  return this.http.get(`${this.apiServerUrl}/api/users/getUserInformation`);
 }
 }
