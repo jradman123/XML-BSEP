@@ -7,6 +7,8 @@ import com.example.AgentApp.repository.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
+import java.util.*;
+
 @Component
 public class CompanyMapper {
 
@@ -38,5 +40,41 @@ public class CompanyMapper {
         response.companyStatus = company.getCompanyStatus();
         response.message = "Request for creating company is created!";
         return response;
+    }
+
+    public Company editCompany(EditCompanyRequestDto requestDto, Company company) {
+        company.setCompanyPolicy(requestDto.companyPolicy);
+        company.getCompanyInfo().setName(requestDto.companyName);
+        company.getCompanyInfo().setWebsite(requestDto.companyWebsite);
+        company.getCompanyInfo().setHeadquarters(requestDto.headquarters);
+        company.getCompanyInfo().setIndustry(requestDto.industry);
+        company.getCompanyInfo().setFounded(requestDto.founded);
+        company.getCompanyInfo().setNoOfEmpl(requestDto.noOfEmpl);
+        company.getCompanyInfo().setCountryOfOrigin(requestDto.countryOfOrigin);
+        company.getCompanyInfo().setOffices(requestDto.offices);
+        return company;
+    }
+
+    public CompanyResponseDto mapToDto(Company company){
+        CompanyResponseDto companyResponseDto = new CompanyResponseDto();
+        companyResponseDto.companyId = company.getId();
+        companyResponseDto.companyPolicy = company.getCompanyPolicy();
+        companyResponseDto.companyName = company.getCompanyInfo().getName();
+        companyResponseDto.companyWebsite = company.getCompanyInfo().getWebsite();
+        companyResponseDto.headquarters = company.getCompanyInfo().getHeadquarters();
+        companyResponseDto.industry = company.getCompanyInfo().getIndustry();
+        companyResponseDto.founded = company.getCompanyInfo().getFounded();
+        companyResponseDto.noOfEmpl = company.getCompanyInfo().getNoOfEmpl();
+        companyResponseDto.countryOfOrigin = company.getCompanyInfo().getCountryOfOrigin();
+        companyResponseDto.offices = company.getCompanyInfo().getOffices();
+        return companyResponseDto;
+    }
+
+    public List<CompanyResponseDto> mapToDtos(List<Company> companies){
+        List<CompanyResponseDto> companyDtos = new ArrayList<CompanyResponseDto>();
+        for (Company company: companies) {
+            companyDtos.add(mapToDto(company));
+        }
+        return companyDtos;
     }
 }

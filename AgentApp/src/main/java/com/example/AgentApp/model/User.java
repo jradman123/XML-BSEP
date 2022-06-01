@@ -49,26 +49,26 @@ public class User {
 
     @Column(nullable = false)
     private boolean isConfirmed;
+//
+//    @Column(nullable = false)
+//    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+//    @ToString.Exclude
+//    private List<Company> companies;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Company> companies;
-
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<SalaryComment> salaryComments;
-
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Interview> interviews;
-
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private List<Comment> comments;
+//    @Column(nullable = false)
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    @ToString.Exclude
+//    private List<SalaryComment> salaryComments;
+//
+//    @Column(nullable = false)
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    @ToString.Exclude
+//    private List<Interview> interviews;
+//
+//    @Column(nullable = false)
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    @ToString.Exclude
+//    private List<Comment> comments;
 
     public User(String username, String password, String email, String recoveryEmail, String phoneNumber, String firstName, String lastName, Date dateOfBirth, Gender gender, UserRole role, boolean isConfirmed) {
         this.username = username;
