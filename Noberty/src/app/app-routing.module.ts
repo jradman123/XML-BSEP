@@ -34,10 +34,6 @@ const routes: Routes = [
     path: "companies",
     component: CompaniesListComponent
   },
-  {
-    path: "testing",
-    component: SalaryCommentComponent
-  },
   
 ];
 
