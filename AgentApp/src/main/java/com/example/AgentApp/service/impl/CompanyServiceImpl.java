@@ -77,4 +77,8 @@ public class CompanyServiceImpl implements CompanyService {
         List<Company> companies = companyRepository.findAllByCompanyStatus(status);
         return companies;
     }
+    public Company getById(Long id) {
+        return companyRepository.findById(id).orElseThrow(() -> new RuntimeException("There is no company with id " + id));
+    }
+
 }

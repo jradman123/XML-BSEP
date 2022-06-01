@@ -18,4 +18,5 @@ public interface CompanyService {
     Company addJobOffer(CreateJobOfferRequestDto requestDto);
 
     List<Company> getAllCompaniesWithStatus(CompanyStatus status);
+    Company getById(Long id);
 }

@@ -18,8 +18,7 @@ public class Company {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<JobOffer> jobOffers;
 
