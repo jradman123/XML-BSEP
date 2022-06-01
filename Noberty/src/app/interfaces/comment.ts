@@ -1,4 +1,5 @@
 export interface IComment {
+    companyId:number,
     comment:string,
-    username:string
+    userUsername:string
 }

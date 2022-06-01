@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CommentComponent } from './components/comment/comment.component';
+import { InterviewComponent } from './components/interview/interview.component';
+import { SalaryCommentComponent } from './components/salary-comment/salary-comment.component';
 import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
 
 import { HomePageComponent } from './pages/home-page/home-page.component';
@@ -35,7 +36,7 @@ const routes: Routes = [
   },
   {
     path: "testing",
-    component: CommentComponent
+    component: SalaryCommentComponent
   },
   
 ];

@@ -26,6 +26,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CompanyListViewComponent } from './components/company-list-view/company-list-view.component';
 import { CompanyViewComponent } from './components/company-view/company-view.component';
 import { CommentComponent } from './components/comment/comment.component';
+import { InterviewComponent } from './components/interview/interview.component';
+import { SalaryCommentComponent } from './components/salary-comment/salary-comment.component';
 
 
 
@@ -45,6 +47,8 @@ import { CommentComponent } from './components/comment/comment.component';
     CompanyListViewComponent,
     CompanyViewComponent,
     CommentComponent,
+    InterviewComponent,
+    SalaryCommentComponent,
 
   ],
   imports: [
