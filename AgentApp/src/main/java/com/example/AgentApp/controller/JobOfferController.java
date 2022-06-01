@@ -23,10 +23,20 @@ public class JobOfferController {
     //mzd svi sta znam
     @GetMapping("all/{companyId}")
     public ResponseEntity<?> allOffersForCompany(@PathVariable Long companyId){
-        List<JobOffer> offers = jobOfferService.getAllOfersForCompany(companyId);
+        List<JobOffer> offers = jobOfferService.getAllOffersForCompany(companyId);
         if (offers != null){
             return new ResponseEntity<List<JobOfferResponseDto>>(jobOfferMapper.mapToDtos(offers), HttpStatus.OK);
         }
-        return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);
+        return new ResponseEntity<>("Failed to get all job offers for company!", HttpStatus.CONFLICT);
+    }
+
+    //SVI MZD
+    @GetMapping("all")
+    public ResponseEntity<?> allJobOffers(){
+        List<JobOffer> offers = jobOfferService.getAllJobOffers();
+        if (offers != null){
+            return new ResponseEntity<List<JobOfferWithCompanyResponseDto>>(jobOfferMapper.mapToDtosWithCompany(offers), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Failed to get all job offers!", HttpStatus.CONFLICT);
     }
 }

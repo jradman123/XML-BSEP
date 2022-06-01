@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Data
@@ -18,12 +18,12 @@ public class JobOffer {
     private Company company;
 
     @Column
-    @ElementCollection(targetClass = String.class)
-    private List<String> requirements;
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    private Set<String> requirements;
 
     @Column
-    @ElementCollection(targetClass = String.class)
-    private List<String> otherRequirements;
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    private Set<String> otherRequirements;
 
 
 
