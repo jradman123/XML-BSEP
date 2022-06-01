@@ -24,6 +24,9 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { MaterialModule } from './material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CompanyListViewComponent } from './components/company-list-view/company-list-view.component';
+import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
+import { JobOfferComponent } from './components/job-offer/job-offer.component';
+import { JobOfferListViewComponent } from './components/job-offer-list-view/job-offer-list-view.component';
 
 
 
@@ -40,7 +43,10 @@ import { CompanyListViewComponent } from './components/company-list-view/company
     ResetPasswordComponent,
     CompaniesListComponent,
     CompanyRegisterComponent,
-    CompanyListViewComponent
+    CompanyListViewComponent,
+    CompanyProfileComponent,
+    JobOfferComponent,
+    JobOfferListViewComponent
 
   ],
   imports: [
