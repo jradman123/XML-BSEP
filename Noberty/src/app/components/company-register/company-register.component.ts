@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { NewCompanyRequestDto } from 'src/app/interfaces/new-company-request-dto';
 import { CompanyService } from 'src/app/services/company-service/company.service';
 
 @Component({
@@ -11,14 +12,14 @@ import { CompanyService } from 'src/app/services/company-service/company.service
   styleUrls: ['./company-register.component.css']
 })
 export class CompanyRegisterComponent implements OnInit {
-  company: ICompanyInfo;
+  company: NewCompanyRequestDto;
   createForm!: FormGroup;
   constructor(
     private _snackBar: MatSnackBar,
     private _formBuilder: FormBuilder,
     private companyService: CompanyService
   ) {
-    this.company = {} as ICompanyInfo
+    this.company = {} as NewCompanyRequestDto
 
     this.createForm = this._formBuilder.group({
       Name: new FormControl('', [
@@ -41,6 +42,7 @@ export class CompanyRegisterComponent implements OnInit {
       ///^-?(0|[1-9]\d*)?$/)]),
       Origin: new FormControl('', [Validators.required]),
       Offices: new FormControl('', [Validators.required]),
+      CompanyPolicy: new FormControl('', [Validators.required]),
 
     });
   }
@@ -58,6 +60,7 @@ export class CompanyRegisterComponent implements OnInit {
           'Your request has been successfully submitted.',
           'Dismiss'
         );
+        
 
       },
       error: (err: HttpErrorResponse) => {
@@ -68,14 +71,16 @@ export class CompanyRegisterComponent implements OnInit {
 
   }
   createCompany(): void {
-    this.company.employees = this.createForm.value.Employees
-    this.company.name = this.createForm.value.Name
-    this.company.site = this.createForm.value.Site
+    this.company.noOfEmpl = this.createForm.value.Employees
+    this.company.companyName = this.createForm.value.Name
+    this.company.companyWebsite = this.createForm.value.Site
     this.company.founded = this.createForm.value.Founded
-    this.company.headquaters = this.createForm.value.Hedquaters
+    this.company.headquarters = this.createForm.value.Hedquaters
     this.company.industry = this.createForm.value.Industry
-    this.company.offices = this.createForm.value.offices
-    this.company.origin = this.createForm.value.Origin
+    this.company.offices = this.createForm.value.Offices
+    this.company.countryOfOrigin = this.createForm.value.Origin
+    this.company.companyPolicy = this.createForm.value.CompanyPolicy
+    this.company.ownerUsername = localStorage.getItem('username')
 
   }
 
