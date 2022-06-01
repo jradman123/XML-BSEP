@@ -22,7 +22,7 @@ export class CompanyService {
     return this.http.post(`${this.apiServerUrl}/company/new`,company,{
       responseType: 'text',
     });
-    
+     
   }
 
   constructor(private http : HttpClient) { }

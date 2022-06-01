@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { PageEvent } from '@angular/material/paginator';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
 
 @Component({
@@ -13,6 +12,7 @@ export class CompaniesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.items = [{
+      id: 1,
       name: "Endava",
       site: "string",
       headquaters: "Novi Sad",
@@ -24,6 +24,7 @@ export class CompaniesListComponent implements OnInit {
     },
     
     {
+      id:2,
       name: "Levi9 Technology Services",
       site: "string",
       headquaters: "Wienna",
@@ -34,6 +35,7 @@ export class CompaniesListComponent implements OnInit {
       offices: "Beograd, Novi Sad, Zrenjanin"
     },
     {
+      id:3,
       name: "Synechron",
       site: "string",
       headquaters: "London",

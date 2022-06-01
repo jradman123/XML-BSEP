@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CompanyListViewComponent } from './company-list-view.component';
+
 
 describe('CompanyListViewComponent', () => {
   let component: CompanyListViewComponent;
@@ -22,4 +22,5 @@ describe('CompanyListViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  
 });
