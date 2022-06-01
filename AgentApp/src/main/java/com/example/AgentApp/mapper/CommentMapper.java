@@ -4,6 +4,7 @@ import com.example.AgentApp.dto.*;
 import com.example.AgentApp.model.*;
 import com.example.AgentApp.repository.CompanyRepository;
 import com.example.AgentApp.repository.UserRepository;
+import com.example.AgentApp.service.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -12,16 +13,18 @@ import java.util.*;
 public class CommentMapper {
 
     private final UserRepository userRepository;
-    private final CompanyRepository companyRepository;
+    private final CompanyService companyService;
 
-    public CommentMapper(UserRepository userRepository, CompanyRepository companyRepository) {
+    public CommentMapper(UserRepository userRepository, CompanyService companyService) {
         this.userRepository = userRepository;
-        this.companyRepository = companyRepository;
+        this.companyService = companyService;
     }
 
     public Comment toEntity(CommentDto dto){
         Comment comment = new Comment();
         User u = userRepository.findByUsername(dto.getUserUsername());
+        Company company = companyService.getById(dto.companyId);
+        comment.setCompany(company);
         comment.setUser(u);
         comment.setComment(dto.getComment());
         return comment;
