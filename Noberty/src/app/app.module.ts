@@ -13,12 +13,18 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthHeaderComponent } from './components/auth-header/auth-header.component';
 import { MatCardModule } from '@angular/material/card';
-import { MaterialModule } from './material-module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CompanyRegisterComponent } from './components/company-register/company-register.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MaterialModule } from './material/material.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CompanyListViewComponent } from './components/company-list-view/company-list-view.component';
+
 
 
 @NgModule({
@@ -31,7 +37,11 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
     UnauthHeaderComponent,
     FooterComponent,
     AuthHeaderComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    CompaniesListComponent,
+    CompanyRegisterComponent,
+    CompanyListViewComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -42,8 +52,14 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
     MaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
+
   providers: [ HttpClientModule,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
   DatePipe],

@@ -1,0 +1,32 @@
+<div *ngFor="let item of items">
+  <mat-card class="example-card m-3">
+    <mat-card-title-group>
+      <mat-card-title>{{item.name}}</mat-card-title>
+      <mat-card-subtitle>{{item.headquaters}}</mat-card-subtitle>
+    </mat-card-title-group>
+    <mat-card-content>
+      <div class="ml-3 info">
+        <div class="row pr-3">
+          <label> Offices </label>
+          <label> Employees </label>
+
+          <label> Industry </label>
+        </div>
+
+        <div class="rowData pl-3" style="font-weight: bold;">
+          <label> {{item.offices}}</label>
+          <label> {{item.employees}}</label>
+
+          <label> {{item.industry}}</label>
+        </div>
+      </div>
+      Company Info: orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+      et dolore
+      magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+      consequat...
+    </mat-card-content>
+    <button type="button" class="btn btn-success mybtn">See more</button>
+
+
+  </mat-card>
+</div>

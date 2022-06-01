@@ -5,32 +5,46 @@
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <h2 class="ml-3">My profile</h2>
     <label class="ml-3">
-        Ove podatke čuvamo samo u svrhu prijave za posao.
-        Prilikom ostavljanja utisaka, anonimnost je zagarantovana.
+        We have secured this data .
+        Anonymity is guarantied.
+       
     </label>
     <div class="main">
         <mat-card class="profile ml-3">
 
-            <img src="../../../assets/user.png" height="300px" width="300px">
+            <img src="../../../assets/user.png" height="150px" width="150px">
 
             <div class="row">
                 <label>Username: </label>
                 <label>First Name: </label>
                 <label>Last name: </label>
-                <label>Last name: </label>
                 <label>Email: </label>
 
             </div>
             <div class="rowData">
-                <label> Mike</label>
-                <label> Mike</label>
-                <label> Mike</label>
-                <label> Mike</label>
-                <label> Mike</label>
+                <label> mike@132</label>
+                <label> Mike </label>
+                <label> Watson </label>
+                <label> mikeyy12@gmail.com </label>
+            </div>
+            <div class="row ml-3">
+                <label>Phone number: </label>
+                <label>Date of birth: </label>
+                <label>Recovery email: </label>
+                <label>Gender: </label>
+
+            </div>
+            <div class="rowData">
+                <label> +13213123</label>
+                <label> 18/09/1978 </label>
+                <label> mikee@gmail.com </label>
+                <label> MALE </label>
             </div>
         </mat-card>
         <div class="buttons mr-5">
-            <button type="button" class="btn btn-success mybtn ">Registruj kompanijski profil</button>
+            <h3>Register company profile for free ! </h3>
+            <br>
+            <button type="button" class="btn btn-success mybtn" id="openModal" (click)="openModal()">Register</button>
         </div>
 
     </div>
