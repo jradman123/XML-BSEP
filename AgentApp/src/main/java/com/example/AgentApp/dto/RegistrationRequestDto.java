@@ -26,6 +26,5 @@ public class RegistrationRequestDto {
     private String dateOfBirth;
     @Pattern(regexp = "[a-zA-Z]+")
     private String gender;
-    private String isPwned;
 
 }
