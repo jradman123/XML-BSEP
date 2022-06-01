@@ -7,6 +7,7 @@ import com.example.AgentApp.model.*;
 import com.example.AgentApp.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.*;
@@ -48,6 +49,8 @@ public class CompanyController {
     }
 
     //korisnik
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER')")
     @PostMapping("/new")
     public ResponseEntity<?> createCompanyRequest(@RequestBody NewCompanyRequestDto requestDto){
         Company newCompany = companyService.createCompany(requestDto);
