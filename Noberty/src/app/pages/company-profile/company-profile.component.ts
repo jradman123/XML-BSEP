@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CompanyRegisterComponent } from 'src/app/components/company-register/company-register.component';
 import { JobOfferComponent } from 'src/app/components/job-offer/job-offer.component';
 import { IComment } from 'src/app/interfaces/comment';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
@@ -44,6 +43,7 @@ export class CompanyProfileComponent implements OnInit {
       + "magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo"
       + " consequat...";
     this.item = {
+      id:1,
       name: "Levi9 Technology Services",
       site: "https://www.levi9.com/",
       headquaters: "Novi Sad",

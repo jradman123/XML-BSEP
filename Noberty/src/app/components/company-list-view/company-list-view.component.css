@@ -17,4 +17,5 @@
 .info {
     display: flex;
     flex-direction: row;
+    width: 700px;
 }

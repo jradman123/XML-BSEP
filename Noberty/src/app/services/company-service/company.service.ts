@@ -22,8 +22,13 @@ export class CompanyService {
     return this.http.post(`${this.apiServerUrl}/company/new`,company,{
       responseType: 'text',
     });
-    
+     
   }
 
   constructor(private http : HttpClient) { }
+
+  getAlCompaniesForUser() : Observable<any>{
+    return this.http.get(`${this.apiServerUrl}/company/getAllForUser`);
+
+  }
 }

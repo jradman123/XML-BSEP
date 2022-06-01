@@ -81,4 +81,9 @@ public class CompanyServiceImpl implements CompanyService {
         return companyRepository.findById(id).orElseThrow(() -> new RuntimeException("There is no company with id " + id));
     }
 
+    @Override
+    public List<Company> getAllApprovedCompaniesExceptOwners(User user) {
+        return companyRepository.findAllExceptOwnerId(user.getId());
+    }
+
 }

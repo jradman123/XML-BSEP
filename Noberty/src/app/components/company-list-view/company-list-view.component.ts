@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { Router } from '@angular/router';
+import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 
 @Component({
   selector: 'app-company-list-view',
@@ -7,10 +8,17 @@ import { ICompanyInfo } from 'src/app/interfaces/company-info';
   styleUrls: ['./company-list-view.component.css']
 })
 export class CompanyListViewComponent implements OnInit {
-  @Input() 
-  item!:ICompanyInfo
-  constructor() { }
+  @Input()
+  item!:CompanyResponseDto
 
+  
+  constructor(private router:Router) { 
+  
+  }
+
+  seeMore() {
+    this.router.navigate(['/company/' + this.item.companyId]);
+  }
   ngOnInit(): void {
   }
 

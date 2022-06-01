@@ -11,13 +11,16 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <button class=" m-3 btn btn-dark btn-lg " [routerLink]="['/companies']">Search companies</button>
         </div>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" *ngIf="role=='OWNER'">
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/my/companies']">My company</button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" *ngIf="role=='ADMIN'">
+          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/my/companies']">Company requests</button>
         </div>
         </div>
   
         <div class="d-flex flex-row-reverse">
-          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/']">Logout</button>
+          <button class="m-3 btn btn-dark btn-lg " (click)="logout()" [routerLink]="['/']">Logout</button>
         </div>
       </nav>
   

@@ -4,6 +4,7 @@ import com.example.AgentApp.dto.*;
 import com.example.AgentApp.enums.*;
 import com.example.AgentApp.mapper.*;
 import com.example.AgentApp.model.*;
+import com.example.AgentApp.security.TokenUtils;
 import com.example.AgentApp.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.*;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @RequestMapping("/company")
@@ -26,12 +28,13 @@ public class CompanyController {
     private final SalaryCommentService salaryCommentService;
     private final InterviewService interviewService;
     private final InterviewMapper interviewMapper;
+    private final TokenUtils tokenUtils;
 
     public CompanyController(CommentMapper commentMapper, CompanyMapper companyMapper,
                              CompanyService companyService, CommentService commentService,
                              UserService userService, SalaryCommentMapper salaryCommentMapper,
                              SalaryCommentService salaryCommentService,InterviewService interviewService,
-                             InterviewMapper interviewMapper) {
+                             InterviewMapper interviewMapper,TokenUtils tokenUtils) {
         this.commentMapper = commentMapper;
         this.companyMapper = companyMapper;
         this.companyService = companyService;
@@ -41,6 +44,7 @@ public class CompanyController {
         this.salaryCommentService = salaryCommentService;
         this.interviewService = interviewService;
         this.interviewMapper = interviewMapper;
+        this.tokenUtils = tokenUtils;
     }
 
     @GetMapping("")
@@ -181,6 +185,24 @@ public class CompanyController {
             return new ResponseEntity<List<InterviewResponseDto>>(interviewMapper.mapToDtos(allInterviewsCompany), HttpStatus.OK);
         }
         return new ResponseEntity<>("Failed to get all interviews for company!", HttpStatus.CONFLICT);
+    }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER') or hasAuthority('ADMIN')")
+    @GetMapping("/getAllForUser")
+    public ResponseEntity<?> getAllForUser(HttpServletRequest request){
+        String username = tokenUtils.getUsernameFromToken(tokenUtils.getToken(request));
+        User user = userService.findByUsername(username);
+        List<Company> companies;
+        if(user.getRole().equals(UserRole.OWNER)){
+            companies = companyService.getAllApprovedCompaniesExceptOwners(user);
+        }else {
+            companies = companyService.getAllCompaniesWithStatus(CompanyStatus.APPROVED);
+        }
+        if (companies != null){
+            return new ResponseEntity<List<CompanyResponseDto>>(companyMapper.mapToDtos(companies), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Failed to return any company!", HttpStatus.CONFLICT);
     }
 
 }
