@@ -11,7 +11,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <button class=" m-3 btn btn-dark btn-lg " [routerLink]="['/companies']">Search companies</button>
         </div>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" *ngIf="role=='OWNER'">
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/my/companies']">My company</button>
         </div>
         </div>
