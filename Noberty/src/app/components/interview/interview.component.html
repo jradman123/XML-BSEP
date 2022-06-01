@@ -1,4 +1,4 @@
-<div class="card">
+<!-- <div class="card">
                
     <div class="row">
         
@@ -10,16 +10,16 @@
         
         </div>
         
-        <div class="col-10">
+        <div class="comment-widgets m-b-20">
             
-            <div class="comment-box ml-2">
+            <div class="d-flex flex-row comment-row">
                 
                 <h4>{{this.interview.userUsername}}</h4>
-                <!-- <ngb-rating [max]="5" [(rate)]="interview.rating" [readonly]="true" ></ngb-rating> -->
+                 <ngb-rating [max]="5" [(rate)]="interview.rating" [readonly]="true" ></ngb-rating> 
                 
                 <div class="comment-area">
                     
-                    <textarea readonly class="form-control"  rows="6">{{this.interview.comment}}</textarea>
+                    <textarea readonly class="form-control"  rows="3">{{this.interview.comment}}</textarea>
                 
                 </div>
                 <br/>
@@ -40,4 +40,27 @@
     
     </div>
 
+</div> -->
+
+
+<div class="card">
+    <div class="card-body">
+
+        <div class="comment-widgets m-b-20">
+
+            <div class="d-flex flex-row comment-row">
+                <div class="p-2"><span class="round"><img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="user" 
+                    width="50"></span>
+                </div>
+                <div class="comment-text w-100">
+                    <h4>{{this.interview.userUsername}}     <ngb-rating [max]="5" [(rate)]="interview.rating" [readonly]="true" ></ngb-rating> </h4>
+                    
+                    <p style="font-size:large">{{this.interview.comment}}</p>
+                    <p style="font-size:large">Difficulty: {{this.interview.difficulty}}</p>  
+                    <!-- <p style="font-size:large">Rating: <ngb-rating [max]="5" [(rate)]="interview.rating" [readonly]="true" ></ngb-rating> </p>  -->
+                </div>
+                
+        </div>
+
+    </div>
 </div>

@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { InterviewComponent } from './components/interview/interview.component';
-import { SalaryCommentComponent } from './components/salary-comment/salary-comment.component';
 import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';

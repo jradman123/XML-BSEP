@@ -4,8 +4,11 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CompanyRegisterComponent } from 'src/app/components/company-register/company-register.component';
 import { JobOfferComponent } from 'src/app/components/job-offer/job-offer.component';
+import { IComment } from 'src/app/interfaces/comment';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { IInterview } from 'src/app/interfaces/interview';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
+import { ISalaryComment } from 'src/app/interfaces/salary-comment';
 import { CompanyService } from 'src/app/services/company-service/company.service';
 
 @Component({
@@ -19,6 +22,9 @@ export class CompanyProfileComponent implements OnInit {
   editable!: boolean;
   newDescription!: string
   jobOffer!: IJobOffer[]
+  comments!: IComment[]
+  interviews!: IInterview[]
+  salaryComments!: ISalaryComment[]
 
   constructor(
     private _snackBar: MatSnackBar,
@@ -49,9 +55,45 @@ export class CompanyProfileComponent implements OnInit {
     }
     this.editable = false;
     this.newDescription = this.description
+    this.comments = [{
+      comment:"asasas",
+      companyId  : 1,
+      userUsername : "usernameeebebebooo"
+    },{
+      comment:"eeeeeeeeeeeee",
+      companyId  : 1,
+      userUsername : "zjuuu"
+    }]
+
+    this.interviews = [{
+      comment : "aaashodhsuhd",
+      companyID : 1,
+      difficulty : "HARD",
+      rating : 5,
+      userUsername : "SHDOSHD"
+    },{
+      comment : "FGDGDG",
+      companyID : 1,
+      difficulty : "HARD",
+      rating : 4,
+      userUsername : "SHDOSSADDDDHD"
+    }]
+
+    this.salaryComments = [{
+      companyId : 1, 
+      position : "position",
+      salary : "120e",
+      userUsername : " dsdhsddhsh"
+    },{
+      companyId : 1, 
+      position : "another one ",
+      salary : "12000e",
+      userUsername : " heheheheh"
+    }]
   }
 
   ngOnInit(): void {
+    
   }
   enableEdit() {
     this.editable = true
