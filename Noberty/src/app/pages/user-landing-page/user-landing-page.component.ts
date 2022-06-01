@@ -18,7 +18,7 @@ export class UserLandingPageComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.id = 'modal-component';
-    dialogConfig.height = '400px';
+    dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
     this.matDialog.open(CompanyRegisterComponent, dialogConfig);
   }

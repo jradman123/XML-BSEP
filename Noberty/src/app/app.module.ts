@@ -18,6 +18,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { CompanyRegisterComponent } from './components/company-register/company-register.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { MaterialModule } from './material/material.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CompanyListViewComponent } from './components/company-list-view/company-list-view.component';
 
 
 
@@ -33,6 +35,7 @@ import { MaterialModule } from './material/material.module';
     AuthHeaderComponent,
     CompaniesListComponent,
     CompanyRegisterComponent,
+    CompanyListViewComponent,
 
   ],
   imports: [
@@ -43,7 +46,9 @@ import { MaterialModule } from './material/material.module';
     NgbModule,
     MatDialogModule,
     MatSnackBarModule,
-    MaterialModule
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
 
   providers: [],
