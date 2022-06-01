@@ -26,4 +26,9 @@ export class CompanyService {
   }
 
   constructor(private http : HttpClient) { }
+
+  getAlCompaniesForUser() : Observable<any>{
+    return this.http.get(`${this.apiServerUrl}/company/getAllForUser`);
+
+  }
 }

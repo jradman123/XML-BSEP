@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
+import { CompanyService } from 'src/app/services/company-service/company.service';
 
 @Component({
   selector: 'app-companies-list',
@@ -7,45 +8,11 @@ import { ICompanyInfo } from 'src/app/interfaces/company-info';
   styleUrls: ['./companies-list.component.css']
 })
 export class CompaniesListComponent implements OnInit {
-  items!: ICompanyInfo[]
-  constructor() { }
+  items!: CompanyResponseDto[]
+  constructor(private companyService : CompanyService) { }
 
   ngOnInit(): void {
-    this.items = [{
-      id: 1,
-      name: "Endava",
-      site: "string",
-      headquaters: "Novi Sad",
-      founded: "string",
-      industry: "Software Outsourcing",
-      employees: 1000,
-      origin: "string",
-      offices: "Beograd, Novi Sad, Kragujevac, Čačak"
-    },
-    
-    {
-      id:2,
-      name: "Levi9 Technology Services",
-      site: "string",
-      headquaters: "Wienna",
-      founded: "string",
-      industry: "Software Outsourcing",
-      employees: 800,
-      origin: "string",
-      offices: "Beograd, Novi Sad, Zrenjanin"
-    },
-    {
-      id:3,
-      name: "Synechron",
-      site: "string",
-      headquaters: "London",
-      founded: "string",
-      industry: "IT Services",
-      employees: 500,
-      origin: "string",
-      offices: "Novi Sad, Beograd"
-    }
-    ]
+    this.companyService.getAlCompaniesForUser().subscribe((res) => {this.items = res});
   }
 
 

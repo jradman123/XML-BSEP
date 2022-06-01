@@ -10,16 +10,15 @@ import { UserServiceService } from 'src/app/services/UserService/user-service.se
 export class AuthHeaderComponent implements OnInit {
 
   currentUser : LoggedUserDto;
-  isOwner : boolean = false;
+  role! : string ;
   constructor(private userService : UserServiceService) {
     this.currentUser = {} as LoggedUserDto;
    }
 
   ngOnInit(): void {
    this.currentUser = this.userService.getUserValue();
-   if(this.currentUser.role === "OWNER"){
-      this.isOwner = true;
-   }
+   this.role = this.currentUser.role;
+   console.log(this.role);
   }
 
   logout() : void {

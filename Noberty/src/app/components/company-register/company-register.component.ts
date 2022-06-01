@@ -24,7 +24,7 @@ export class CompanyRegisterComponent implements OnInit {
     this.createForm = this._formBuilder.group({
       Name: new FormControl('', [
         Validators.required,
-        Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ ]*$'),
+        Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ0-9 ]*$'),
       ]),
       Site: new FormControl('', [
         Validators.required,
