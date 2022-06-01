@@ -13,6 +13,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthHeaderComponent } from './components/auth-header/auth-header.component';
 import { MatCardModule } from '@angular/material/card';
+import { MaterialModule } from './material-module';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 
 @NgModule({
@@ -24,16 +30,23 @@ import { MatCardModule } from '@angular/material/card';
     HomePageComponent,
     UnauthHeaderComponent,
     FooterComponent,
-    AuthHeaderComponent
+    AuthHeaderComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
     MatCardModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    NgbModule
+    NgbModule,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [ HttpClientModule,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+  DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
