@@ -7,8 +7,7 @@ import javax.validation.constraints.Email;
 @Data
 public class CheckCodeDto {
 
-    @Email
-    private String email;
+    private String username;
     private String code;
 }
 

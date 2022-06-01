@@ -3,25 +3,25 @@ package com.example.AgentApp.dto;
 import lombok.Data;
 
 public class LoggedUserDto {
-    private String email;
+    private String username;
     private String role;
     private UserTokenState token;
 
     public LoggedUserDto() {
     }
 
-    public LoggedUserDto(String email, String role, UserTokenState token) {
-        this.email = email;
+    public LoggedUserDto(String username, String role, UserTokenState token) {
+        this.username = username;
         this.role = role;
         this.token = token;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getRole() {

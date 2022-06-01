@@ -22,10 +22,10 @@
 
             </div>
             <div class="rowData">
-                <label> mike@132</label>
-                <label> Mike </label>
-                <label> Watson </label>
-                <label> mikeyy12@gmail.com </label>
+                <label> {{userInfo.username}}</label>
+                <label> {{userInfo.firstName}}</label>
+                <label> {{userInfo.lastName}}</label>
+                <label> {{userInfo.email}}</label>
             </div>
             <div class="row ml-3">
                 <label>Phone number: </label>
@@ -35,10 +35,10 @@
 
             </div>
             <div class="rowData">
-                <label> +13213123</label>
-                <label> 18/09/1978 </label>
-                <label> mikee@gmail.com </label>
-                <label> MALE </label>
+                <label> {{userInfo.phoneNumber}}</label>
+                <label> {{userInfo.dateOfBirth}} </label>
+                <label> {{userInfo.recoveryEmail}}</label>
+                <label> {{userInfo.gender}}</label>
             </div>
         </mat-card>
         <div class="buttons mr-5">

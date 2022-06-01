@@ -1,7 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { observable, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
+import { NewCompanyRequestDto } from 'src/app/interfaces/new-company-request-dto';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +16,14 @@ export class CompanyService {
   UpdateInfo(description: string): Observable<ICompanyInfo> {
     throw new Error('Method not implemented.');
   }
-  RegisterCompany(company: ICompanyInfo): Observable<ICompanyInfo> {
-    throw new Error('Method not implemented.');
+
+  private apiServerUrl = environment.apiBaseUrl;
+  RegisterCompany(company: NewCompanyRequestDto):Observable<any> {
+    return this.http.post(`${this.apiServerUrl}/company/new`,company,{
+      responseType: 'text',
+    });
+    
   }
 
-  constructor() { }
+  constructor(private http : HttpClient) { }
 }

@@ -44,7 +44,7 @@ public class AuthenticationController {
     @Autowired
     private CustomTokenService customTokenService;
 
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
     public ResponseEntity<LoggedUserDto> login(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
@@ -60,6 +60,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(loggedUserDto);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/signup")
     public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationRequestDto userRequest, UriComponentsBuilder ucBuilder) throws UnknownHostException, ParseException {
         User existUser = this.userService.findByUsername(userRequest.getUsername());
@@ -93,27 +94,18 @@ public class AuthenticationController {
         }
     }
 
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/sendCode")
-    public ResponseEntity<?> sendCode(@RequestBody String email) {
-        User user = userService.findByEmail(email);
+    public ResponseEntity<?> sendCode(@RequestBody String username) {
+        User user = userService.findByUsername(username);
         customTokenService.sendResetPasswordToken(user);
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping(value = "/checkRecoveryEmail")
-    public ResponseEntity<String> checkRecoveryEmail(@Valid @RequestBody RequestCheckDto request) {
-        User user = userService.findByEmail(request.getEmail());
-        if (user.getRecoveryEmail().equals(request.getRecoveryEmail())) {
-            customTokenService.sendResetPasswordToken(user);
-            return new ResponseEntity<>("Check your email.", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("Entered recovery email is not valid!", HttpStatus.BAD_REQUEST);
-    }
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/checkCode")
-    public ResponseEntity<String> checkCode(@Valid @RequestBody CheckCodeDto checkCodeDto) {
-        User user = userService.findByEmail(checkCodeDto.getEmail());
+    public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
+        User user = userService.findByUsername(checkCodeDto.getUsername());
         CustomToken token = customTokenService.findByUser(user);
         if (customTokenService.checkResetPasswordCode(checkCodeDto.getCode(), token.getToken())) {
             return new ResponseEntity<>("Success!", HttpStatus.OK);
@@ -122,10 +114,10 @@ public class AuthenticationController {
         return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
     }
 
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping(value = "/resetPassword")
     public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
-        userService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getNewPassword());
+        userService.resetPassword(resetPasswordDto.getUsername(), resetPasswordDto.getNewPassword());
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }

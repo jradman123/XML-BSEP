@@ -1,1 +1,227 @@
-<p>register-page works!</p>
+<div class="image">
+<div class="container" >
+    <mat-card>
+      <mat-card-title>Registration</mat-card-title>
+      <br/><br/>
+      <mat-card-content>
+      <div class="container" [formGroup]="createForm" >
+        <br />
+        <div class="separateMe">
+          <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>First name</mat-label>
+              <input matInput formControlName="firstName" />
+              <mat-error
+                *ngIf="
+                  createForm?.get('firstName')?.valid &&
+                  createForm?.get('firstName')?.touched &&
+                  createForm?.get('firstName')?.errors?.required
+                "
+                >First name is required.</mat-error
+              >
+              <mat-error>Invalid input</mat-error>
+            </mat-form-field>
+            </div>
+            <div style="width: 100%; display: flex"></div>
+            <mat-form-field appearance="fill">
+              <mat-label>Last name</mat-label>
+              <input matInput formControlName="lastName" />
+              <mat-error
+                *ngIf="
+                  createForm?.get('lastName')?.valid &&
+                  createForm?.get('lastName')?.touched &&
+                  createForm?.get('lastName')?.errors?.required
+                "
+                >Last name is required.</mat-error
+              >
+              <mat-error>Invalid input</mat-error>
+            </mat-form-field>
+          </div>
+          <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              
+          <mat-label>Date of Birth</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="dateOfBirth"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>                
+            </div>
+            <div style="width: 100%; display: flex">
+                <mat-form-field appearance="fill">
+                  <mat-label>Gender</mat-label>
+                  <mat-select
+                    formControlName="gender"
+                  >
+                    <mat-option  value="FEMALE">
+                      FEMALE
+                    </mat-option>
+                    <mat-option  value="MALE">
+                        MALE
+                      </mat-option>
+                  </mat-select>
+                  <mat-error
+                    *ngIf="
+                      !createForm?.get('gender')?.valid &&
+                      createForm?.get('gender')?.touched &&
+                      createForm?.get('gender')?.errors?.required
+                    "
+                    >Please select gender</mat-error
+                  >
+                </mat-form-field>
+            </div>
+    
+          <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Phone number</mat-label>
+              <input matInput formControlName="phoneNumber" />
+              <mat-error
+                *ngIf="
+                  !createForm?.get('phoneNumber')?.valid &&
+                  createForm?.get('phoneNumber')?.touched &&
+                  createForm?.get('phoneNumber')?.errors?.required
+                "
+                >Phone number is required</mat-error
+              >
+            </mat-form-field>
+            </div>
+            <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Username</mat-label>
+              <input matInput formControlName="username" />
+              <mat-error
+                *ngIf="
+                  !createForm?.get('username')?.valid &&
+                  createForm?.get('username')?.touched &&
+                  createForm?.get('username')?.errors?.required
+                "
+                >Country is required</mat-error
+              >
+            </mat-form-field>
+            </div>
+    
+          <div style="width: 100%; display: flex">
+            <mat-form-field appearance="fill">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" />
+              <mat-error
+                *ngIf="
+                  !createForm?.get('email')?.valid &&
+                  createForm?.get('email')?.touched &&
+                  createForm?.get('email')?.errors?.required
+                "
+                >Email is required</mat-error
+              >
+              <mat-error
+                *ngIf="
+                  !createForm?.get('email')?.valid &&
+                  createForm?.get('email')?.touched &&
+                  createForm?.get('email')?.errors?.email
+                "
+                >Invalid email!</mat-error
+              >
+            </mat-form-field>
+            </div>
+            <div style="width: 100%; display: flex">
+                <mat-form-field appearance="fill">
+                  <mat-label>Recovery email address</mat-label>
+                  <input matInput formControlName="recoveryEmail" />
+                  <mat-error
+                    *ngIf="
+                      !createForm?.get('recoveryEmail')?.valid &&
+                      createForm?.get('recoveryEmail')?.touched &&
+                      createForm?.get('recoveryEmail')?.errors?.required 
+                    "
+                    >Recovery email is required</mat-error
+                  >
+                  <mat-error
+                    *ngIf="
+                      !createForm?.get('recoveryEmail')?.valid &&
+                      createForm?.get('recoveryEmail')?.touched &&
+                      createForm?.get('recoveryEmail')?.errors?.email
+                    "
+                    >Invalid email!</mat-error
+                  >
+                </mat-form-field>
+                </div>
+          <div style="width: 100%; display: flex">
+          <mat-form-field appearance="fill">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              (input)="onPasswordInput()"
+            />
+            <mat-error
+              *ngIf="
+                !createForm?.get('password')?.valid &&
+                createForm?.get('password')?.touched &&
+                createForm?.get('password')?.errors?.required 
+
+              "
+              >Password is required</mat-error
+            >
+            <mat-error
+                *ngIf="
+                  !createForm?.get('password')?.valid &&
+                  createForm?.get('password')?.touched &&
+                  createForm?.get('password')?.errors?.pattern
+                "
+                >Password is not strong enough!</mat-error
+              >
+              <mat-error
+                *ngIf="
+                  !createForm?.get('password')?.valid &&
+                  createForm?.get('password')?.touched &&
+                  createForm?.get('password')?.errors?.minlength
+                "
+                >10 characters please!</mat-error
+            >
+          </mat-form-field>
+          </div>
+          <div style="width: 100%; display: flex">
+          <mat-form-field appearance="fill">
+            <mat-label>Confirm Password</mat-label>
+            <input
+              type="password"
+              matInput
+              formControlName="passConfirmed"
+              (input)="onPasswordInput()"
+            />
+            <mat-error
+              *ngIf="
+                !createForm?.get('passConfirmed')?.valid &&
+                createForm?.get('passConfirmed')?.touched &&
+                createForm?.get('passConfirmed')?.errors?.required
+              "
+              >Password is required</mat-error
+            >
+            <mat-error *ngIf="!passMatch">Passwords does not match! </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <br /><br />
+        <div >
+          <button
+            mat-raised-button
+            (click)="onSubmit()"
+            color="primary"
+            class="icon-display"
+          >
+            Register
+          </button>
+        </div>
+        </div>
+      </mat-card-content>
+      </mat-card>
+      <br />
+</div>  
+</div>
+

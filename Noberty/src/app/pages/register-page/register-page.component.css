@@ -1,0 +1,30 @@
+mat-form-field {
+  width: 300px;
+}
+
+.separateMe {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.icon-display {
+  transform: scale(1.34);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.image{
+    height:-webkit-fill-available; 
+    background-size:cover;
+    width:auto;
+    background-image:url("../../../assets/wallpaper.jpg"); 
+    background-position:10% 10%;
+    background-position: fill;
+  }

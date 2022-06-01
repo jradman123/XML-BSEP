@@ -13,6 +13,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthHeaderComponent } from './components/auth-header/auth-header.component';
 import { MatCardModule } from '@angular/material/card';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
+import { DatePipe } from '@angular/common';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CompanyRegisterComponent } from './components/company-register/company-register.component';
@@ -23,6 +27,7 @@ import { CompanyListViewComponent } from './components/company-list-view/company
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { JobOfferListViewComponent } from './components/job-offer-list-view/job-offer-list-view.component';
+import { CompanyViewComponent } from './components/company-view/company-view.component';
 
 
 
@@ -36,12 +41,14 @@ import { JobOfferListViewComponent } from './components/job-offer-list-view/job-
     UnauthHeaderComponent,
     FooterComponent,
     AuthHeaderComponent,
+    ResetPasswordComponent,
     CompaniesListComponent,
     CompanyRegisterComponent,
     CompanyListViewComponent,
     CompanyProfileComponent,
     JobOfferComponent,
     JobOfferListViewComponent,
+    CompanyViewComponent,
 
   ],
   imports: [
@@ -50,6 +57,10 @@ import { JobOfferListViewComponent } from './components/job-offer-list-view/job-
     AppRoutingModule,
     BrowserAnimationsModule,
     NgbModule,
+    MaterialModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
     MatDialogModule,
     MatSnackBarModule,
     MaterialModule,
@@ -57,7 +68,9 @@ import { JobOfferListViewComponent } from './components/job-offer-list-view/job-
     ReactiveFormsModule
   ],
 
-  providers: [],
+  providers: [ HttpClientModule,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+  DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
