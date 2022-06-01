@@ -1,12 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { observable, Observable } from 'rxjs';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { IJobOffer } from 'src/app/interfaces/job-offer';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CompanyService {
-  RegisterCompany(company: ICompanyInfo):Observable<ICompanyInfo> {
+  CreateJobOffer(jobOffer: IJobOffer): Observable<ICompanyInfo> {
+    throw new Error('Method not implemented.');
+  }
+  UpdateInfo(description: string): Observable<ICompanyInfo> {
+    throw new Error('Method not implemented.');
+  }
+  RegisterCompany(company: ICompanyInfo): Observable<ICompanyInfo> {
     throw new Error('Method not implemented.');
   }
 
