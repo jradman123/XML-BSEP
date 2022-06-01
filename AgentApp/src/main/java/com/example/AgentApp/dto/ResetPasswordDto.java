@@ -7,8 +7,8 @@ import javax.validation.constraints.Pattern;
 
 @Data
 public class ResetPasswordDto {
-    @Email
-    private String email;
+
+    private String username;
 
     @Pattern(regexp= "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!\"#$@%&()*<>+_|~]).*$", message =  "Password format not valid")
     private String newPassword;

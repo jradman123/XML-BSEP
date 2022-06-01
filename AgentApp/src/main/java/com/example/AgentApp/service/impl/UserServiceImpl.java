@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private Date getDateOfBirthFromRequest(String dateOfBirth) throws ParseException {
-        return new SimpleDateFormat("dd/MM/yyyy").parse(dateOfBirth);
+        return new SimpleDateFormat("MM/dd/yyyy").parse(dateOfBirth);
     }
 
     private Gender getGenderFromRequest(String gender) {
