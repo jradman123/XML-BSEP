@@ -7,6 +7,7 @@ import { JobOfferComponent } from 'src/app/components/job-offer/job-offer.compon
 import { IComment } from 'src/app/interfaces/comment';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { IInterview } from 'src/app/interfaces/interview';
+import { IsUsersCompanyDto } from 'src/app/interfaces/is-users-company-dto';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
 import { ISalaryComment } from 'src/app/interfaces/salary-comment';
 import { CompanyService } from 'src/app/services/company-service/company.service';
@@ -29,6 +30,9 @@ export class CompanyProfileComponent implements OnInit {
 
   cid!: string;
 
+  isUsersCompany! : string;
+  role! : string | null;
+
   constructor(
     private router : Router,
     private _snackBar: MatSnackBar,
@@ -49,11 +53,20 @@ export class CompanyProfileComponent implements OnInit {
     ]
     
     this.editable = false;
+  
   }
 
   ngOnInit(): void {
     console.log(this.router.url);
     this.cid = this.router.url.substring(9);
+    this.role = localStorage.getItem('role');
+
+    this.companyService.isUsersCompany(this.cid).subscribe(
+      res => {
+        this.isUsersCompany=res.message;
+        console.log(this.isUsersCompany);
+      }
+    );
 
     this.companyService.getById(this.cid).subscribe(
       res => {
