@@ -8,8 +8,8 @@
         <div [formGroup]="createForm" class="content">
             <div>
                 <mat-form-field appearance="fill" style="width: 100%">
-                    <mat-label>Comment</mat-label>
-                    <input id="text" matInput required formControlName="Comment">
+                    <mat-label>Salary</mat-label>
+                    <input id="text" matInput required formControlName="Salary">
                 </mat-form-field>
 
             </div>
@@ -22,7 +22,7 @@
             </div>
         
             <div class="buttons">
-                <button id="submitRequest"  class="btn btn-success text-center">
+                <button id="submitRequest" (click)="submitRequest()"  class="btn btn-success text-center">
                     Submit
                 </button>
             </div>

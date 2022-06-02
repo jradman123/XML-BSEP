@@ -15,6 +15,15 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class CompanyService {
+  CreateComment(comment: IComment): Observable<any> {
+    return this.http.post(`${this.apiServerUrl}/company/comment`, comment);
+  }
+  CreateInterview(interview: IInterview) : Observable<any> {
+    return this.http.post(`${this.apiServerUrl}/company/interview`, interview);
+  }
+  CreateSalaryComment(comment: ISalaryComment) : Observable<any> {
+    return this.http.post(`${this.apiServerUrl}/company/salaryComment`, comment);
+  }
 
   CreateJobOffer(jobOffer: IJobOfferRequest): Observable<any> {
     return this.http.post(`${this.apiServerUrl}/company/createOffer`, jobOffer);

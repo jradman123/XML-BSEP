@@ -145,7 +145,7 @@ export class CompanyProfileComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (res) => {
         console.log(res);
-        this.getOffersForCompany()
+        this.jobOffers = res.data;
       }
     })
   }
@@ -156,7 +156,13 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.id = 'modal-component';
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
-    this.matDialog.open(LeaveCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+    const dialogRef = this.matDialog.open(LeaveCommentComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.comments = res.data;
+      }
+    })
 
   }
 
@@ -166,7 +172,13 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.id = 'modal-component';
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
-    this.matDialog.open(LeaveInterviewCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+    const dialogRef = this.matDialog.open(LeaveInterviewCommentComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.interviews = res.data;
+      }
+    })
 
   }
 
@@ -176,7 +188,13 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.id = 'modal-component';
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
-    this.matDialog.open(LeaveSallaryCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+    const dialogRef = this.matDialog.open(LeaveSallaryCommentComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.salaryComments = res.data;
+      }
+    })
 
   }
 

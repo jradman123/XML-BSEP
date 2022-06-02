@@ -67,9 +67,6 @@ export class JobOfferComponent implements OnInit {
           'You have created a job offer.',
           'Dismiss'
         );
-
-     
-
       },
       error: (err: HttpErrorResponse) => {
         this.clearForm();
