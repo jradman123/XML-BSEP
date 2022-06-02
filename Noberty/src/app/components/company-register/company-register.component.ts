@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
 import { NewCompanyRequestDto } from 'src/app/interfaces/new-company-request-dto';
@@ -17,7 +18,8 @@ export class CompanyRegisterComponent implements OnInit {
   constructor(
     private _snackBar: MatSnackBar,
     private _formBuilder: FormBuilder,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private dialogRef: MatDialogRef<CompanyRegisterComponent>
   ) {
     this.company = {} as NewCompanyRequestDto
 
@@ -60,6 +62,7 @@ export class CompanyRegisterComponent implements OnInit {
           'Your request has been successfully submitted.',
           'Dismiss'
         );
+        this.dialogRef.close();
         
 
       },

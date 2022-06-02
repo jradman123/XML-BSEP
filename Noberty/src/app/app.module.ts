@@ -36,6 +36,7 @@ import { LeaveCommentComponent } from './components/leave-comment/leave-comment.
 import { LeaveInterviewCommentComponent } from './components/leave-interview-comment/leave-interview-comment.component';
 import { LeaveSallaryCommentComponent } from './components/leave-sallary-comment/leave-sallary-comment.component';
 import { MyCompaniesListComponent } from './pages/my-companies-list/my-companies-list.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 
 
@@ -65,7 +66,8 @@ import { MyCompaniesListComponent } from './pages/my-companies-list/my-companies
     LeaveCommentComponent,
     LeaveInterviewCommentComponent,
     LeaveSallaryCommentComponent,
-    MyCompaniesListComponent
+    MyCompaniesListComponent,
+    ChangePasswordComponent
 
   ],
   imports: [
