@@ -64,22 +64,27 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to create company registration request!", HttpStatus.CONFLICT);
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     //admin
     @GetMapping("approve/{id}")
     public ResponseEntity<?> approveCompany(@PathVariable Long id) {
         Company company = companyService.approveCompany(id,true);
+        List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.PENDING);
         if (company != null){
-            return new ResponseEntity<NewCompanyResponseDto>(companyMapper.mapToCompanyCreateResponse(company), HttpStatus.OK);
+            return new ResponseEntity<List<CompanyResponseDto>>(companyMapper.mapToDtos( companies), HttpStatus.OK);
         }
         return new ResponseEntity<>("Failed to approve company!", HttpStatus.CONFLICT);
 
     }
+
+    @CrossOrigin(origins = "http://localhost:4200")
     //admin
     @GetMapping("reject/{id}")
     public ResponseEntity<?> rejectCompany(@PathVariable Long id) {
         Company company = companyService.approveCompany(id,false);
+        List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.PENDING);
         if (company != null){
-            return new ResponseEntity<NewCompanyResponseDto>(companyMapper.mapToCompanyCreateResponse(company), HttpStatus.OK);
+            return new ResponseEntity<List<CompanyResponseDto>>(companyMapper.mapToDtos( companies), HttpStatus.OK);
         }
         return new ResponseEntity<>("Failed to reject company!", HttpStatus.CONFLICT);
     }
@@ -104,7 +109,9 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);
     }
 
+
     //admin
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("pending")
     public ResponseEntity<?> getAllPendingCompanies(){
         List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.PENDING);

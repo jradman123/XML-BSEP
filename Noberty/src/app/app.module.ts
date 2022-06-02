@@ -27,6 +27,8 @@ import { CompanyListViewComponent } from './components/company-list-view/company
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { JobOfferListViewComponent } from './components/job-offer-list-view/job-offer-list-view.component';
+import { CompanyRequestsComponent } from './components/company-requests/company-requests.component';
+import { CompanyRequestsPageComponent } from './pages/company-requests-page/company-requests-page.component';
 
 
 
@@ -46,7 +48,9 @@ import { JobOfferListViewComponent } from './components/job-offer-list-view/job-
     CompanyListViewComponent,
     CompanyProfileComponent,
     JobOfferComponent,
-    JobOfferListViewComponent
+    JobOfferListViewComponent,
+    CompanyRequestsComponent,
+    CompanyRequestsPageComponent
 
   ],
   imports: [

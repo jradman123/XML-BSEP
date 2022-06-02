@@ -8,7 +8,7 @@ import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 })
 export class CompanyListViewComponent implements OnInit {
   @Input()
-  items!:CompanyResponseDto[]
+  item!:CompanyResponseDto
 
   
   constructor() { 
