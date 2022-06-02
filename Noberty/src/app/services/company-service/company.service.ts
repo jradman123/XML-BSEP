@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IComment } from 'src/app/interfaces/comment';
 import { IInterview } from 'src/app/interfaces/interview';
+import { IsUsersCompanyDto } from 'src/app/interfaces/is-users-company-dto';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
 import { IJobOfferRequest } from 'src/app/interfaces/job-offer-request';
 import { IJobOfferResponse } from 'src/app/interfaces/job-offer-response';
@@ -71,5 +72,9 @@ export class CompanyService {
     return this.http.get<ISalaryComment[]>(`${this.apiServerUrl}/company/` + id + `/salaryComments`);
   }
 
+  isUsersCompany(id : string) : Observable<any>{
+    return this.http.get<IsUsersCompanyDto>(`${this.apiServerUrl}/company/isUsersCompany/` + id);
+  }
+  
 
 }

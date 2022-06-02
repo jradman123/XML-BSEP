@@ -227,4 +227,19 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to return any company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER') or hasAuthority('ADMIN')")
+    @GetMapping("/isUsersCompany/{id}")
+    public ResponseEntity<?> isUsersCompany(@PathVariable Long id, HttpServletRequest request){
+        String username = tokenUtils.getUsernameFromToken(tokenUtils.getToken(request));
+        User user = userService.findByUsername(username);
+        Company company = companyService.getById(id);
+        IsUsersCompanyDto isUsersCompanyDto = new IsUsersCompanyDto();
+        if(company.getOwner().getUsername().equals(user.getUsername())){
+            isUsersCompanyDto.setMessage("TRUE");
+        }else {
+            isUsersCompanyDto.setMessage("FALSE");
+        }
+        return new ResponseEntity<IsUsersCompanyDto>(isUsersCompanyDto, HttpStatus.OK);
+    }
+
 }
