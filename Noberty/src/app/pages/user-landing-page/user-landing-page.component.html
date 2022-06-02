@@ -1,0 +1,51 @@
+<div class="container" class="image">
+
+    <app-auth-header></app-auth-header>
+    <router-outlet></router-outlet>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <h2 class="ml-3">My profile</h2>
+    <label class="ml-3">
+        We have secured this data .
+        Anonymity is guarantied.
+       
+    </label>
+    <div class="main">
+        <mat-card class="profile ml-3">
+
+            <img src="../../../assets/user.png" height="150px" width="150px">
+
+            <div class="row">
+                <label>Username: </label>
+                <label>First Name: </label>
+                <label>Last name: </label>
+                <label>Email: </label>
+
+            </div>
+            <div class="rowData">
+                <label> {{userInfo.username}}</label>
+                <label> {{userInfo.firstName}}</label>
+                <label> {{userInfo.lastName}}</label>
+                <label> {{userInfo.email}}</label>
+            </div>
+            <div class="row ml-3">
+                <label>Phone number: </label>
+                <label>Date of birth: </label>
+                <label>Recovery email: </label>
+                <label>Gender: </label>
+
+            </div>
+            <div class="rowData">
+                <label> {{userInfo.phoneNumber}}</label>
+                <label> {{userInfo.dateOfBirth}} </label>
+                <label> {{userInfo.recoveryEmail}}</label>
+                <label> {{userInfo.gender}}</label>
+            </div>
+        </mat-card>
+        <div class="buttons mr-5">
+            <h3>Register company profile for free ! </h3>
+            <br>
+            <button type="button" class="btn btn-success mybtn" id="openModal" (click)="openModal()">Register</button>
+        </div>
+
+    </div>
+</div>

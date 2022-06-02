@@ -1,0 +1,66 @@
+<!-- <div class="card">
+               
+    <div class="row">
+        
+        <div class="col-2">
+            
+            
+            <img src="https://i.imgur.com/xELPaag.jpg" width="70" class="rounded-circle mt-2">
+        
+        
+        </div>
+        
+        <div class="comment-widgets m-b-20">
+            
+            <div class="d-flex flex-row comment-row">
+                
+                <h4>{{this.interview.userUsername}}</h4>
+                 <ngb-rating [max]="5" [(rate)]="interview.rating" [readonly]="true" ></ngb-rating> 
+                
+                <div class="comment-area">
+                    
+                    <textarea readonly class="form-control"  rows="3">{{this.interview.comment}}</textarea>
+                
+                </div>
+                <br/>
+                <div class="comment-area">
+                    <div>
+                         <p style="font-size:large">Difficulty: {{this.interview.difficulty}}</p>  
+                         <p style="font-size:large">Rating: {{this.interview.rating}}</p> 
+                    </div>
+                             
+                </div>
+                
+            
+            
+            </div>
+        
+        </div>
+    
+    
+    </div>
+
+</div> -->
+
+
+<div class="card">
+    <div class="card-body">
+
+        <div class="comment-widgets m-b-20">
+
+            <div class="d-flex flex-row comment-row">
+                <div class="p-2"><span class="round"><img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="user" 
+                    width="50"></span>
+                </div>
+                <div class="comment-text w-100">
+                    <h4>{{this.interview.userUsername}}     <ngb-rating [max]="5" [(rate)]="interview.rating" [readonly]="true" ></ngb-rating> </h4>
+                    
+                    <p style="font-size:large">{{this.interview.comment}}</p>
+                    <p style="font-size:large">Difficulty: {{this.interview.difficulty}}</p>  
+                    <!-- <p style="font-size:large">Rating: <ngb-rating [max]="5" [(rate)]="interview.rating" [readonly]="true" ></ngb-rating> </p>  -->
+                </div>
+                
+        </div>
+
+    </div>
+</div>

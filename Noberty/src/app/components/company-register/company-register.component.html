@@ -1,0 +1,57 @@
+<div class="container" style="  position: relative;top: 20px;">
+
+    <div class="col-12 text-center">
+        <h3> Company data </h3>
+        <hr />
+    </div>
+    <div class="col-12">
+        <div [formGroup]="createForm">
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Name</mat-label>
+                    <input id="text" matInput required  formControlName="Name">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Web site</mat-label>
+                    <input id="text" matInput required formControlName="Site">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Headquarters</mat-label>
+                    <input id="text" matInput required formControlName="Hedquaters">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Founded</mat-label>
+                    <input id="text" matInput required formControlName="Founded">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Industry</mat-label>
+                    <input id="text" matInput required formControlName="Industry">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Number of employees</mat-label>
+                    <input id="text" type="number" matInput required formControlName="Employees">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Country of origin </mat-label>
+                    <input id="text" matInput required formControlName="Origin">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Offices</mat-label>
+                    <input id="text" matInput required formControlName="Offices">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Company policy</mat-label>
+                    <input id="text" matInput required formControlName="CompanyPolicy">
+                </mat-form-field>
+                
+
+            </div>
+
+            <button id="submitRequest" (click)="submitRequest()" class="btn btn-success text-center">
+                Register
+            </button>
+           
+        </div>
+        <br>
+    </div>
+</div>
