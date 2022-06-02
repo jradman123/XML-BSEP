@@ -2,8 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { JobOfferComponent } from 'src/app/components/job-offer/job-offer.component';
-import { ICompanyInfo } from 'src/app/interfaces/company-info';
+import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
 import { CompanyService } from 'src/app/services/company-service/company.service';
 
@@ -14,16 +15,23 @@ import { CompanyService } from 'src/app/services/company-service/company.service
 })
 export class CompanyProfileComponent implements OnInit {
   description!: string;
-  item!: ICompanyInfo;
   editable!: boolean;
   newDescription!: string
   jobOffer!: IJobOffer[]
 
+  company! : CompanyResponseDto;
+
+  cid!: string;
+
   constructor(
+    private router : Router,
     private _snackBar: MatSnackBar,
     private companyService: CompanyService,
     public matDialog: MatDialog
   ) {
+
+    this.company = {} as CompanyResponseDto;
+    
     this.jobOffer = [{
       name: "Senior develper for outsourcing firm",
       requirements: ["5+ years experience", "c++ development", "java development"]
@@ -33,40 +41,27 @@ export class CompanyProfileComponent implements OnInit {
       requirements: ["c++ development", "c# development"]
     }
     ]
-    this.description = " Company Info: orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore"
-      + "magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo"
-      + " consequat...";
-    this.item = {
-      id:1,
-      name: "Levi9 Technology Services",
-      site: "https://www.levi9.com/",
-      headquaters: "Novi Sad",
-      founded: "2018",
-      industry: "Software Outsourcing",
-      employees: 800,
-      origin: "SRB",
-      offices: "Beograd, Novi Sad, Zrenjanin"
-    }
+    
     this.editable = false;
-    this.newDescription = this.description
   }
 
   ngOnInit(): void {
+    console.log(this.router.url);
+    this.cid = this.router.url.substring(9);
+
+    this.companyService.getById(this.cid).subscribe(
+      res => {
+        this.company = res;
+      }
+    )
   }
   enableEdit() {
-    this.editable = true
+    this.editable = true;
   }
   updateInfo() {
-
     this.editable = false;
 
-    if (this.description == this.newDescription) {
-      return;
-    }
-    console.log("SENDING REQUEST");
-    this.description = this.newDescription
-
-    this.companyService.UpdateInfo(this.description).subscribe({
+    this.companyService.UpdateInfo(this.company).subscribe({
       next: () => {
         this._snackBar.open(
           'Your request has been successfully submitted.',

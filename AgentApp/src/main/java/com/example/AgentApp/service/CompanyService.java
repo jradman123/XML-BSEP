@@ -21,4 +21,6 @@ public interface CompanyService {
     Company getById(Long id);
 
     List<Company> getAllApprovedCompaniesExceptOwners(User user);
+
+    List<Company> getAllUsersCompanies(Long userId);
 }

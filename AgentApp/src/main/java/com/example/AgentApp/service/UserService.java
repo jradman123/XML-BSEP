@@ -13,4 +13,6 @@ public interface UserService {
     User activateAccount(User user);
     void changePassword(String username, ChangePasswordDto changePasswordDto);
     void resetPassword(String username,String newPassword);
+
+    Long getByUsername(String username);
 }

@@ -13,8 +13,9 @@ export class CompanyService {
   CreateJobOffer(jobOffer: IJobOffer): Observable<ICompanyInfo> {
     throw new Error('Method not implemented.');
   }
-  UpdateInfo(description: string): Observable<ICompanyInfo> {
-    throw new Error('Method not implemented.');
+  UpdateInfo(company: any): Observable<any> {
+    return this.http.put(`${this.apiServerUrl}/company/edit/` + company.companyId
+    ,company);
   }
 
   private apiServerUrl = environment.apiBaseUrl;
@@ -30,5 +31,13 @@ export class CompanyService {
   getAlCompaniesForUser() : Observable<any>{
     return this.http.get(`${this.apiServerUrl}/company/getAllForUser`);
 
+  }
+
+  getAllUsersCompanies(username : string ) : Observable<any>{
+    return this.http.get(`${this.apiServerUrl}/company/users-company/` + username);
+  }
+
+  getById(id : any) : Observable<any> {
+    return this.http.get(`${this.apiServerUrl}/company/` + id); 
   }
 }
