@@ -9,6 +9,7 @@ import com.example.AgentApp.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
@@ -84,6 +85,12 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<Company> getAllApprovedCompaniesExceptOwners(User user) {
         return companyRepository.findAllExceptOwnerId(user.getId());
+    }
+
+    @Transactional
+    @Override
+    public List<Company> getAllUsersCompanies(Long userId) {
+        return companyRepository.getAllUsersCompanies(userId);
     }
 
 }

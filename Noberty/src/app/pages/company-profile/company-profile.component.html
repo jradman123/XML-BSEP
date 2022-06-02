@@ -6,8 +6,8 @@
 <div class="container">
     <mat-card class="example-card m-3">
         <mat-card-title-group>
-            <mat-card-title>{{item.name}}</mat-card-title>
-            <mat-card-subtitle>{{item.headquaters}}</mat-card-subtitle>
+            <mat-card-title>{{company.companyName}}</mat-card-title>
+            <mat-card-subtitle>{{company.headquarters}}</mat-card-subtitle>
         </mat-card-title-group>
         <mat-card-content>
             <div class="ml-3 info">
@@ -21,16 +21,16 @@
                 </div>
 
                 <div class="rowData pl-3" style="font-weight: bold;">
-                    <label> {{item.offices}}</label>
-                    <label> {{item.employees}}</label>
-                    <label> {{item.industry}}</label>
-                    <label><a href="{{item.site}}"> {{item.site}}</a></label>
-                    <label> {{item.founded}}</label>
-                    <label> {{item.origin}}</label>
+                    <label> {{company.offices}}</label>
+                    <label> {{company.noOfEmpl}}</label>
+                    <label> {{company.industry}}</label>
+                    <label><a href="{{company.companyWebsite}}"> {{company.companyWebsite}}</a></label>
+                    <label> {{company.founded}}</label>
+                    <label> {{company.countryOfOrigin}}</label>
                 </div>
             </div>
             <div class="description_form">
-                <textarea [readonly]="!editable" class=" description editable" [(ngModel)]="newDescription">
+                <textarea [readonly]="!editable" class=" description editable" [(ngModel)]="company.companyPolicy">
                 </textarea>
             </div>
 
