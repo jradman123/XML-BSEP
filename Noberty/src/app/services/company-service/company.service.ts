@@ -37,6 +37,18 @@ export class CompanyService {
 
   }
 
+  getAllPendingCompanies() : Observable<any>{
+    return this.http.get(`${this.apiServerUrl}/company/pending`);
+
+  }
+
+  approveRequest(id : number) : Observable<any> {
+    return this.http.get(`${this.apiServerUrl}/company/approve/` + id);
+  }
+
+  rejectRequest(id : number) : Observable<any> {
+    return this.http.get(`${this.apiServerUrl}/company/reject/` + id);
+  }
   getAllUsersCompanies(username : string ) : Observable<any>{
     return this.http.get(`${this.apiServerUrl}/company/users-company/` + username);
   }

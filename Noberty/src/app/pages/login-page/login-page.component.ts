@@ -39,7 +39,7 @@ export class LoginPageComponent implements OnInit {
                 this._router.navigate(['/user/landing']);
           },
            error: (err:any) => {
-             this._snackBar.open("Email or password are incorrect.Try again,please.","Dismiss"); 
+             this._snackBar.open("Username or password are incorrect.Try again,please.","Dismiss"); 
            
            }};
         
