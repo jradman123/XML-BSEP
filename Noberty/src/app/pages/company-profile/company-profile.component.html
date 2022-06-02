@@ -6,8 +6,8 @@
 <div class="container">
     <mat-card class="example-card m-3">
         <mat-card-title-group>
-            <mat-card-title>{{item.name}}</mat-card-title>
-            <mat-card-subtitle>{{item.headquaters}}</mat-card-subtitle>
+            <mat-card-title>{{company.companyName}}</mat-card-title>
+            <mat-card-subtitle>{{company.headquarters}}</mat-card-subtitle>
         </mat-card-title-group>
         <mat-card-content>
             <div class="ml-3 info">
@@ -21,16 +21,16 @@
                 </div>
 
                 <div class="rowData pl-3" style="font-weight: bold;">
-                    <label> {{item.offices}}</label>
-                    <label> {{item.employees}}</label>
-                    <label> {{item.industry}}</label>
-                    <label><a href="{{item.site}}"> {{item.site}}</a></label>
-                    <label> {{item.founded}}</label>
-                    <label> {{item.origin}}</label>
+                    <label> {{company.offices}}</label>
+                    <label> {{company.noOfEmpl}}</label>
+                    <label> {{company.industry}}</label>
+                    <label><a href="{{company.companyWebsite}}"> {{company.companyWebsite}}</a></label>
+                    <label> {{company.founded}}</label>
+                    <label> {{company.countryOfOrigin}}</label>
                 </div>
             </div>
             <div class="description_form">
-                <textarea [readonly]="!editable" class=" description editable" [(ngModel)]="newDescription">
+                <textarea [readonly]="!editable" class=" description editable" [(ngModel)]="company.companyPolicy">
                 </textarea>
             </div>
 
@@ -42,14 +42,25 @@
     <mat-card class="example-card m-3">
         <mat-tab-group>
             <mat-tab label="Comments">
+                <div *ngFor="let com of comments">
+                    <app-comment [comment]="com"></app-comment>
+                </div>
             </mat-tab>
             <mat-tab label="Job Offers">
                 <div *ngFor="let offer of jobOffer">
                     <app-job-offer-list-view [jobOffer]="offer"></app-job-offer-list-view>
                 </div>
             </mat-tab>
-            <mat-tab label="Interviews"> Content 3 </mat-tab>
-            <mat-tab label="Sallares"> Content 4</mat-tab>
+            <mat-tab label="Interviews">
+                <div *ngFor="let inte of interviews">
+                    <app-interview [interview]="inte"></app-interview>
+                </div>
+            </mat-tab>
+            <mat-tab label="Sallares">
+                <div *ngFor="let come of salaryComments">
+                    <app-salary-comment [salaryComment]="come"></app-salary-comment>
+                </div>
+            </mat-tab>
         </mat-tab-group>
     </mat-card>
 

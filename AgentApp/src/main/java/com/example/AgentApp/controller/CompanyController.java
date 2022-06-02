@@ -15,6 +15,7 @@ import javax.annotation.security.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/company")
 @RestController
 public class CompanyController {
@@ -52,8 +53,12 @@ public class CompanyController {
         return  new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getById(@PathVariable Long id){
+        return ResponseEntity.ok(companyMapper.mapToDto(companyService.getById(id)));
+    }
+
     //korisnik
-    @CrossOrigin(origins = "http://localhost:4200")
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER')")
     @PostMapping("/new")
     public ResponseEntity<?> createCompanyRequest(@RequestBody NewCompanyRequestDto requestDto){
@@ -135,9 +140,6 @@ public class CompanyController {
     public ResponseEntity<?> leaveAComment(@RequestBody CommentDto commentDto){
         Company company = companyService.getById(commentDto.getCompanyId());
         Comment comment = commentMapper.toEntity(commentDto);
-        User user = userService.findByUsername(commentDto.userUsername);
-        comment.setCompany(company);
-        comment.setUser(user);
         Comment savedComment = commentService.create(comment);
         Set<Comment> allCommentsForCompany = commentService.getAllForCompany(commentDto.getCompanyId());
         if (savedComment != null && allCommentsForCompany != null){
@@ -197,7 +199,13 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to get all interviews for company!", HttpStatus.CONFLICT);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping("/users-company/{username}")
+    public ResponseEntity<List<CompanyResponseDto>> getUsersCompany(@PathVariable String username){
+        Long id = userService.getByUsername(username);
+        return ResponseEntity.ok(companyMapper.mapToDtos(companyService.getAllUsersCompanies(id)));
+    }
+
+
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER') or hasAuthority('ADMIN')")
     @GetMapping("/getAllForUser")
     public ResponseEntity<?> getAllForUser(HttpServletRequest request){

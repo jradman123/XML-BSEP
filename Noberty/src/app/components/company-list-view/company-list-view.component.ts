@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 
 @Component({
@@ -11,10 +12,13 @@ export class CompanyListViewComponent implements OnInit {
   item!:CompanyResponseDto
 
   
-  constructor() { 
+  constructor(private router:Router) { 
   
   }
 
+  seeMore() {
+    this.router.navigate(['/company/' + this.item.companyId]);
+  }
   ngOnInit(): void {
   }
 

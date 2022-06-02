@@ -34,7 +34,7 @@ const routes: Routes = [
     component: CompaniesListComponent
   },
   {
-    path: "company",
+    path: "company/:id",
     component: CompanyProfileComponent
   },
   {
