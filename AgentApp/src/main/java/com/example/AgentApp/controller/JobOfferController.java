@@ -24,7 +24,7 @@ public class JobOfferController {
     //mzd svi sta znam
     @GetMapping("all/{companyId}")
     public ResponseEntity<?> allOffersForCompany(@PathVariable Long companyId){
-        List<JobOffer> offers = jobOfferService.getAllOffersForCompany(companyId);
+        Set<JobOffer> offers = jobOfferService.getAllOffersForCompany(companyId);
         if (offers != null){
             return new ResponseEntity<List<JobOfferResponseDto>>(jobOfferMapper.mapToDtos(offers), HttpStatus.OK);
         }

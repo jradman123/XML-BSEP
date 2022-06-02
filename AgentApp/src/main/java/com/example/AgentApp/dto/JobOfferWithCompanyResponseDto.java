@@ -4,8 +4,8 @@ import java.util.*;
 
 public class JobOfferWithCompanyResponseDto {
     public Long offerId;
+    public String name;
     public Set<String> requirements;
-    public Set<String> otherRequirements;
     public Long companyId;
     public String companyPolicy;
     public String companyName;

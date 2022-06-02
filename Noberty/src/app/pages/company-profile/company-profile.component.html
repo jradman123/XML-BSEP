@@ -62,7 +62,7 @@
                 </div>
             </mat-tab>
             <mat-tab label="Job Offers">
-                <div *ngFor="let offer of jobOffer">
+                <div *ngFor="let offer of jobOffers">
                     <app-job-offer-list-view [jobOffer]="offer"></app-job-offer-list-view>
                 </div>
             </mat-tab>
@@ -71,7 +71,7 @@
                     <app-interview [interview]="inte"></app-interview>
                 </div>
             </mat-tab>
-            <mat-tab label="Sallares">
+            <mat-tab label="Salaries">
                 <div *ngFor="let come of salaryComments">
                     <app-salary-comment [salaryComment]="come"></app-salary-comment>
                 </div>

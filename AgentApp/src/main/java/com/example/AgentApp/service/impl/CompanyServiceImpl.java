@@ -67,7 +67,7 @@ public class CompanyServiceImpl implements CompanyService {
         JobOffer jobOffer = new JobOffer();
         jobOffer.setCompany(company.get());
         jobOffer.setRequirements(requestDto.requirements);
-        jobOffer.setOtherRequirements(requestDto.otherRequirements);
+        jobOffer.setName(requestDto.name);
         jobOfferRepository.save(jobOffer);
         Optional<Company> companyWithOffer = companyRepository.findById(requestDto.companyId);
         return companyWithOffer.get();
@@ -91,6 +91,11 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public List<Company> getAllUsersCompanies(Long userId) {
         return companyRepository.getAllUsersCompanies(userId);
+    }
+
+    @Override
+    public List<JobOfferResponseDto> getAllJobOffers(Long companyId) {
+        return companyRepository.getAllJobOffers(companyId);
     }
 
 }

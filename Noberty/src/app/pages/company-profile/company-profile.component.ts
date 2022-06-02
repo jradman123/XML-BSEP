@@ -15,6 +15,7 @@ import { IJobOffer } from 'src/app/interfaces/job-offer';
 import { ISalaryComment } from 'src/app/interfaces/salary-comment';
 import { CompanyService } from 'src/app/services/company-service/company.service';
 
+
 @Component({
   selector: 'app-company-profile',
   templateUrl: './company-profile.component.html',
@@ -24,12 +25,12 @@ export class CompanyProfileComponent implements OnInit {
   description!: string;
   editable!: boolean;
   newDescription!: string
-  jobOffer!: IJobOffer[]
+  jobOffers!: IJobOffer[]
   comments!: IComment[]
   interviews!: IInterview[]
   salaryComments!: ISalaryComment[]
 
-  company! : CompanyResponseDto;
+  company!: CompanyResponseDto;
 
   cid!: string;
 
@@ -37,24 +38,15 @@ export class CompanyProfileComponent implements OnInit {
   role! : string | null;
 
   constructor(
-    private router : Router,
+    private router: Router,
     private _snackBar: MatSnackBar,
     private companyService: CompanyService,
     public matDialog: MatDialog
   ) {
 
     this.company = {} as CompanyResponseDto;
-    
-    this.jobOffer = [{
-      name: "Senior develper for outsourcing firm",
-      requirements: ["5+ years experience", "c++ development", "java development"]
-    },
-    {
-      name: "Junior develper ",
-      requirements: ["c++ development", "c# development"]
-    }
-    ]
-    
+
+
     this.editable = false;
   
   }
@@ -77,16 +69,8 @@ export class CompanyProfileComponent implements OnInit {
       }
     );
 
-    this.companyService.getOffersForCompany(this.cid).subscribe({
-      next: (result) => {
-        this.jobOffer = result;
-      },
-      error: (data) => {
-        if (data.error && typeof data.error === 'string')
-          console.log('desila se greska1');
-      },
-    });
-  
+    this.getOffersForCompany()
+
     this.companyService.getCommentsForCompany(this.cid).subscribe({
       next: (result) => {
         this.comments = result;
@@ -96,7 +80,7 @@ export class CompanyProfileComponent implements OnInit {
           console.log('desila se greska2');
       },
     });
-  
+
     this.companyService.getInterviewsForCompany(this.cid).subscribe({
       next: (result) => {
         this.interviews = result;
@@ -106,7 +90,7 @@ export class CompanyProfileComponent implements OnInit {
           console.log('desila se greska3');
       },
     });
-  
+
     this.companyService.getSalaryCommentsForCompany(this.cid).subscribe({
       next: (result) => {
         this.salaryComments = result;
@@ -116,10 +100,20 @@ export class CompanyProfileComponent implements OnInit {
           console.log('desila se greska4');
       },
     });
-  
-
-
   }
+
+  getOffersForCompany() {
+    this.companyService.getOffersForCompany(this.cid).subscribe({
+      next: (result) => {
+        this.jobOffers = result;
+      },
+      error: (data) => {
+        if (data.error && typeof data.error === 'string')
+          console.log('desila se greska1');
+      },
+    });
+  }
+
   enableEdit() {
     this.editable = true;
   }
@@ -147,7 +141,13 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.id = 'modal-component';
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
-    this.matDialog.open(JobOfferComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+    const dialogRef = this.matDialog.open(JobOfferComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.getOffersForCompany()
+      }
+    })
   }
 
   openLeaveComment() {
@@ -181,4 +181,5 @@ export class CompanyProfileComponent implements OnInit {
   }
 
 
+  
 }

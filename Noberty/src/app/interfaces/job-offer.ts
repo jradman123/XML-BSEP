@@ -1,4 +1,5 @@
-export interface IJobOffer {
+export interface IJobOffer{
+    id:string,
     name:string,
-    requirements: string[],
+    requirements:string[]
 }

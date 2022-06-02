@@ -20,9 +20,9 @@
   justify-content: start;
   align-items: center;
   height: 100%;
-  width: auto;
+  width: 50%;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 20px;
+  font-size: 15px;
 
 }
 
@@ -55,11 +55,12 @@
 
 }
 .mybtn {
-  width: 800px;
+  width: auto;
   height: 45px;
   flex-shrink: wrap;
 }
-@media (max-width: 1500px) {
+
+@media (max-width: 500px) {
   .main{
      display: block;
       text-align: center;
