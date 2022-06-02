@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/offer")
 @RestController
 public class JobOfferController {

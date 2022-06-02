@@ -15,6 +15,7 @@ import javax.annotation.security.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/company")
 @RestController
 public class CompanyController {

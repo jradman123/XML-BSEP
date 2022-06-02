@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { JobOfferComponent } from 'src/app/components/job-offer/job-offer.component';
 import { IComment } from 'src/app/interfaces/comment';
 import { ICompanyInfo } from 'src/app/interfaces/company-info';
@@ -28,7 +29,8 @@ export class CompanyProfileComponent implements OnInit {
   constructor(
     private _snackBar: MatSnackBar,
     private companyService: CompanyService,
-    public matDialog: MatDialog
+    public matDialog: MatDialog,
+    private router : Router
   ) {
     this.jobOffer = [{
       name: "Senior develper for outsourcing firm",
@@ -93,7 +95,50 @@ export class CompanyProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+   var a = this.router.url
+   var b = a.split("/")
+   var c = b[2]
+   console.log(c)
+  this.companyService.getOffersForCompany(c).subscribe({
+    next: (result) => {
+      this.jobOffer = result;
+    },
+    error: (data) => {
+      if (data.error && typeof data.error === 'string')
+        console.log('desila se greska1');
+    },
+  });
+
+  this.companyService.getCommentsForCompany(c).subscribe({
+    next: (result) => {
+      this.comments = result;
+    },
+    error: (data) => {
+      if (data.error && typeof data.error === 'string')
+        console.log('desila se greska2');
+    },
+  });
+
+  this.companyService.getInterviewsForCompany(c).subscribe({
+    next: (result) => {
+      this.interviews = result;
+    },
+    error: (data) => {
+      if (data.error && typeof data.error === 'string')
+        console.log('desila se greska3');
+    },
+  });
+
+  this.companyService.getSalaryCommentsForCompany(c).subscribe({
+    next: (result) => {
+      this.salaryComments = result;
+    },
+    error: (data) => {
+      if (data.error && typeof data.error === 'string')
+        console.log('desila se greska4');
+    },
+  });
+
   }
   enableEdit() {
     this.editable = true
