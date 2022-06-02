@@ -11,33 +11,23 @@ import { UserServiceService } from 'src/app/services/UserService/user-service.se
 })
 export class AuthHeaderComponent implements OnInit {
 
-  currentUser : LoggedUserDto;
-  role! : string ;
-  id! : number;
-  constructor(private userService : UserServiceService, private companyService : CompanyService, private router : Router) {
+  currentUser: LoggedUserDto;
+  role!: string;
+  id!: number;
+  constructor(
+    private userService: UserServiceService,
+  
+    private router: Router) {
     this.currentUser = {} as LoggedUserDto;
-   }
+  }
 
   ngOnInit(): void {
-   this.currentUser = this.userService.getUserValue();
-   this.role = this.currentUser.role;
-   console.log(this.role);
-
-   // get companies of this user and navigate to /company/id
+    this.currentUser = this.userService.getUserValue();
+    this.role = this.currentUser.role;
+    console.log(this.role);
   }
 
-  neznamdrugacije() {
-    this.companyService.getAllUsersCompanies(this.currentUser.username).subscribe(res =>
-      {
-        this.id = res[0].companyId;
-
-        console.log(res);
-        this.router.navigate(['/company/' + this.id ]);
-
-      });
-  }
-
-  logout() : void {
+  logout(): void {
     this.userService.logout();
   }
 

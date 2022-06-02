@@ -8,7 +8,7 @@ import java.util.*;
 
 @Component
 public class JobOfferMapper {
-    public List<JobOfferResponseDto> mapToDtos(List<JobOffer> offers) {
+    public List<JobOfferResponseDto> mapToDtos(Set<JobOffer> offers) {
         List<JobOfferResponseDto> jobOfferResponseDtos = new ArrayList<JobOfferResponseDto>();
         for (JobOffer o: offers) {
             jobOfferResponseDtos.add(mapToDto(o));
@@ -20,7 +20,7 @@ public class JobOfferMapper {
         JobOfferResponseDto jobOfferResponseDto = new JobOfferResponseDto();
         jobOfferResponseDto.offerId = offer.getId();
         jobOfferResponseDto.requirements = offer.getRequirements();
-        jobOfferResponseDto.otherRequirements = offer.getOtherRequirements();
+        jobOfferResponseDto.name = offer.getName();
         return jobOfferResponseDto;
     }
 
@@ -36,7 +36,7 @@ public class JobOfferMapper {
         JobOfferWithCompanyResponseDto jobOfferResponseDto = new JobOfferWithCompanyResponseDto();
         jobOfferResponseDto.offerId = offer.getId();
         jobOfferResponseDto.requirements = offer.getRequirements();
-        jobOfferResponseDto.otherRequirements = offer.getOtherRequirements();
+        jobOfferResponseDto.name = offer.getName();
         jobOfferResponseDto.companyId = offer.getCompany().getId();
         jobOfferResponseDto.companyPolicy = offer.getCompany().getCompanyPolicy();
         jobOfferResponseDto.companyName = offer.getCompany().getCompanyInfo().getName();

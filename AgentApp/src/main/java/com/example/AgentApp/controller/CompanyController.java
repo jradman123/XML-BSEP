@@ -6,12 +6,10 @@ import com.example.AgentApp.mapper.*;
 import com.example.AgentApp.model.*;
 import com.example.AgentApp.security.TokenUtils;
 import com.example.AgentApp.service.*;
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
@@ -20,6 +18,8 @@ import java.util.*;
 @RestController
 public class CompanyController {
 
+    private final JobOfferService jobOfferService;
+    private final JobOfferMapper jobOfferMapper;
     private final CompanyService companyService;
     private final CompanyMapper companyMapper;
     private final CommentMapper commentMapper;
@@ -31,14 +31,16 @@ public class CompanyController {
     private final InterviewMapper interviewMapper;
     private final TokenUtils tokenUtils;
 
-    public CompanyController(CommentMapper commentMapper, CompanyMapper companyMapper,
-                             CompanyService companyService, CommentService commentService,
+    public CompanyController(JobOfferMapper jobOfferMapper, CommentMapper commentMapper, CompanyMapper companyMapper,
+                             CompanyService companyService, JobOfferService jobOfferService, CommentService commentService,
                              UserService userService, SalaryCommentMapper salaryCommentMapper,
-                             SalaryCommentService salaryCommentService,InterviewService interviewService,
-                             InterviewMapper interviewMapper,TokenUtils tokenUtils) {
+                             SalaryCommentService salaryCommentService, InterviewService interviewService,
+                             InterviewMapper interviewMapper, TokenUtils tokenUtils) {
+        this.jobOfferMapper = jobOfferMapper;
         this.commentMapper = commentMapper;
         this.companyMapper = companyMapper;
         this.companyService = companyService;
+        this.jobOfferService = jobOfferService;
         this.commentService = commentService;
         this.userService = userService;
         this.salaryCommentMapper = salaryCommentMapper;
@@ -108,8 +110,10 @@ public class CompanyController {
     @PostMapping("createOffer")
     public ResponseEntity<?> crateJobOffer(@RequestBody CreateJobOfferRequestDto requestDto){
         Company company = companyService.addJobOffer(requestDto);
+        Set<JobOffer> allOffers = jobOfferService.getAllOffersForCompany(requestDto.companyId);
         if (company != null){
-            return new ResponseEntity<NewCompanyResponseDto>(companyMapper.mapToCompanyCreateResponse(company), HttpStatus.OK);
+            return new ResponseEntity<List<JobOfferResponseDto>>(jobOfferMapper.mapToDtos(allOffers),
+                    HttpStatus.OK);
         }
         return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);
     }
