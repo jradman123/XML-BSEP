@@ -15,6 +15,7 @@ import javax.annotation.security.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/company")
 @RestController
 public class CompanyController {
@@ -128,9 +129,6 @@ public class CompanyController {
     public ResponseEntity<?> leaveAComment(@RequestBody CommentDto commentDto){
         Company company = companyService.getById(commentDto.getCompanyId());
         Comment comment = commentMapper.toEntity(commentDto);
-        User user = userService.findByUsername(commentDto.userUsername);
-        comment.setCompany(company);
-        comment.setUser(user);
         Comment savedComment = commentService.create(comment);
         Set<Comment> allCommentsForCompany = commentService.getAllForCompany(commentDto.getCompanyId());
         if (savedComment != null && allCommentsForCompany != null){

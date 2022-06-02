@@ -1,4 +1,5 @@
 export interface ICompanyInfo {
+    id: number, 
     name: string,
     site: string,
     headquaters: string,

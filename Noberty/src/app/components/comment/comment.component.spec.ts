@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CompanyListViewComponent } from './company-list-view.component';
 
+import { CommentComponent } from './comment.component';
 
-describe('CompanyListViewComponent', () => {
-  let component: CompanyListViewComponent;
-  let fixture: ComponentFixture<CompanyListViewComponent>;
+describe('CommentComponent', () => {
+  let component: CommentComponent;
+  let fixture: ComponentFixture<CommentComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CompanyListViewComponent ]
+      declarations: [ CommentComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CompanyListViewComponent);
+    fixture = TestBed.createComponent(CommentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -22,5 +22,4 @@ describe('CompanyListViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  
 });

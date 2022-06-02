@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CompanyListViewComponent } from './company-list-view.component';
 
+import { SalaryCommentComponent } from './salary-comment.component';
 
-describe('CompanyListViewComponent', () => {
-  let component: CompanyListViewComponent;
-  let fixture: ComponentFixture<CompanyListViewComponent>;
+describe('SalaryCommentComponent', () => {
+  let component: SalaryCommentComponent;
+  let fixture: ComponentFixture<SalaryCommentComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CompanyListViewComponent ]
+      declarations: [ SalaryCommentComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CompanyListViewComponent);
+    fixture = TestBed.createComponent(SalaryCommentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -22,5 +22,4 @@ describe('CompanyListViewComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  
 });
