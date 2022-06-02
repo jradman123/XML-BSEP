@@ -23,4 +23,6 @@ public interface CompanyService {
     List<Company> getAllApprovedCompaniesExceptOwners(User user);
 
     List<Company> getAllUsersCompanies(Long userId);
+
+    List<JobOfferResponseDto> getAllJobOffers(Long companyId);
 }

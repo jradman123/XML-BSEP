@@ -4,6 +4,7 @@ import java.util.*;
 
 public class CreateJobOfferRequestDto {
     public Long companyId;
+    public String name;
     public Set<String> requirements;
-    public Set<String> otherRequirements;
+
 }

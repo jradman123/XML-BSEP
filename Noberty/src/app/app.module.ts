@@ -32,6 +32,7 @@ import { CompanyRequestsPageComponent } from './pages/company-requests-page/comp
 import { CommentComponent } from './components/comment/comment.component';
 import { InterviewComponent } from './components/interview/interview.component';
 import { SalaryCommentComponent } from './components/salary-comment/salary-comment.component';
+import { MyCompaniesListComponent } from './pages/my-companies-list/my-companies-list.component';
 
 
 
@@ -57,7 +58,8 @@ import { SalaryCommentComponent } from './components/salary-comment/salary-comme
     CommentComponent,
     InterviewComponent,
     SalaryCommentComponent,
-    JobOfferListViewComponent
+    JobOfferListViewComponent,
+    MyCompaniesListComponent
 
   ],
   imports: [

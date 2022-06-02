@@ -7,7 +7,7 @@ import java.util.*;
 
 @Service
 public interface JobOfferService {
-    List<JobOffer> getAllOffersForCompany(Long companyId);
+    Set<JobOffer> getAllOffersForCompany(Long companyId);
 
     List<JobOffer> getAllJobOffers();
 }

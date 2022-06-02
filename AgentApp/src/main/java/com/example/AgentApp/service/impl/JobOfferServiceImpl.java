@@ -15,8 +15,8 @@ public class JobOfferServiceImpl implements JobOfferService {
     private JobOfferRepository jobOfferRepository;
 
     @Override
-    public List<JobOffer> getAllOffersForCompany(Long companyId) {
-        List<JobOffer> offers = jobOfferRepository.findAllByCompanyId(companyId);
+    public Set<JobOffer> getAllOffersForCompany(Long companyId) {
+        Set<JobOffer> offers = jobOfferRepository.findAllByCompanyId(companyId);
         return offers;
     }
 

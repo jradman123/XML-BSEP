@@ -37,7 +37,7 @@ export class CompanyRegisterComponent implements OnInit {
       Industry: new FormControl('', [Validators.required]),
       Employees: new FormControl('', [
         Validators.required,
-        Validators.pattern('^((?!(0))[0-9]{4})$'),
+        Validators.pattern('^((?!(0))[0-9]{1,4})$'),
       ]),
       ///^-?(0|[1-9]\d*)?$/)]),
       Origin: new FormControl('', [Validators.required]),

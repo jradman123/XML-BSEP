@@ -1,10 +1,9 @@
 package com.example.AgentApp.model;
 
 import lombok.Data;
-import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Set;
 
 @Entity
 @Data
@@ -18,13 +17,11 @@ public class JobOffer {
     private Company company;
 
     @Column
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    private Set<String> requirements;
+    private String name;
 
     @Column
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    private Set<String> otherRequirements;
-
+    private Set<String> requirements;
 
 
 }
