@@ -32,6 +32,9 @@ import { CompanyRequestsPageComponent } from './pages/company-requests-page/comp
 import { CommentComponent } from './components/comment/comment.component';
 import { InterviewComponent } from './components/interview/interview.component';
 import { SalaryCommentComponent } from './components/salary-comment/salary-comment.component';
+import { LeaveCommentComponent } from './components/leave-comment/leave-comment.component';
+import { LeaveInterviewCommentComponent } from './components/leave-interview-comment/leave-interview-comment.component';
+import { LeaveSallaryCommentComponent } from './components/leave-sallary-comment/leave-sallary-comment.component';
 
 
 
@@ -57,7 +60,10 @@ import { SalaryCommentComponent } from './components/salary-comment/salary-comme
     CommentComponent,
     InterviewComponent,
     SalaryCommentComponent,
-    JobOfferListViewComponent
+    JobOfferListViewComponent,
+    LeaveCommentComponent,
+    LeaveInterviewCommentComponent,
+    LeaveSallaryCommentComponent
 
   ],
   imports: [

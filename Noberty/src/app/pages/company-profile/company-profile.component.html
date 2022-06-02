@@ -39,17 +39,17 @@
         <button type="button" *ngIf="editable && isUsersCompany=='TRUE'; else showInterviewComment" class="btn btn-primary mybtn" (click)="updateInfo()" >Save</button>
         <button type="button" class="btn btn-primary ml-3 mybtn" (click)="openModal()"  *ngIf = "isUsersCompany == 'TRUE'; else showSallaryComment">Create job offer</button>
         <ng-template #showLeaveComment>
-              <button type="button" *ngIf="role!='ADMIN' && isUsersCompany == 'FALSE'" class="btn btn-success mybtn" [routerLink]="['/login']">
+              <button type="button" *ngIf="role!='ADMIN' && isUsersCompany == 'FALSE'" class="btn btn-success mybtn" (click)="openLeaveComment()">
                 Leave comment
               </button>
         </ng-template>
         <ng-template #showInterviewComment>
-            <button type="button" *ngIf="role!='ADMIN' && isUsersCompany=='FALSE'" class="btn btn-success ml-3 mybtn" [routerLink]="['/login']">
+            <button type="button" *ngIf="role!='ADMIN' && isUsersCompany=='FALSE'" class="btn btn-success ml-3 mybtn" (click)="openLeaveInterviewComment()">
               Leave interview comment
             </button>
       </ng-template>
       <ng-template #showSallaryComment>
-        <button type="button" *ngIf="role!='ADMIN'" class="btn btn-success ml-3 mybtn" [routerLink]="['/login']">
+        <button type="button" *ngIf="role!='ADMIN'" class="btn btn-success ml-3 mybtn" (click)="openLeaveSallaryComment()">
           Leave sallary comment
         </button>
   </ng-template>

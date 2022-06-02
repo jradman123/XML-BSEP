@@ -4,6 +4,9 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { JobOfferComponent } from 'src/app/components/job-offer/job-offer.component';
+import { LeaveCommentComponent } from 'src/app/components/leave-comment/leave-comment.component';
+import { LeaveInterviewCommentComponent } from 'src/app/components/leave-interview-comment/leave-interview-comment.component';
+import { LeaveSallaryCommentComponent } from 'src/app/components/leave-sallary-comment/leave-sallary-comment.component';
 import { IComment } from 'src/app/interfaces/comment';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { IInterview } from 'src/app/interfaces/interview';
@@ -146,5 +149,36 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.width = '500px';
     this.matDialog.open(JobOfferComponent, dialogConfig); //TODO: OVDJE JOB OFFER
   }
+
+  openLeaveComment() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = 'modal-component';
+    dialogConfig.height = 'fit-content';
+    dialogConfig.width = '500px';
+    this.matDialog.open(LeaveCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+
+  }
+
+  openLeaveInterviewComment() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = 'modal-component';
+    dialogConfig.height = 'fit-content';
+    dialogConfig.width = '500px';
+    this.matDialog.open(LeaveInterviewCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+
+  }
+
+  openLeaveSallaryComment() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = 'modal-component';
+    dialogConfig.height = 'fit-content';
+    dialogConfig.width = '500px';
+    this.matDialog.open(LeaveSallaryCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+
+  }
+
 
 }
