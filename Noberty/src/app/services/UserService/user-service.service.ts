@@ -96,4 +96,8 @@ checkCode(verCode: string): Observable<any> {
 getUserInformation() : Observable<any>{
   return this.http.get(`${this.apiServerUrl}/api/users/getUserInformation`);
 }
+
+changePassword(data: any) {
+  return this.http.put(`${this.apiServerUrl}/api/users/changePassword`, data)
+}
 }
