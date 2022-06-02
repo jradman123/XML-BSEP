@@ -42,14 +42,25 @@
     <mat-card class="example-card m-3">
         <mat-tab-group>
             <mat-tab label="Comments">
+                <div *ngFor="let com of comments">
+                    <app-comment [comment]="com"></app-comment>
+                </div>
             </mat-tab>
             <mat-tab label="Job Offers">
                 <div *ngFor="let offer of jobOffer">
                     <app-job-offer-list-view [jobOffer]="offer"></app-job-offer-list-view>
                 </div>
             </mat-tab>
-            <mat-tab label="Interviews"> Content 3 </mat-tab>
-            <mat-tab label="Sallares"> Content 4</mat-tab>
+            <mat-tab label="Interviews">
+                <div *ngFor="let inte of interviews">
+                    <app-interview [interview]="inte"></app-interview>
+                </div>
+            </mat-tab>
+            <mat-tab label="Sallares">
+                <div *ngFor="let come of salaryComments">
+                    <app-salary-comment [salaryComment]="come"></app-salary-comment>
+                </div>
+            </mat-tab>
         </mat-tab-group>
     </mat-card>
 

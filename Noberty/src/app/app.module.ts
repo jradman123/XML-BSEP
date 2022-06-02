@@ -27,6 +27,9 @@ import { CompanyListViewComponent } from './components/company-list-view/company
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { JobOfferListViewComponent } from './components/job-offer-list-view/job-offer-list-view.component';
+import { CommentComponent } from './components/comment/comment.component';
+import { InterviewComponent } from './components/interview/interview.component';
+import { SalaryCommentComponent } from './components/salary-comment/salary-comment.component';
 
 
 
@@ -46,6 +49,10 @@ import { JobOfferListViewComponent } from './components/job-offer-list-view/job-
     CompanyListViewComponent,
     CompanyProfileComponent,
     JobOfferComponent,
+    JobOfferListViewComponent,
+    CommentComponent,
+    InterviewComponent,
+    SalaryCommentComponent,
     JobOfferListViewComponent
 
   ],

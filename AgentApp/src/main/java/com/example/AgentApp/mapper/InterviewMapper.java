@@ -24,7 +24,7 @@ public class InterviewMapper {
         interview.setComment(commentDto.comment);
         interview.setRating(commentDto.rating);
         if (commentDto.difficulty.equals("HARD")) interview.setDifficulty(InterviewDifficulty.HARD);
-        if (commentDto.difficulty.equals("INTERMEDIATE")) interview.setDifficulty(InterviewDifficulty.INTERMEDIATE);
+        else if (commentDto.difficulty.equals("INTERMEDIATE")) interview.setDifficulty(InterviewDifficulty.INTERMEDIATE);
         else interview.setDifficulty(InterviewDifficulty.EASY);
         interview.setUser(user);
         interview.setCompany(company);

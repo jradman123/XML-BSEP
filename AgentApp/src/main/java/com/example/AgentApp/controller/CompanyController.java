@@ -133,9 +133,6 @@ public class CompanyController {
     public ResponseEntity<?> leaveAComment(@RequestBody CommentDto commentDto){
         Company company = companyService.getById(commentDto.getCompanyId());
         Comment comment = commentMapper.toEntity(commentDto);
-        User user = userService.findByUsername(commentDto.userUsername);
-        comment.setCompany(company);
-        comment.setUser(user);
         Comment savedComment = commentService.create(comment);
         Set<Comment> allCommentsForCompany = commentService.getAllForCompany(commentDto.getCompanyId());
         if (savedComment != null && allCommentsForCompany != null){

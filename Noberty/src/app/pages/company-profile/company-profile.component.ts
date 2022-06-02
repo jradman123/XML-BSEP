@@ -4,8 +4,11 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { JobOfferComponent } from 'src/app/components/job-offer/job-offer.component';
+import { IComment } from 'src/app/interfaces/comment';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
+import { IInterview } from 'src/app/interfaces/interview';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
+import { ISalaryComment } from 'src/app/interfaces/salary-comment';
 import { CompanyService } from 'src/app/services/company-service/company.service';
 
 @Component({
@@ -18,6 +21,9 @@ export class CompanyProfileComponent implements OnInit {
   editable!: boolean;
   newDescription!: string
   jobOffer!: IJobOffer[]
+  comments!: IComment[]
+  interviews!: IInterview[]
+  salaryComments!: ISalaryComment[]
 
   company! : CompanyResponseDto;
 
@@ -53,7 +59,50 @@ export class CompanyProfileComponent implements OnInit {
       res => {
         this.company = res;
       }
-    )
+    );
+
+    this.companyService.getOffersForCompany(this.cid).subscribe({
+      next: (result) => {
+        this.jobOffer = result;
+      },
+      error: (data) => {
+        if (data.error && typeof data.error === 'string')
+          console.log('desila se greska1');
+      },
+    });
+  
+    this.companyService.getCommentsForCompany(this.cid).subscribe({
+      next: (result) => {
+        this.comments = result;
+      },
+      error: (data) => {
+        if (data.error && typeof data.error === 'string')
+          console.log('desila se greska2');
+      },
+    });
+  
+    this.companyService.getInterviewsForCompany(this.cid).subscribe({
+      next: (result) => {
+        this.interviews = result;
+      },
+      error: (data) => {
+        if (data.error && typeof data.error === 'string')
+          console.log('desila se greska3');
+      },
+    });
+  
+    this.companyService.getSalaryCommentsForCompany(this.cid).subscribe({
+      next: (result) => {
+        this.salaryComments = result;
+      },
+      error: (data) => {
+        if (data.error && typeof data.error === 'string')
+          console.log('desila se greska4');
+      },
+    });
+  
+
+
   }
   enableEdit() {
     this.editable = true;
