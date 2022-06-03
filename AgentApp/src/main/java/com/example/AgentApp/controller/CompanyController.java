@@ -71,7 +71,6 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to create company registration request!", HttpStatus.CONFLICT);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     //admin
     @GetMapping("approve/{id}")
     public ResponseEntity<?> approveCompany(@PathVariable Long id) {
@@ -84,7 +83,6 @@ public class CompanyController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     //admin
     @GetMapping("reject/{id}")
     public ResponseEntity<?> rejectCompany(@PathVariable Long id) {
@@ -120,7 +118,6 @@ public class CompanyController {
 
 
     //admin
-    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("pending")
     public ResponseEntity<?> getAllPendingCompanies(){
         List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.PENDING);
@@ -229,7 +226,7 @@ public class CompanyController {
 
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER') or hasAuthority('ADMIN')")
     @GetMapping("/isUsersCompany/{id}")
-    public ResponseEntity<?> isUsersCompany(@PathVariable Long id, HttpServletRequest request){
+    public ResponseEntity<IsUsersCompanyDto> isUsersCompany(@PathVariable Long id, HttpServletRequest request){
         String username = tokenUtils.getUsernameFromToken(tokenUtils.getToken(request));
         User user = userService.findByUsername(username);
         Company company = companyService.getById(id);

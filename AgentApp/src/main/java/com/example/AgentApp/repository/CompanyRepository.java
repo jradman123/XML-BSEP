@@ -19,7 +19,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     @Query(value = "select * from company c where c.owner_id != ?1 and c.company_status = 0", nativeQuery = true)
     List<Company> findAllExceptOwnerId(Long id);
 
-    @Query(value = "select * from company c where c.owner_id = ?1", nativeQuery = true)
+    @Query(value = "select * from company c where c.owner_id = ?1 and c.company_status = 0", nativeQuery = true)
     List<Company> getAllUsersCompanies(Long userId);
 
     @Query(value = "select * from company c where c.id = ?1", nativeQuery = true)
