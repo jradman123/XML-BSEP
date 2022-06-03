@@ -1,5 +1,7 @@
 export interface IJobOffer{
     id:string,
     name:string,
-    requirements:string[]
+    requirements:string[],
+    position : string,
+    jobDescription : string 
 }

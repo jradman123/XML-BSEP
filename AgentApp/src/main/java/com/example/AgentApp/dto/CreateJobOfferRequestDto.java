@@ -7,4 +7,7 @@ public class CreateJobOfferRequestDto {
     public String name;
     public Set<String> requirements;
 
+    public String position;
+    public String jobDescription;
+
 }

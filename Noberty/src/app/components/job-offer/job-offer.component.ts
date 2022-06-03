@@ -44,6 +44,13 @@ export class JobOfferComponent implements OnInit {
         Validators.required,
         Validators.pattern('^[a-zA-Z0-9_.-]*$')
       ]),
+      Position: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^[a-zA-Z0-9_.-]*$')
+      ]),
+      Description: new FormControl('', [
+        Validators.required
+      ]),
     })
 
   }
@@ -84,6 +91,8 @@ export class JobOfferComponent implements OnInit {
 
     this.jobOfferRequest.name = this.createForm.value.Name;
     this.jobOfferRequest.requirements = this.requirements;
+    this.jobOfferRequest.position = this.createForm.value.Position;
+    this.jobOfferRequest.jobDescription = this.createForm.value.Description;
     this.jobOfferRequest.companyId = parseInt(this.cid);
   }
   clearForm() {

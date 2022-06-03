@@ -3,12 +3,21 @@
         <mat-card-title>{{jobOffer.name}}</mat-card-title>
 
     </mat-card-title-group>
-    <mat-card-content class="content">
-        <div class="ml-3 info">
-            <div *ngFor="let item of jobOffer.requirements">
-            <label>{{item}}</label>
-            </div>
+    <mat-label><h2>{{ jobOffer.position }}</h2></mat-label>
 
+   <div>
+    <mat-label><h4>Job description:</h4></mat-label>
+    <span> {{ jobOffer.jobDescription }} </span>
+   </div>
+   <br>
+    <mat-card-content class="content">
+        <div>
+            <mat-label>Requirements:</mat-label>
+            <div class="ml-3 info">
+                <div *ngFor="let item of jobOffer.requirements">
+                <label> - {{item}}</label>
+                </div>
+            </div>
         </div>
         <button type="button" class="btn btn-primary ml-3 mybtn" >Publish</button>
     </mat-card-content>
