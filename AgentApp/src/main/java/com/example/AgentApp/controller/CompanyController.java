@@ -50,7 +50,7 @@ public class CompanyController {
         this.tokenUtils = tokenUtils;
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<String> getAll(){
         return  new ResponseEntity<>("ok", HttpStatus.OK);
     }
@@ -105,7 +105,7 @@ public class CompanyController {
     }
 
     //owner
-    @PostMapping("createOffer")
+    @PostMapping("create-offer")
     public ResponseEntity<?> crateJobOffer(@RequestBody CreateJobOfferRequestDto requestDto){
         Company company = companyService.addJobOffer(requestDto);
         Set<JobOffer> allOffers = jobOfferService.getAllOffersForCompany(requestDto.companyId);
@@ -158,7 +158,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to get all comments for company!", HttpStatus.CONFLICT);
     }
 
-    @PostMapping("/salaryComment")
+    @PostMapping("/salary-comment")
     public  ResponseEntity<?> leaveSalaryComment(@RequestBody SalaryCommentRequestDto commentDto){
         Company company = companyService.getById(commentDto.companyID);
         SalaryComment comment = salaryCommentMapper.mapToEntity(commentDto);
@@ -170,7 +170,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add salary comment for company!", HttpStatus.CONFLICT);
     }
 
-    @GetMapping("{id}/salaryComments")
+    @GetMapping("{id}/salary-comments")
     public ResponseEntity<?> allSalaryComments(@PathVariable Long id){
         Set<SalaryComment> allCommentsForCompany = salaryCommentService.getAllForCompany(id);
         if ( allCommentsForCompany != null){
@@ -208,7 +208,7 @@ public class CompanyController {
 
 
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER') or hasAuthority('ADMIN')")
-    @GetMapping("/getAllForUser")
+    @GetMapping("/search-companies")
     public ResponseEntity<?> getAllForUser(HttpServletRequest request){
         String username = tokenUtils.getUsernameFromToken(tokenUtils.getToken(request));
         User user = userService.findByUsername(username);

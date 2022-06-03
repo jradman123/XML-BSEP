@@ -17,34 +17,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "/api/users")
 public class UserController {
 
-    @Autowired
-    private TokenUtils tokenUtils;
+    private final TokenUtils tokenUtils;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    public UserController(TokenUtils tokenUtils, UserService userService, UserMapper userMapper) {
+        this.tokenUtils = tokenUtils;
+        this.userService = userService;
+        this.userMapper = userMapper;
+    }
+
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('REGISTERED_USER') or hasAuthority('OWNER')")
-    @PutMapping(value = "/changePassword")
+    @PutMapping(value = "/change-password")
     public ResponseEntity<HttpStatus> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
         String token = tokenUtils.getToken(request);
         userService.changePassword(tokenUtils.getUsernameFromToken(token), changePasswordDto);
         return ResponseEntity.noContent().build();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('REGISTERED_USER') or hasAuthority('OWNER')")
-    @GetMapping (value = "/getUserInformation")
+    @GetMapping(value = "/user-info")
     public ResponseEntity<?> getUserInformation(HttpServletRequest request) {
         String token = tokenUtils.getToken(request);
-        String username=tokenUtils.getUsernameFromToken(token);
+        String username = tokenUtils.getUsernameFromToken(token);
         User user = userService.findByUsername(username);
-        return new ResponseEntity<UserInformationResponseDto>(userMapper.mapToDto(user),HttpStatus.OK);
+        return new ResponseEntity<UserInformationResponseDto>(userMapper.mapToDto(user), HttpStatus.OK);
     }
 }

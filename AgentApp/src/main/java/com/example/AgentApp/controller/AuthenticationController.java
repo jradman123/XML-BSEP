@@ -6,7 +6,6 @@ import com.example.AgentApp.exception.ResourceConflictException;
 import com.example.AgentApp.model.CustomToken;
 import com.example.AgentApp.model.User;
 import com.example.AgentApp.model.UserDetails;
-import com.example.AgentApp.repository.UserRepository;
 import com.example.AgentApp.security.TokenUtils;
 import com.example.AgentApp.service.CustomTokenService;
 import com.example.AgentApp.service.UserService;
@@ -19,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.UnknownHostException;
@@ -26,25 +26,27 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping(value = "/api")
 public class AuthenticationController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    private final TokenUtils tokenUtils;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final CustomTokenService customTokenService;
+
 
     @Autowired
-    private TokenUtils tokenUtils;
+    public AuthenticationController(UserService userService, TokenUtils tokenUtils, CustomTokenService customTokenService, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.tokenUtils = tokenUtils;
+        this.customTokenService = customTokenService;
+        this.authenticationManager = authenticationManager;
+    }
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CustomTokenService customTokenService;
-
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
     public ResponseEntity<LoggedUserDto> login(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
@@ -60,7 +62,6 @@ public class AuthenticationController {
         return ResponseEntity.ok(loggedUserDto);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/signup")
     public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationRequestDto userRequest, UriComponentsBuilder ucBuilder) throws UnknownHostException, ParseException {
         User existUser = this.userService.findByUsername(userRequest.getUsername());
@@ -76,7 +77,7 @@ public class AuthenticationController {
         return new ResponseEntity<>("ERROR!", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/confirmAccount/{token}")
+    @GetMapping("/confirm-account/{token}")
     public ResponseEntity<String> confirmAccount(@PathVariable String token) {
         CustomToken verificationToken = customTokenService.findByToken(token);
         User user = verificationToken.getUser();
@@ -88,22 +89,20 @@ public class AuthenticationController {
         User activated = userService.activateAccount(user);
         customTokenService.deleteById(verificationToken.getId());
         if (activated.isConfirmed()) {
-            return new ResponseEntity<>("Account is activated.", HttpStatus.OK);
+            return new ResponseEntity<>("Account is activated", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    @PostMapping(value = "/sendCode")
+    @PostMapping(value = "/send-code")
     public ResponseEntity<?> sendCode(@RequestBody String username) {
         User user = userService.findByUsername(username);
         customTokenService.sendResetPasswordToken(user);
         return ResponseEntity.accepted().build();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    @PostMapping(value = "/checkCode")
+    @PostMapping(value = "/check-code")
     public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
         User user = userService.findByUsername(checkCodeDto.getUsername());
         CustomToken token = customTokenService.findByUser(user);
@@ -114,8 +113,7 @@ public class AuthenticationController {
         return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    @PostMapping(value = "/resetPassword")
+    @PostMapping(value = "/reset-password")
     public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
         userService.resetPassword(resetPasswordDto.getUsername(), resetPasswordDto.getNewPassword());
         return new ResponseEntity<>("OK", HttpStatus.OK);
