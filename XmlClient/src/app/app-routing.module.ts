@@ -9,6 +9,7 @@ import { AuthGuard } from './AuthGuard/AuthGuard';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
 import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
+import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
 
 const routes: Routes = [
   {
@@ -37,7 +38,11 @@ const routes: Routes = [
   },
   {
     path: "userHome",
-    component: UserHomeComponent , canActivate: [AuthGuard]
+    component: UserHomeComponent  //, canActivate: [AuthGuard]
+  },
+  {
+    path: "editProfile",
+    component: EditProfileComponent //, canActivate: [AuthGuard]
   }
 ];
 
