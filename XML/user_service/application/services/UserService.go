@@ -13,8 +13,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"user/module/domain/dto"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
+	"user/module/infrastructure/api"
 )
 
 type UserService struct {
@@ -336,4 +338,20 @@ func sendMailWithCourier(email string, code string, subject string, body string)
 		fmt.Println(err)
 	}
 	fmt.Println(requestID)
+}
+
+func (u UserService) EditUser(userDetails *dto.UserDetails) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), userDetails.Username)
+	if err != nil {
+		return nil, err
+	}
+	user = api.MapUserDetailsDtoToUser(userDetails, user)
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user was not edited dunno y")
+	}
+	return user, nil
 }
