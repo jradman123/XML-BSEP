@@ -25,12 +25,10 @@ public class UserController {
 
     private final UserService userService;
 
-    private final UserMapper userMapper;
 
-    public UserController(TokenUtils tokenUtils, UserService userService, UserMapper userMapper) {
+    public UserController(TokenUtils tokenUtils, UserService userService) {
         this.tokenUtils = tokenUtils;
         this.userService = userService;
-        this.userMapper = userMapper;
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('REGISTERED_USER') or hasAuthority('OWNER')")
@@ -47,6 +45,6 @@ public class UserController {
         String token = tokenUtils.getToken(request);
         String username = tokenUtils.getUsernameFromToken(token);
         User user = userService.findByUsername(username);
-        return new ResponseEntity<UserInformationResponseDto>(userMapper.mapToDto(user), HttpStatus.OK);
+        return new ResponseEntity<UserInformationResponseDto>(UserMapper.mapToDto(user), HttpStatus.OK);
     }
 }

@@ -67,7 +67,6 @@ public class CompanyServiceImpl implements CompanyService {
         JobOffer jobOffer = new JobOffer();
         jobOffer.setCompany(company.get());
         jobOffer.setRequirements(requestDto.requirements);
-        jobOffer.setName(requestDto.name);
         jobOffer.setPosition(requestDto.position);
         jobOffer.setJobDescription(requestDto.jobDescription);
         jobOfferRepository.save(jobOffer);

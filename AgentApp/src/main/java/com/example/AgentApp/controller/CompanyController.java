@@ -19,7 +19,6 @@ import java.util.*;
 public class CompanyController {
 
     private final JobOfferService jobOfferService;
-    private final JobOfferMapper jobOfferMapper;
     private final CompanyService companyService;
     private final CompanyMapper companyMapper;
     private final CommentMapper commentMapper;
@@ -31,12 +30,11 @@ public class CompanyController {
     private final InterviewMapper interviewMapper;
     private final TokenUtils tokenUtils;
 
-    public CompanyController(JobOfferMapper jobOfferMapper, CommentMapper commentMapper, CompanyMapper companyMapper,
+    public CompanyController(CommentMapper commentMapper, CompanyMapper companyMapper,
                              CompanyService companyService, JobOfferService jobOfferService, CommentService commentService,
                              UserService userService, SalaryCommentMapper salaryCommentMapper,
                              SalaryCommentService salaryCommentService, InterviewService interviewService,
                              InterviewMapper interviewMapper, TokenUtils tokenUtils) {
-        this.jobOfferMapper = jobOfferMapper;
         this.commentMapper = commentMapper;
         this.companyMapper = companyMapper;
         this.companyService = companyService;
@@ -110,7 +108,7 @@ public class CompanyController {
         Company company = companyService.addJobOffer(requestDto);
         Set<JobOffer> allOffers = jobOfferService.getAllOffersForCompany(requestDto.companyId);
         if (company != null){
-            return new ResponseEntity<List<JobOfferResponseDto>>(jobOfferMapper.mapToDtos(allOffers),
+            return new ResponseEntity<List<JobOfferResponseDto>>(JobOfferMapper.mapToDtos(allOffers),
                     HttpStatus.OK);
         }
         return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);

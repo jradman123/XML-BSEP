@@ -36,10 +36,6 @@ export class JobOfferComponent implements OnInit {
     this.allOffers = {} as IJobOfferResponse
     this.requirements = [];
     this.createForm = this._formBuilder.group({
-      Name: new FormControl('', [
-        Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.-]*$')
-      ]),
       Requirements: new FormControl('', [
         Validators.required,
         Validators.pattern('^[a-zA-Z0-9_.-]*$')
@@ -90,7 +86,6 @@ export class JobOfferComponent implements OnInit {
   createJobOfferRequest() {
     console.log(this.createForm.value.Name);
 
-    this.jobOfferRequest.name = this.createForm.value.Name;
     this.jobOfferRequest.requirements = this.requirements;
     this.jobOfferRequest.position = this.createForm.value.Position;
     this.jobOfferRequest.jobDescription = this.createForm.value.Description;

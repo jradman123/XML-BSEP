@@ -4,7 +4,6 @@ import com.example.AgentApp.dto.*;
 import com.example.AgentApp.mapper.*;
 import com.example.AgentApp.model.*;
 import com.example.AgentApp.service.*;
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +14,11 @@ import java.util.*;
 @RestController
 public class JobOfferController {
 
-    @Autowired
-    private JobOfferService jobOfferService;
-    @Autowired
-    private JobOfferMapper jobOfferMapper;
+    private final JobOfferService jobOfferService;
+
+    public JobOfferController(JobOfferService jobOfferService) {
+        this.jobOfferService = jobOfferService;
+    }
 
     //NE RADI
     //mzd svi sta znam
@@ -26,7 +26,7 @@ public class JobOfferController {
     public ResponseEntity<?> allOffersForCompany(@PathVariable Long companyId){
         Set<JobOffer> offers = jobOfferService.getAllOffersForCompany(companyId);
         if (offers != null){
-            return new ResponseEntity<List<JobOfferResponseDto>>(jobOfferMapper.mapToDtos(offers), HttpStatus.OK);
+            return new ResponseEntity<List<JobOfferResponseDto>>(JobOfferMapper.mapToDtos(offers), HttpStatus.OK);
         }
         return new ResponseEntity<>("Failed to get all job offers for company!", HttpStatus.CONFLICT);
     }
@@ -36,7 +36,7 @@ public class JobOfferController {
     public ResponseEntity<?> allJobOffers(){
         List<JobOffer> offers = jobOfferService.getAllJobOffers();
         if (offers != null){
-            return new ResponseEntity<List<JobOfferWithCompanyResponseDto>>(jobOfferMapper.mapToDtosWithCompany(offers), HttpStatus.OK);
+            return new ResponseEntity<List<JobOfferWithCompanyResponseDto>>(JobOfferMapper.mapToDtosWithCompany(offers), HttpStatus.OK);
         }
         return new ResponseEntity<>("Failed to get all job offers!", HttpStatus.CONFLICT);
     }
