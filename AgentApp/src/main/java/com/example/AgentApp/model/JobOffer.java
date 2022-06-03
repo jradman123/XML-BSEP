@@ -19,6 +19,10 @@ public class JobOffer {
     @Column
     private String name;
 
+    private String position;
+
+    private String jobDescription;
+
     @Column
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     private Set<String> requirements;

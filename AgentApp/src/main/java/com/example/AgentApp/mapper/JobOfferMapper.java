@@ -21,6 +21,8 @@ public class JobOfferMapper {
         jobOfferResponseDto.offerId = offer.getId();
         jobOfferResponseDto.requirements = offer.getRequirements();
         jobOfferResponseDto.name = offer.getName();
+        jobOfferResponseDto.jobDescription = offer.getJobDescription();
+        jobOfferResponseDto.position = offer.getPosition();
         return jobOfferResponseDto;
     }
 
@@ -35,6 +37,8 @@ public class JobOfferMapper {
     private JobOfferWithCompanyResponseDto mapToDtoWithCompany(JobOffer offer) {
         JobOfferWithCompanyResponseDto jobOfferResponseDto = new JobOfferWithCompanyResponseDto();
         jobOfferResponseDto.offerId = offer.getId();
+        jobOfferResponseDto.position = offer.getPosition();
+        jobOfferResponseDto.jobDescription = offer.getJobDescription();
         jobOfferResponseDto.requirements = offer.getRequirements();
         jobOfferResponseDto.name = offer.getName();
         jobOfferResponseDto.companyId = offer.getCompany().getId();
