@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/company")
+@RequestMapping("/api/company")
 @RestController
 public class CompanyController {
 
@@ -47,19 +47,13 @@ public class CompanyController {
         this.interviewMapper = interviewMapper;
         this.tokenUtils = tokenUtils;
     }
-
-    @GetMapping
-    public ResponseEntity<String> getAll(){
-        return  new ResponseEntity<>("ok", HttpStatus.OK);
-    }
-
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id){
         return ResponseEntity.ok(companyMapper.mapToDto(companyService.getById(id)));
     }
 
-    //korisnik
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER')")
+    @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/new")
     public ResponseEntity<?> createCompanyRequest(@RequestBody NewCompanyRequestDto requestDto){
         Company newCompany = companyService.createCompany(requestDto);
@@ -69,7 +63,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to create company registration request!", HttpStatus.CONFLICT);
     }
 
-    //admin
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("approve/{id}")
     public ResponseEntity<?> approveCompany(@PathVariable Long id) {
         Company company = companyService.approveCompany(id,true);
@@ -81,7 +75,7 @@ public class CompanyController {
 
     }
 
-    //admin
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("reject/{id}")
     public ResponseEntity<?> rejectCompany(@PathVariable Long id) {
         Company company = companyService.approveCompany(id,false);
@@ -92,7 +86,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to reject company!", HttpStatus.CONFLICT);
     }
 
-    //owner
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("edit/{id}")
     public ResponseEntity<?> editCompany(@PathVariable Long id, @RequestBody EditCompanyRequestDto requestDto){
         Company company = companyService.editCompany(requestDto,id);
@@ -102,7 +96,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to edit company!", HttpStatus.CONFLICT);
     }
 
-    //owner
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping("create-offer")
     public ResponseEntity<?> crateJobOffer(@RequestBody CreateJobOfferRequestDto requestDto){
         Company company = companyService.addJobOffer(requestDto);
@@ -114,8 +108,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);
     }
 
-
-    //admin
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("pending")
     public ResponseEntity<?> getAllPendingCompanies(){
         List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.PENDING);
@@ -125,7 +118,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);
     }
 
-    //svi
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("approved")
     public ResponseEntity<?> getAllApprovedCompanies(){
         List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.APPROVED);
@@ -135,6 +128,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/comment")
     public ResponseEntity<?> leaveAComment(@RequestBody CommentDto commentDto){
         Company company = companyService.getById(commentDto.getCompanyId());
@@ -147,6 +141,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add comment for company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("{id}/comments")
     public ResponseEntity<?> allComments(@PathVariable Long id){
         Set<Comment> allCommentsForCompany = commentService.getAllForCompany(id);
@@ -156,6 +151,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to get all comments for company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/salary-comment")
     public  ResponseEntity<?> leaveSalaryComment(@RequestBody SalaryCommentRequestDto commentDto){
         Company company = companyService.getById(commentDto.companyID);
@@ -168,6 +164,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add salary comment for company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("{id}/salary-comments")
     public ResponseEntity<?> allSalaryComments(@PathVariable Long id){
         Set<SalaryComment> allCommentsForCompany = salaryCommentService.getAllForCompany(id);
@@ -177,6 +174,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to get all salary comments for company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/interview")
     public  ResponseEntity<?> leaveInterviewComment(@RequestBody InterviewRequestDto commentDto){
         Company company = companyService.getById(commentDto.companyID);
@@ -189,6 +187,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to add interview for company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("{id}/interviews")
     public ResponseEntity<?> allInterviews(@PathVariable Long id){
         Set<Interview> allInterviewsCompany = interviewService.getAllForCompany(id);
@@ -198,6 +197,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to get all interviews for company!", HttpStatus.CONFLICT);
     }
 
+    @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/users-company/{username}")
     public ResponseEntity<List<CompanyResponseDto>> getUsersCompany(@PathVariable String username){
         Long id = userService.getByUsername(username);
@@ -205,7 +205,7 @@ public class CompanyController {
     }
 
 
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("/search-companies")
     public ResponseEntity<?> getAllForUser(HttpServletRequest request){
         String username = tokenUtils.getUsernameFromToken(tokenUtils.getToken(request));
@@ -222,7 +222,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to return any company!", HttpStatus.CONFLICT);
     }
 
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('REGISTERED_USER') or hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("/isUsersCompany/{id}")
     public ResponseEntity<IsUsersCompanyDto> isUsersCompany(@PathVariable Long id, HttpServletRequest request){
         String username = tokenUtils.getUsernameFromToken(tokenUtils.getToken(request));

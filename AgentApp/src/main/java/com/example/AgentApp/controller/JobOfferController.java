@@ -5,12 +5,13 @@ import com.example.AgentApp.mapper.*;
 import com.example.AgentApp.model.*;
 import com.example.AgentApp.service.*;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/offer")
+@RequestMapping("/api/offer")
 @RestController
 public class JobOfferController {
 
@@ -20,8 +21,7 @@ public class JobOfferController {
         this.jobOfferService = jobOfferService;
     }
 
-    //NE RADI
-    //mzd svi sta znam
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("all/{companyId}")
     public ResponseEntity<?> allOffersForCompany(@PathVariable Long companyId){
         Set<JobOffer> offers = jobOfferService.getAllOffersForCompany(companyId);
@@ -31,7 +31,7 @@ public class JobOfferController {
         return new ResponseEntity<>("Failed to get all job offers for company!", HttpStatus.CONFLICT);
     }
 
-    //SVI MZD
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("all")
     public ResponseEntity<?> allJobOffers(){
         List<JobOffer> offers = jobOfferService.getAllJobOffers();

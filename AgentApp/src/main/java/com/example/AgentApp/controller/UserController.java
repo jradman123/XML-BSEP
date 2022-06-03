@@ -18,20 +18,17 @@ import javax.validation.Valid;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping(value = "/api/users")
+@RequestMapping(value = "/api/user")
 public class UserController {
-
     private final TokenUtils tokenUtils;
-
     private final UserService userService;
-
-
+    
     public UserController(TokenUtils tokenUtils, UserService userService) {
         this.tokenUtils = tokenUtils;
         this.userService = userService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('REGISTERED_USER') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @PutMapping(value = "/change-password")
     public ResponseEntity<HttpStatus> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
         String token = tokenUtils.getToken(request);
@@ -39,7 +36,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('REGISTERED_USER') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping(value = "/user-info")
     public ResponseEntity<?> getUserInformation(HttpServletRequest request) {
         String token = tokenUtils.getToken(request);

@@ -21,13 +21,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping(value = "/api")
+@RequestMapping(value = "api/auth")
 public class AuthenticationController {
 
     private final UserService userService;
@@ -89,7 +90,9 @@ public class AuthenticationController {
         User activated = userService.activateAccount(user);
         customTokenService.deleteById(verificationToken.getId());
         if (activated.isConfirmed()) {
-            return new ResponseEntity<>("Account is activated", HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:4200/login")).build();
+
         } else {
             return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
         }

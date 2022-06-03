@@ -47,7 +47,7 @@ public class CustomTokenServiceImpl implements CustomTokenService {
 
     @Override
     public void sendVerificationToken(User user) {
-        String confirmationLink = "http://localhost:8443/api/confirm-account/" + createConfirmationToken(user).getToken();
+        String confirmationLink = "http://localhost:8443/api/auth/confirm-account/" + createConfirmationToken(user).getToken();
         emailSenderService.sendEmail(user.getEmail(),"Confirm account", "Click on following link to confirm " +
                 "your account \n" + confirmationLink);
 

@@ -35,7 +35,7 @@ public getUserValue() : LoggedUserDto {
 }
 
 registerUser(newUser: NewUser) {
-return this.http.post(`${this.apiServerUrl}/api/signup`, newUser, {
+return this.http.post(`${this.apiServerUrl}/api/auth/signup`, newUser, {
   responseType: 'text',
 });
 }
@@ -50,7 +50,7 @@ get isLoggedIn() {
 }
 
 login(model: any): Observable<LoggedUserDto> {
-  return this.http.post(`${this.apiServerUrl}/api/login`, model).pipe(
+  return this.http.post(`${this.apiServerUrl}/api/auth/login`, model).pipe(
     map((response: any) => {
       if (response && response.token) {
         this.loginStatus.next(true);
@@ -93,10 +93,10 @@ checkCode(verCode: string): Observable<any> {
 }
 
 getUserInformation() : Observable<any>{
-  return this.http.get(`${this.apiServerUrl}/api/users/user-info`);
+  return this.http.get(`${this.apiServerUrl}/api/user/user-info`);
 }
 
 changePassword(data: any) {
-  return this.http.put(`${this.apiServerUrl}/api/users/change-password`, data)
+  return this.http.put(`${this.apiServerUrl}/api/user/change-password`, data)
 }
 }
