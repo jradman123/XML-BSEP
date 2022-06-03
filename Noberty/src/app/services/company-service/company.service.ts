@@ -6,7 +6,6 @@ import { IInterview } from 'src/app/interfaces/interview';
 import { IsUsersCompanyDto } from 'src/app/interfaces/is-users-company-dto';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
 import { IJobOfferRequest } from 'src/app/interfaces/job-offer-request';
-import { IJobOfferResponse } from 'src/app/interfaces/job-offer-response';
 import { NewCompanyRequestDto } from 'src/app/interfaces/new-company-request-dto';
 import { ISalaryComment } from 'src/app/interfaces/salary-comment';
 import { environment } from 'src/environments/environment';
@@ -22,11 +21,11 @@ export class CompanyService {
     return this.http.post(`${this.apiServerUrl}/company/interview`, interview);
   }
   CreateSalaryComment(comment: ISalaryComment) : Observable<any> {
-    return this.http.post(`${this.apiServerUrl}/company/salaryComment`, comment);
+    return this.http.post(`${this.apiServerUrl}/company/salary-comment`, comment);
   }
 
   CreateJobOffer(jobOffer: IJobOfferRequest): Observable<any> {
-    return this.http.post(`${this.apiServerUrl}/company/createOffer`, jobOffer);
+    return this.http.post(`${this.apiServerUrl}/company/create-offer`, jobOffer);
   }
   UpdateInfo(company: any): Observable<any> {
     return this.http.put(`${this.apiServerUrl}/company/edit/` + company.companyId
@@ -44,7 +43,7 @@ export class CompanyService {
   constructor(private http: HttpClient) { }
 
   getAlCompaniesForUser(): Observable<any> {
-    return this.http.get(`${this.apiServerUrl}/company/getAllForUser`);
+    return this.http.get(`${this.apiServerUrl}/company/search-companies`);
 
   }
 
@@ -78,7 +77,7 @@ export class CompanyService {
     return this.http.get<IInterview[]>(`${this.apiServerUrl}/company/` + id + `/interviews`);
   }
   getSalaryCommentsForCompany(id: string): Observable<ISalaryComment[]> {
-    return this.http.get<ISalaryComment[]>(`${this.apiServerUrl}/company/` + id + `/salaryComments`);
+    return this.http.get<ISalaryComment[]>(`${this.apiServerUrl}/company/` + id + `/salary-comments`);
   }
 
   isUsersCompany(id : string) : Observable<any>{

@@ -10,7 +10,6 @@ import { LeaveSallaryCommentComponent } from 'src/app/components/leave-sallary-c
 import { IComment } from 'src/app/interfaces/comment';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { IInterview } from 'src/app/interfaces/interview';
-import { IsUsersCompanyDto } from 'src/app/interfaces/is-users-company-dto';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
 import { ISalaryComment } from 'src/app/interfaces/salary-comment';
 import { CompanyService } from 'src/app/services/company-service/company.service';
@@ -123,13 +122,16 @@ export class CompanyProfileComponent implements OnInit {
     this.companyService.UpdateInfo(this.company).subscribe({
       next: () => {
         this._snackBar.open(
-          'Your request has been successfully submitted.',
-          'Dismiss'
+          'Successfully changed company policy info.',
+          'Dismiss',
+          {duration : 3000}
         );
 
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss',{
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });

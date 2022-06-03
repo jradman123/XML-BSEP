@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ICompanyInfo } from 'src/app/interfaces/company-info';
 import { NewCompanyRequestDto } from 'src/app/interfaces/new-company-request-dto';
 import { CompanyService } from 'src/app/services/company-service/company.service';
 
@@ -59,15 +58,18 @@ export class CompanyRegisterComponent implements OnInit {
     this.companyService.RegisterCompany(this.company).subscribe({
       next: () => {
         this._snackBar.open(
-          'Your request has been successfully submitted.',
-          'Dismiss'
-        );
+          'You have successfully created a request that has been sent to administration for approval.',
+          '', {
+            duration: 3000
+          });
         this.dialogRef.close();
         
 
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss', {
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });

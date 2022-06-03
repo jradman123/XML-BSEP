@@ -50,12 +50,15 @@ export class LeaveInterviewCommentComponent implements OnInit {
         this.dialogRef.close({ event: "Created interview comment", data: res });
         this._snackBar.open(
           'You have created a interview comment.',
-          'Dismiss'
-        );
+          'Dismiss', {
+            duration: 3000
+          });
       },
       error: (err: HttpErrorResponse) => {
         this.clearForm();
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss', {
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });

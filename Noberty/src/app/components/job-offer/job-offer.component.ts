@@ -66,18 +66,19 @@ export class JobOfferComponent implements OnInit {
 
     this.companyService.CreateJobOffer(this.jobOfferRequest).subscribe({
       next: (res) => {
-        console.log(res);
-
         this.clearForm();
         this.dialogRef.close({ event: "Created Job offer", data: res });
         this._snackBar.open(
           'You have created a job offer.',
-          'Dismiss'
-        );
+          'Dismiss', {
+            duration: 3000
+          });
       },
       error: (err: HttpErrorResponse) => {
         this.clearForm();
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss', {
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });

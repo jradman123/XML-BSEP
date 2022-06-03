@@ -34,13 +34,17 @@ export class LoginPageComponent implements OnInit {
       submit():void{
         const loginObserver = {
           next: (x:any) => {
-             this._snackBar.open("     Welcome","Dismiss");
+             this._snackBar.open("Welcome!","",{
+              duration : 3000
+             });
              
                 this._router.navigate(['/user/landing']);
           },
            error: (err:any) => {
-             this._snackBar.open("Username or password are incorrect.Try again,please.","Dismiss"); 
-           
+             this._snackBar.open("Username or password are incorrect.Try again,please.","Dismiss",{
+               duration : 3000
+              }); 
+
            }};
         
         this._userService.login(this.form.getRawValue()).subscribe(loginObserver);

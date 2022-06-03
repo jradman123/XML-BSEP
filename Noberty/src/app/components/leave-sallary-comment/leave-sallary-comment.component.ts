@@ -49,12 +49,15 @@ export class LeaveSallaryCommentComponent implements OnInit {
         this.dialogRef.close({ event: "Created salary comment", data: res });
         this._snackBar.open(
           'You have created a salary comment.',
-          'Dismiss'
-        );
+          'Dismiss', {
+            duration: 3000
+          });
       },
       error: (err: HttpErrorResponse) => {
         this.clearForm();
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss', {
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });

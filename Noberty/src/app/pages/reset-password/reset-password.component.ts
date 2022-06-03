@@ -59,8 +59,9 @@ export class ResetPasswordComponent implements OnInit {
   onSubmit(): void {
     this.userService
       .resetPassword(this.createForm.value.password)
-      .subscribe((res) => {});
+      .subscribe((res) => {
     this.router.navigate(['/login']);
+      });
   }
 
 }
