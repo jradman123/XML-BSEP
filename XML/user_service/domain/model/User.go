@@ -19,24 +19,28 @@ type User struct {
 	DateOfBirth   time.Time    `json:"dateOfBirth" gorm:"not null"`
 	RecoveryEmail string       `json:"recovery_email" gorm:"typevarchar(100);unique;not null"`
 	Biography     string       `json:"biography"`
-	Interests     []Interest   `json:"interests" gorm:"foreignKey:UserId"`
-	Skills        []Skill      `json:"skills" gorm:"foreignKey:UserId"`
-	Educations    []Education  `json:"educations" gorm:"foreignKey:UserId"`
-	Experiences   []Experience `json:"experiences" gorm:"foreignKey:UserId"`
+	Interests     []Interest   `json:"interests"`
+	Skills        []Skill      `json:"skills"`
+	Educations    []Education  `json:"educations"`
+	Experiences   []Experience `json:"experiences"`
 }
 type Skill struct {
-	UserId uuid.UUID
+	ID     int
+	UserID uuid.UUID
 	Skill  string
 }
 type Interest struct {
-	UserId   uuid.UUID
+	ID       int
+	UserID   uuid.UUID
 	Interest string
 }
 type Education struct {
-	UserId    uuid.UUID
+	ID        int
+	UserID    uuid.UUID
 	Education string
 }
 type Experience struct {
-	UserId     uuid.UUID
+	ID         int
+	UserID     uuid.UUID
 	Experience string
 }
