@@ -76,6 +76,9 @@ export class RegisterPageComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.createForm.invalid) {
+      return;
+    }
       this.createUser();
       this.userService.registerUser(this.newUser).subscribe(
         (res) => {
@@ -100,7 +103,6 @@ export class RegisterPageComponent implements OnInit {
   }
 
   createUser(): void {
-    
       this.newUser.firstName = this.createForm.value.firstName;
       this.newUser.lastName = this.createForm.value.lastName;
       this.newUser.phoneNumber = this.createForm.value.phoneNumber;
