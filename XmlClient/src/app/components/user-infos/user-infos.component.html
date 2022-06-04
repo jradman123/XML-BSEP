@@ -1,0 +1,92 @@
+<div class="container">
+    <mat-card class="bg-light">
+      <mat-card-title>Personal data</mat-card-title>
+      <br />
+      <div class="row">
+        <br />
+        <div class="col center">
+            <ng-template [ngIf]="userDetails.gender == 'FEMALE'"
+            ><img class="profilePhoto" src="../../../assets/userFemale.png"
+          /></ng-template>
+          <ng-template [ngIf]="userDetails.gender == 'MALE'"
+            ><img class="profilePhoto" src="../../../assets/userMale.png"
+          /></ng-template>
+        </div>
+        <div class="col">
+          <p>First name</p>
+          <p>Last name</p>
+          <p>Birth date</p>
+          <p>Gender</p>
+          <p>Username</p>
+          <p>Email address</p>
+          <p>Phone number</p>
+          <p>Biography</p>
+          
+          
+        </div>
+        <div class="col">
+          <p>{{ userDetails.firstName }}</p>
+          <p>{{ userDetails.lastName }}</p>
+          <p>{{ userDetails.dateOfBirth}}</p>
+         <p>{{ userDetails.gender}}</p>
+          <p>{{ userDetails.username }}</p>
+          <p>{{ userDetails.email }}</p>
+          <p>{{ userDetails.phoneNumber }}</p>
+          <p>{{userDetails.biography}}</p>
+         
+        </div></div>
+        </mat-card>
+        <mat-card class="bg-light">
+            <mat-card-title>Job data</mat-card-title>
+           <mat-tab-group>
+               <mat-tab label="Experiences">
+                <mat-card class="bg-light col">
+                    <div class="row">
+                        <div class="col">
+                            <p *ngFor="let experience of userDetails.experiences">{{experience.experience}}</p>
+                        </div>
+                    </div>
+                </mat-card>
+    
+               </mat-tab>
+               <mat-tab label="Skills">
+                <mat-card class="bg-light col">
+                    <div class="row">
+                        <div class="col">
+                            <p *ngFor="let skill of userDetails.skills">{{skill.skill}}</p>
+                        </div>
+                    </div>
+                </mat-card>
+    
+               </mat-tab>
+               <mat-tab label="Interests">
+                <mat-card class="bg-light col">
+                    <div class="row">
+                        <div class="col">
+                            <p *ngFor="let interest of userDetails.interests">{{interest.interest}}</p>
+                        </div>
+                    </div>
+                </mat-card>
+    
+               </mat-tab>
+               <mat-tab label="Education">
+                <mat-card class="bg-light col">
+                    <div class="row">
+                        <div class="col">
+                            <p *ngFor="let education of userDetails.educations">{{education.education}}</p>
+                        </div>
+                    </div>
+                </mat-card>
+    
+               </mat-tab>
+            </mat-tab-group>
+        </mat-card>
+        <br/><br/><br/>
+        <div class="row">
+            <div class="col-sm-2">
+                 <button type="button" class="btn btn-primary ml-3 mybtn" >Edit profile</button>
+            </div>
+        </div>
+        
+        </div>
+

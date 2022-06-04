@@ -54,6 +54,7 @@ import { RecoverPassComponent } from './components/recover-pass/recover-pass.com
 import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { EditUserComponent } from './pages/edit-user/edit-user.component';
+import { UserInfosComponent } from './components/user-infos/user-infos.component';
 
 
 
@@ -71,7 +72,8 @@ import { EditUserComponent } from './pages/edit-user/edit-user.component';
     RecoverPassComponent,
     ActivateAccountComponent,
     UserInfoComponent,
-    EditUserComponent
+    EditUserComponent,
+    UserInfosComponent
   ],
   imports: [
     BrowserModule,
