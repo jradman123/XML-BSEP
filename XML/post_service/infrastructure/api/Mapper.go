@@ -20,7 +20,7 @@ func MapPost(post *model.Post) *pb.Post {
 		User:    "/user/" + post.UserId,
 	}
 
-	likesNum, dislikesNum := findNumberOfReactions(post)
+	likesNum, dislikesNum := FindNumberOfReactions(post)
 
 	postPb := &pb.Post{
 		Id:             id,
@@ -37,7 +37,7 @@ func MapPost(post *model.Post) *pb.Post {
 	return postPb
 }
 
-func findNumberOfReactions(post *model.Post) (int, int) {
+func FindNumberOfReactions(post *model.Post) (int, int) {
 	likesNum := 0
 	dislikesNum := 0
 

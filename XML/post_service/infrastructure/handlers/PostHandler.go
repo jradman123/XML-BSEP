@@ -16,6 +16,9 @@ type PostHandler struct {
 func NewPostHandler(service *application.PostService) *PostHandler {
 	return &PostHandler{service: service}
 }
+func (p PostHandler) MustEmbedUnimplementedPostServiceServer() {
+
+}
 
 func (p PostHandler) GetAllByUserId(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
 	id := request.Id
@@ -146,43 +149,34 @@ func (p PostHandler) GetAllJobOffers(ctx context.Context, empty *pb.Empty) (*pb.
 	return response, nil
 }
 
-func (p PostHandler) GetAllLikesForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetReactionsResponse, error) {
-	//objectId, err := primitive.ObjectIDFromHex(request.Id)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//post, err := p.service.Get(objectId)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//response := &pb.GetReactionsResponse{Users: []*pb.User{}}
-	//for _, reaction := range post.Reactions {
-	//	if reaction.Reaction == model.LIKED {
-	//		user, err := p.service.GetUser(reaction.UserId)
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		current := api.MapUserReaction(user)
-	//		response.Users = append(response.Users, current)
-	//	}
-	//}
-	//
-	//if err != nil {
-	//	return nil, err
-	//}
-	//return response, nil
-	return &pb.GetReactionsResponse{}, nil
-}
+func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetReactionsResponse, error) {
+	objectId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	post, err := p.service.Get(objectId)
+	if err != nil {
+		return nil, err
+	}
 
-func (p PostHandler) GetAllDislikesForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetReactionsResponse, error) {
-	return &pb.GetReactionsResponse{}, nil
+	likesNum, dislikesNum := api.FindNumberOfReactions(post)
+	response := &pb.GetReactionsResponse{}
+	response.DislikesNumber = int32(dislikesNum)
+	response.LikesNumber = int32(likesNum)
+
+	return response, nil
 }
 
 func (p PostHandler) GetAllCommentsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetAllCommentsResponse, error) {
-	return &pb.GetAllCommentsResponse{}, nil
-}
+	objectId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		return nil, err
+	}
+	_, err = p.service.Get(objectId)
+	if err != nil {
+		return nil, err
+	}
 
-func (p PostHandler) MustEmbedUnimplementedPostServiceServer() {
-
+	response := &pb.GetAllCommentsResponse{Comments: []*pb.Comment{}}
+	return response, nil
 }

@@ -60,14 +60,9 @@ service PostService{
       get: "/job_offer"
     };
   }
-  rpc getAllLikesForPost(GetRequest) returns(GetReactionsResponse) {
+  rpc getAllReactionsForPost(GetRequest) returns(GetReactionsResponse) {
     option (google.api.http) = {
-      get: "/post/{Id}/likes"
-    };
-  }
-  rpc getAllDislikesForPost(GetRequest) returns(GetReactionsResponse) {
-    option (google.api.http) = {
-      get: "/post/{Id}/dislikes"
+      get: "/post/{Id}/reactions"
     };
   }
   rpc getAllCommentsForPost(GetRequest) returns(GetAllCommentsResponse) {
@@ -94,7 +89,8 @@ message GetAllCommentsResponse {
 }
 
 message GetReactionsResponse {
-  repeated User Users = 1;
+  int32 LikesNumber = 1;
+  int32 DislikesNumber = 2;
 }
 
 message Empty {}

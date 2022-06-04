@@ -31,8 +31,7 @@ type PostServiceClient interface {
 	DislikePost(ctx context.Context, in *ReactionRequest, opts ...grpc.CallOption) (*Empty, error)
 	CreateJobOffer(ctx context.Context, in *CreateJobOfferRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetAllJobOffers(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetAllJobOffers, error)
-	GetAllLikesForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error)
-	GetAllDislikesForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error)
+	GetAllReactionsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error)
 	GetAllCommentsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetAllCommentsResponse, error)
 }
 
@@ -125,18 +124,9 @@ func (c *postServiceClient) GetAllJobOffers(ctx context.Context, in *Empty, opts
 	return out, nil
 }
 
-func (c *postServiceClient) GetAllLikesForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error) {
+func (c *postServiceClient) GetAllReactionsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error) {
 	out := new(GetReactionsResponse)
-	err := c.cc.Invoke(ctx, "/post_service.PostService/getAllLikesForPost", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *postServiceClient) GetAllDislikesForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error) {
-	out := new(GetReactionsResponse)
-	err := c.cc.Invoke(ctx, "/post_service.PostService/getAllDislikesForPost", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/post_service.PostService/getAllReactionsForPost", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -165,8 +155,7 @@ type PostServiceServer interface {
 	DislikePost(context.Context, *ReactionRequest) (*Empty, error)
 	CreateJobOffer(context.Context, *CreateJobOfferRequest) (*Empty, error)
 	GetAllJobOffers(context.Context, *Empty) (*GetAllJobOffers, error)
-	GetAllLikesForPost(context.Context, *GetRequest) (*GetReactionsResponse, error)
-	GetAllDislikesForPost(context.Context, *GetRequest) (*GetReactionsResponse, error)
+	GetAllReactionsForPost(context.Context, *GetRequest) (*GetReactionsResponse, error)
 	GetAllCommentsForPost(context.Context, *GetRequest) (*GetAllCommentsResponse, error)
 	MustEmbedUnimplementedPostServiceServer()
 }
@@ -202,11 +191,8 @@ func (UnimplementedPostServiceServer) CreateJobOffer(context.Context, *CreateJob
 func (UnimplementedPostServiceServer) GetAllJobOffers(context.Context, *Empty) (*GetAllJobOffers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllJobOffers not implemented")
 }
-func (UnimplementedPostServiceServer) GetAllLikesForPost(context.Context, *GetRequest) (*GetReactionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllLikesForPost not implemented")
-}
-func (UnimplementedPostServiceServer) GetAllDislikesForPost(context.Context, *GetRequest) (*GetReactionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllDislikesForPost not implemented")
+func (UnimplementedPostServiceServer) GetAllReactionsForPost(context.Context, *GetRequest) (*GetReactionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllReactionsForPost not implemented")
 }
 func (UnimplementedPostServiceServer) GetAllCommentsForPost(context.Context, *GetRequest) (*GetAllCommentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommentsForPost not implemented")
@@ -386,38 +372,20 @@ func _PostService_GetAllJobOffers_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PostService_GetAllLikesForPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PostService_GetAllReactionsForPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PostServiceServer).GetAllLikesForPost(ctx, in)
+		return srv.(PostServiceServer).GetAllReactionsForPost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/post_service.PostService/getAllLikesForPost",
+		FullMethod: "/post_service.PostService/getAllReactionsForPost",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).GetAllLikesForPost(ctx, req.(*GetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PostService_GetAllDislikesForPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PostServiceServer).GetAllDislikesForPost(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/post_service.PostService/getAllDislikesForPost",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).GetAllDislikesForPost(ctx, req.(*GetRequest))
+		return srv.(PostServiceServer).GetAllReactionsForPost(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -484,12 +452,8 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_GetAllJobOffers_Handler,
 		},
 		{
-			MethodName: "getAllLikesForPost",
-			Handler:    _PostService_GetAllLikesForPost_Handler,
-		},
-		{
-			MethodName: "getAllDislikesForPost",
-			Handler:    _PostService_GetAllDislikesForPost_Handler,
+			MethodName: "getAllReactionsForPost",
+			Handler:    _PostService_GetAllReactionsForPost_Handler,
 		},
 		{
 			MethodName: "getAllCommentsForPost",
