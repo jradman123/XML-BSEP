@@ -1,15 +1,19 @@
 package handlers
 
 import (
+	"bytes"
 	pb "common/module/proto/user_service"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	hibp "github.com/mattevans/pwned-passwords"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"user/module/application/helpers"
@@ -24,6 +28,12 @@ type UserHandler struct {
 	validator    *validator.Validate
 	passwordUtil *helpers.PasswordUtil
 	pwnedClient  *hibp.Client
+	tokenService *services.ApiTokenService
+}
+
+func (u UserHandler) mustEmbedUnimplementedUserServiceServer() {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
@@ -31,8 +41,78 @@ func (u UserHandler) MustEmbedUnimplementedUserServiceServer() {
 }
 
 func NewUserHandler(l *log.Logger, service *services.UserService, jsonConv *helpers.JsonConverters, validator *validator.Validate,
-	passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client) *UserHandler {
-	return &UserHandler{l, service, jsonConv, validator, passwordUtil, pwnedClient}
+	passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client, tokenService *services.ApiTokenService) *UserHandler {
+	return &UserHandler{l, service, jsonConv, validator, passwordUtil, pwnedClient, tokenService}
+}
+
+func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateTokenRequest) (*pb.ApiToken, error) {
+	u.l.Println("Handling GenerateAPIToken")
+	username := request.Username.Username
+	policy := bluemonday.UGCPolicy()
+	username = strings.TrimSpace(policy.Sanitize(username))
+	if username == "" {
+		u.l.Println("fields are empty or xss")
+		return &pb.ApiToken{ApiToken: ""}, errors.New("fields are empty or xss happened")
+	}
+	existsErr := u.service.UserExists(username)
+	if existsErr != nil {
+		u.l.Println(existsErr)
+		return &pb.ApiToken{ApiToken: ""}, existsErr
+	}
+	user, er := u.service.GetByUsername(context.TODO(), username)
+	if er != nil {
+		u.l.Println(er)
+		return &pb.ApiToken{ApiToken: ""}, er
+	}
+	token, tokenErr := u.tokenService.GenerateApiToken(user)
+	if tokenErr != nil {
+		u.l.Println(tokenErr)
+		return &pb.ApiToken{ApiToken: ""}, tokenErr
+	}
+	return &pb.ApiToken{ApiToken: token}, nil
+}
+
+func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOfferRequest) (*pb.EmptyRequest, error) {
+	token := request.ShareJobOffer.ApiToken
+	hasAccess, er := u.tokenService.CheckIfHasAccess(token)
+	if er != nil {
+		return &pb.EmptyRequest{}, er
+	}
+	if !hasAccess {
+		return &pb.EmptyRequest{}, errors.New("you don't have acccess")
+	}
+	u.l.Println("IMA PRISTUUUUUUUUUUP")
+
+	//Encode the data
+	requirements := &myJSON{Array: request.ShareJobOffer.JobOffer.Requirements}
+	requirementsJson, _ := json.Marshal(requirements)
+	fmt.Println(string(requirementsJson))
+	postBody, _ := json.Marshal(map[string]string{
+		"Publisher":      request.ShareJobOffer.JobOffer.Publisher,
+		"Position":       request.ShareJobOffer.JobOffer.Position,
+		"JobDescription": request.ShareJobOffer.JobOffer.JobDescription,
+		"Requirements":   string(requirementsJson),
+		"DatePosted":     request.ShareJobOffer.JobOffer.DatePosted.String(),
+		"Duration":       request.ShareJobOffer.JobOffer.Duration,
+	})
+	responseBody := bytes.NewBuffer(postBody)
+	resp, err := http.Post("http://localhost:9090/job_offer", "application/json", responseBody)
+	if err != nil {
+		log.Fatalf("An Error Occured %v", err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	sb := string(body)
+	log.Printf(sb)
+
+	return &pb.EmptyRequest{}, nil
+}
+
+type myJSON struct {
+	Array []string
 }
 
 func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error) {

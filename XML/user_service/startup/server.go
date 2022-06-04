@@ -41,11 +41,12 @@ func (server *Server) Start() {
 	emailVerRepo := server.InitEmailVerRepo(db)
 	recoveryRepo := server.InitRecoveryRepo(db)
 	userService := server.InitUserService(l, userRepo, emailVerRepo, recoveryRepo)
+	apiTokenService := server.InitApiTokenService(l, userService)
 
 	validator := validator.New()
 	jsonConverters := helpers.NewJsonConverters(l)
 	utils := helpers.PasswordUtil{}
-	userHandler := server.InitUserHandler(l, userService, validator, jsonConverters, &utils, pwnedClient)
+	userHandler := server.InitUserHandler(l, userService, validator, jsonConverters, &utils, pwnedClient, apiTokenService)
 
 	server.StartGrpcServer(userHandler)
 
@@ -71,12 +72,16 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 }
 
 func (server *Server) InitUserHandler(l *log.Logger, userService *services.UserService, validator *validator.Validate,
-	jsonConverters *helpers.JsonConverters, passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client) *handlers.UserHandler {
-	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil, pwnedClient)
+	jsonConverters *helpers.JsonConverters, passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client, tokenService *services.ApiTokenService) *handlers.UserHandler {
+	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil, pwnedClient, tokenService)
 }
 
 func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {
 	return services.NewUserService(l, repo, emailRepo, recoveryRepo)
+}
+
+func (server *Server) InitApiTokenService(l *log.Logger, userService *services.UserService) *services.ApiTokenService {
+	return services.NewApiTokenService(l, userService)
 }
 
 func (server *Server) InitUserRepo(d *gorm.DB) repositories.UserRepository {
