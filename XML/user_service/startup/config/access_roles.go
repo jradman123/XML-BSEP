@@ -6,7 +6,7 @@ func AccessibleRoles() map[string][]string {
 	const userService = "/user_service.UserService/"
 
 	return map[string][]string{
-		userService + "GetAll":     {"Admin"},
-		userService + "UpdateUser": {"Admin"},
+		userService + "GetAll":     {"Regular"},
+		userService + "UpdateUser": {"Regular"},
 	}
 }
