@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { UserServiceService } from 'src/app/services/UserService/user-service.service';
 
@@ -19,6 +20,7 @@ export class ResetPasswordComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserServiceService,
+    private snackBar : MatSnackBar,
     private router: Router
   ) {}
 
@@ -46,8 +48,15 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   verify() {
-    this.userService.checkCode(this.kodic).subscribe((res) => {});
-    this.divVisible = true;
+    this.userService.checkCode(this.kodic).subscribe(
+      (res) => {
+        this.divVisible = true;
+      },
+      err => {
+        this.snackBar.open(err.error, '', {
+          duration: 3000
+        })
+      });
   }
   onCodeInput(event: any): void {}
 
@@ -59,8 +68,10 @@ export class ResetPasswordComponent implements OnInit {
   onSubmit(): void {
     this.userService
       .resetPassword(this.createForm.value.password)
-      .subscribe((res) => {});
+      .subscribe(
+      (res) => {
     this.router.navigate(['/login']);
+      });
   }
 
 }

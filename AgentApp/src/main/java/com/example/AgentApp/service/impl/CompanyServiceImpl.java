@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -62,14 +66,16 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company addJobOffer(CreateJobOfferRequestDto requestDto) {
+    public Company addJobOffer(CreateJobOfferRequestDto requestDto) throws ParseException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         Optional<Company> company = companyRepository.findById(requestDto.companyId);
         JobOffer jobOffer = new JobOffer();
         jobOffer.setCompany(company.get());
         jobOffer.setRequirements(requestDto.requirements);
-        jobOffer.setName(requestDto.name);
         jobOffer.setPosition(requestDto.position);
         jobOffer.setJobDescription(requestDto.jobDescription);
+        jobOffer.setDueDate(LocalDate.parse(requestDto.dueDate, formatter));
+        jobOffer.setDateCreated(LocalDate.now());
         jobOfferRepository.save(jobOffer);
         Optional<Company> companyWithOffer = companyRepository.findById(requestDto.companyId);
         return companyWithOffer.get();

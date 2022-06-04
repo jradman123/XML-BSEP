@@ -1,7 +1,9 @@
 export interface IJobOffer{
     id:string,
-    name:string,
     requirements:string[],
     position : string,
-    jobDescription : string 
+    jobDescription : string,
+    dateCreated : string,
+    dueDate : string,
+    companyName : string
 }
