@@ -1,0 +1,51 @@
+<div class="container">
+    <h1>Personal informations</h1>
+  <form class="form-container" [formGroup]="userDetailsForm">
+    <mat-form-field appearance="standard">
+      <mat-label>First Name</mat-label>
+      <input matInput placeholder="First Name" formControlName="firstName"  [readonly]="!editMode" />
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+      <mat-label>Last Name</mat-label>
+      <input matInput placeholder="Last Name" formControlName="lastName" [readonly]="!editMode"/>
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+      <mat-label>Phone Number</mat-label>
+      <input matInput placeholder="Phone Number" formControlName="phoneNumber" [readonly]="!editMode"/>
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+      <mat-label>Date of birth </mat-label>
+      <input matInput placeholder="Date of birth" formControlName="dateOfBirth" [readonly]="!editMode"/>
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+        <mat-label>Gender </mat-label>
+        <input matInput placeholder="Gender" formControlName="gender" [readonly]="!editMode"/>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Biography </mat-label>
+        <input matInput placeholder="Biography" formControlName="biography" [readonly]="!editMode"/>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Username</mat-label>
+        <input matInput placeholder="Username" formControlName="username" readonly/>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="Email" formControlName="email" readonly />
+      </mat-form-field>
+   
+    <div class="button-container" *ngIf ="!editMode else editIsOn">
+    <button mat-flat-button color="primary"  class="button" (click)="editMode = true">Edit</button>
+    <div class="menu-container">
+      <button class="button" mat-flat-button color="primary" (click)="changePassword()">Change Password</button>
+    </div>
+  </div>
+  <ng-template #editIsOn>
+    <div class="button-container" *ngIf="editMode">
+      <button mat-flat-button color="primary" class="button" (click)="edit()">Save</button>
+      <button mat-flat-button color="warn"  class="button" (click)="cancel()">Cancel</button>
+    </div>
+  </ng-template>
+  </form>
+</div>
+

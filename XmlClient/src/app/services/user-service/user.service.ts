@@ -6,6 +6,7 @@ import { LoggedUser } from 'src/app/interfaces/logged-user';
 import { LoginRequest } from 'src/app/interfaces/login-request';
 import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
+import { UserDetails } from 'src/app/interfaces/user-details';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,7 @@ export class UserService {
           localStorage.setItem('currentUser', JSON.stringify(response));
           localStorage.setItem('role', response.role)
           localStorage.setItem('email', response.email)
+          localStorage.setItem('username', response.username)
           this.currentUserSubject.next(response);
         }
         return this.user;
@@ -85,6 +87,19 @@ export class UserService {
     return this._http.post<any>(
       'http://localhost:9090/users/activate/user',
        activateData);
+  }
+
+  getUserDetails(username : any) {
+    return this._http.post<UserDetails>(
+      'http://localhost:9090/users/user/details', {
+        username
+      });
+  }
+
+  updateUser(user : UserDetails) {
+    return this._http.post<UserDetails>('http://localhost:9090/users/user/edit',{
+      user
+    })
   }
 
 }

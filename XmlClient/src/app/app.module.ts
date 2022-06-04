@@ -52,7 +52,8 @@ import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
 import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
-import { EditProfileComponent } from './pages/edit-profile/edit-profile.component';
+import { UserInfoComponent } from './components/user-info/user-info.component';
+import { EditUserComponent } from './pages/edit-user/edit-user.component';
 
 
 
@@ -69,7 +70,8 @@ import { EditProfileComponent } from './pages/edit-profile/edit-profile.componen
     RecoverPassRequestComponent,
     RecoverPassComponent,
     ActivateAccountComponent,
-    EditProfileComponent
+    UserInfoComponent,
+    EditUserComponent
   ],
   imports: [
     BrowserModule,

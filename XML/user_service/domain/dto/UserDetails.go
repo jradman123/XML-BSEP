@@ -15,14 +15,14 @@ type UserDetails struct {
 	Experiences []ExperienceDto `json:"experiences"`
 }
 type SkillDto struct {
-	Skill string
+	Skill string `json:"skill"`
 }
 type InterestDto struct {
-	Interest string
+	Interest string `json:"interest"`
 }
 type EducationDto struct {
-	Education string
+	Education string `json:"education"`
 }
 type ExperienceDto struct {
-	Experience string
+	Experience string `json:"experience"`
 }
