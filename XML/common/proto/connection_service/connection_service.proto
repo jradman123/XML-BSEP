@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "common/module/connection_service";
+
+package connection_service;
+import "google/api/annotations.proto";
+
+
+service ConnectionService{
+
+  rpc GetAll(EmptyRequest) returns(EmptyRequest) {
+    option (google.api.http) = {
+      get: "/connections"
+    };
+  }
+}
+
+message EmptyRequest{}

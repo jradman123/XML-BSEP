@@ -2,7 +2,6 @@ package interceptor
 
 import (
 	"context"
-	"crypto/rsa"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"google.golang.org/grpc"
@@ -15,10 +14,11 @@ import (
 
 type AuthInterceptor struct {
 	accessibleRoles map[string][]string
-	publicKey       *rsa.PublicKey
+	publicKey       string
 }
 
-func NewAuthInterceptor(accessibleRoles map[string][]string, publicKey *rsa.PublicKey) *AuthInterceptor {
+//TODO:ovdje vratiti na *rsa.PublicKey umesto stringa
+func NewAuthInterceptor(accessibleRoles map[string][]string, publicKey string) *AuthInterceptor {
 	return &AuthInterceptor{
 		accessibleRoles: accessibleRoles,
 		publicKey:       publicKey,
