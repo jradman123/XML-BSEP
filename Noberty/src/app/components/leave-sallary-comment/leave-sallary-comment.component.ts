@@ -26,7 +26,11 @@ export class LeaveSallaryCommentComponent implements OnInit {
   ) { 
     this.comment = {} as ISalaryComment
     this.createForm = this._formBuilder.group({
-      Salary: new FormControl('',[Validators.required]),
+      Salary: new FormControl('',[
+        Validators.required,
+        Validators.pattern('^(?=.*[a-zA-Z])(?=.*[0-9]).*$'
+        )
+      ]),
       Position : new FormControl('',[Validators.required]),
     })
   }
@@ -37,7 +41,10 @@ export class LeaveSallaryCommentComponent implements OnInit {
   }
 
   submitRequest(): void {
-
+    
+    if (this.createForm.invalid)
+        return;
+        
     this.createCommentRequest();
     console.log(this.comment);
 
@@ -49,12 +56,15 @@ export class LeaveSallaryCommentComponent implements OnInit {
         this.dialogRef.close({ event: "Created salary comment", data: res });
         this._snackBar.open(
           'You have created a salary comment.',
-          'Dismiss'
-        );
+          '', {
+            duration: 3000
+          });
       },
       error: (err: HttpErrorResponse) => {
         this.clearForm();
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", '', {
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });

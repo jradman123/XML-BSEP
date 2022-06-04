@@ -36,7 +36,6 @@ public class CompanyMapper {
     public NewCompanyResponseDto mapToCompanyCreateResponse(Company company){
         NewCompanyResponseDto response = new NewCompanyResponseDto();
         response.companyPolicy = company.getCompanyPolicy();
-       // response.contactInfo = company.getContactInfo();
         response.companyStatus = company.getCompanyStatus();
         response.message = "Request for creating company is created!";
         return response;

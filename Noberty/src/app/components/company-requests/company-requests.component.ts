@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { CompanyService } from 'src/app/services/company-service/company.service';
 
@@ -10,7 +11,7 @@ import { CompanyService } from 'src/app/services/company-service/company.service
 export class CompanyRequestsComponent implements OnInit {
 
   items! : CompanyResponseDto[];
-  constructor(private companyService : CompanyService) { }
+  constructor(private companyService : CompanyService, private matSnackBar : MatSnackBar) { }
 
   ngOnInit(): void {
     this.companyService.getAllPendingCompanies().subscribe((res) => {this.items = res});
@@ -20,7 +21,9 @@ export class CompanyRequestsComponent implements OnInit {
     this.companyService.approveRequest(id).subscribe({
       next: (requests : CompanyResponseDto[]) => {
         this.items = requests;
-
+        this.matSnackBar.open('Request successfully approved.', '', {
+          duration:3000
+        });
       }});
 
   }
@@ -29,7 +32,9 @@ export class CompanyRequestsComponent implements OnInit {
     this.companyService.rejectRequest(id).subscribe({
       next: (requests : CompanyResponseDto[]) => {
         this.items = requests;
-
+        this.matSnackBar.open('Request successfully rejected.', '', {
+          duration:3000
+        });
       }});
 
   }

@@ -2,11 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { LoggedUserDto } from 'src/app/interfaces/logged-user-dto';
 import { NewUser } from 'src/app/interfaces/new-user';
 import { environment } from 'src/environments/environment';
-import { map } from 'rxjs/operators';
-import { UserInformationResponseDto } from 'src/app/interfaces/user-information-response-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +35,7 @@ public getUserValue() : LoggedUserDto {
 }
 
 registerUser(newUser: NewUser) {
-return this.http.post(`${this.apiServerUrl}/api/signup`, newUser, {
+return this.http.post(`${this.apiServerUrl}/api/auth/signup`, newUser, {
   responseType: 'text',
 });
 }
@@ -51,7 +50,7 @@ get isLoggedIn() {
 }
 
 login(model: any): Observable<LoggedUserDto> {
-  return this.http.post(`${this.apiServerUrl}/api/login`, model).pipe(
+  return this.http.post(`${this.apiServerUrl}/api/auth/login`, model).pipe(
     map((response: any) => {
       if (response && response.token) {
         this.loginStatus.next(true);
@@ -76,28 +75,28 @@ logout() {
 }
 
 sendCode(email: string): Observable<any> {
-  return this.http.post<any>(`${this.apiServerUrl}/api/sendCode`, email);
+  return this.http.post<any>(`${this.apiServerUrl}/api/auth/send-code`, email);
 }
 
 resetPassword(newPassword: string): Observable<any> {
-  return this.http.post<any>(`${this.apiServerUrl}/api/resetPassword`, {
+  return this.http.post<any>(`${this.apiServerUrl}/api/auth/reset-password`, {
     username: localStorage.getItem('usernamee'),
     newPassword: newPassword,
   });
 }
 
 checkCode(verCode: string): Observable<any> {
-  return this.http.post<any>(`${this.apiServerUrl}/api/checkCode`, {
+  return this.http.post<any>(`${this.apiServerUrl}/api/auth/check-code`, {
     username: localStorage.getItem('usernamee'),
     code: verCode,
   });
 }
 
 getUserInformation() : Observable<any>{
-  return this.http.get(`${this.apiServerUrl}/api/users/getUserInformation`);
+  return this.http.get(`${this.apiServerUrl}/api/user/user-info`);
 }
 
 changePassword(data: any) {
-  return this.http.put(`${this.apiServerUrl}/api/users/changePassword`, data)
+  return this.http.put(`${this.apiServerUrl}/api/user/change-password`, data)
 }
 }

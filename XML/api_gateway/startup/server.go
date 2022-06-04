@@ -1,6 +1,7 @@
 package startup
 
 import (
+	postsGw "common/module/proto/posts_service"
 	userGw "common/module/proto/user_service"
 	"context"
 	"fmt"
@@ -42,12 +43,16 @@ func (server *Server) initHandlers() {
 	//Povezuje sa grpc generisanim fajlovima
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
+	postsEndpoint := fmt.Sprintf("%s:%s", server.config.PostsHost, server.config.PostsPort)
 
 	err := userGw.RegisterUserServiceHandlerFromEndpoint(context.TODO(), server.mux, userEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
-
+	err = postsGw.RegisterPostServiceHandlerFromEndpoint(context.TODO(), server.mux, postsEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
 }
 
 //Gateway ima svoje endpointe

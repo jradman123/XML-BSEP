@@ -1,0 +1,23 @@
+<div class="container" style="  position: relative;top: 20px;">
+
+    <div class="col-12 ">
+        <h3> In order to publish this job offer on Dislinkt, please enter your API key.</h3>
+        <hr />
+    </div>
+    <div class="col-12">
+        <div  [formGroup]="createForm" class="content">
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>API key</mat-label>
+                    <input matInput  formControlName="ApiKey" required>
+                </mat-form-field>
+
+        
+            <div class="buttons">
+                <button  (click)="publishOffer()" class="btn btn-success text-center">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+</div>

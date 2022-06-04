@@ -84,11 +84,11 @@ func (server *Server) InitApiTokenService(l *log.Logger, userService *services.U
 	return services.NewApiTokenService(l, userService)
 }
 
-func (server *Server) InitUserRepo(d *gorm.DB) repositories.UserRepository {
+func (server *Server) InitUserRepo(db *gorm.DB) repositories.UserRepository {
 	return persistance.NewUserRepositoryImpl(db)
 }
 
-func (server *Server) InitEmailVerRepo(d *gorm.DB) repositories.EmailVerificationRepository {
+func (server *Server) InitEmailVerRepo(db *gorm.DB) repositories.EmailVerificationRepository {
 	return persistance.NewEmailVerificationRepositoryImpl(db)
 }
 
