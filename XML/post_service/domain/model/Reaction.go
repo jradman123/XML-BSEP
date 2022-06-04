@@ -1,6 +1,6 @@
 package model
 
 type Reaction struct {
-	Username string       `bson:"username"`
+	UserId   string       `bson:"user_id"`
 	Reaction ReactionType `bson:"reaction"`
 }

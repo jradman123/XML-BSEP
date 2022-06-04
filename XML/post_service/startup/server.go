@@ -1,7 +1,10 @@
 package startup
 
 import (
+	"common/module/interceptor"
+	postsProto "common/module/proto/posts_service"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"log"
@@ -24,10 +27,8 @@ func NewServer(config *config.Config) *Server {
 func (server *Server) Start() {
 	mongoClient := server.InitMongoClient()
 	postRepo := server.InitPostsRepo(mongoClient)
-
 	postService := server.InitPostService(postRepo)
 	postHandler := server.InitPostHandler(postService)
-
 	server.StartGrpcServer(postHandler)
 }
 
@@ -56,11 +57,11 @@ func (server *Server) StartGrpcServer(handler *handlers.PostHandler) {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(server.config.PublicKey))
+	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
 
-	//interceptor := interceptor.NewAuthInterceptor(config.AccessiblePermissions(), server.config.PublicKey)
-	//grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
-	//postProto.RegisterPostServiceServer(grpcServer, postHandler)
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
+	postsProto.RegisterPostServiceServer(grpcServer, handler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}

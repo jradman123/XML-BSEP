@@ -1,6 +1,6 @@
 package model
 
 type Comment struct {
-	Username    string `bson:"username"`
+	UserId      string `bson:"user_id"`
 	CommentText string `bson:"comment_text"`
 }

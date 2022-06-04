@@ -34,10 +34,18 @@ func (service *PostService) CreateComment(post *model.Post, comment *model.Comme
 	return service.repository.CreateComment(post, comment)
 }
 
-func (service *PostService) LikePost(post *model.Post, username string) error {
-	return service.repository.LikePost(post, username)
+func (service *PostService) LikePost(post *model.Post, userId string) error {
+	return service.repository.LikePost(post, userId)
 }
 
-func (service *PostService) DislikePost(post *model.Post, username string) error {
-	return service.repository.DislikePost(post, username)
+func (service *PostService) DislikePost(post *model.Post, userId string) error {
+	return service.repository.DislikePost(post, userId)
+}
+
+func (service *PostService) CreateJobOffer(offer *model.JobOffer) error {
+	return service.repository.CreateJobOffer(offer)
+}
+
+func (service *PostService) GetAllJobOffers() ([]*model.JobOffer, error) {
+	return service.repository.GetAllJobOffers()
 }

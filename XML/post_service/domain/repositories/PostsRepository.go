@@ -13,4 +13,6 @@ type PostRepository interface {
 	CreateComment(post *model.Post, comment *model.Comment) error
 	LikePost(post *model.Post, username string) error
 	DislikePost(post *model.Post, username string) error
+	CreateJobOffer(offer *model.JobOffer) error
+	GetAllJobOffers() ([]*model.JobOffer, error)
 }

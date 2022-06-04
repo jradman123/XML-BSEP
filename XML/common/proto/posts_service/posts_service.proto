@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+option go_package = "common/module/posts_service";
+
+package post_service;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service PostService{
+
+  rpc getAllByUserId(GetRequest) returns(GetMultipleResponse) {
+    option (google.api.http) = {
+      get: "/post/user/{Id}"
+    };
+  }
+  rpc get(GetRequest) returns(GetResponse) {
+    option (google.api.http) = {
+      get: "/post/{Id}"
+    };
+  }
+  rpc getAll(Empty) returns(GetMultipleResponse) {
+    option (google.api.http) = {
+      get: "/post"
+    };
+  }
+  rpc create(CreatePostRequest) returns (Empty) {
+    option (google.api.http) = {
+      post: "/post"
+      body: "Post"
+    };
+  }
+  rpc createComment(CreateCommentRequest) returns (CreateCommentResponse) {
+    option (google.api.http) = {
+      post: "/post/{PostId}/comment"
+      body: "Comment"
+    };
+  }
+  rpc likePost(ReactionRequest) returns (Empty) {
+    option (google.api.http) = {
+      post: "/post/{PostId}/like"
+      body: "*"
+    };
+  }
+  rpc dislikePost(ReactionRequest) returns (Empty) {
+    option (google.api.http) = {
+      post: "/post/{PostId}/dislike"
+      body: "*"
+    };
+  }
+  rpc createJobOffer(CreateJobOfferRequest) returns (Empty) {
+    option (google.api.http) = {
+      post: "/job_offer"
+      body: "JobOffer"
+    };
+  }
+  rpc getAllJobOffers(Empty) returns(GetAllJobOffers) {
+    option (google.api.http) = {
+      get: "/job_offer"
+    };
+  }
+  rpc getAllLikesForPost(GetRequest) returns(GetReactionsResponse) {
+    option (google.api.http) = {
+      get: "/post/{Id}/likes"
+    };
+  }
+  rpc getAllDislikesForPost(GetRequest) returns(GetReactionsResponse) {
+    option (google.api.http) = {
+      get: "/post/{Id}/dislikes"
+    };
+  }
+  rpc getAllCommentsForPost(GetRequest) returns(GetAllCommentsResponse) {
+    option (google.api.http) = {
+      get: "/post/{Id}/comments"
+    };
+  }
+}
+
+message GetRequest {
+  string Id = 1;
+}
+
+message GetResponse {
+  Post Post = 1;
+}
+
+message GetMultipleResponse {
+  repeated Post Posts = 1;
+}
+
+message GetAllCommentsResponse {
+  repeated Comment Comments = 1;
+}
+
+message GetReactionsResponse {
+  repeated User Users = 1;
+}
+
+message Empty {}
+
+message CreatePostRequest {
+  Post Post = 1;
+}
+
+message CreateCommentRequest {
+  string PostId = 1;
+  Comment Comment = 2;
+}
+
+message CreateCommentResponse {
+  Comment Comment = 1;
+}
+
+message ReactionRequest {
+  string PostId = 1;
+  string UserId = 2;
+}
+
+message Post {
+  string Id = 1;
+  string UserId = 2;
+  string PostText = 3;
+  repeated string ImagePaths = 4;
+  string DatePosted = 6;
+  int32 LikesNumber = 7;
+  int32 DislikesNumber = 8;
+  Links Links = 9;
+  int32 CommentsNumber = 10;
+}
+
+message User {
+  string Username = 1;
+  string Name = 2;
+  string Surname = 3;
+}
+
+message Comment {
+  string UserId = 1;
+  string Username = 2;
+  string Name = 3;
+  string Surname = 4;
+  string CommentText = 5;
+}
+
+message Links{
+  string Comment = 1;
+  string Like = 2;
+  string Dislike = 3;
+  string User = 4;
+}
+
+message JobOffer {
+  string Id = 1;
+  string Publisher = 2;
+  string Position = 3;
+  string JobDescription = 4;
+  repeated string Requirements = 5;
+  google.protobuf.Timestamp DatePosted = 6;
+  string Duration = 7;
+}
+
+message CreateJobOfferRequest {
+  JobOffer JobOffer = 1;
+}
+
+message GetAllJobOffers {
+  repeated JobOffer JobOffers = 1;
+}
+
+
