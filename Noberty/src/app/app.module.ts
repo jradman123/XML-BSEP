@@ -36,6 +36,7 @@ import { MyCompaniesListComponent } from './pages/my-companies-list/my-companies
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { UserLandingPageComponent } from './pages/user-landing-page/user-landing-page.component';
+import { PublishJobOfferComponent } from './components/publish-job-offer/publish-job-offer.component';
 
 
 
@@ -68,6 +69,7 @@ import { UserLandingPageComponent } from './pages/user-landing-page/user-landing
     LeaveSallaryCommentComponent,
     MyCompaniesListComponent,
     ChangePasswordComponent,
+    PublishJobOfferComponent,
 
   ],
   imports: [

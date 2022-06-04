@@ -4,6 +4,7 @@ import com.example.AgentApp.dto.*;
 import com.example.AgentApp.model.*;
 import org.springframework.stereotype.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
@@ -22,6 +23,8 @@ public class JobOfferMapper {
         jobOfferResponseDto.requirements = offer.getRequirements();
         jobOfferResponseDto.jobDescription = offer.getJobDescription();
         jobOfferResponseDto.position = offer.getPosition();
+        jobOfferResponseDto.dateCreated = offer.getDateCreated().toString();
+        jobOfferResponseDto.dueDate = offer.getDueDate().toString();
         return jobOfferResponseDto;
     }
 
@@ -49,6 +52,8 @@ public class JobOfferMapper {
         jobOfferResponseDto.noOfEmpl = offer.getCompany().getCompanyInfo().getNoOfEmpl();
         jobOfferResponseDto.countryOfOrigin = offer.getCompany().getCompanyInfo().getCountryOfOrigin();
         jobOfferResponseDto.offices = offer.getCompany().getCompanyInfo().getOffices();
+        jobOfferResponseDto.dateCreated = offer.getDateCreated().toString();
+        jobOfferResponseDto.dueDate = offer.getDueDate().toString();
         return jobOfferResponseDto;
     }
 }

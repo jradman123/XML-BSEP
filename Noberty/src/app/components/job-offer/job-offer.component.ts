@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
@@ -30,7 +31,8 @@ export class JobOfferComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private router: Router,
     private _formBuilder: FormBuilder,
-    private companyService: CompanyService) {
+    private companyService: CompanyService,
+    private datePipe : DatePipe) {
 
     this.jobOfferRequest = {} as IJobOfferRequest
     this.allOffers = {} as IJobOfferResponse
@@ -38,15 +40,17 @@ export class JobOfferComponent implements OnInit {
     this.createForm = this._formBuilder.group({
       Requirements: new FormControl('', [
         Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.-]*$')
       ]),
       Position: new FormControl('', [
-        Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.-]*$')
+        Validators.required
       ]),
       Description: new FormControl('', [
         Validators.required
       ]),
+      DueDate : new FormControl( '',
+      [
+        Validators.required
+      ])
     })
 
   }
@@ -90,6 +94,9 @@ export class JobOfferComponent implements OnInit {
     this.jobOfferRequest.position = this.createForm.value.Position;
     this.jobOfferRequest.jobDescription = this.createForm.value.Description;
     this.jobOfferRequest.companyId = parseInt(this.cid);
+    const dateParsed = this.datePipe.transform(this.createForm.value.DueDate, 'MM/dd/yyyy');
+    this.jobOfferRequest.dueDate = dateParsed;
+
   }
   clearForm() {
     this.createForm.reset()

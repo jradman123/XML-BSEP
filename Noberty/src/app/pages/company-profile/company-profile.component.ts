@@ -105,6 +105,7 @@ export class CompanyProfileComponent implements OnInit {
     this.companyService.getOffersForCompany(this.cid).subscribe({
       next: (result) => {
         this.jobOffers = result;
+        this.jobOffers.forEach(jo => jo.companyName = this.company.companyName)
       },
       error: (data) => {
         if (data.error && typeof data.error === 'string')
