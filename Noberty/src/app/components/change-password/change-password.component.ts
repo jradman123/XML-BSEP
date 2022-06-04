@@ -57,6 +57,10 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   submit() {
+    if (this.form.invalid) {
+      return;
+    }
+    
     this.createNewPassword();
       this.userService.changePassword(this.changedPassword).subscribe(
         (res) => {

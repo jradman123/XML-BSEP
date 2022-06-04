@@ -35,10 +35,24 @@ export class LoginPageComponent implements OnInit {
     }
 
     forgotPass() {
-      this._userService.sendCode(this.usernamee).subscribe();
-      localStorage.setItem('usernamee', this.usernamee);
-      this._router.navigate(['/resetPassword']);
-  }
+      if (this.form.value.username == '' || this.form.value.username == undefined){
+        this._snackBar.open("Please enter your username.","",{
+          duration : 3000
+         }); 
+         return;
+      }
+      this._userService.sendCode(this.usernamee).subscribe(
+        res => {
+          localStorage.setItem('usernamee', this.usernamee);
+          this._router.navigate(['/resetPassword']);
+        },
+        err => {
+          this._snackBar.open("User with this usename does not exist!","",{
+            duration : 3000
+           });
+        }
+      );
+    }
 
       submit():void{
         if (this.form.invalid) return;

@@ -101,6 +101,8 @@ public class AuthenticationController {
     @PostMapping(value = "/send-code")
     public ResponseEntity<?> sendCode(@RequestBody String username) {
         User user = userService.findByUsername(username);
+        if (user == null)
+            return ResponseEntity.notFound().build();
         customTokenService.sendResetPasswordToken(user);
         return ResponseEntity.accepted().build();
     }

@@ -75,18 +75,18 @@ logout() {
 }
 
 sendCode(email: string): Observable<any> {
-  return this.http.post<any>(`${this.apiServerUrl}/api/send-code`, email);
+  return this.http.post<any>(`${this.apiServerUrl}/api/auth/send-code`, email);
 }
 
 resetPassword(newPassword: string): Observable<any> {
-  return this.http.post<any>(`${this.apiServerUrl}/api/reset-password`, {
+  return this.http.post<any>(`${this.apiServerUrl}/api/auth/reset-password`, {
     username: localStorage.getItem('usernamee'),
     newPassword: newPassword,
   });
 }
 
 checkCode(verCode: string): Observable<any> {
-  return this.http.post<any>(`${this.apiServerUrl}/api/check-code`, {
+  return this.http.post<any>(`${this.apiServerUrl}/api/auth/check-code`, {
     username: localStorage.getItem('usernamee'),
     code: verCode,
   });

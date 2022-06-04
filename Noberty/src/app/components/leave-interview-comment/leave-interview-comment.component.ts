@@ -39,6 +39,9 @@ export class LeaveInterviewCommentComponent implements OnInit {
 
   submitRequest(): void {
 
+    if (this.createForm.invalid)
+      return;
+      
     this.createInterviewRequest();
     console.log(this.interview);
 

@@ -29,7 +29,7 @@ export class CompanyRegisterComponent implements OnInit {
       ]),
       Site: new FormControl('', [
         Validators.required,
-        Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')
+        Validators.pattern('(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
       ]),
       Hedquaters: new FormControl('', [
         Validators.required,
@@ -40,8 +40,9 @@ export class CompanyRegisterComponent implements OnInit {
         Validators.required,
         Validators.pattern('^((?!(0))[0-9]{1,4})$'),
       ]),
-      ///^-?(0|[1-9]\d*)?$/)]),
-      Origin: new FormControl('', [Validators.required]),
+      Origin: new FormControl('', [Validators.required,
+      Validators.pattern('^[A-ZŠĐŽČĆ][a-zšđćčžA-ZŠĐŽČĆ]*$'),
+      ]),
       Offices: new FormControl('', [Validators.required]),
       CompanyPolicy: new FormControl('', [Validators.required]),
 
@@ -52,6 +53,8 @@ export class CompanyRegisterComponent implements OnInit {
   }
 
   submitRequest(): void {
+
+    if (this.createForm.invalid) return;
 
     this.createCompany();
 

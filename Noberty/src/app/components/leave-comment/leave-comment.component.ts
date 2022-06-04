@@ -26,7 +26,7 @@ export class LeaveCommentComponent implements OnInit {
       
       this.comment = {} as IComment
       this.createForm = this._formBuilder.group({
-      Comment: new FormControl('',Validators.required)
+      comment: new FormControl('',Validators.required)
     })
   }
 
@@ -37,6 +37,11 @@ export class LeaveCommentComponent implements OnInit {
 
 
   submitRequest(): void {
+
+    if (this.createForm.invalid) {
+      console.log('nisam validna')
+      return;
+    }
 
     this.createCommentRequest();
     console.log(this.comment);
@@ -49,7 +54,7 @@ export class LeaveCommentComponent implements OnInit {
         this.dialogRef.close({ event: "Created comment", data: res });
         this._snackBar.open(
           'You have created a comment.',
-          'Dismiss', {
+          '', {
             duration: 3000
           });
       },
@@ -65,7 +70,7 @@ export class LeaveCommentComponent implements OnInit {
   createCommentRequest() {
     console.log(this.createForm.value.Name);
 
-    this.comment.comment = this.createForm.value.Comment;
+    this.comment.comment = this.createForm.value.comment;
     this.comment.userUsername = localStorage.getItem("username")!;
     this.comment.companyId = parseInt(this.cid);
   }
