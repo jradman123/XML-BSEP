@@ -29,6 +29,8 @@ type UserServiceClient interface {
 	SendRequestForPasswordRecovery(ctx context.Context, in *PasswordRecoveryRequest, opts ...grpc.CallOption) (*PasswordRecoveryResponse, error)
 	RecoverPassword(ctx context.Context, in *NewPasswordRequest, opts ...grpc.CallOption) (*NewPasswordResponse, error)
 	PwnedPassword(ctx context.Context, in *PwnedRequest, opts ...grpc.CallOption) (*PwnedResponse, error)
+	GenerateAPIToken(ctx context.Context, in *GenerateTokenRequest, opts ...grpc.CallOption) (*ApiToken, error)
+	ShareJobOffer(ctx context.Context, in *ShareJobOfferRequest, opts ...grpc.CallOption) (*EmptyRequest, error)
 }
 
 type userServiceClient struct {
@@ -102,6 +104,24 @@ func (c *userServiceClient) PwnedPassword(ctx context.Context, in *PwnedRequest,
 	return out, nil
 }
 
+func (c *userServiceClient) GenerateAPIToken(ctx context.Context, in *GenerateTokenRequest, opts ...grpc.CallOption) (*ApiToken, error) {
+	out := new(ApiToken)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/GenerateAPIToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ShareJobOffer(ctx context.Context, in *ShareJobOfferRequest, opts ...grpc.CallOption) (*EmptyRequest, error) {
+	out := new(EmptyRequest)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/ShareJobOffer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -113,6 +133,8 @@ type UserServiceServer interface {
 	SendRequestForPasswordRecovery(context.Context, *PasswordRecoveryRequest) (*PasswordRecoveryResponse, error)
 	RecoverPassword(context.Context, *NewPasswordRequest) (*NewPasswordResponse, error)
 	PwnedPassword(context.Context, *PwnedRequest) (*PwnedResponse, error)
+	GenerateAPIToken(context.Context, *GenerateTokenRequest) (*ApiToken, error)
+	ShareJobOffer(context.Context, *ShareJobOfferRequest) (*EmptyRequest, error)
 	MustEmbedUnimplementedUserServiceServer()
 }
 
@@ -140,6 +162,12 @@ func (UnimplementedUserServiceServer) RecoverPassword(context.Context, *NewPassw
 }
 func (UnimplementedUserServiceServer) PwnedPassword(context.Context, *PwnedRequest) (*PwnedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PwnedPassword not implemented")
+}
+func (UnimplementedUserServiceServer) GenerateAPIToken(context.Context, *GenerateTokenRequest) (*ApiToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateAPIToken not implemented")
+}
+func (UnimplementedUserServiceServer) ShareJobOffer(context.Context, *ShareJobOfferRequest) (*EmptyRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ShareJobOffer not implemented")
 }
 func (UnimplementedUserServiceServer) MustEmbedUnimplementedUserServiceServer() {}
 
@@ -280,6 +308,42 @@ func _UserService_PwnedPassword_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GenerateAPIToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GenerateAPIToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/GenerateAPIToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GenerateAPIToken(ctx, req.(*GenerateTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ShareJobOffer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShareJobOfferRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ShareJobOffer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/ShareJobOffer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ShareJobOffer(ctx, req.(*ShareJobOfferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -314,6 +378,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PwnedPassword",
 			Handler:    _UserService_PwnedPassword_Handler,
+		},
+		{
+			MethodName: "GenerateAPIToken",
+			Handler:    _UserService_GenerateAPIToken_Handler,
+		},
+		{
+			MethodName: "ShareJobOffer",
+			Handler:    _UserService_ShareJobOffer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

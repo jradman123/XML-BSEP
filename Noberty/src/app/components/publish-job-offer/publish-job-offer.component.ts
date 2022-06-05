@@ -49,8 +49,8 @@ export class PublishJobOfferComponent implements OnInit {
 
   createPublishing() {
     this.publishing.jobOffer.Publisher = this.data.companyName;
-    this.publishing.jobOffer.DatePosted = this.data.dateCreated;
-    this.publishing.jobOffer.Duration = this.data.dueDate;
+    //this.publishing.jobOffer.DatePosted = 237635;
+    //this.publishing.jobOffer.Duration ="2374";
     this.publishing.jobOffer.JobDescription = this.data.jobDescription;
     this.publishing.jobOffer.Position = this.data.position;
     this.publishing.jobOffer.Requirements = this.data.requirements;
