@@ -1,26 +1,29 @@
-<div class="container" style="  position: relative;top: 20px;">
-
-    <div class="col-12 text-center">
-        <h3> Generate API key </h3>
-        <hr />
-        <br>
+<div class="container" style="position: relative; top: 20px">
+  <div class="col-12 text-center">
+    <h3>Your API keys</h3>
+    <hr />
+    <br />
+  </div>
+  <div>
+    Make sure to copy your personal access token now. You will not be able to
+    see it again!
+    <button
+      (click)="generate()"
+      class="btn btn-success text-center"
+      style="float: right"
+    >
+      Generate
+    </button>
+  </div>
+  <div class="col-12">
+    <div class="content">
+      <div>
+        <mat-form-field appearance="fill" style="width: 100%">
+          <mat-label>Your API key is </mat-label>
+          <input matInput [(ngModel)]="apiKey" />
+        </mat-form-field>
+      </div>
     </div>
-    <div >
-        Click on Generate to create your API key. Once u get it, save it since you won't be able to get it again. 
-        <button (click)="generate()"  class="btn btn-success text-center" style="float: right;">
-            Generate
-        </button>
-    </div>
-    <div class="col-12">
-        <div class="content">
-            <div>
-                <mat-form-field appearance="fill" style="width: 100%">
-                    <mat-label>Your API key is </mat-label>
-                    <input matInput [(ngModel)] = "apiKey">
-                </mat-form-field>
-
-            </div>
-        </div>
-        <br>
-    </div>
+    <br />
+  </div>
 </div>

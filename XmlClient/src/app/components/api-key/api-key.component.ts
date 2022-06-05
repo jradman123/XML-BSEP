@@ -4,22 +4,18 @@ import { ApiKeyService } from 'src/app/services/api-key-service/api-key.service'
 @Component({
   selector: 'app-api-key',
   templateUrl: './api-key.component.html',
-  styleUrls: ['./api-key.component.css']
+  styleUrls: ['./api-key.component.css'],
 })
 export class ApiKeyComponent implements OnInit {
+  apiKey!: string;
 
-  apiKey! : string;
+  constructor(private apiKeyService: ApiKeyService) {}
 
-  constructor(private apiKeyService : ApiKeyService) { 
+  ngOnInit(): void {}
+
+  generate() {
+    this.apiKeyService
+      .generateApiKey(localStorage.getItem('username')!)
+      .subscribe((res) => (this.apiKey = res.apiToken));
   }
-
-  ngOnInit(): void {
-  }
-
-  generate(){
-   this.apiKeyService.generateApiKey(localStorage.getItem('username')!).subscribe(
-     res => this.apiKey = res
-   )
-  }
-
 }

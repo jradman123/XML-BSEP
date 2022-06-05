@@ -19,52 +19,49 @@ const routes: Routes = [
     component: HomePageComponent,
     children: [
       {
-        path: "jobOffers", 
-        component: JobOfferComponent
+        path: 'jobOffers',
+        component: JobOfferComponent,
       },
       {
-        path : "genApiKey",
-        component : ApiKeyComponent
-      }
+        path: 'genApiKey',
+        component: ApiKeyComponent,
+      },
+    ],
+  },
+  {
+    path: 'login',
+    component: LoginPageComponent,
+  },
+  {
+    path: 'register',
+    component: RegisterPageComponent,
+  },
+  {
+    path: 'recoverRequest',
+    component: RecoverPassRequestComponent,
+  },
+  {
+    path: 'recover',
+    component: RecoverPassComponent,
+  },
+  {
+    path: 'activate',
+    component: ActivateAccountComponent,
+  },
+  {
+    path: 'userHome',
+    component: UserHomeComponent,
+    canActivate: [AuthGuard],
+  },
 
-    ]
-  },
   {
-    path: "login",
-    component: LoginPageComponent
+    path: 'newJobOffer',
+    component: NewJobOfferComponent,
   },
-  {
-    path: "register",
-    component: RegisterPageComponent
-  },
-  {
-    path: "recoverRequest",
-    component: RecoverPassRequestComponent 
-  },
-  {
-    path: "recover",
-    component: RecoverPassComponent 
-  },
-  {
-    path: "activate",
-    component: ActivateAccountComponent 
-  },
-  {
-    path: "userHome",
-    component: UserHomeComponent , canActivate: [AuthGuard]
-  },
-
-  {
-    path: "newJobOffer",
-    component: NewJobOfferComponent
-  }
 ];
 
 @NgModule({
-
-  imports: [RouterModule.forRoot(routes),
-    MaterialModule,
-  ],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes), MaterialModule],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

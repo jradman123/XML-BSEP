@@ -81,17 +81,12 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 	if !hasAccess {
 		return &pb.EmptyRequest{}, errors.New("you don't have acccess")
 	}
-	u.l.Println("IMA PRISTUUUUUUUUUUP")
 
-	//Encode the data
-	requirements := &myJSON{Array: request.ShareJobOffer.JobOffer.Requirements}
-	requirementsJson, _ := json.Marshal(requirements)
-	fmt.Println(string(requirementsJson))
-	postBody, _ := json.Marshal(map[string]string{
+	postBody, _ := json.Marshal(map[string]any{
 		"Publisher":      request.ShareJobOffer.JobOffer.Publisher,
 		"Position":       request.ShareJobOffer.JobOffer.Position,
 		"JobDescription": request.ShareJobOffer.JobOffer.JobDescription,
-		"Requirements":   string(requirementsJson),
+		"Requirements":   request.ShareJobOffer.JobOffer.Requirements,
 		"DatePosted":     request.ShareJobOffer.JobOffer.DatePosted,
 		"Duration":       request.ShareJobOffer.JobOffer.Duration,
 	})
