@@ -14,7 +14,10 @@ import { UserServiceService } from 'src/app/services/UserService/user-service.se
 export class UserLandingPageComponent implements OnInit {
 
   userInfo : UserInformationResponseDto;
-  constructor(public matDialog: MatDialog,private userService : UserServiceService) {
+  showMe! : boolean;
+
+   constructor(public matDialog: MatDialog,private userService : UserServiceService) {
+     this.showMe = localStorage.getItem('role') != 'ADMIN' ? true : false;
     this.userInfo = {} as UserInformationResponseDto;
    }
 

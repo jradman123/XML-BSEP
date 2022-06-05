@@ -2,7 +2,7 @@ module gateway/module
 
 go 1.18
 
-replace common/module => ../common
+replace common/module => ./../common
 
 require (
 	common/module v0.0.0-00010101000000-000000000000

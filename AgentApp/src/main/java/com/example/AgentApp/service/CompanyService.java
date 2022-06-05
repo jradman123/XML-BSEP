@@ -5,6 +5,7 @@ import com.example.AgentApp.enums.*;
 import com.example.AgentApp.model.*;
 import org.springframework.stereotype.*;
 
+import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -15,7 +16,7 @@ public interface CompanyService {
 
     Company editCompany(EditCompanyRequestDto requestDto, Long id);
 
-    Company addJobOffer(CreateJobOfferRequestDto requestDto);
+    Company addJobOffer(CreateJobOfferRequestDto requestDto) throws ParseException;
 
     List<Company> getAllCompaniesWithStatus(CompanyStatus status);
     Company getById(Long id);

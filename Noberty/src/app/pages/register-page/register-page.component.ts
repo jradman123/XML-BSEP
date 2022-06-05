@@ -76,6 +76,9 @@ export class RegisterPageComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.createForm.invalid) {
+      return;
+    }
       this.createUser();
       this.userService.registerUser(this.newUser).subscribe(
         (res) => {
@@ -83,21 +86,23 @@ export class RegisterPageComponent implements OnInit {
           this.router.navigate(['/']);
           this._snackBar.open(
             'Your registration request has been sumbitted. Please check your email and confirm your email adress to activate your account.',
-            'Dismiss'
-          );
+            'Dismiss',{
+              duration : 3000
+             }); 
           
         },
         (err) => {
           let parts = err.error.split(':');
           let mess = parts[parts.length - 1];
           let description = mess.substring(1, mess.length - 4);
-          this._snackBar.open(description, 'Dismiss');
+          this._snackBar.open(description, 'Dismiss',{
+            duration : 3000
+           }); 
         }
       );
   }
 
   createUser(): void {
-    
       this.newUser.firstName = this.createForm.value.firstName;
       this.newUser.lastName = this.createForm.value.lastName;
       this.newUser.phoneNumber = this.createForm.value.phoneNumber;

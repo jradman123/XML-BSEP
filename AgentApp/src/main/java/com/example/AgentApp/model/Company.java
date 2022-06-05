@@ -29,7 +29,7 @@ public class Company {
     @JoinColumn(name = "company_info_id", referencedColumnName = "id")
     private CompanyInfo companyInfo;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String companyPolicy;
 
     @Column(nullable = false)

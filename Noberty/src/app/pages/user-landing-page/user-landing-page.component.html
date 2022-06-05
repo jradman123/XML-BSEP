@@ -41,7 +41,7 @@
                 <label> {{userInfo.gender}}</label>
             </div>
         </mat-card>
-        <div class="buttons mr-5">
+        <div *ngIf="showMe" class="buttons mr-5">
             <h3>Register company profile for free ! </h3>
             <br>
             <button type="button" class="btn btn-success mybtn" id="openModal" (click)="openModal()">Register</button>

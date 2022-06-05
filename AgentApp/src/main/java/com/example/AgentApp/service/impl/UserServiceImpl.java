@@ -22,9 +22,6 @@ public class UserServiceImpl implements UserService {
     private CustomTokenService customTokenService;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -39,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(RegistrationRequestDto registrationRequestDto) throws ParseException {
-        User newUser = userMapper.mapToUser(registrationRequestDto);
+        User newUser = UserMapper.mapToUser(registrationRequestDto);
         User created = userRepository.save(newUser);
         customTokenService.sendVerificationToken(created);
         return created;

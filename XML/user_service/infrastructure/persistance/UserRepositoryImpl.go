@@ -87,11 +87,15 @@ func (r UserRepositoryImpl) GetUserRole(username string) (string, error) {
 	var result int
 	r.db.Table("users").Select("role").Where("username = ?", username).Scan(&result)
 
+	if result == 0 {
+		return "Regular", nil
+	}
+
 	if result == 1 {
-		return "user", nil
+		return "Admin", nil
 	}
 	if result == 2 {
-		return "admin", nil
+		return "Agent", nil
 	}
 	return "", errors.New("User role not found for username" + username)
 }

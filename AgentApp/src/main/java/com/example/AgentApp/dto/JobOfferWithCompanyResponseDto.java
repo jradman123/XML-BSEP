@@ -1,10 +1,10 @@
 package com.example.AgentApp.dto;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class JobOfferWithCompanyResponseDto {
     public Long offerId;
-    public String name;
     public String position;
     public String jobDescription;
     public Set<String> requirements;
@@ -18,4 +18,7 @@ public class JobOfferWithCompanyResponseDto {
     public String noOfEmpl;
     public String countryOfOrigin;
     public String offices;
+    public String dateCreated;
+    public String dueDate;
+
 }
