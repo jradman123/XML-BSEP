@@ -198,7 +198,7 @@ public class CompanyController {
         return new ResponseEntity<>("Failed to get all interviews for company!", HttpStatus.CONFLICT);
     }
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    //@PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/users-company/{username}")
     public ResponseEntity<List<CompanyResponseDto>> getUsersCompany(@PathVariable String username){
         Long id = userService.getByUsername(username);
