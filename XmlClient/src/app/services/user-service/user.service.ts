@@ -93,13 +93,14 @@ export class UserService {
     return this._http.post<UserDetails>(
       'http://localhost:9090/users/user/details', {
         username
-      });
+    }
+      );
   }
 
   updateUser(user : UserDetails) {
-    return this._http.post<UserDetails>('http://localhost:9090/users/user/edit',{
+    return this._http.post<UserDetails>('http://localhost:9090/users/user/edit',
       user
-    })
+    )
   }
 
 

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { UserDetails } from 'src/app/interfaces/user-details';
 import { UserService } from 'src/app/services/user-service/user.service';
+import { UserInfoComponent } from '../user-info/user-info.component';
 
 @Component({
   selector: 'app-user-infos',
@@ -14,7 +15,6 @@ export class UserInfosComponent implements OnInit {
   sub!: Subscription;
   userDetails! : UserDetails;
   initialDetails: any;
-  editMode = false;
   id!: number;
   constructor(private userService : UserService,public dialog: MatDialog) { }
 
@@ -30,6 +30,14 @@ export class UserInfosComponent implements OnInit {
         this.initialDetails = JSON.parse(JSON.stringify(data)); 
       },
     });
+  }
 
-}
+  edit(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = 'modal-component';
+    dialogConfig.height = 'fit-content';
+    dialogConfig.width = '500px';
+    const dialogRef = this.dialog.open(UserInfoComponent, dialogConfig);
+  }
 }

@@ -1,57 +1,57 @@
 <div class="container">
   <div class="row">
     <div class="col-sm">
-    <h1>Personal informations</h1>
+    <h1>Edit personal data</h1>
   <form class="form-container" [formGroup]="userDetailsForm">
     <mat-form-field appearance="standard">
       <mat-label>First Name</mat-label>
-      <input matInput placeholder="First Name" formControlName="firstName"  [readonly]="!editMode" />
+      <input matInput placeholder="First Name" formControlName="firstName"   />
     </mat-form-field>
     <mat-form-field appearance="standard">
       <mat-label>Last Name</mat-label>
-      <input matInput placeholder="Last Name" formControlName="lastName" [readonly]="!editMode"/>
+      <input matInput placeholder="Last Name" formControlName="lastName" />
     </mat-form-field>
     <mat-form-field appearance="standard">
       <mat-label>Phone Number</mat-label>
-      <input matInput placeholder="Phone Number" formControlName="phoneNumber" [readonly]="!editMode"/>
+      <input matInput placeholder="Phone Number" formControlName="phoneNumber" />
     </mat-form-field>
     <mat-form-field appearance="standard">
       <mat-label>Date of birth </mat-label>
-      <input matInput placeholder="Date of birth" formControlName="dateOfBirth" [readonly]="!editMode"/>
+      <input matInput placeholder="Date of birth" formControlName="dateOfBirth" />
     </mat-form-field>
     <mat-form-field appearance="standard">
-        <mat-label>Gender </mat-label>
-        <input matInput placeholder="Gender" formControlName="gender" [readonly]="!editMode"/>
+        <mat-label>Gender</mat-label>
+        <mat-select
+          formControlName="gender" 
+        >
+          <mat-option  value="FEMALE">
+            FEMALE
+          </mat-option>
+          <mat-option  value="MALE">
+              MALE
+            </mat-option>
+            
+        </mat-select>
       </mat-form-field>
       <mat-form-field appearance="standard">
         <mat-label>Biography </mat-label>
-        <input matInput placeholder="Biography" formControlName="biography" [readonly]="!editMode"/>
+        <textarea matInput placeholder="Biography" formControlName="biography" ></textarea>
       </mat-form-field>
-      <mat-form-field appearance="standard">
-        <mat-label>Username</mat-label>
-        <input matInput placeholder="Username" formControlName="username" readonly/>
-      </mat-form-field>
-      <mat-form-field appearance="standard">
-        <mat-label>Email</mat-label>
-        <input matInput placeholder="Email" formControlName="email" readonly />
-      </mat-form-field>
+      
+
    
-    <div class="button-container" *ngIf ="!editMode else editIsOn">
-    <button mat-flat-button color="primary"  class="button" (click)="editMode = true">Edit</button>
-    <div class="menu-container">
-      <button class="button" mat-flat-button color="primary" (click)="changePassword()">Change Password</button>
+    <div class="button-container" >
+      <div class="row">
+        <div class="col-sm-6">
+        <button type="button" class="btn btn-primary ml-3 mybtn" (click)="save()">Save</button>
+      </div>
+      <div class="col-sm-6">
+      <button type="button" class="btn btn-danger ml-3 mybtn" (click)="cancel()">Cancel</button>
     </div>
-  </div>
-  <ng-template #editIsOn>
-    <div class="button-container" *ngIf="editMode">
-      <button mat-flat-button color="primary" class="button" (click)="edit()">Save</button>
-      <button mat-flat-button color="warn"  class="button" (click)="cancel()">Cancel</button>
+      </div>
     </div>
-  </ng-template>
   </form>
-</div>
-<div class="col-sm">
-  <input matInput placeholder="nesto">
+
 </div>
 </div>
 </div>
