@@ -25,8 +25,25 @@ export class UserInfoComponent implements OnInit {
   id!: number;
   username! : string;
   email! : string;
+  skills! : SkillDto[];
+  educations! : EducationDto[];
+  interests! : InterestDto[];
+  experiences! : ExperienceDto[];
+  newSkill! : SkillDto;
+  newExperience! : ExperienceDto;
+  newEducation! : EducationDto;
+  newInterest! : InterestDto;
+  date! : any;
   constructor(private dialogRef: MatDialogRef<UserInfoComponent>,private userService : UserService,public dialog: MatDialog,
     private _snackBar : MatSnackBar, private _router: Router) { 
+      this.skills = [] as SkillDto[];
+      this.educations = [] as EducationDto[];
+      this.experiences = [] as ExperienceDto[];
+      this.interests = [] as InterestDto[];
+      this.newSkill = {} as SkillDto;
+      this.newEducation = {} as EducationDto;
+      this.newExperience = {} as ExperienceDto;
+      this.newInterest = {} as InterestDto;
     
   }
 
@@ -42,7 +59,11 @@ export class UserInfoComponent implements OnInit {
     username: new FormControl('', Validators.required),
     dateOfBirth: new FormControl('', Validators.required),
     gender: new FormControl('', Validators.required),
-    biography: new FormControl('', Validators.required)
+    biography: new FormControl('', Validators.required),
+    skill : new FormControl('',null),
+    experience : new FormControl('',null),
+    interest : new FormControl('',null),
+    education : new FormControl('',null)
   })
 
   cancel() {
@@ -60,6 +81,10 @@ export class UserInfoComponent implements OnInit {
   getUserDetails() {
     this.sub = this.userService.getUserDetails(localStorage.getItem('username')).subscribe({
       next: (data: UserDetails) => {
+        this.skills = data.skills;
+        this.interests = data.interests;
+        this.experiences = data.experiences;
+        this.educations = data.educations;
         this.userDetails = data
         this.username = data.username;
         this.email = data.email;
@@ -69,7 +94,7 @@ export class UserInfoComponent implements OnInit {
         this.userDetailsForm.controls['phoneNumber'].setValue(data.phoneNumber)
         this.userDetailsForm.controls['gender'].setValue(data.gender)
         this.userDetailsForm.controls['biography'].setValue(data.biography)
-        this.userDetailsForm.controls['dateOfBirth'].setValue(data.dateOfBirth)
+        this.date = new Date(data.dateOfBirth.substring(0,10));     
       },
     });
 
@@ -82,14 +107,19 @@ export class UserInfoComponent implements OnInit {
       next: () => {
        
         
-        this._router.navigate(['/']);
+        this.dialogRef.close();
         this._snackBar.open(
-          'Your registration request has been sumbitted. Please check your email and confirm your email adress to activate your account.',
-          'Dismiss'
+          'Success!.',
+          'Dismiss',
+          {
+            duration : 3000
+          }
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss',{
+          duration : 3000
+        });
       }
 
     }
@@ -106,11 +136,20 @@ export class UserInfoComponent implements OnInit {
     this.userDetails.gender = this.userDetailsForm.value.gender;
     this.userDetails.dateOfBirth = this.userDetailsForm.value.dateOfBirth;
     this.userDetails.biography = this.userDetailsForm.value.biography;
-    this.userDetails.skills = [] as SkillDto[];
-    this.userDetails.educations = [] as EducationDto[];
-    this.userDetails.experiences = [] as ExperienceDto[];
-    this.userDetails.interests = [] as InterestDto[];
+    this.newSkill.skill = this.userDetailsForm.value.skill;
+    this.skills.push(this.newSkill);
+    this.userDetails.skills = this.skills;
+    this.newEducation.education = this.userDetailsForm.value.education;
+    this.educations.push(this.newEducation);
+    this.userDetails.educations =this.educations;
+    this.newExperience.experience = this.userDetailsForm.value.experience;
+    this.experiences.push(this.newExperience);
+    this.userDetails.experiences = this.experiences;
+    this.newInterest.interest = this.userDetailsForm.value.interest;
+    this.interests.push(this.newInterest);
+    this.userDetails.interests = this.interests;
   }
+
 }
 
  

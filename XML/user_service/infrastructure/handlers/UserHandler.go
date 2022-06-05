@@ -330,12 +330,12 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	}
 	policy := bluemonday.UGCPolicy()
 	userDetails.Username = strings.TrimSpace(policy.Sanitize(userDetails.Username))
-	userDetails.PhoneNumber = strings.TrimSpace(policy.Sanitize(userDetails.Username))
-	userDetails.FirstName = strings.TrimSpace(policy.Sanitize(userDetails.Username))
-	userDetails.LastName = strings.TrimSpace(policy.Sanitize(userDetails.Username))
-	userDetails.Gender = strings.TrimSpace(policy.Sanitize(userDetails.Username))
-	userDetails.DateOfBirth = strings.TrimSpace(policy.Sanitize(userDetails.Username))
-	userDetails.Biography = strings.TrimSpace(policy.Sanitize(userDetails.Username))
+	userDetails.PhoneNumber = strings.TrimSpace(policy.Sanitize(userDetails.PhoneNumber))
+	userDetails.FirstName = strings.TrimSpace(policy.Sanitize(userDetails.FirstName))
+	userDetails.LastName = strings.TrimSpace(policy.Sanitize(userDetails.LastName))
+	userDetails.Gender = strings.TrimSpace(policy.Sanitize(userDetails.Gender))
+	userDetails.DateOfBirth = strings.TrimSpace(policy.Sanitize(userDetails.DateOfBirth))
+	userDetails.Biography = strings.TrimSpace(policy.Sanitize(userDetails.Biography))
 	//nzm kako da sanitizeujem ove liste
 	if userDetails.Username == "" || userDetails.FirstName == "" || userDetails.LastName == "" ||
 		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" ||

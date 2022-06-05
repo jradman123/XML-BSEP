@@ -39,5 +39,9 @@ export class UserInfosComponent implements OnInit {
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
     const dialogRef = this.dialog.open(UserInfoComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      this.getUserDetails();
+    });
   }
 }
