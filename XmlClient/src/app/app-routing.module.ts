@@ -31,6 +31,11 @@ const routes: Routes = [
         path: 'newJobOffer',
         component: NewJobOfferComponent,
       },
+      {
+        path: "editUser",
+        component: EditUserComponent , canActivate: [AuthGuard]
+       
+      },
     ],
   },
   {
@@ -52,11 +57,6 @@ const routes: Routes = [
   {
     path: 'activate',
     component: ActivateAccountComponent,
-  },
-  {
-    path: "editUser",
-    component: EditUserComponent , canActivate: [AuthGuard]
-   
   },
   {
     path: 'userHome',
