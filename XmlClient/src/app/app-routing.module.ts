@@ -26,6 +26,10 @@ const routes: Routes = [
         path: 'genApiKey',
         component: ApiKeyComponent,
       },
+      {
+        path: 'newJobOffer',
+        component: NewJobOfferComponent,
+      },
     ],
   },
   {
@@ -54,10 +58,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
-  {
-    path: 'newJobOffer',
-    component: NewJobOfferComponent,
-  },
+  
 ];
 
 @NgModule({
