@@ -92,7 +92,7 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 		"Position":       request.ShareJobOffer.JobOffer.Position,
 		"JobDescription": request.ShareJobOffer.JobOffer.JobDescription,
 		"Requirements":   string(requirementsJson),
-		"DatePosted":     request.ShareJobOffer.JobOffer.DatePosted.String(),
+		"DatePosted":     request.ShareJobOffer.JobOffer.DatePosted,
 		"Duration":       request.ShareJobOffer.JobOffer.Duration,
 	})
 	responseBody := bytes.NewBuffer(postBody)
