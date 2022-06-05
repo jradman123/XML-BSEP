@@ -1,8 +1,8 @@
 export interface JobOfferWithPublisher {
-    Requirements:string[],
-    Position : string,
-    JobDescription : string,
-    DatePosted : string,
-    Duration : string,
-    Publisher: string,
+  Requirements: string[];
+  Position: string;
+  JobDescription: string;
+  DatePosted: Date;
+  Duration: Date;
+  Publisher: string;
 }

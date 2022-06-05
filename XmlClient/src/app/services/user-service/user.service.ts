@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { ActivateAccount } from 'src/app/interfaces/activate-account';
@@ -8,43 +8,46 @@ import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private currentUserSubject: BehaviorSubject<LoggedUser>;
   public currentUser: Observable<LoggedUser>;
   private user!: LoggedUser;
 
-
   constructor(private _http: HttpClient) {
     this.currentUserSubject = new BehaviorSubject<LoggedUser>(
       JSON.parse(localStorage.getItem('currentUser')!)
     );
     this.currentUser = this.currentUserSubject.asObservable();
-
-
   }
   registerUser(registerRequest: UserData): Observable<any> {
-
     return this._http.post<any>(
       'http://localhost:9090/users/register/user',
-       registerRequest);
+      registerRequest
+    );
   }
 
   login(loginRequest: LoginRequest): Observable<LoggedUser> {
-    return this._http.post(`http://localhost:9090/users/login/user`, loginRequest).pipe(
-      map((response: any) => {
+    return this._http
+      .post(`http://localhost:9090/users/login/user`, loginRequest)
+      .pipe(
+        map((response: any) => {
+          console.log(response);
+          console.log(response.Token);
+          if (response) {
+            console.log('uso sam');
+            localStorage.setItem('token', response.Token);
+            localStorage.setItem('currentUser', JSON.stringify(response));
+            localStorage.setItem('role', response.Role);
+            localStorage.setItem('email', response.Email);
+            localStorage.setItem('username', response.Username);
 
-        if (response && response.token) {
-          localStorage.setItem('token', response.token.accessToken);
-          localStorage.setItem('currentUser', JSON.stringify(response));
-          localStorage.setItem('role', response.role)
-          localStorage.setItem('email', response.email)
-          this.currentUserSubject.next(response);
-        }
-        return this.user;
-      })
-    );
+            this.currentUserSubject.next(response);
+          }
+          return this.user;
+        })
+      );
   }
 
   logout() {
@@ -66,25 +69,28 @@ export class UserService {
   recoverPass(recoverPass: NewPass) {
     return this._http.post<any>(
       'http://localhost:9090/users/recover/user',
-       recoverPass);
+      recoverPass
+    );
   }
 
   recoverPassRequest(recoverPass: any) {
     return this._http.post<any>(
       'http://localhost:9090/users/recoveryRequest/user',
-       recoverPass);
+      recoverPass
+    );
   }
 
   passIsPwned(pass: any) {
     return this._http.post<any>(
       'http://localhost:9090/users/pwnedPassword/user',
-       pass);
+      pass
+    );
   }
-  
+
   activateAccount(activateData: ActivateAccount) {
     return this._http.post<any>(
       'http://localhost:9090/users/activate/user',
-       activateData);
+      activateData
+    );
   }
-
 }

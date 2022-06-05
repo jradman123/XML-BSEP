@@ -152,7 +152,7 @@ message JobOffer {
   string Position = 3;
   string JobDescription = 4;
   repeated string Requirements = 5;
-  google.protobuf.Timestamp DatePosted = 6;
+  string DatePosted = 6;
   string Duration = 7;
 }
 

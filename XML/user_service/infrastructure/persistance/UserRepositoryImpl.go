@@ -73,6 +73,7 @@ func (r UserRepositoryImpl) GetUserRole(username string) (string, error) {
 	if result == 0 {
 		return "Regular", nil
 	}
+
 	if result == 1 {
 		return "Admin", nil
 	}
