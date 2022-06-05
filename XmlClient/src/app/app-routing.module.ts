@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './AuthGuard/AuthGuard';
 import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
+import { ApiKeyComponent } from './components/api-key/api-key.component';
 import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
@@ -16,6 +17,17 @@ const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
+    children: [
+      {
+        path: "jobOffers", 
+        component: JobOfferComponent
+      },
+      {
+        path : "genApiKey",
+        component : ApiKeyComponent
+      }
+
+    ]
   },
   {
     path: "login",
@@ -41,10 +53,7 @@ const routes: Routes = [
     path: "userHome",
     component: UserHomeComponent , canActivate: [AuthGuard]
   },
-   {
-    path: "jobOffers", 
-    component: JobOfferComponent
-  },
+
   {
     path: "newJobOffer",
     component: NewJobOfferComponent

@@ -56,6 +56,7 @@ import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
+import { ApiKeyComponent } from './components/api-key/api-key.component';
 
 
 
@@ -74,7 +75,8 @@ import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
     ActivateAccountComponent,
     JobOfferComponent,
     FiterPipePipe,
-    NewJobOfferComponent
+    NewJobOfferComponent,
+    ApiKeyComponent,
   ],
   imports: [
     BrowserModule,
