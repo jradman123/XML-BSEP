@@ -5,7 +5,6 @@ import (
 	b64 "encoding/base64"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"post/module/domain/model"
 	"time"
 )
@@ -91,7 +90,6 @@ func MapNewComment(commentPb *pb.Comment) *model.Comment {
 }
 
 func MapNewJobOffer(offerPb *pb.JobOffer) *model.JobOffer {
-	duration, _ := time.ParseDuration(offerPb.Duration)
 
 	offer := &model.JobOffer{
 		Id:             primitive.NewObjectID(),
@@ -99,11 +97,17 @@ func MapNewJobOffer(offerPb *pb.JobOffer) *model.JobOffer {
 		Position:       offerPb.Position,
 		JobDescription: offerPb.JobDescription,
 		Requirements:   offerPb.Requirements,
-		DatePosted:     offerPb.DatePosted.AsTime(),
-		Duration:       duration,
+		DatePosted:     mapToDate(offerPb.DatePosted),
+		Duration:       mapToDate(offerPb.Duration),
 	}
 
 	return offer
+}
+func mapToDate(birth string) time.Time {
+	layout := "2006-01-02T15:04:05.000Z"
+	dateOfBirth, _ := time.Parse(layout, birth)
+	return dateOfBirth
+
 }
 
 func MapJobOffer(offer *model.JobOffer) *pb.JobOffer {
@@ -115,7 +119,7 @@ func MapJobOffer(offer *model.JobOffer) *pb.JobOffer {
 		Position:       offer.Position,
 		JobDescription: offer.JobDescription,
 		Requirements:   offer.Requirements,
-		DatePosted:     timestamppb.New(offer.DatePosted),
+		DatePosted:     offer.DatePosted.String(),
 		Duration:       offer.Duration.String(),
 	}
 
