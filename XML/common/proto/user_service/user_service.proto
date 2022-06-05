@@ -55,15 +55,22 @@ service UserService{
     };
   }
 
-  rpc GetUserDetails(GetUserDetailsRequest) returns(UserDetails) {
-    option (google.api.http) = {
-      post: "/users/user/details"
-      body: "username"
-    };
-  }
   rpc GenerateAPIToken(GenerateTokenRequest) returns(ApiToken) {
     option (google.api.http) = {
       post: "/users/token/generate"
+      body: "username"
+    };
+  }
+
+  rpc ShareJobOffer(ShareJobOfferRequest) returns(EmptyRequest) {
+    option (google.api.http) = {
+      post: "/users/share/jobOffer"
+      body: "shareJobOffer"
+    };
+  }
+  rpc GetUserDetails(GetUserDetailsRequest) returns(UserDetails) {
+    option (google.api.http) = {
+      post: "/users/user/details"
       body: "username"
     };
   }
@@ -74,8 +81,8 @@ service UserService{
       body: "userDetails"
     };
   }
-
 }
+
 message GetUserDetailsRequest{
   Username username = 1;
 }
@@ -110,13 +117,8 @@ message Education{
 }
 message Experience{
   string experience = 1;
-  rpc ShareJobOffer(ShareJobOfferRequest) returns(EmptyRequest) {
-    option (google.api.http) = {
-      post: "/users/share/jobOffer"
-      body: "shareJobOffer"
-    };
-  }
 }
+
 message GenerateTokenRequest{
   Username username = 1;
 }
