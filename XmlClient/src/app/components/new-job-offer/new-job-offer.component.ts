@@ -6,6 +6,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { JobOffer } from 'src/app/interfaces/job-offer';
 import { JobOfferService } from 'src/app/services/job-offer-service/job-offer.service';
 
@@ -22,7 +23,8 @@ export class NewJobOfferComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     private datepipe: DatePipe,
-    private jobOfferService: JobOfferService
+    private jobOfferService: JobOfferService,
+    private router: Router
   ) {
     this.newJobOffer = {} as JobOffer;
     this.requirements = [];
@@ -43,8 +45,10 @@ export class NewJobOfferComponent implements OnInit {
   submitRequest() {
     //if (this.createForm.invalid) return;
     this.createJobOffer();
-    console.log('jede govna');
-    this.jobOfferService.createJobOffer(this.newJobOffer).subscribe();
+    this.jobOfferService.createJobOffer(this.newJobOffer).subscribe(res => {
+      
+      this.router.navigate(['/jobOffers'])
+    });
   }
 
   createJobOffer() {
