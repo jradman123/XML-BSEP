@@ -134,20 +134,40 @@ export class UserInfoComponent implements OnInit {
     this.userDetails.firstName = this.userDetailsForm.value.firstName;
     this.userDetails.lastName = this.userDetailsForm.value.lastName;
     this.userDetails.gender = this.userDetailsForm.value.gender;
-    this.userDetails.dateOfBirth = this.userDetailsForm.value.dateOfBirth;
+    if(this.userDetailsForm.value.dateOfBirth == ""){
+      this.userDetails.dateOfBirth = this.date;
+    }else{
+      this.userDetails.dateOfBirth = this.userDetailsForm.value.dateOfBirth;
+    }
     this.userDetails.biography = this.userDetailsForm.value.biography;
     this.newSkill.skill = this.userDetailsForm.value.skill;
-    this.skills.push(this.newSkill);
-    this.userDetails.skills = this.skills;
+    if(this.newSkill.skill == ""){
+      this.userDetails.skills = this.skills;
+    }else{
+      this.skills.push(this.newSkill);
+      this.userDetails.skills = this.skills;
+    }
     this.newEducation.education = this.userDetailsForm.value.education;
-    this.educations.push(this.newEducation);
-    this.userDetails.educations =this.educations;
+    if(this.newEducation.education == ""){
+      this.userDetails.educations =this.educations;
+    }else{
+      this.educations.push(this.newEducation);
+      this.userDetails.educations =this.educations;
+    }
     this.newExperience.experience = this.userDetailsForm.value.experience;
-    this.experiences.push(this.newExperience);
-    this.userDetails.experiences = this.experiences;
+    if(this.newExperience.experience == ""){
+      this.userDetails.experiences = this.experiences;
+    }else{
+      this.experiences.push(this.newExperience);
+      this.userDetails.experiences = this.experiences;
+    }
     this.newInterest.interest = this.userDetailsForm.value.interest;
-    this.interests.push(this.newInterest);
-    this.userDetails.interests = this.interests;
+    if(this.newInterest.interest == ""){
+      this.userDetails.interests = this.interests;
+    }else{
+      this.interests.push(this.newInterest);
+      this.userDetails.interests = this.interests;
+    }
   }
 
 }

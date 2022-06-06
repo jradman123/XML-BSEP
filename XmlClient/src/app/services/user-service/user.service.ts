@@ -38,11 +38,11 @@ export class UserService {
           console.log(response.Token);
           if (response) {
             console.log('uso sam');
-            localStorage.setItem('token', response.Token);
+            localStorage.setItem('token', response.token);
             localStorage.setItem('currentUser', JSON.stringify(response));
-            localStorage.setItem('role', response.Role);
-            localStorage.setItem('email', response.Email);
-            localStorage.setItem('username', response.Username);
+            localStorage.setItem('role', response.role);
+            localStorage.setItem('email', response.email);
+            localStorage.setItem('username', response.username);
 
             this.currentUserSubject.next(response);
           }

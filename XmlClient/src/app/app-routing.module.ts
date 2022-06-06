@@ -30,12 +30,7 @@ const routes: Routes = [
       {
         path: 'newJobOffer',
         component: NewJobOfferComponent,
-      },
-      {
-        path: "editUser",
-        component: EditUserComponent , canActivate: [AuthGuard]
-       
-      },
+      }
     ],
   },
   {
@@ -62,6 +57,11 @@ const routes: Routes = [
     path: 'userHome',
     component: UserHomeComponent,
     canActivate: [AuthGuard],
+  },
+  {
+    path: "editUser",
+    component: EditUserComponent , canActivate: [AuthGuard]
+   
   }
 
   
