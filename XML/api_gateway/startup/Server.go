@@ -1,6 +1,7 @@
 package startup
 
 import (
+	"common/module/logger"
 	postsGw "common/module/proto/posts_service"
 	userGw "common/module/proto/user_service"
 	"context"
@@ -58,7 +59,7 @@ func (server *Server) initHandlers() {
 //Gateway ima svoje endpointe
 func (server *Server) initCustomHandlers() {
 
-	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
+	l := logger.InitializeLogger("api-gateway", context.Background())
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
 	userService := server.InitUserService(l, userRepo)
@@ -85,10 +86,10 @@ func muxMiddleware(server *Server) http.Handler {
 	})
 }
 
-func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository) *services.UserService {
+func (server *Server) InitUserService(l *logger.Logger, repo repositories.UserRepository) *services.UserService {
 	return services.NewUserService(l, repo)
 }
-func (server *Server) InitUserRepo(d *gorm.DB) repositories.UserRepository {
+func (server *Server) InitUserRepo(db *gorm.DB) repositories.UserRepository {
 	return persistance.NewUserRepositoryImpl(db)
 }
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"common/module/interceptor"
+	"common/module/logger"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,19 +14,18 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
-	"log"
 	"net/http"
 	"time"
 )
 
 type AuthenticationHandler struct {
-	l            *log.Logger
+	l            *logger.Logger
 	service      *services.UserService
 	validator    *validator.Validate
 	passwordUtil *helpers.PasswordUtil
 }
 
-func NewAuthenticationHandler(l *log.Logger, service *services.UserService, validator *validator.Validate,
+func NewAuthenticationHandler(l *logger.Logger, service *services.UserService, validator *validator.Validate,
 	passwordUtil *helpers.PasswordUtil) Handler {
 	return &AuthenticationHandler{l, service, validator, passwordUtil}
 }
@@ -38,7 +38,8 @@ func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
 }
 
 func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
-	a.l.Println("Handling LOGIN Users")
+
+	a.l.Logger.Infof("Handling LOGIN Users")
 
 	var loginRequest dto.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
