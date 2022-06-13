@@ -18,14 +18,15 @@ import (
 )
 
 type UserService struct {
-	l              *logger.Logger
+	logInfo        *logger.Logger
+	logError       *logger.Logger
 	userRepository repositories.UserRepository
 	emailRepo      repositories.EmailVerificationRepository
 	recoveryRepo   repositories.PasswordRecoveryRequestRepository
 }
 
-func NewUserService(l *logger.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
-	return &UserService{l, repository, emailRepo, recoveryRepo}
+func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
+	return &UserService{logInfo, logError, repository, emailRepo, recoveryRepo}
 }
 
 func (u UserService) GetUsers() ([]model.User, error) {
@@ -44,7 +45,7 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
-		u.l.Logger.Errorf("INVALID USERNAME")
+		u.logError.Logger.Errorf("INVALID USERNAME")
 		return nil, err
 	}
 

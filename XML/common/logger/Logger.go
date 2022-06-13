@@ -16,12 +16,12 @@ type Logger struct {
 	file   *os.File
 }
 
-func InitializeLogger(service string, ctx context.Context) *Logger {
+func InitializeLogger(service string, ctx context.Context, logType string) *Logger {
 	logger := &Logger{}
 	if err := CreateLogDir(filepath.FromSlash("../logfiles/" + service)); err != nil {
 		logrus.Fatalf("Failed to create directory for log files | %v\n", err)
 	}
-	file := filepath.FromSlash("../logfiles/" + service + "/" + service + ".log")
+	file := filepath.FromSlash("../logfiles/" + service + "/" + service + logType + ".log")
 
 	rotatingLogs, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
 		Filename:   file,

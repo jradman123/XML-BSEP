@@ -36,19 +36,20 @@ func NewServer(config *config.Config) *Server {
 	}
 }
 func (server *Server) Start() {
-	l := logger.InitializeLogger("user-service", context.Background())
+	logInfo := logger.InitializeLogger("user-service", context.Background(), "Info")
+	logError := logger.InitializeLogger("user-service", context.Background(), "Error")
 	pwnedClient := hibp.NewClient()
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
 	emailVerRepo := server.InitEmailVerRepo(db)
 	recoveryRepo := server.InitRecoveryRepo(db)
-	userService := server.InitUserService(l, userRepo, emailVerRepo, recoveryRepo)
-	apiTokenService := server.InitApiTokenService(l, userService)
+	userService := server.InitUserService(logInfo, logError, userRepo, emailVerRepo, recoveryRepo)
+	apiTokenService := server.InitApiTokenService(logInfo, logError, userService)
 
 	validator := validator.New()
-	jsonConverters := helpers.NewJsonConverters(l)
+	jsonConverters := helpers.NewJsonConverters(logInfo)
 	utils := helpers.PasswordUtil{}
-	userHandler := server.InitUserHandler(l, userService, validator, jsonConverters, &utils, pwnedClient, apiTokenService)
+	userHandler := server.InitUserHandler(logInfo, logError, userService, validator, jsonConverters, &utils, pwnedClient, apiTokenService)
 
 	server.StartGrpcServer(userHandler)
 
@@ -73,17 +74,17 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 	}
 }
 
-func (server *Server) InitUserHandler(l *logger.Logger, userService *services.UserService, validator *validator.Validate,
+func (server *Server) InitUserHandler(logInfo *logger.Logger, logError *logger.Logger, userService *services.UserService, validator *validator.Validate,
 	jsonConverters *helpers.JsonConverters, passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client, tokenService *services.ApiTokenService) *handlers.UserHandler {
-	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil, pwnedClient, tokenService)
+	return handlers.NewUserHandler(logInfo, logError, userService, jsonConverters, validator, passwordUtil, pwnedClient, tokenService)
 }
 
-func (server *Server) InitUserService(l *logger.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {
-	return services.NewUserService(l, repo, emailRepo, recoveryRepo)
+func (server *Server) InitUserService(logInfo *logger.Logger, logError *logger.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {
+	return services.NewUserService(logInfo, logError, repo, emailRepo, recoveryRepo)
 }
 
-func (server *Server) InitApiTokenService(l *logger.Logger, userService *services.UserService) *services.ApiTokenService {
-	return services.NewApiTokenService(l, userService)
+func (server *Server) InitApiTokenService(logInfo *logger.Logger, logError *logger.Logger, userService *services.UserService) *services.ApiTokenService {
+	return services.NewApiTokenService(logInfo, logError, userService)
 }
 
 func (server *Server) InitUserRepo(db *gorm.DB) repositories.UserRepository {

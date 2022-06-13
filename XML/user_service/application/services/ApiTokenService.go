@@ -11,12 +11,13 @@ import (
 )
 
 type ApiTokenService struct {
-	l           *logger.Logger
+	logInfo     *logger.Logger
+	logError    *logger.Logger
 	userService *UserService
 }
 
-func NewApiTokenService(l *logger.Logger, userService *UserService) *ApiTokenService {
-	return &ApiTokenService{l, userService}
+func NewApiTokenService(logInfo *logger.Logger, logError *logger.Logger, userService *UserService) *ApiTokenService {
+	return &ApiTokenService{logInfo, logError, userService}
 }
 
 func (s ApiTokenService) GenerateApiToken(user *model.User) (string, error) {

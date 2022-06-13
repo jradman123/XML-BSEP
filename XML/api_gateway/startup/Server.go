@@ -59,7 +59,7 @@ func (server *Server) initHandlers() {
 //Gateway ima svoje endpointe
 func (server *Server) initCustomHandlers() {
 
-	l := logger.InitializeLogger("api-gateway", context.Background())
+	l := logger.InitializeLogger("api-gateway", context.Background(), "")
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
 	userService := server.InitUserService(l, userRepo)
@@ -102,6 +102,12 @@ func (server *Server) SetupDatabase() *gorm.DB {
 	user := os.Getenv("PG_USER")
 	dbname := os.Getenv("XML_DB_NAME")
 	password := os.Getenv("PG_PASSWORD")
+
+	//host := os.Getenv("USER_DB_HOST")
+	//port := os.Getenv("USER_DB_PORT")
+	//user := os.Getenv("USER_DB_USER")
+	//dbname := os.Getenv("USER_DB_NAME")
+	//password := os.Getenv("USER_DB_PASS")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
