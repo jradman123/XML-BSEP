@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+option go_package = "common/module/user_service";
+
+package user_service;
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+service UserService{
+
+  rpc GetAll(EmptyRequest) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/users"
+    };
+  }
+  rpc UpdateUser(UpdateRequest) returns(UpdateUserResponse) {
+    option (google.api.http) = {
+      post: "/users/{id}"
+      body: "updatedUser"
+    };
+  }
+
+  rpc RegisterUser(RegisterUserRequest) returns(RegisterUserResponse) {
+    option (google.api.http) = {
+      post: "/users/register/user"
+      body: "userRequest"
+    };
+  }
+
+  rpc ActivateUserAccount(ActivationRequest) returns(ActivationResponse) {
+    option (google.api.http) = {
+      post: "/users/activate/user"
+      body: "account"
+    };
+  }
+
+  rpc SendRequestForPasswordRecovery(PasswordRecoveryRequest) returns(PasswordRecoveryResponse) {
+    option (google.api.http) = {
+      post: "/users/recoveryRequest/user"
+      body: "username"
+    };
+  }
+
+  rpc RecoverPassword(NewPasswordRequest) returns(NewPasswordResponse) {
+    option (google.api.http) = {
+      post: "/users/recover/user"
+      body: "recovery"
+    };
+  }
+
+  rpc PwnedPassword(PwnedRequest) returns(PwnedResponse) {
+    option (google.api.http) = {
+      post: "/users/pwnedPassword/password"
+      body: "password"
+    };
+  }
+
+  rpc GenerateAPIToken(GenerateTokenRequest) returns(ApiToken) {
+    option (google.api.http) = {
+      post: "/users/token/generate"
+      body: "username"
+    };
+  }
+
+  rpc ShareJobOffer(ShareJobOfferRequest) returns(EmptyRequest) {
+    option (google.api.http) = {
+      post: "/users/share/jobOffer"
+      body: "shareJobOffer"
+    };
+  }
+}
+message GenerateTokenRequest{
+  Username username = 1;
+}
+
+message ShareJobOfferRequest{
+  ShareJobOffer shareJobOffer = 1;
+}
+message ShareJobOffer{
+  string apiToken = 1;
+  JobOffer jobOffer = 2;
+}
+
+message JobOffer {
+  string Id = 1;
+  string Publisher = 2;
+  string Position = 3;
+  string JobDescription = 4;
+  repeated string Requirements = 5;
+  string DatePosted = 6;
+  string Duration = 7;
+}
+
+message ApiToken {
+  string apiToken = 1;
+}
+
+message NewPasswordRequest{
+  PasswordRecovery recovery = 1;
+}
+
+message PwnedResponse {
+  bool pwned = 1;
+  string message = 2;
+}
+
+message PasswordRecovery {
+  string username = 1;
+  string password = 2;
+  string code = 3;
+}
+message NewPasswordResponse{
+  bool passwordChanged = 1;
+}
+
+message PwnedRequest {
+  Password password = 1;
+}
+
+message PasswordRecoveryRequest {
+  Username username = 1;
+}
+message Username {
+  string username = 1;
+}
+message Password {
+  string password = 1;
+}
+
+message PasswordRecoveryResponse{
+  bool codeSent = 1;
+}
+
+message ActivationRequest{
+  ActivateAccount account = 1;
+}
+message ActivateAccount{
+  string username = 1;
+  string code = 2;
+}
+message ActivationResponse{
+  string username = 1;
+  bool activated = 2;
+}
+
+message GetAllResponse {
+  repeated User users = 1;
+}
+message UpdateRequest{
+  string id = 1;
+  User updatedUser = 2;
+}
+message EmptyRequest{}
+
+message UsernamePass {
+  string username = 1;
+  string password = 2;
+}
+
+message UpdateUserResponse {
+  User updatedUser = 1;
+}
+
+message User {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  string firstName = 5;
+  string lastName = 6;
+  string gender = 7;
+  string role = 8;
+  string dateOfBirth = 9;
+  string recoveryEmail = 10;
+  bool isConfirmed = 11;
+}
+
+message RegisterUserRequest {
+  RegisterUser userRequest = 1;
+}
+
+message RegisterUserResponse {
+  RegisteredUser registeredUser = 1;
+
+}
+message RegisteredUser{
+  string username = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+}
+
+message RegisterUser {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  string phoneNumber = 4;
+  string firstName = 5;
+  string lastName = 6;
+  string gender = 7;
+  string dateOfBirth = 8;
+  string recoveryEmail = 9;
+}

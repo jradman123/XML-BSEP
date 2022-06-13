@@ -2,7 +2,7 @@ version: '3.7'
 services:
   userservice:
     build: 
-      context: ./user-service/
+      context: user_service_old/
       dockerfile: Dockerfile
     image: userservice1
     container_name: user_server

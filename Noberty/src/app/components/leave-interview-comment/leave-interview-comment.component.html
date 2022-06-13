@@ -1,0 +1,51 @@
+<div class="container" style="  position: relative;top: 20px;">
+
+    <div class="col-12 text-center">
+        <h3> Leave interview comment </h3>
+        <hr />
+    </div>
+    <div class="col-12">
+        <div [formGroup]="createForm" class="content">
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Comment</mat-label>
+                    <input id="text" matInput required formControlName="Comment">
+                </mat-form-field>
+
+            </div>
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Difficulty</mat-label>
+                    <mat-select required
+                formControlName="Difficulty"
+              >
+                <mat-option  value="EASY">
+                  EASY
+                </mat-option>
+                <mat-option  value="INTERMEDIATE">
+                    INTERMEDIATE
+                  </mat-option>
+                  <mat-option  value="HARD">
+                    HARD
+                  </mat-option>
+              </mat-select>
+                </mat-form-field>
+
+            </div>
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Rating</mat-label>
+                    <input id="text" type="number" matInput required formControlName="Rating">
+                </mat-form-field>
+ 
+            </div>
+        
+            <div class="buttons">
+                <button id="submitRequest" (click)="submitRequest()" class="btn btn-success text-center">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+</div>

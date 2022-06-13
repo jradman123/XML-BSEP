@@ -1,0 +1,33 @@
+<div class="container" style="  position: relative;top: 20px;">
+
+    <div class="col-12 text-center">
+        <h3> Leave interview comment </h3>
+        <hr />
+    </div>
+    <div class="col-12">
+        <div [formGroup]="createForm" class="content">
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Salary</mat-label>
+                    <input id="text" matInput required formControlName="Salary">
+                </mat-form-field>
+
+            </div>
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Position</mat-label>
+                    <input id="text" matInput required formControlName="Position">
+                </mat-form-field>
+
+            </div>
+        
+            <div class="buttons">
+                <button id="submitRequest" (click)="submitRequest()"  class="btn btn-success text-center">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+</div>
+

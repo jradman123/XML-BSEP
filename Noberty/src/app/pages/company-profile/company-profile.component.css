@@ -1,0 +1,38 @@
+.header {
+    height: 20%;
+}
+
+.row {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.rowData {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.info {
+    display: flex;
+    flex-direction: row;
+}
+
+.editable {
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+.description {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    word-wrap: break-word;
+}
+
+.description_form {
+    width: 100%;
+    height: 100%;
+}

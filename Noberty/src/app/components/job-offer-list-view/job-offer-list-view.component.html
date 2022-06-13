@@ -1,0 +1,20 @@
+<mat-card class="example-card m-3">
+    <mat-label><h1>{{ jobOffer.position }}</h1></mat-label>
+
+   <div>
+    <mat-label><h4>Due: {{ jobOffer.dueDate | date: "mediumDate" }} </h4></mat-label>
+    <span> {{ jobOffer.jobDescription }} </span>
+   </div>
+   <br>
+    <mat-card-content class="content">
+        <div>
+            <mat-label>Requirements:</mat-label>
+            <div class="ml-3 info">
+                <div *ngFor="let item of jobOffer.requirements">
+                <label> - {{item}}</label>
+                </div>
+            </div>
+        </div>
+        <button *ngIf="isVisible" type="button" class="btn btn-primary ml-3 mybtn" (click)="publish()" >Publish</button>        
+    </mat-card-content>
+</mat-card>

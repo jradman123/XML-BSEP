@@ -1,0 +1,56 @@
+<div class="container" style="  position: relative;top: 20px;">
+
+    <div class="col-12 text-center">
+        <h3> Create job offer </h3>
+        <hr />
+    </div>
+    <div class="col-12">
+        <div [formGroup]="createForm" class="content">
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Position</mat-label>
+                    <input matInput required formControlName="Position">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+              
+                    <mat-label>Due Date</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      formControlName="DueDate"
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>     
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Job Description </mat-label>
+                    <textarea matInput required formControlName="Description">
+                    </textarea>
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Requirements</mat-label>
+                    <input id="text" matInput required formControlName="Requirements">
+                </mat-form-field>
+
+            </div>
+            <mat-list style="margin-bottom: 30px;" role=" list">
+                <mat-label *ngIf="this.requirements.length!=0">Requirements</mat-label>
+                <div *ngFor="let item of requirements">
+                  
+                    <mat-list-item role="listitem">{{item}}</mat-list-item>
+                </div>
+            </mat-list>
+            <div class="buttons">
+                <input type="image" src="./../../../assets/add.png" style="height:32px;width:32px;" class="mr-3"
+                    (click)="addItem()" />
+                <button id="submitRequest" (click)="submitRequest()" class="btn btn-success text-center">
+                    Create
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+</div>

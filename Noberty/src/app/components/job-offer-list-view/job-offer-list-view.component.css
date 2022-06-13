@@ -1,0 +1,9 @@
+.content{
+    display: flex;
+    justify-content: space-between;
+
+}
+.content button {
+    height: 40px;
+    float: right;
+}
