@@ -5,5 +5,6 @@ export interface IJobOffer{
     jobDescription : string,
     dateCreated : string,
     dueDate : string,
-    companyName : string
+    companyName : string,
+    companyId : number
 }
