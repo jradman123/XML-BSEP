@@ -1,12 +1,12 @@
 package services
 
 import (
+	"common/module/logger"
 	"context"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/trycourier/courier-go/v2"
-	"log"
 	"math/rand"
 	"net"
 	"regexp"
@@ -18,13 +18,13 @@ import (
 )
 
 type UserService struct {
-	l              *log.Logger
+	l              *logger.Logger
 	userRepository repositories.UserRepository
 	emailRepo      repositories.EmailVerificationRepository
 	recoveryRepo   repositories.PasswordRecoveryRequestRepository
 }
 
-func NewUserService(l *log.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
+func NewUserService(l *logger.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
 	return &UserService{l, repository, emailRepo, recoveryRepo}
 }
 
@@ -44,7 +44,7 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
-		u.l.Println("Invalid username")
+		u.l.Logger.Errorf("INVALID USERNAME")
 		return nil, err
 	}
 

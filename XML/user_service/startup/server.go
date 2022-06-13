@@ -2,7 +2,9 @@ package startup
 
 import (
 	"common/module/interceptor"
+	"common/module/logger"
 	userProto "common/module/proto/user_service"
+	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
@@ -34,7 +36,7 @@ func NewServer(config *config.Config) *Server {
 	}
 }
 func (server *Server) Start() {
-	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
+	l := logger.InitializeLogger("user-service", context.Background())
 	pwnedClient := hibp.NewClient()
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
@@ -71,16 +73,16 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 	}
 }
 
-func (server *Server) InitUserHandler(l *log.Logger, userService *services.UserService, validator *validator.Validate,
+func (server *Server) InitUserHandler(l *logger.Logger, userService *services.UserService, validator *validator.Validate,
 	jsonConverters *helpers.JsonConverters, passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client, tokenService *services.ApiTokenService) *handlers.UserHandler {
 	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil, pwnedClient, tokenService)
 }
 
-func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {
+func (server *Server) InitUserService(l *logger.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {
 	return services.NewUserService(l, repo, emailRepo, recoveryRepo)
 }
 
-func (server *Server) InitApiTokenService(l *log.Logger, userService *services.UserService) *services.ApiTokenService {
+func (server *Server) InitApiTokenService(l *logger.Logger, userService *services.UserService) *services.ApiTokenService {
 	return services.NewApiTokenService(l, userService)
 }
 
@@ -100,11 +102,17 @@ var db *gorm.DB
 
 func (server *Server) SetupDatabase() *gorm.DB {
 
-	host := os.Getenv("HOST")
-	port := os.Getenv("PG_DBPORT")
-	user := os.Getenv("PG_USER")
-	dbname := os.Getenv("XML_DB_NAME")
-	password := os.Getenv("PG_PASSWORD")
+	//host := os.Getenv("HOST")
+	//port := os.Getenv("PG_DBPORT")
+	//user := os.Getenv("PG_USER")
+	//dbname := os.Getenv("XML_DB_NAME")
+	//password := os.Getenv("PG_PASSWORD")
+
+	host := os.Getenv("USER_DB_HOST")
+	port := os.Getenv("USER_DB_PORT")
+	user := os.Getenv("USER_DB_USER")
+	dbname := os.Getenv("USER_DB_NAME")
+	password := os.Getenv("USER_DB_PASS")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})

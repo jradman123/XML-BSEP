@@ -1,19 +1,19 @@
 package helpers
 
 import (
+	"common/module/logger"
 	"context"
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"user/module/domain/dto"
 )
 
 type JsonConverters struct {
-	l *log.Logger
+	l *logger.Logger
 }
 
-func NewJsonConverters(l *log.Logger) *JsonConverters {
+func NewJsonConverters(l *logger.Logger) *JsonConverters {
 	return &JsonConverters{l}
 }
 

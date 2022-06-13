@@ -29,12 +29,12 @@ func InitializeLogger(service string, ctx context.Context) *Logger {
 		MaxBackups: 50,  //MaxBackups is the maximum number of old log files to retain.
 		MaxAge:     14,  //days
 		Level:      logrus.InfoLevel,
-		Formatter: &logrus.JSONFormatter{
-			TimestampFormat: "2006-01-02 15:04:05",
+		Formatter: UTCFormatter{&logrus.JSONFormatter{
+			TimestampFormat: "2006-01-02T15:04:05Z",
 			DataKey:         "data",
 			CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
 				return frame.Function, fmt.Sprintf("%s:%d", FormatFilePath(frame.File), frame.Line)
-			}},
+			}}},
 	})
 
 	if err != nil {
@@ -82,4 +82,13 @@ func (l *Logger) InfoMessage(message string) {
 
 func (l *Logger) FatalMessage(message string) {
 	l.Logger.Fatal(message)
+}
+
+type UTCFormatter struct {
+	logrus.Formatter
+}
+
+func (u UTCFormatter) Format(e *logrus.Entry) ([]byte, error) {
+	e.Time = e.Time.UTC()
+	return u.Formatter.Format(e)
 }
