@@ -39,7 +39,9 @@ export class LandingPageComponent implements OnInit {
       error: (err: any) => {
         this._snackBar.open(
           'Email or password are incorrect.Try again,please.',
-          'Dismiss'
+          'Dismiss',{
+            duration : 3000
+           }
         );
       },
     };
