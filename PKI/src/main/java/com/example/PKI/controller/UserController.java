@@ -103,7 +103,7 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:4200")
     //ovo moze da radi bilo koji ulogovani korisnik
     @PutMapping(value = "/changePassword")
-    public ResponseEntity<HttpStatus> changePassword(@RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
+    public ResponseEntity<HttpStatus> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
         String token = tokenUtils.getToken(request);
         userService.changePassword(tokenUtils.getEmailFromToken(token), changePasswordDto);
         return ResponseEntity.noContent().build();
@@ -118,7 +118,7 @@ public class UserController {
 
     //ovoj metodi mogu svi da pristupe
     @PostMapping(value = "/checkRecoveryEmail")
-    public ResponseEntity<String> checkRecoveryEmail(@RequestBody RequestCheckDto request) {
+    public ResponseEntity<String> checkRecoveryEmail(@Valid @RequestBody RequestCheckDto request) {
         User user = userService.findByEmail(request.getEmail());
         if (user.getRecoveryEmail().equals(request.getRecoveryEmail())) {
             customTokenService.sendResetPasswordToken(user);
@@ -128,7 +128,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/checkCode")
-    public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
+    public ResponseEntity<String> checkCode(@Valid @RequestBody CheckCodeDto checkCodeDto) {
         User user = userService.findByEmail(checkCodeDto.getEmail());
         CustomToken token = customTokenService.findByUser(user);
         if (customTokenService.checkResetPasswordCode(checkCodeDto.getCode(), token.getToken())) {
@@ -140,7 +140,7 @@ public class UserController {
 
 
     @PostMapping(value = "/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
         userService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getNewPassword());
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
