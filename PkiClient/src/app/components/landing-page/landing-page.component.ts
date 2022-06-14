@@ -29,7 +29,7 @@ export class LandingPageComponent implements OnInit {
   onSubmit(f: NgForm) {
     const loginObserver = {
       next: (x: any) => {
-        this._snackBar.open('     Welcome', 'Dismiss');
+        this._snackBar.open('     Welcome', 'Dismiss',{duration : 3000});
         if (localStorage.getItem('role') == 'Admin') {
           this._router.navigate(['/ahome']);
         } else {

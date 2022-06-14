@@ -84,7 +84,7 @@ export class RegistrationComponent implements OnInit {
           if (res.isPawned) alert("The choosen password is weak and already pawned. Please, go change it.");
           this.router.navigate(['/']);
           this._snackBar.open(
-            'Your registration request has been sumbitted. Please check your email and confirm your email adress to activate your account.',
+            'Please check your email and confirm your email adress to activate your account.',
             'Dismiss',{
               duration : 3000
              }

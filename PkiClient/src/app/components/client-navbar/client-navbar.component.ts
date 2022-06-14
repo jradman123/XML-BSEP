@@ -15,5 +15,9 @@ export class ClientNavbarComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  logout() : void{
+    this.userService.logout();
+  }
+
 
 }
