@@ -132,7 +132,7 @@ public class UserController {
         User user = userService.findByEmail(checkCodeDto.getEmail());
         CustomToken token = customTokenService.findByUser(user);
         if (customTokenService.checkResetPasswordCode(checkCodeDto.getCode(), token.getToken())) {
-            return new ResponseEntity<>("Success!", HttpStatus.OK);
+            return new ResponseEntity<>("\"Success!\"", HttpStatus.OK);
         }
 
         return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
