@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.net.URI;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -94,7 +95,8 @@ public class UserController {
         User activated = userService.activateAccount(user);
         customTokenService.deleteById(verificationToken.getId());
         if (activated.isActivated()) {
-            return new ResponseEntity<>("Account is activated.", HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("http://localhost:4200/")).build();
         } else {
             return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
         }

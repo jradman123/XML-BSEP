@@ -61,14 +61,16 @@ export class ChangePasswordComponent implements OnInit {
           this.router.navigate(['/']);
           this._snackBar.open(
             'Password is changed!',
-            'Dismiss'
+            'Dismiss',{
+              duration : 3000
+            }
           );
         },
         (err) => {
           let parts = err.error.split(':');
           let mess = parts[parts.length - 1];
           let description = mess.substring(1, mess.length - 4);
-          this._snackBar.open(description, 'Dismiss');
+          this._snackBar.open(description, 'Dismiss',{ duration : 3000});
         }
       );
     this.userService.changePassword(this.form.value).subscribe();
