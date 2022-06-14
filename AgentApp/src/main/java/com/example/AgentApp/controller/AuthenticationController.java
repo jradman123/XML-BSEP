@@ -112,7 +112,14 @@ public class AuthenticationController {
         User user = userService.findByUsername(checkCodeDto.getUsername());
         CustomToken token = customTokenService.findByUser(user);
         if (customTokenService.checkResetPasswordCode(checkCodeDto.getCode(), token.getToken())) {
-            return new ResponseEntity<>("Success!", HttpStatus.OK);
+            if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+                customTokenService.deleteById(token.getId());
+                customTokenService.sendVerificationToken(user);
+                return new ResponseEntity<>("Reset password code is expired,we sent you new one.Please check you mail box.", HttpStatus.BAD_REQUEST);
+            }
+
+            customTokenService.deleteById(token.getId());
+            return new ResponseEntity<>("\"Success!\"", HttpStatus.OK);
         }
 
         return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
