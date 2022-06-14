@@ -108,7 +108,7 @@ public class AuthenticationController {
     }
 
     @PostMapping(value = "/check-code")
-    public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
+    public ResponseEntity<String> checkCode(@Valid @RequestBody CheckCodeDto checkCodeDto) {
         User user = userService.findByUsername(checkCodeDto.getUsername());
         CustomToken token = customTokenService.findByUser(user);
         if (customTokenService.checkResetPasswordCode(checkCodeDto.getCode(), token.getToken())) {

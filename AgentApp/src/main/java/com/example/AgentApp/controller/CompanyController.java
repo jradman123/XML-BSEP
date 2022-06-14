@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.*;
 
@@ -131,7 +132,7 @@ public class CompanyController {
 
     @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/comment")
-    public ResponseEntity<?> leaveAComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<?> leaveAComment(@Valid @RequestBody CommentDto commentDto){
         Company company = companyService.getById(commentDto.getCompanyId());
         Comment comment = commentMapper.toEntity(commentDto);
         Comment savedComment = commentService.create(comment);
