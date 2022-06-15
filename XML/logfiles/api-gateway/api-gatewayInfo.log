@@ -1,1 +1,0 @@
-{"data":{"user":"stelena","userIP":"[::1]:51949"},"file":"AuthenticationHandler.go:76","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"info","msg":"INFO:Handling LOGIN","time":"2022-06-14T20:55:21Z"}
