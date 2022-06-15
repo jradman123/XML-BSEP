@@ -31,6 +31,8 @@ type UserServiceClient interface {
 	PwnedPassword(ctx context.Context, in *PwnedRequest, opts ...grpc.CallOption) (*PwnedResponse, error)
 	GenerateAPIToken(ctx context.Context, in *GenerateTokenRequest, opts ...grpc.CallOption) (*ApiToken, error)
 	ShareJobOffer(ctx context.Context, in *ShareJobOfferRequest, opts ...grpc.CallOption) (*EmptyRequest, error)
+	GetUserDetails(ctx context.Context, in *GetUserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error)
+	EditUserDetails(ctx context.Context, in *UserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error)
 }
 
 type userServiceClient struct {
@@ -122,6 +124,24 @@ func (c *userServiceClient) ShareJobOffer(ctx context.Context, in *ShareJobOffer
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserDetails(ctx context.Context, in *GetUserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error) {
+	out := new(UserDetails)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/GetUserDetails", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) EditUserDetails(ctx context.Context, in *UserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error) {
+	out := new(UserDetails)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/EditUserDetails", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -135,6 +155,8 @@ type UserServiceServer interface {
 	PwnedPassword(context.Context, *PwnedRequest) (*PwnedResponse, error)
 	GenerateAPIToken(context.Context, *GenerateTokenRequest) (*ApiToken, error)
 	ShareJobOffer(context.Context, *ShareJobOfferRequest) (*EmptyRequest, error)
+	GetUserDetails(context.Context, *GetUserDetailsRequest) (*UserDetails, error)
+	EditUserDetails(context.Context, *UserDetailsRequest) (*UserDetails, error)
 	MustEmbedUnimplementedUserServiceServer()
 }
 
@@ -168,6 +190,12 @@ func (UnimplementedUserServiceServer) GenerateAPIToken(context.Context, *Generat
 }
 func (UnimplementedUserServiceServer) ShareJobOffer(context.Context, *ShareJobOfferRequest) (*EmptyRequest, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ShareJobOffer not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserDetails(context.Context, *GetUserDetailsRequest) (*UserDetails, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserDetails not implemented")
+}
+func (UnimplementedUserServiceServer) EditUserDetails(context.Context, *UserDetailsRequest) (*UserDetails, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditUserDetails not implemented")
 }
 func (UnimplementedUserServiceServer) MustEmbedUnimplementedUserServiceServer() {}
 
@@ -344,6 +372,42 @@ func _UserService_ShareJobOffer_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserDetailsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserDetails(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/GetUserDetails",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserDetails(ctx, req.(*GetUserDetailsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_EditUserDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserDetailsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).EditUserDetails(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/EditUserDetails",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).EditUserDetails(ctx, req.(*UserDetailsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -386,6 +450,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ShareJobOffer",
 			Handler:    _UserService_ShareJobOffer_Handler,
+		},
+		{
+			MethodName: "GetUserDetails",
+			Handler:    _UserService_GetUserDetails_Handler,
+		},
+		{
+			MethodName: "EditUserDetails",
+			Handler:    _UserService_EditUserDetails_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
