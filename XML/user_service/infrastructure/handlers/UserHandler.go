@@ -454,3 +454,63 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 	return &pb.PwnedResponse{Pwned: pwned, Message: mess}, nil
 
 }
+
+func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDetailsRequest) (*pb.UserDetails, error) {
+	u.l.Println("Handling GetUserDetails")
+	username := request.Username.Username
+	policy := bluemonday.UGCPolicy()
+	username = strings.TrimSpace(policy.Sanitize(username))
+	if username == "" {
+		fmt.Println("fields are empty or xss")
+		return nil, errors.New("fields are empty or xss happened")
+	}
+	err := u.service.UserExists(username)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err //ne postoji user
+	}
+	user, er := u.service.GetByUsername(context.TODO(), username)
+	u.l.Println(user.Skills)
+	if er != nil {
+		fmt.Println(er)
+		return nil, er
+	}
+	return api.MapUserToUserDetails(user), nil
+	return nil, nil
+}
+
+func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetailsRequest) (*pb.UserDetails, error) {
+
+	u.l.Println("Handling EditUserDetails")
+	userDetails := api.MapPbUserDetailsToUser(request)
+	if err := u.validator.Struct(userDetails); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	policy := bluemonday.UGCPolicy()
+	userDetails.Username = strings.TrimSpace(policy.Sanitize(userDetails.Username))
+	userDetails.PhoneNumber = strings.TrimSpace(policy.Sanitize(userDetails.PhoneNumber))
+	userDetails.FirstName = strings.TrimSpace(policy.Sanitize(userDetails.FirstName))
+	userDetails.LastName = strings.TrimSpace(policy.Sanitize(userDetails.LastName))
+	userDetails.Gender = strings.TrimSpace(policy.Sanitize(userDetails.Gender))
+	userDetails.DateOfBirth = strings.TrimSpace(policy.Sanitize(userDetails.DateOfBirth))
+	userDetails.Biography = strings.TrimSpace(policy.Sanitize(userDetails.Biography))
+	//nzm kako da sanitizeujem ove liste
+	if userDetails.Username == "" || userDetails.FirstName == "" || userDetails.LastName == "" ||
+		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" ||
+		userDetails.Biography == "" {
+		fmt.Println("fields are empty or xss")
+		return nil, errors.New("fields are empty or xss happened")
+	}
+	err := u.service.UserExists(userDetails.Username)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err //ne postoji user
+	}
+	editedUser, er := u.service.EditUser(userDetails)
+	if er != nil {
+		fmt.Println(er)
+		return nil, er
+	}
+	return api.MapUserToUserDetails(editedUser), nil
+}

@@ -127,6 +127,10 @@ func (server *Server) SetupDatabase() *gorm.DB {
 	db.AutoMigrate(&model.User{}) //This will not remove columns
 	db.AutoMigrate(&model.EmailVerification{})
 	db.AutoMigrate(&model.PasswordRecoveryRequest{})
+	db.AutoMigrate(&model.Skill{})
+	db.AutoMigrate(&model.Experience{})
+	db.AutoMigrate(&model.Education{})
+	db.AutoMigrate(&model.Interest{})
 	//db.Create(users) // Use this only once to populate db with data
 
 	return db

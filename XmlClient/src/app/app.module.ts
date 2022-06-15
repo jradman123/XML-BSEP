@@ -49,6 +49,9 @@ import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
+import { UserInfoComponent } from './components/user-info/user-info.component';
+import { EditUserComponent } from './pages/edit-user/edit-user.component';
+import { UserInfosComponent } from './components/user-infos/user-infos.component';
 import { UnauthenticatedHeaderComponent } from './components/unauthenticated-header/unauthenticated-header.component';
 import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
@@ -73,6 +76,9 @@ import { ApiKeyComponent } from './components/api-key/api-key.component';
     RecoverPassRequestComponent,
     RecoverPassComponent,
     ActivateAccountComponent,
+    UserInfoComponent,
+    EditUserComponent,
+    UserInfosComponent,
     JobOfferComponent,
     FiterPipePipe,
     NewJobOfferComponent,

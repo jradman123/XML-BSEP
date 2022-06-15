@@ -14,7 +14,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
    this.role  = localStorage.getItem('role')!;
-   if(this.role === 'admin'){
+   if(this.role === 'Admin'){
       this.show = true;
       console.log('admin');
    } else {

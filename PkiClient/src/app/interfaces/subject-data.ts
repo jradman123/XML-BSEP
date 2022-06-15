@@ -7,4 +7,5 @@ export interface SubjectData {
   country: String;
   email: String;
   password: String;
+  recoveryMail: String;
 }
