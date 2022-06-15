@@ -4,8 +4,10 @@ import com.example.AgentApp.enums.Gender;
 import com.example.AgentApp.enums.UserRole;
 import lombok.Data;
 import lombok.ToString;
+import org.apache.commons.codec.binary.Base32;
 
 import javax.persistence.*;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +51,8 @@ public class User {
 
     @Column(nullable = false)
     private boolean isConfirmed;
+    private boolean isUsing2FA;
+    private String secret;
 //
 //    @Column(nullable = false)
 //    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
@@ -82,7 +86,22 @@ public class User {
         this.gender = gender;
         this.role = role;
         this.isConfirmed = isConfirmed;
+        this.isUsing2FA = false;
+        this.secret = generateSecretKey();
     }
 
-    public User(){}
+    private static String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+        Base32 base32 = new Base32();
+        return base32.encodeToString(bytes);
+    }
+
+    public void setSecret() {
+        this.secret = generateSecretKey();
+    }
+
+    public User() {
+    }
 }

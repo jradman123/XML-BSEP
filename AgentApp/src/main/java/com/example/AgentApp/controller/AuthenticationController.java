@@ -9,6 +9,9 @@ import com.example.AgentApp.model.UserDetails;
 import com.example.AgentApp.security.TokenUtils;
 import com.example.AgentApp.service.CustomTokenService;
 import com.example.AgentApp.service.UserService;
+import de.taimos.totp.TOTP;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,11 +52,17 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoggedUserDto> login(
+    public ResponseEntity<Object> login(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+
+        User u = userService.findByUsername(authenticationRequest.getUsername());
+        String code = authenticationRequest.getCode();
+        if (u.isUsing2FA() && (code == null || !code.equals(getTOTPCode(u.getSecret())))) {
+            return ResponseEntity.badRequest().body("Code invalid");
+        }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserRole role = userService.findByUsername(authenticationRequest.getUsername()).getRole();
         UserDetails user = (UserDetails) authentication.getPrincipal();
@@ -61,6 +70,13 @@ public class AuthenticationController {
         int expiresIn = tokenUtils.getExpiredIn();
         LoggedUserDto loggedUserDto = new LoggedUserDto(authenticationRequest.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
         return ResponseEntity.ok(loggedUserDto);
+    }
+
+    public static String getTOTPCode(String secretKey) {
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode(secretKey);
+        String hexKey = Hex.encodeHexString(bytes);
+        return TOTP.getOTP(hexKey);
     }
 
     @PostMapping("/signup")
@@ -123,4 +139,12 @@ public class AuthenticationController {
         userService.resetPassword(resetPasswordDto.getUsername(), resetPasswordDto.getNewPassword());
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
+
+    @PutMapping(value = "/two-factor-auth")
+    public ResponseEntity<String> enable2FA(@RequestBody String username) {
+        String secret = userService.enable2FA(username);
+        return ResponseEntity.ok(secret);
+    }
+
+
 }
