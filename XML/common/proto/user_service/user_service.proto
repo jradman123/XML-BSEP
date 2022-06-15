@@ -68,7 +68,57 @@ service UserService{
       body: "shareJobOffer"
     };
   }
+  rpc GetUserDetails(GetUserDetailsRequest) returns(UserDetails) {
+    option (google.api.http) = {
+      post: "/users/user/details"
+      body: "username"
+    };
+  }
+
+  rpc EditUserDetails(UserDetailsRequest) returns(UserDetails) {
+    option (google.api.http) = {
+      post: "/users/user/edit"
+      body: "userDetails"
+    };
+  }
 }
+
+message GetUserDetailsRequest{
+  Username username = 1;
+}
+
+message UserDetailsRequest{
+  UserDetails userDetails = 1;
+}
+
+message UserDetails{
+  string username = 1;
+  string email = 2;
+  string phoneNumber = 3;
+  string firstName = 4;
+  string lastName = 5;
+  string gender = 6;
+  string dateOfBirth = 7;
+  string biography = 8;
+  repeated Skill skills = 9;
+  repeated Interest interests = 10;
+  repeated Education educations = 11;
+  repeated Experience experiences = 12;
+}
+
+message Skill{
+  string skill = 1;
+}
+message Interest{
+  string interest = 1;
+}
+message Education{
+  string education = 1;
+}
+message Experience{
+  string experience = 1;
+}
+
 message GenerateTokenRequest{
   Username username = 1;
 }

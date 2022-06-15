@@ -6,6 +6,7 @@ import { LoggedUser } from 'src/app/interfaces/logged-user';
 import { LoginRequest } from 'src/app/interfaces/login-request';
 import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
+import { UserDetails } from 'src/app/interfaces/user-details';
 
 @Injectable({
   providedIn: 'root',
@@ -37,11 +38,11 @@ export class UserService {
           console.log(response.Token);
           if (response) {
             console.log('uso sam');
-            localStorage.setItem('token', response.Token);
+            localStorage.setItem('token', response.token);
             localStorage.setItem('currentUser', JSON.stringify(response));
-            localStorage.setItem('role', response.Role);
-            localStorage.setItem('email', response.Email);
-            localStorage.setItem('username', response.Username);
+            localStorage.setItem('role', response.role);
+            localStorage.setItem('email', response.email);
+            localStorage.setItem('username', response.username);
 
             this.currentUserSubject.next(response);
           }
@@ -93,4 +94,20 @@ export class UserService {
       activateData
     );
   }
+
+  getUserDetails(username : any) {
+    return this._http.post<UserDetails>(
+      'http://localhost:9090/users/user/details', {
+        username
+    }
+      );
+  }
+
+  updateUser(user : UserDetails) {
+    return this._http.post<UserDetails>('http://localhost:9090/users/user/edit',
+      user
+    )
+  }
+
+
 }
