@@ -1,0 +1,8 @@
+{"data":{"user":"\u003cnil\u003e"},"file":"UserHandler.go:76","func":"user/module/infrastructure/handlers.UserHandler.GenerateAPIToken","level":"info","msg":"INFO:GenerateAPIToken","time":"2022-06-15T19:43:27Z"}
+{"data":{},"file":"UserHandler.go:333","func":"user/module/infrastructure/handlers.UserHandler.SendRequestForPasswordRecovery","level":"info","msg":"INFO:Handling PASSWORD RECCOVERY ","time":"2022-06-15T19:58:35Z"}
+{"data":{},"file":"UserService.go:225","func":"user/module/application/services.UserService.SendCodeToRecoveryMail","level":"info","msg":"INFO:CREATED PASS RECOVERY","time":"2022-06-15T19:58:35Z"}
+{"data":{},"file":"UserHandler.go:378","func":"user/module/infrastructure/handlers.UserHandler.RecoverPassword","level":"info","msg":"INFO:Handling RecoverPassword","time":"2022-06-15T20:00:46Z"}
+{"data":{"user":"\u003cnil\u003e"},"file":"UserHandler.go:76","func":"user/module/infrastructure/handlers.UserHandler.GenerateAPIToken","level":"info","msg":"INFO:GenerateAPIToken","time":"2022-06-15T20:01:50Z"}
+{"data":{"user":"stelena"},"file":"UserHandler.go:78","func":"user/module/infrastructure/handlers.UserHandler.GenerateAPIToken","level":"info","msg":"INFO:GenerateAPIToken","time":"2022-06-15T21:14:49Z"}
+{"data":{"user":"stelena"},"file":"UserHandler.go:78","func":"user/module/infrastructure/handlers.UserHandler.GenerateAPIToken","level":"info","msg":"INFO:GenerateAPIToken","time":"2022-06-15T21:18:13Z"}
+{"data":{"user":"stelena"},"file":"UserHandler.go:76","func":"user/module/infrastructure/handlers.UserHandler.GenerateAPIToken","level":"info","msg":"INFO:GenerateAPIToken","time":"2022-06-15T21:41:38Z"}

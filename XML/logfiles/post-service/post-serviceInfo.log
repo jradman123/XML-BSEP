@@ -1,0 +1,22 @@
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T18:22:21Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T18:23:55Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T19:35:26Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T19:35:43Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T19:36:34Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T19:41:27Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T19:42:39Z"}
+{"data":{},"file":"PostHandler.go:308","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"info","msg":"INFO:Handling ShareJobOffer","time":"2022-06-15T19:42:55Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T19:42:55Z"}
+{"data":{},"file":"PostHandler.go:322","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T19:44:13Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-15T21:42:36Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:135","func":"post/module/infrastructure/handlers.PostHandler.Create","level":"info","msg":"INFO:Handling Create post","time":"2022-06-15T21:55:22Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:179","func":"post/module/infrastructure/handlers.PostHandler.CreateComment","level":"info","msg":"INFO:Handling CreateComment","time":"2022-06-15T22:00:50Z"}
+{"data":{},"file":"PostHandler.go:70","func":"post/module/infrastructure/handlers.PostHandler.Get","level":"info","msg":"INFO:Handling Get post","time":"2022-06-15T22:01:24Z"}
+{"data":{},"file":"PostHandler.go:411","func":"post/module/infrastructure/handlers.PostHandler.GetAllCommentsForPost","level":"info","msg":"INFO:Handling GetAllCommentsForPost","time":"2022-06-15T22:02:20Z"}
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-15T22:03:10Z"}
+{"data":{},"file":"PostHandler.go:70","func":"post/module/infrastructure/handlers.PostHandler.Get","level":"info","msg":"INFO:Handling Get post","time":"2022-06-15T22:03:48Z"}
+{"data":{},"file":"PostHandler.go:411","func":"post/module/infrastructure/handlers.PostHandler.GetAllCommentsForPost","level":"info","msg":"INFO:Handling GetAllCommentsForPost","time":"2022-06-15T22:04:57Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:231","func":"post/module/infrastructure/handlers.PostHandler.LikePost","level":"info","msg":"INFO:Handling ShareJobOffer","time":"2022-06-15T22:08:02Z"}
+{"data":{},"file":"PostHandler.go:70","func":"post/module/infrastructure/handlers.PostHandler.Get","level":"info","msg":"INFO:Handling Get post","time":"2022-06-15T22:08:07Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:280","func":"post/module/infrastructure/handlers.PostHandler.DislikePost","level":"info","msg":"INFO:Handling ShareJobOffer","time":"2022-06-15T22:09:24Z"}
+{"data":{},"file":"PostHandler.go:70","func":"post/module/infrastructure/handlers.PostHandler.Get","level":"info","msg":"INFO:Handling Get post","time":"2022-06-15T22:09:29Z"}

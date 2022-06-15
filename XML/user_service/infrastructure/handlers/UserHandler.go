@@ -57,7 +57,8 @@ func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateT
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
-	sqlInj := common.CheckRegexSQL(username)
+	//sqlInj := common.CheckRegexSQL(username)
+	sqlInj := common.BadUsername(username)
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if username == "" {
 		u.logError.Logger.WithFields(logrus.Fields{
@@ -67,7 +68,7 @@ func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateT
 	} else if sqlInj {
 		u.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
-		}).Errorf("ERR:INJECTION")
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return nil, status.Error(codes.FailedPrecondition, "there is chance of sql injection happening")
 	} else {
 		u.logInfo.Logger.WithFields(logrus.Fields{
@@ -76,7 +77,8 @@ func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateT
 	}
 	existsErr := u.service.UserExists(username)
 	if existsErr != nil {
-		return nil, status.Error(codes.AlreadyExists, existsErr.Error())
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST:" + username)
+		return nil, status.Error(codes.Internal, existsErr.Error())
 	}
 	user, er := u.service.GetByUsername(context.TODO(), username)
 	if er != nil {
@@ -104,17 +106,24 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 	}
 	request.ShareJobOffer.JobOffer.DatePosted = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.DatePosted))
 	request.ShareJobOffer.JobOffer.Duration = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.Duration))
-	sqlInj := common.CheckForSQLInjection([]string{request.ShareJobOffer.ApiToken, request.ShareJobOffer.JobOffer.Publisher,
-		request.ShareJobOffer.JobOffer.Position, request.ShareJobOffer.JobOffer.JobDescription, request.ShareJobOffer.JobOffer.DatePosted,
-		request.ShareJobOffer.JobOffer.Duration})
-	sqlInj2 := common.CheckForSQLInjection(request.ShareJobOffer.JobOffer.Requirements)
+	p1 := common.BadJWTToken(request.ShareJobOffer.ApiToken)
+	p2 := common.BadText(request.ShareJobOffer.JobOffer.Publisher)
+	p3 := common.BadText(request.ShareJobOffer.JobOffer.Position)
+	p4 := common.BadText(request.ShareJobOffer.JobOffer.JobDescription)
+	p5 := common.BadTexts(request.ShareJobOffer.JobOffer.Requirements)
+	p6 := common.BadDate(request.ShareJobOffer.JobOffer.DatePosted)
+	p7 := common.BadDate(request.ShareJobOffer.JobOffer.Duration)
+	//sqlInj := common.CheckForSQLInjection([]string{request.ShareJobOffer.ApiToken, request.ShareJobOffer.JobOffer.Publisher,
+	//	request.ShareJobOffer.JobOffer.Position, request.ShareJobOffer.JobOffer.JobDescription, request.ShareJobOffer.JobOffer.DatePosted,
+	//	request.ShareJobOffer.JobOffer.Duration})
+	//sqlInj2 := common.CheckForSQLInjection(request.ShareJobOffer.JobOffer.Requirements)
 
 	if request.ShareJobOffer.ApiToken == "" || request.ShareJobOffer.JobOffer.Publisher == "" ||
 		request.ShareJobOffer.JobOffer.Position == "" || request.ShareJobOffer.JobOffer.JobDescription == "" ||
 		request.ShareJobOffer.JobOffer.DatePosted == "" || request.ShareJobOffer.JobOffer.Duration == "" {
 		u.logError.Logger.Errorf("ERR:XSS")
-	} else if sqlInj || sqlInj2 {
-		u.logError.Logger.Errorf("ERR:INJECTION")
+	} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
 		u.logInfo.Logger.Infof("INFO:Handling ShareJobOffer")
 	}
@@ -171,19 +180,21 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 	//sanitize everything
 	requestDto.Username = strings.TrimSpace(policy.Sanitize(requestDto.Username))
 	requestDto.Code = strings.TrimSpace(policy.Sanitize(requestDto.Code))
-	sqlInj := common.CheckForSQLInjection([]string{requestDto.Username, requestDto.Code})
+	//sqlInj := common.CheckForSQLInjection([]string{requestDto.Username, requestDto.Code})
+	p1 := common.BadUsername(requestDto.Username)
+	p2 := common.BadNumber(requestDto.Code)
 	if requestDto.Username == "" || requestDto.Code == "" {
 		u.logError.Logger.Errorf("ERR:XSS")
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, errors.New("fields are empty or xss happened")
-	} else if sqlInj {
-		u.logError.Logger.Errorf("ERR:INJECTION")
+	} else if p1 || p2 {
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, errors.New("there is chance of sql injection happening")
 	} else {
 		u.logInfo.Logger.Infof("INFO:Handling ActivateUserAccount")
 	}
 	existsErr := u.service.UserExists(requestDto.Username)
 	if existsErr != nil {
-		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, existsErr
 	}
 
@@ -207,7 +218,10 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 }
 
 func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
-	u.logInfo.Logger.Println("INFO:Handling GetAll Users")
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	u.logInfo.Logger.WithFields(logrus.Fields{
+		"user": userNameCtx,
+	}).Infof("INFO:Handling GetAll Users")
 	users, err := u.service.GetUsers()
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -224,7 +238,10 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 
 // UpdateUser TODO: SPOJITI S GRANOM EDITA
 func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
-	u.logInfo.Logger.Println("INFO:Handling UpdateUser")
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	u.logInfo.Logger.WithFields(logrus.Fields{
+		"user": userNameCtx,
+	}).Infof("INFO:Handling UpdateUser")
 
 	return &pb.UpdateUserResponse{UpdatedUser: nil}, nil
 }
@@ -247,8 +264,18 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 	newUser.PhoneNumber = strings.TrimSpace(policy.Sanitize(newUser.PhoneNumber))
 	newUser.RecoveryEmail = strings.TrimSpace(policy.Sanitize(newUser.RecoveryEmail))
 
-	sqlInj := common.CheckForSQLInjection([]string{newUser.Username, newUser.FirstName, newUser.LastName, newUser.Email,
-		newUser.Gender, newUser.DateOfBirth, newUser.PhoneNumber, newUser.RecoveryEmail})
+	p1 := common.BadUsername(newUser.Username)
+	p2 := common.BadName(newUser.FirstName)
+	p3 := common.BadName(newUser.LastName)
+	p4 := common.BadEmail(newUser.Email)
+	p5 := common.BadText(newUser.Gender)
+	p6 := common.BadDate(newUser.DateOfBirth)
+	p7 := common.BadNumber(newUser.PhoneNumber)
+	p8 := common.BadEmail(newUser.RecoveryEmail)
+	p9 := common.BadPassword(newUser.Password)
+
+	//sqlInj := common.CheckForSQLInjection([]string{newUser.Username, newUser.FirstName, newUser.LastName, newUser.Email,
+	//	newUser.Gender, newUser.DateOfBirth, newUser.PhoneNumber, newUser.RecoveryEmail})
 
 	if newUser.Username == "" || newUser.FirstName == "" || newUser.LastName == "" ||
 		newUser.Gender == "" || newUser.DateOfBirth == "" || newUser.PhoneNumber == "" ||
@@ -256,8 +283,8 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 		u.logError.Logger.Errorf("ERR:XSS")
 		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
 		//return nil, errors.New("fields are empty or xss happened")
-	} else if sqlInj {
-		u.logError.Logger.Errorf("ERR:INJECTION")
+	} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 || p8 || p9 {
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		//return nil, errors.New("there is chance for sql injection")
 		return nil, status.Error(codes.FailedPrecondition, "there is chance for sql injection")
 	} else {
@@ -265,7 +292,7 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 	}
 	err := u.service.UserExists(newUser.Username)
 	if err == nil {
-		u.logError.Logger.Errorf("USER EXISTS")
+		u.logError.Logger.Errorf("USER ALREADY EXISTS")
 		return nil, status.Error(codes.AlreadyExists, "user already exists")
 	}
 
@@ -299,20 +326,21 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 	var requestUsername = request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	requestUsername = strings.TrimSpace(policy.Sanitize(requestUsername))
-	sqlInj := common.CheckRegexSQL(requestUsername)
+	//sqlInj := common.CheckRegexSQL(requestUsername)
+	sqlInj := common.BadUsername(requestUsername)
 	if requestUsername == "" {
 		u.logError.Logger.Errorf("XSS")
 		//http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, errors.New("fields are empty or xss happened")
 	} else if sqlInj {
-		u.logError.Logger.Errorf("INJECTION")
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return nil, errors.New("there is chance for sql injection")
 	} else {
 		u.logInfo.Logger.Println("INFO:Handling PASSWORD RECCOVERY ")
 	}
 	existsErr := u.service.UserExists(requestUsername)
 	if existsErr != nil {
-		//u.logError.Logger.Errorf("USER DOES NOT EXIST")
+		u.logError.Logger.Errorf("USER DOES NOT EXIST")
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, existsErr
 	}
 
@@ -342,12 +370,15 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 	requestDto.Username = strings.TrimSpace(policy.Sanitize(requestDto.Username))
 	requestDto.Code = strings.TrimSpace(policy.Sanitize(requestDto.Code))
 	requestDto.NewPassword = strings.TrimSpace(policy.Sanitize(requestDto.NewPassword))
-	sqlInj := common.CheckForSQLInjection([]string{requestDto.Username, requestDto.Code})
+	//sqlInj := common.CheckForSQLInjection([]string{requestDto.Username, requestDto.Code})
+	p1 := common.BadUsername(requestDto.Username)
+	p2 := common.BadNumber(requestDto.Code)
+	p3 := common.BadPassword(requestDto.NewPassword)
 	if requestDto.Username == "" || requestDto.Code == "" || requestDto.NewPassword == "" {
 		u.logError.Logger.Error("ERR:XSS")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("fields are empty or xss happened")
-	} else if sqlInj {
-		u.logError.Logger.Errorf("INJECTION")
+	} else if p1 || p2 || p3 {
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return nil, errors.New("there is chance for sql injection")
 	} else {
 		u.logInfo.Logger.Println("INFO:Handling RecoverPassword")
@@ -355,7 +386,7 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 
 	existsErr := u.service.UserExists(requestDto.Username)
 	if existsErr != nil {
-		//u.logError.Logger.Errorf("USER DOES NOT EXIST")
+		u.logError.Logger.Errorf("USER DOES NOT EXIST")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, existsErr
 	}
 	///////////////////
@@ -395,13 +426,13 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything
 	pwnedPassword = strings.TrimSpace(policy.Sanitize(pwnedPassword))
-	sqlInj := common.CheckRegexSQL(pwnedPassword)
+	sqlInj := common.BadPassword(pwnedPassword)
 	if pwnedPassword == "" {
 		u.logError.Logger.Errorf("XSS")
 		//http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return &pb.PwnedResponse{Pwned: true, Message: "fields are empty or xss happened"}, errors.New("fields are empty or xss happened")
 	} else if sqlInj {
-		u.logError.Logger.Errorf("INJECTION")
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return nil, errors.New("there is chance for sql injection")
 	} else {
 		u.logInfo.Logger.Println("INFO:Handling PWNED PASSWORD")

@@ -53,20 +53,25 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	policy := bluemonday.UGCPolicy()
 	loginRequest.Password = strings.TrimSpace(policy.Sanitize(loginRequest.Password))
 	loginRequest.Username = strings.TrimSpace(policy.Sanitize(loginRequest.Username))
-	sqlInj := common.CheckForSQLInjection([]string{loginRequest.Username, loginRequest.Password})
+	//sqlInj := common.CheckForSQLInjection([]string{loginRequest.Username, loginRequest.Password})
+	sqlInj := common.BadUsername(loginRequest.Username)
+	sqlInj2 := common.BadPassword(loginRequest.Password)
+	//fmt.Println(sqlInj2)
+	fmt.Println("username")
+	fmt.Println(sqlInj)
 	if loginRequest.Username == "" || loginRequest.Password == "" {
 		a.logError.Logger.WithFields(logrus.Fields{
 			"user":   loginRequest.Username,
 			"userIP": ip,
 		}).Errorf("ERR:XSS")
-		http.Error(rw, "XSS! "+err.Error(), http.StatusBadRequest)
+		http.Error(rw, "XSS! ", http.StatusBadRequest)
 		return
-	} else if sqlInj {
+	} else if sqlInj || sqlInj2 {
 		a.logError.Logger.WithFields(logrus.Fields{
 			"user":   loginRequest.Username,
 			"userIP": ip,
-		}).Errorf("ERR:INJECTION")
-		http.Error(rw, "Chance for sql injection! "+err.Error(), http.StatusBadRequest)
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		http.Error(rw, "Chance for sql injection! ", http.StatusBadRequest)
 		return
 	} else {
 		a.logInfo.Logger.WithFields(logrus.Fields{

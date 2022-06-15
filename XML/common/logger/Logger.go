@@ -26,8 +26,8 @@ func InitializeLogger(service string, ctx context.Context, logType string) *Logg
 	rotatingLogs, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
 		Filename:   file,
 		MaxSize:    100, //megabytes
-		MaxBackups: 50,  //MaxBackups is the maximum number of old log files to retain.
-		MaxAge:     14,  //days
+		MaxBackups: 5,   //MaxBackups is the maximum number of old log files to retain.
+		MaxAge:     30,  //days
 		Level:      logrus.InfoLevel,
 		Formatter: UTCFormatter{&logrus.JSONFormatter{
 			TimestampFormat: "2006-01-02T15:04:05Z",

@@ -68,7 +68,7 @@ func (u UserService) UserExists(username string) error {
 	err := u.userRepository.UserExists(username)
 
 	if err != nil {
-		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST:" + username)
+		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST:" + username)
 		return err
 	}
 	return nil

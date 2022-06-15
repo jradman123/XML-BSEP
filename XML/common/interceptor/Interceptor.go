@@ -72,19 +72,21 @@ func (interceptor *AuthInterceptor) Authorize(ctx context.Context, method string
 		return ctx, status.Errorf(codes.Unauthenticated, "Unauthorized")
 	}
 
+	userName := getUsernameFromClaim(tokenString)
+
 	for _, claimsRole := range claimsRoles {
 		for _, role := range accessibleRoles {
 			if role == claimsRole {
 				fmt.Println(role)
-				return context.WithValue(ctx, LoggedInUserKey{}, getUsernameClaim(tokenString)), nil //zamjenila sam da umesto role ide username
+				//k := loggedInUser("loggedIn")
+				return context.WithValue(ctx, LoggedInUserKey{}, userName), nil
+				//return context.WithValue(ctx, "loggedIn", getUsernameClaim(tokenString)), nil //zamjenila sam da umesto role ide username
 			}
 		}
 	}
 
-	userName := getUsernameClaim(tokenString)
-	userNameStr := fmt.Sprintf("%v", userName)
 	interceptor.logError.Logger.WithFields(logrus.Fields{
-		"user": userNameStr,
+		"user": userName,
 	}).Errorf("ERR:FORBIDEN")
 	return ctx, status.Errorf(codes.PermissionDenied, "Forbidden")
 }
@@ -139,16 +141,17 @@ func VerifyToken(tokenString string) (*JwtClaims, error) {
 	return claims, nil
 }
 
-func getUsernameClaim(tokenString string) any {
-	myClaims := jwt.MapClaims{}
-	myToken, _ := jwt.ParseWithClaims(tokenString, myClaims, func(token *jwt.Token) (interface{}, error) {
+func getUsernameFromClaim(tokenString string) string {
+	myClaims := &JwtClaims{}
+	_, err := jwt.ParseWithClaims(tokenString, myClaims, func(token *jwt.Token) (interface{}, error) {
 		return []byte("<YOUR VERIFICATION KEY>"), nil
 	})
-	fmt.Println(myToken)
-	for key, val := range myClaims {
-		if key == "username" {
-			return val
-		}
-	}
-	return nil
+	fmt.Println(err)
+	//fmt.Println(myToken)
+	//for key, val := range myClaims {
+	//	if key == "username" {
+	//		return my
+	//	}
+	//}
+	return myClaims.Username
 }

@@ -2,9 +2,11 @@ package handlers
 
 import (
 	common "common/module"
+	"common/module/interceptor"
 	"common/module/logger"
 	pb "common/module/proto/posts_service"
 	"context"
+	"fmt"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -30,11 +32,11 @@ func (p PostHandler) MustEmbedUnimplementedPostServiceServer() {
 func (p PostHandler) GetAllByUserId(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
 	policy := bluemonday.UGCPolicy()
 	request.Id = strings.TrimSpace(policy.Sanitize(request.Id))
-	sqlInj := common.CheckRegexSQL(request.Id)
+	sqlInj := common.BadId(request.Id)
 	if request.Id == "" {
 		p.logError.Logger.Errorf("ERR:XSS")
 	} else if sqlInj {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
 		p.logInfo.Logger.Infof("INFO:Handling GetAllByUserId posts")
 	}
@@ -59,11 +61,11 @@ func (p PostHandler) GetAllByUserId(ctx context.Context, request *pb.GetRequest)
 func (p PostHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
 	policy := bluemonday.UGCPolicy()
 	request.Id = strings.TrimSpace(policy.Sanitize(request.Id))
-	sqlInj := common.CheckRegexSQL(request.Id)
+	sqlInj := common.BadId(request.Id)
 	if request.Id == "" {
 		p.logError.Logger.Errorf("ERR:XSS")
 	} else if sqlInj {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
 		p.logInfo.Logger.Infof("INFO:Handling Get post")
 	}
@@ -112,20 +114,31 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 	}
 	request.Post.DatePosted = strings.TrimSpace(policy.Sanitize(request.Post.DatePosted))
 
-	sqlInj := common.CheckForSQLInjection([]string{request.Post.PostText, request.Post.UserId, request.Post.DatePosted})
-	sqlInj2 := common.CheckForSQLInjection(request.Post.ImagePaths)
+	p1 := common.BadId(request.Post.UserId)
+	p2 := common.BadText(request.Post.PostText)
+	p3 := common.BadDate(request.Post.DatePosted)
+	p4 := common.BadPaths(request.Post.ImagePaths)
+	//sqlInj := common.CheckForSQLInjection([]string{request.Post.PostText, request.Post.UserId, request.Post.DatePosted})
+	//sqlInj2 := common.CheckForSQLInjection(request.Post.ImagePaths)
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.Post.UserId == "" || request.Post.PostText == "" || request.Post.DatePosted == "" {
-		p.logError.Logger.Errorf("ERR:XSS")
-	} else if sqlInj || sqlInj2 {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:XSS")
+	} else if p1 || p2 || p3 || p4 {
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
-		p.logInfo.Logger.Infof("INFO:Handling Create post")
+		p.logInfo.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Infof("INFO:Handling Create post")
 	}
 	post := api.MapNewPost(request.Post)
 	err := p.service.Create(post)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Post.UserId,
+			"user": userNameCtx,
 		}).Errorf("ERR:CREATE POST")
 		return nil, err
 	}
@@ -140,20 +153,35 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 	request.Comment.Name = strings.TrimSpace(policy.Sanitize(request.Comment.Name))
 	request.Comment.Surname = strings.TrimSpace(policy.Sanitize(request.Comment.Surname))
 	request.Comment.CommentText = strings.TrimSpace(policy.Sanitize(request.Comment.CommentText))
-	sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.Comment.UserId, request.Comment.Username,
-		request.Comment.Name, request.Comment.Surname, request.Comment.CommentText})
+
+	p1 := common.BadId(request.PostId)
+	p2 := common.BadId(request.Comment.UserId)
+	p3 := common.BadUsername(request.Comment.Username)
+	p4 := common.BadName(request.Comment.Name)
+	p5 := common.BadName(request.Comment.Surname)
+	p6 := common.BadText(request.Comment.CommentText)
+
+	//sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.Comment.UserId, request.Comment.Username,
+	//	request.Comment.Name, request.Comment.Surname, request.Comment.CommentText})
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.PostId == "" || request.Comment.UserId == "" || request.Comment.Username == "" || request.Comment.Name == "" ||
 		request.Comment.Surname == "" || request.Comment.CommentText == "" {
-		p.logError.Logger.Errorf("ERR:XSS")
-	} else if sqlInj {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:XSS")
+	} else if p1 || p2 || p3 || p4 || p5 || p6 {
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
-		p.logInfo.Logger.Infof("INFO:Handling CreateComment")
+		p.logInfo.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Infof("INFO:Handling CreateComment")
 	}
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Comment.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:HEX STRING INVALID")
 		return nil, err
@@ -161,7 +189,7 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 	post, err := p.service.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Comment.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:GET POST FROM DB")
 		return nil, err
@@ -170,7 +198,7 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 	err = p.service.CreateComment(post, comment)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Comment.UserId,
+			"userId": userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:CREATE COMMENT")
 		return nil, err
@@ -185,18 +213,27 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	policy := bluemonday.UGCPolicy()
 	request.PostId = strings.TrimSpace(policy.Sanitize(request.PostId))
 	request.UserId = strings.TrimSpace(policy.Sanitize(request.UserId))
-	sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.UserId})
+	p1 := common.BadId(request.PostId)
+	p2 := common.BadId(request.UserId)
+	//sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.UserId})
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.PostId == "" || request.UserId == "" {
-		p.logError.Logger.Errorf("ERR:XSS")
-	} else if sqlInj {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:XSS")
+	} else if p1 || p2 {
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
-		p.logInfo.Logger.Infof("INFO:Handling ShareJobOffer")
+		p.logInfo.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Infof("INFO:Handling LikePost")
 	}
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:HEX STRING INVALID")
 		return nil, err
@@ -204,7 +241,7 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	post, err := p.service.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:GET POST FROM DB")
 		return nil, err
@@ -212,7 +249,7 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	err = p.service.LikePost(post, request.UserId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:LIKE POST")
 		return nil, err
@@ -225,18 +262,27 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 	policy := bluemonday.UGCPolicy()
 	request.PostId = strings.TrimSpace(policy.Sanitize(request.PostId))
 	request.UserId = strings.TrimSpace(policy.Sanitize(request.UserId))
-	sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.UserId})
+	p1 := common.BadId(request.PostId)
+	p2 := common.BadId(request.UserId)
+	//sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.UserId})
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.PostId == "" || request.UserId == "" {
-		p.logError.Logger.Errorf("ERR:XSS")
-	} else if sqlInj {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:XSS")
+	} else if p1 || p2 {
+		p.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
-		p.logInfo.Logger.Infof("INFO:Handling ShareJobOffer")
+		p.logInfo.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Infof("INFO:Handling DislikePost")
 	}
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:HEX STRING INVALID")
 		return nil, err
@@ -244,7 +290,7 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 	post, err := p.service.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:GET POST FROM DB")
 		return nil, err
@@ -252,7 +298,7 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 	err = p.service.DislikePost(post, request.UserId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.UserId,
+			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:DISLIKE POST")
 		return nil, err
@@ -271,18 +317,25 @@ func (p PostHandler) CreateJobOffer(ctx context.Context, request *pb.CreateJobOf
 	}
 	request.JobOffer.DatePosted = strings.TrimSpace(policy.Sanitize(request.JobOffer.DatePosted))
 	request.JobOffer.Duration = strings.TrimSpace(policy.Sanitize(request.JobOffer.Duration))
-	sqlInj := common.CheckForSQLInjection([]string{request.JobOffer.Publisher,
-		request.JobOffer.Position, request.JobOffer.JobDescription, request.JobOffer.DatePosted,
-		request.JobOffer.Duration})
-	sqlInj2 := common.CheckForSQLInjection(request.JobOffer.Requirements)
+	//p1 := common.BadJWTToken(request.ShareJobOffer.ApiToken)
+	p2 := common.BadText(request.JobOffer.Publisher)
+	p3 := common.BadText(request.JobOffer.Position)
+	p4 := common.BadText(request.JobOffer.JobDescription)
+	p5 := common.BadTexts(request.JobOffer.Requirements)
+	p6 := common.BadDate(request.JobOffer.DatePosted)
+	p7 := common.BadDate(request.JobOffer.Duration)
+	//sqlInj := common.CheckForSQLInjection([]string{request.JobOffer.Publisher,
+	//	request.JobOffer.Position, request.JobOffer.JobDescription, request.JobOffer.DatePosted,
+	//	request.JobOffer.Duration})
+	//sqlInj2 := common.CheckForSQLInjection(request.JobOffer.Requirements)
 
 	if request.JobOffer.Publisher == "" || request.JobOffer.Position == "" || request.JobOffer.JobDescription == "" ||
 		request.JobOffer.DatePosted == "" || request.JobOffer.Duration == "" {
 		p.logError.Logger.Errorf("ERR:XSS")
-	} else if sqlInj || sqlInj2 {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+	} else if p2 || p3 || p4 || p5 || p6 || p7 {
+		p.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
-		p.logInfo.Logger.Infof("INFO:Handling ShareJobOffer")
+		p.logInfo.Logger.Infof("INFO:Handling ShareJobOffer/CreateJobOffer")
 	}
 	offer := api.MapNewJobOffer(request.JobOffer)
 	err := p.service.CreateJobOffer(offer)
@@ -313,11 +366,12 @@ func (p PostHandler) GetAllJobOffers(ctx context.Context, empty *pb.Empty) (*pb.
 func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetReactionsResponse, error) {
 	policy := bluemonday.UGCPolicy()
 	request.Id = strings.TrimSpace(policy.Sanitize(request.Id))
-	sqlInj := common.CheckRegexSQL(request.Id)
+	sqlInj := common.BadId(request.Id)
+	//sqlInj := common.CheckRegexSQL(request.Id)
 	if request.Id == "" {
 		p.logError.Logger.Errorf("ERR:XSS")
 	} else if sqlInj {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
 		p.logInfo.Logger.Infof("INFO:Handling GetAllReactionsForPost")
 	}
@@ -347,11 +401,12 @@ func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.Get
 func (p PostHandler) GetAllCommentsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetAllCommentsResponse, error) {
 	policy := bluemonday.UGCPolicy()
 	request.Id = strings.TrimSpace(policy.Sanitize(request.Id))
-	sqlInj := common.CheckRegexSQL(request.Id)
+	//sqlInj := common.CheckRegexSQL(request.Id)
+	sqlInj := common.BadId(request.Id)
 	if request.Id == "" {
 		p.logError.Logger.Errorf("ERR:XSS")
 	} else if sqlInj {
-		p.logError.Logger.Errorf("ERR:INJECTION")
+		p.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
 		p.logInfo.Logger.Infof("INFO:Handling GetAllCommentsForPost")
 	}

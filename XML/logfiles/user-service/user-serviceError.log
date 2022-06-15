@@ -1,0 +1,5 @@
+{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-15T20:57:37Z"}
+{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-15T21:08:12Z"}
+{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-15T21:19:37Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-15T21:41:59Z"}
+{"data":{"user":"stelena"},"file":"Interceptor.go:90","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:FORBIDEN","time":"2022-06-15T21:42:19Z"}
