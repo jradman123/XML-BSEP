@@ -16,6 +16,7 @@ public interface LoggerService {
     void checkCodeSuccess(String username,String ipAddress);
     void resetPasswordSuccess(String username,String ipAddress);
     void changePasswordSuccess(String username,String ipAddress);
+    void userEditInfo(String username);
 
 
 }

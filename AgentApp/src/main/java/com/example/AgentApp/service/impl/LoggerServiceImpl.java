@@ -66,4 +66,9 @@ public class LoggerServiceImpl implements LoggerService {
     public void changePasswordSuccess(String username, String ipAddress) {
         logger.info("Change password succeed. Username: " + username + ". Ip address: " + ipAddress);
     }
+
+    @Override
+    public void userEditInfo(String username) {
+        logger.info("User edits info. Username: " + username);
+    }
 }
