@@ -68,7 +68,9 @@ public class LoggerServiceImpl implements LoggerService {
     }
 
     @Override
-    public void userEditInfo(String username) {
-        logger.info("User edits info. Username: " + username);
+    public void getUserInfo(String username) {
+        logger.info("Getting info for user with username: " + username);
     }
+
+
 }
