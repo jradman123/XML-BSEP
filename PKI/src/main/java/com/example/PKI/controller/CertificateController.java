@@ -56,7 +56,7 @@ public class CertificateController {
         com.example.PKI.model.Certificate certificate = certificateService.createCertificate(certificateDto, generatedSubjectData);
         if (certificate != null) {
             loggerService.generateCertificateSuccess(request.getRemoteAddr());
-            return new ResponseEntity<String>("Success!", HttpStatus.OK);
+            return new ResponseEntity<String>("\"Success!\"", HttpStatus.OK);
         } else {
             loggerService.generateCertificateFailed(request.getRemoteAddr());
             return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
