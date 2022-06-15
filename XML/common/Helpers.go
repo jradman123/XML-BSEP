@@ -3,10 +3,11 @@ package common
 import "regexp"
 
 func CheckRegexSQL(input string) bool {
-	matched1, _ := regexp.MatchString(`[\s\W\n\r\t]`, input)   //a whitespace character: [\t\n\f\r ]
-	matched2, _ := regexp.MatchString(`[\'\"\#\$\%\_]`, input) //a non-whitespace character: [^\t\n\f\r ]
-	matched3, _ := regexp.MatchString(`\\`, input)             //a whitespace character: [\t\n\f\r ]
-	if matched1 || matched2 || matched3 {
+	matched1, _ := regexp.MatchString(`[\s\n\r\t]`, input)
+	matched2, _ := regexp.MatchString(`[\'\"\#\$\%\_\|]`, input)
+	matched3, _ := regexp.MatchString(`\\`, input)
+	matched4, _ := regexp.MatchString(`\>\<\&`, input)
+	if matched1 || matched2 || matched3 || matched4 {
 		return true
 	} else {
 		return false

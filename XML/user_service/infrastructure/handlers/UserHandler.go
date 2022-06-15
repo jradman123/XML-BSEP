@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	common "common/module"
+	"common/module/interceptor"
 	"common/module/logger"
 	pb "common/module/proto/user_service"
 	"context"
@@ -13,6 +14,8 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
 	"log"
@@ -51,61 +54,79 @@ func NewUserHandler(logInfo *logger.Logger, logError *logger.Logger, service *se
 }
 
 func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateTokenRequest) (*pb.ApiToken, error) {
-	u.logInfo.Logger.Println("GenerateAPIToken")
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
 	sqlInj := common.CheckRegexSQL(username)
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if username == "" {
 		u.logError.Logger.WithFields(logrus.Fields{
-			"user": request.Username.Username,
-		}).Warnf("XSS")
-		return &pb.ApiToken{ApiToken: ""}, errors.New("fields are empty or xss happened")
+			"user": userNameCtx,
+		}).Errorf("ERR:XSS")
+		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
 	} else if sqlInj {
 		u.logError.Logger.WithFields(logrus.Fields{
-			"user": request.Username.Username,
-		}).Warnf("INJECTION")
-		return &pb.ApiToken{ApiToken: ""}, errors.New("there is chance of sql injection happening")
+			"user": userNameCtx,
+		}).Errorf("ERR:INJECTION")
+		return nil, status.Error(codes.FailedPrecondition, "there is chance of sql injection happening")
 	} else {
 		u.logInfo.Logger.WithFields(logrus.Fields{
-			"user": request.Username.Username,
-		}).Infof("GenerateAPIToken")
+			"user": userNameCtx,
+		}).Infof("INFO:GenerateAPIToken")
 	}
 	existsErr := u.service.UserExists(username)
 	if existsErr != nil {
-		u.logError.Logger.WithFields(logrus.Fields{
-			"user": request.Username.Username,
-		}).Errorf("USER DO NOT EXIST")
-		return &pb.ApiToken{ApiToken: ""}, existsErr
+		return nil, status.Error(codes.AlreadyExists, existsErr.Error())
 	}
 	user, er := u.service.GetByUsername(context.TODO(), username)
 	if er != nil {
-		u.logError.Logger.WithFields(logrus.Fields{
-			"user": request.Username.Username,
-		}).Errorf("DB ERR")
-		return &pb.ApiToken{ApiToken: ""}, er
+		return nil, status.Error(codes.Internal, er.Error())
 	}
 	token, tokenErr := u.tokenService.GenerateApiToken(user)
 	if tokenErr != nil {
 		u.logError.Logger.WithFields(logrus.Fields{
-			"user": request.Username.Username,
-		}).Errorf("GEN TOKEN ERR")
-		return &pb.ApiToken{ApiToken: ""}, tokenErr
+			"user": userNameCtx,
+		}).Errorf("ERR:GEN TOKEN")
+		return nil, status.Error(codes.Internal, tokenErr.Error())
 	}
-	u.logInfo.Logger.WithFields(logrus.Fields{
-		"user": request.Username.Username,
-	}).Infof("SUCCESS GenerateAPIToken")
 	return &pb.ApiToken{ApiToken: token}, nil
 }
 
 func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOfferRequest) (*pb.EmptyRequest, error) {
+
+	policy := bluemonday.UGCPolicy()
+	request.ShareJobOffer.ApiToken = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.ApiToken))
+	request.ShareJobOffer.JobOffer.Publisher = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.Publisher))
+	request.ShareJobOffer.JobOffer.Position = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.Position))
+	request.ShareJobOffer.JobOffer.JobDescription = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.JobDescription))
+	for i, _ := range request.ShareJobOffer.JobOffer.Requirements {
+		request.ShareJobOffer.JobOffer.Requirements[i] = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.Requirements[i]))
+	}
+	request.ShareJobOffer.JobOffer.DatePosted = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.DatePosted))
+	request.ShareJobOffer.JobOffer.Duration = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.Duration))
+	sqlInj := common.CheckForSQLInjection([]string{request.ShareJobOffer.ApiToken, request.ShareJobOffer.JobOffer.Publisher,
+		request.ShareJobOffer.JobOffer.Position, request.ShareJobOffer.JobOffer.JobDescription, request.ShareJobOffer.JobOffer.DatePosted,
+		request.ShareJobOffer.JobOffer.Duration})
+	sqlInj2 := common.CheckForSQLInjection(request.ShareJobOffer.JobOffer.Requirements)
+
+	if request.ShareJobOffer.ApiToken == "" || request.ShareJobOffer.JobOffer.Publisher == "" ||
+		request.ShareJobOffer.JobOffer.Position == "" || request.ShareJobOffer.JobOffer.JobDescription == "" ||
+		request.ShareJobOffer.JobOffer.DatePosted == "" || request.ShareJobOffer.JobOffer.Duration == "" {
+		u.logError.Logger.Errorf("ERR:XSS")
+	} else if sqlInj || sqlInj2 {
+		u.logError.Logger.Errorf("ERR:INJECTION")
+	} else {
+		u.logInfo.Logger.Infof("INFO:Handling ShareJobOffer")
+	}
+
 	token := request.ShareJobOffer.ApiToken
 	hasAccess, er := u.tokenService.CheckIfHasAccess(token)
 	if er != nil {
 		return &pb.EmptyRequest{}, er
 	}
 	if !hasAccess {
-		return &pb.EmptyRequest{}, errors.New("you don't have acccess")
+		u.logError.Logger.Errorf("ERR:DOES NOT HAVE ACCCESS")
+		return &pb.EmptyRequest{}, errors.New("you don't have access")
 	}
 
 	postBody, _ := json.Marshal(map[string]any{
@@ -119,6 +140,7 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 	responseBody := bytes.NewBuffer(postBody)
 	resp, err := http.Post("http://localhost:9090/job_offer", "application/json", responseBody)
 	if err != nil {
+		u.logError.Logger.Errorf("ERR:POST")
 		log.Fatalf("An Error Occured %v", err)
 	}
 	defer resp.Body.Close()
@@ -129,6 +151,7 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 	sb := string(body)
 	log.Printf(sb)
 
+	u.logInfo.Logger.Infof("INFO:REQ SENT TO POST SER")
 	return &pb.EmptyRequest{}, nil
 }
 
@@ -137,57 +160,57 @@ type myJSON struct {
 }
 
 func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error) {
-	u.logInfo.Logger.Println("Handling ActivateUserAccount ")
 	//TODO:mzd dodati provjeru da li se uspelo ok mapirati?
-	requstDto := api.MapPbToUserActivateRequest(request)
-	err := u.validator.Struct(requstDto)
+	requestDto := api.MapPbToUserActivateRequest(request)
+	err := u.validator.Struct(requestDto)
 	if err != nil {
-		u.logError.Logger.Errorf("invalid fields")
-		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, err
+		u.logError.Logger.Errorf("ERR:INVALID REQ FIELDS")
+		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, err
 	}
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything
-	requstDto.Username = strings.TrimSpace(policy.Sanitize(requstDto.Username))
-	requstDto.Code = strings.TrimSpace(policy.Sanitize(requstDto.Code))
-	if requstDto.Username == "" || requstDto.Code == "" {
-		u.logError.Logger.Errorf("XSS")
-		//http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
-		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, errors.New("fields are empty or xss happened")
+	requestDto.Username = strings.TrimSpace(policy.Sanitize(requestDto.Username))
+	requestDto.Code = strings.TrimSpace(policy.Sanitize(requestDto.Code))
+	sqlInj := common.CheckForSQLInjection([]string{requestDto.Username, requestDto.Code})
+	if requestDto.Username == "" || requestDto.Code == "" {
+		u.logError.Logger.Errorf("ERR:XSS")
+		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, errors.New("fields are empty or xss happened")
+	} else if sqlInj {
+		u.logError.Logger.Errorf("ERR:INJECTION")
+		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, errors.New("there is chance of sql injection happening")
+	} else {
+		u.logInfo.Logger.Infof("INFO:Handling ActivateUserAccount")
 	}
-	existsErr := u.service.UserExists(requstDto.Username)
+	existsErr := u.service.UserExists(requestDto.Username)
 	if existsErr != nil {
-		u.logError.Logger.Errorf("USER DO NOT EXIST")
-		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, existsErr
+		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, existsErr
 	}
-	sqlInj := common.CheckForSQLInjection([]string{requstDto.Username, requstDto.Code})
-	if sqlInj {
-		u.logError.Logger.Errorf("INJECTION")
-		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, errors.New("there is chance of sql injection happening")
-	}
+
 	var code int
-	code, convertError := strconv.Atoi(requstDto.Code)
+	code, convertError := strconv.Atoi(requestDto.Code)
 	if convertError != nil {
-		u.logError.Logger.Errorf("CONVERT ERR")
-		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, convertError
+		u.logError.Logger.Errorf("ERR:CONVERT")
+		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, convertError
 	}
-	activated, e := u.service.ActivateUserAccount(requstDto.Username, code)
+	activated, e := u.service.ActivateUserAccount(requestDto.Username, code)
 	if e != nil {
-		u.logError.Logger.Errorf("ERR")
-		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, e
+		//u.logError.Logger.Errorf("ERR:")
+		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, e
 	}
 	if !activated {
-		u.logError.Logger.Errorf("account activation failed")
-		return &pb.ActivationResponse{Activated: false, Username: requstDto.Username}, errors.New("account activation failed")
+		//u.logError.Logger.Errorf("account activation failed")
+		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, errors.New("account activation failed")
 	}
-	u.logInfo.Logger.Infof("SUCCESS GenerateAPIToken")
-	return &pb.ActivationResponse{Activated: activated, Username: requstDto.Username}, nil
+	//u.logInfo.Logger.Infof("SUCCESS GenerateAPIToken")
+	return &pb.ActivationResponse{Activated: activated, Username: requestDto.Username}, nil
 }
 
 func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
-	u.logInfo.Logger.Println("Handling GetAll Users")
+	u.logInfo.Logger.Println("INFO:Handling GetAll Users")
 	users, err := u.service.GetUsers()
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	response := &pb.GetAllResponse{
 		Users: []*pb.User{},
@@ -199,21 +222,18 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 	return response, nil
 }
 
+// UpdateUser TODO: SPOJITI S GRANOM EDITA
 func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
-	u.logInfo.Logger.Println("Handling UpdateUser")
+	u.logInfo.Logger.Println("INFO:Handling UpdateUser")
 
 	return &pb.UpdateUserResponse{UpdatedUser: nil}, nil
 }
 
 func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error) {
-	u.logInfo.Logger.Println("Handling RegisterUser")
-	//TODO:mzd dodati provjeru da li se uspelo ok mapirati?
 	newUser := api.MapPbUserToNewUserDto(request)
-	//TODO:dodati validaciju u obliku regexa, spreciti injection napad
 	if err := u.validator.Struct(newUser); err != nil {
-		u.logError.Logger.Errorf("Invalid values")
-		return nil, err
-		//http.Error(rw, "New user dto fields aren't entered in valid format! error:"+err.Error(), http.StatusExpectationFailed) //400
+		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything
@@ -227,22 +247,26 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 	newUser.PhoneNumber = strings.TrimSpace(policy.Sanitize(newUser.PhoneNumber))
 	newUser.RecoveryEmail = strings.TrimSpace(policy.Sanitize(newUser.RecoveryEmail))
 
+	sqlInj := common.CheckForSQLInjection([]string{newUser.Username, newUser.FirstName, newUser.LastName, newUser.Email,
+		newUser.Gender, newUser.DateOfBirth, newUser.PhoneNumber, newUser.RecoveryEmail})
+
 	if newUser.Username == "" || newUser.FirstName == "" || newUser.LastName == "" ||
 		newUser.Gender == "" || newUser.DateOfBirth == "" || newUser.PhoneNumber == "" ||
 		newUser.Password == "" || newUser.Email == "" || newUser.RecoveryEmail == "" {
-		u.logError.Logger.Errorf("XSS")
-		return nil, errors.New("fields are empty or xss happened")
-	}
-	sqlInj := common.CheckForSQLInjection([]string{newUser.Username, newUser.FirstName, newUser.LastName, newUser.Email,
-		newUser.Gender, newUser.DateOfBirth, newUser.PhoneNumber, newUser.RecoveryEmail})
-	if sqlInj {
-		u.logError.Logger.Errorf("INJECTION")
-		return nil, errors.New("there is chance for sql injection")
+		u.logError.Logger.Errorf("ERR:XSS")
+		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
+		//return nil, errors.New("fields are empty or xss happened")
+	} else if sqlInj {
+		u.logError.Logger.Errorf("ERR:INJECTION")
+		//return nil, errors.New("there is chance for sql injection")
+		return nil, status.Error(codes.FailedPrecondition, "there is chance for sql injection")
+	} else {
+		u.logInfo.Logger.Infof("INFO:Handling RegisterUser")
 	}
 	err := u.service.UserExists(newUser.Username)
 	if err == nil {
 		u.logError.Logger.Errorf("USER EXISTS")
-		return nil, err
+		return nil, status.Error(codes.AlreadyExists, "user already exists")
 	}
 
 	var hashedSaltedPassword = ""
@@ -252,93 +276,86 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 		pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
 		if err != nil {
 			fmt.Println(err)
-			return nil, err
+			u.logError.Logger.Errorf("ERR:BCRYPT")
+			return nil, status.Error(codes.Internal, err.Error())
 		}
 		hashedSaltedPassword = string(pass)
 	} else {
-		u.logError.Logger.Errorf("PASSWORD FORMAT NOT VALID")
-		return nil, errors.New("password format is not valid")
+		u.logError.Logger.Errorf("ERR:PASSWORD FORMAT NOT VALID")
+		return nil, status.Error(codes.FailedPrecondition, "password format is not valid")
 	}
 	newUser.Password = hashedSaltedPassword
 	registeredUser, er := u.service.CreateRegisteredUser(api.MapDtoToUser(newUser))
 
 	if er != nil {
-		u.logError.Logger.Errorf(er.Error())
-		return nil, er
+		return nil, status.Error(codes.Internal, er.Error())
 	}
 
-	u.logInfo.Logger.Infof("SUCCESS RegisterUser")
+	//u.logInfo.Logger.Infof("SUCCESS RegisterUser")
 	return &pb.RegisterUserResponse{RegisteredUser: api.MapUserToPbResponseUser(registeredUser)}, nil
 }
 
 func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request *pb.PasswordRecoveryRequest) (*pb.PasswordRecoveryResponse, error) {
-
-	u.logInfo.Logger.Println("Handling PASSWORD RECCOVERY ")
-	//TODO: injection
 	var requestUsername = request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	requestUsername = strings.TrimSpace(policy.Sanitize(requestUsername))
-
+	sqlInj := common.CheckRegexSQL(requestUsername)
 	if requestUsername == "" {
 		u.logError.Logger.Errorf("XSS")
 		//http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, errors.New("fields are empty or xss happened")
-	}
-	sqlInj := common.CheckRegexSQL(requestUsername)
-	if sqlInj {
+	} else if sqlInj {
 		u.logError.Logger.Errorf("INJECTION")
 		return nil, errors.New("there is chance for sql injection")
+	} else {
+		u.logInfo.Logger.Println("INFO:Handling PASSWORD RECCOVERY ")
 	}
 	existsErr := u.service.UserExists(requestUsername)
 	if existsErr != nil {
-		u.logError.Logger.Errorf("USER DOES NOT EXIST")
+		//u.logError.Logger.Errorf("USER DOES NOT EXIST")
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, existsErr
 	}
 
 	codeSent, codeErr := u.service.SendCodeToRecoveryMail(requestUsername)
 	if codeErr != nil {
-		u.logError.Logger.Errorf(codeErr.Error())
+		//u.logError.Logger.Errorf(codeErr.Error())
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, codeErr
 	}
 	if !codeSent {
-		u.logError.Logger.Errorf("ACCOUNT ACTIVATION FAILED")
+		u.logError.Logger.Errorf("ERR:ACCOUNT ACTIVATION FAILED")
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, errors.New("account activation failed")
 	}
-	u.logInfo.Logger.Infof("SUCCESS SendRequestForPasswordRecovery")
 
 	return &pb.PasswordRecoveryResponse{CodeSent: true}, nil
 }
 
 func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswordRequest) (*pb.NewPasswordResponse, error) {
-
-	u.logInfo.Logger.Println("Handling RecoverPassword handler ")
-	//TODO:mzd dodati provjeru da li se uspelo ok mapirati?
 	requestDto := api.MapPbToNewPasswordRequestDto(request)
 
 	err := u.validator.Struct(requestDto)
 	if err != nil {
-		u.logError.Logger.Error("Invalid values")
+		u.logError.Logger.Error("ERR:INVALID REQ FIELDS")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, err
-		//http.Error(rw, "New user dto fields aren't entered in valid format! error:"+err.Error(), http.StatusExpectationFailed) //400
 	}
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything
 	requestDto.Username = strings.TrimSpace(policy.Sanitize(requestDto.Username))
 	requestDto.Code = strings.TrimSpace(policy.Sanitize(requestDto.Code))
 	requestDto.NewPassword = strings.TrimSpace(policy.Sanitize(requestDto.NewPassword))
-	if requestDto.Username == "" || requestDto.Code == "" || requestDto.NewPassword == "" {
-		u.logError.Logger.Error("XSS")
-		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("fields are empty or xss happened")
-	}
 	sqlInj := common.CheckForSQLInjection([]string{requestDto.Username, requestDto.Code})
-	if sqlInj {
+	if requestDto.Username == "" || requestDto.Code == "" || requestDto.NewPassword == "" {
+		u.logError.Logger.Error("ERR:XSS")
+		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("fields are empty or xss happened")
+	} else if sqlInj {
 		u.logError.Logger.Errorf("INJECTION")
 		return nil, errors.New("there is chance for sql injection")
+	} else {
+		u.logInfo.Logger.Println("INFO:Handling RecoverPassword")
 	}
 
 	existsErr := u.service.UserExists(requestDto.Username)
 	if existsErr != nil {
-		u.logError.Logger.Errorf("USER DOES NOT EXIST")
+		//u.logError.Logger.Errorf("USER DOES NOT EXIST")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, existsErr
 	}
 	///////////////////
@@ -349,6 +366,7 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 		pass, err := bcrypt.GenerateFromPassword([]byte(requestDto.NewPassword), bcrypt.DefaultCost)
 		if err != nil {
 			fmt.Println(err)
+			u.logError.Logger.Errorf("ERR:BCRYPT")
 			return &pb.NewPasswordResponse{PasswordChanged: false}, err
 		}
 
@@ -356,8 +374,7 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 
 	} else {
 		fmt.Println("Password format is not valid!")
-		//http.Error(rw, "Password format is not valid! error:"+err.Error(), http.StatusBadRequest) //400
-		//return
+		u.logError.Logger.Errorf("ERR:PASSWORD FORMAT NOT VALID")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("password format is not valid")
 	}
 	passChanged, err := u.service.CreateNewPassword(requestDto.Username, hashedSaltedPassword, requestDto.Code)
@@ -367,32 +384,32 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 	}
 	if !passChanged {
 		//http.Error(rw, "error changing password", http.StatusConflict) //409
+		u.logError.Logger.Errorf("ERR:CHANGING PASSWORD")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("error changing password")
 	}
 	return &pb.NewPasswordResponse{PasswordChanged: true}, nil
 }
 
 func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest) (*pb.PwnedResponse, error) {
-
-	u.logInfo.Logger.Println("Handling PWNED PASSWORD")
 	pwnedPassword := request.Password.Password
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything
 	pwnedPassword = strings.TrimSpace(policy.Sanitize(pwnedPassword))
+	sqlInj := common.CheckRegexSQL(pwnedPassword)
 	if pwnedPassword == "" {
 		u.logError.Logger.Errorf("XSS")
 		//http.Error(rw, "Fields are empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return &pb.PwnedResponse{Pwned: true, Message: "fields are empty or xss happened"}, errors.New("fields are empty or xss happened")
-	}
-	sqlInj := common.CheckRegexSQL(pwnedPassword)
-	if sqlInj {
+	} else if sqlInj {
 		u.logError.Logger.Errorf("INJECTION")
 		return nil, errors.New("there is chance for sql injection")
+	} else {
+		u.logInfo.Logger.Println("INFO:Handling PWNED PASSWORD")
 	}
 
 	pwned, err := u.pwnedClient.Compromised(pwnedPassword)
 	if err != nil {
-		u.logError.Logger.Errorf("pwnedClient ERR")
+		u.logError.Logger.Errorf("ERR:PWNED CLIENT")
 		return &pb.PwnedResponse{Pwned: pwned, Message: "error checking if password is pwned"}, errors.New("error checkinf if password is pwaned")
 	}
 	var mess string
@@ -403,7 +420,6 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 	} else {
 		mess = "Password is OK!"
 	}
-	u.logInfo.Logger.Infof("SUCCESS PwnedPassword")
 	return &pb.PwnedResponse{Pwned: pwned, Message: mess}, nil
 
 }

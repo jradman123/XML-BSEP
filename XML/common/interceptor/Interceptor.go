@@ -1,10 +1,12 @@
 package interceptor
 
 import (
+	"common/module/logger"
 	"context"
 	"crypto/rsa"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -16,12 +18,14 @@ import (
 type AuthInterceptor struct {
 	accessibleRoles map[string][]string
 	publicKey       *rsa.PublicKey
+	logError        *logger.Logger
 }
 
-func NewAuthInterceptor(accessibleRoles map[string][]string, publicKey *rsa.PublicKey) *AuthInterceptor {
+func NewAuthInterceptor(accessibleRoles map[string][]string, publicKey *rsa.PublicKey, logError *logger.Logger) *AuthInterceptor {
 	return &AuthInterceptor{
 		accessibleRoles: accessibleRoles,
 		publicKey:       publicKey,
+		logError:        logError,
 	}
 }
 
@@ -51,11 +55,12 @@ func (interceptor *AuthInterceptor) Authorize(ctx context.Context, method string
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		fmt.Println("NEMA METADATA")
+		interceptor.logError.Logger.Errorf("ERR:UNOTHORIZED:NO METADATA")
 		return ctx, status.Errorf(codes.Unauthenticated, "Unauthorized")
 
 	}
 
-	err, tokenString := parseToken(md)
+	err, tokenString := parseToken(md, interceptor.logError)
 	if err != nil {
 		return ctx, err
 
@@ -63,7 +68,7 @@ func (interceptor *AuthInterceptor) Authorize(ctx context.Context, method string
 
 	err, claimsRoles := TokenIsValid(ctx, tokenString)
 	if err != nil {
-		fmt.Println("TOKEN NOT VALID")
+		interceptor.logError.Logger.Errorf("ERR:UNOTHORIZED:TOKEN INVALID")
 		return ctx, status.Errorf(codes.Unauthenticated, "Unauthorized")
 	}
 
@@ -71,26 +76,32 @@ func (interceptor *AuthInterceptor) Authorize(ctx context.Context, method string
 		for _, role := range accessibleRoles {
 			if role == claimsRole {
 				fmt.Println(role)
-				return context.WithValue(ctx, LoggedInUserKey{}, role), nil
+				return context.WithValue(ctx, LoggedInUserKey{}, getUsernameClaim(tokenString)), nil //zamjenila sam da umesto role ide username
 			}
 		}
 	}
 
+	userName := getUsernameClaim(tokenString)
+	userNameStr := fmt.Sprintf("%v", userName)
+	interceptor.logError.Logger.WithFields(logrus.Fields{
+		"user": userNameStr,
+	}).Errorf("ERR:FORBIDEN")
 	return ctx, status.Errorf(codes.PermissionDenied, "Forbidden")
 }
 
-func parseToken(md metadata.MD) (error, string) {
+func parseToken(md metadata.MD, logError *logger.Logger) (error, string) {
 	var values []string
 	values = md.Get("Authorization")
 	if len(values) == 0 {
 		fmt.Println("NEMA AUTH")
+		logError.Logger.Errorf("ERR:UNOTHORIZED:NO AUTH")
 		return status.Errorf(codes.Unauthenticated, "Unauthorized"), ""
 	}
 
 	authHeader := values[0]
 	parts := strings.Split(authHeader, " ")
 	if len(parts) != 2 {
-		fmt.Println("NIJE SPLIT")
+		logError.Logger.Errorf("ERR:UNOTHORIZED:NO JWT") // samo stoji Bearer bez tokena
 		return status.Errorf(codes.Unauthenticated, "Unauthorized"), ""
 	}
 	return nil, parts[1]
@@ -126,4 +137,18 @@ func VerifyToken(tokenString string) (*JwtClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func getUsernameClaim(tokenString string) any {
+	myClaims := jwt.MapClaims{}
+	myToken, _ := jwt.ParseWithClaims(tokenString, myClaims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("<YOUR VERIFICATION KEY>"), nil
+	})
+	fmt.Println(myToken)
+	for key, val := range myClaims {
+		if key == "username" {
+			return val
+		}
+	}
+	return nil
 }

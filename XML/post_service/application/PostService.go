@@ -1,6 +1,7 @@
 package application
 
 import (
+	"common/module/logger"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
@@ -8,10 +9,12 @@ import (
 
 type PostService struct {
 	repository repositories.PostRepository
+	logInfo    *logger.Logger
+	logError   *logger.Logger
 }
 
-func NewPostService(repository repositories.PostRepository) *PostService {
-	return &PostService{repository: repository}
+func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger) *PostService {
+	return &PostService{repository: repository, logInfo: logError, logError: logError}
 }
 
 func (service *PostService) Get(id primitive.ObjectID) (*model.Post, error) {

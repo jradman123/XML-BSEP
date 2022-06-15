@@ -51,11 +51,11 @@ func (server *Server) Start() {
 	utils := helpers.PasswordUtil{}
 	userHandler := server.InitUserHandler(logInfo, logError, userService, validator, jsonConverters, &utils, pwnedClient, apiTokenService)
 
-	server.StartGrpcServer(userHandler)
+	server.StartGrpcServer(userHandler, logError)
 
 }
 
-func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
+func (server *Server) StartGrpcServer(handler *handlers.UserHandler, logError *logger.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -65,7 +65,7 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 	if err != nil {
 		log.Fatalf("failed to parse public key: %v", err)
 	}
-	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
+	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
 	userProto.RegisterUserServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
