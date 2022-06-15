@@ -18,4 +18,7 @@ public interface LoggerService {
     void resetPasswordSuccess(String email,String ipAddress);
     void checkRecoveryEmailFailed(String email,String ipAddress);
     void checkRecoveryEmailSuccess(String email,String ipAddress);
+    void generateCertificateFailed(String ipAddress);
+    void generateCertificateSuccess(String ipAddress);
+    void downloadCertificateSuccess(String serialNumber);
 }

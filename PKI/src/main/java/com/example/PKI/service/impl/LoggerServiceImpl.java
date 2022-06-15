@@ -82,4 +82,19 @@ public class LoggerServiceImpl implements LoggerService {
     public void checkRecoveryEmailSuccess(String email, String ipAddress) {
         logger.info("Check recovery email succeed. Email: " + email + ". Ip address: " + ipAddress);
     }
+
+    @Override
+    public void generateCertificateFailed(String ipAddress) {
+        logger.error("Generating certificate failed. Ip address: " + ipAddress);
+    }
+
+    @Override
+    public void generateCertificateSuccess(String ipAddress) {
+        logger.info("Certificate successfully generated. Ip address: " + ipAddress);
+    }
+
+    @Override
+    public void downloadCertificateSuccess(String serialNumber) {
+        logger.info("Certificate " + serialNumber + " successfully downloaded.");
+    }
 }
