@@ -47,7 +47,6 @@ public class UserController {
         String token = tokenUtils.getToken(request);
         String username = tokenUtils.getUsernameFromToken(token);
         User user = userService.findByUsername(username);
-        loggerService.getUserInfo(username);
         return new ResponseEntity<UserInformationResponseDto>(UserMapper.mapToDto(user), HttpStatus.OK);
     }
 }

@@ -68,8 +68,84 @@ public class LoggerServiceImpl implements LoggerService {
     }
 
     @Override
-    public void getUserInfo(String username) {
-        logger.info("Getting info for user with username: " + username);
+    public void createCompanyRequestFailed(String companyId) {
+        logger.error("Company request creation failed. Company: " + companyId);
+    }
+
+    @Override
+    public void createCompanyRequestSuccess(String companyId) {
+        logger.info("Company request successfully created. Company: " + companyId);
+    }
+
+    @Override
+    public void approveCompanyRequestFailed(String companyId) {
+        logger.error("Company " + companyId + " approving failed.");
+    }
+
+    @Override
+    public void approveCompanyRequestSuccess(String companyId,String username) {
+        logger.info("Company " + companyId + " approved by " + username + ".");
+
+    }
+
+    @Override
+    public void rejectCompanyRequestFailed(String companyId) {
+        logger.error("Company " + companyId + " rejecting failed.");
+    }
+
+    @Override
+    public void rejectCompanyRequestSuccess(String companyId, String username) {
+        logger.info("Company " + companyId + " rejected by " + username + ".");
+    }
+
+    @Override
+    public void editCompanyFailed(String companyId) {
+        logger.error("Company " + companyId + " editing failed.");
+    }
+
+    @Override
+    public void editCompanySuccess(String companyId, String username) {
+        logger.info("Company " + companyId + "successfully edited by " + username + ".");
+    }
+
+    @Override
+    public void createJobOfferFailed(String companyId) {
+        logger.error("Creating job offer for company " + companyId + "failed.");
+    }
+
+    @Override
+    public void createJobOfferSuccess(String companyId, String username) {
+        logger.info("Creating job offer for company " + companyId + "by " + username + ".");
+    }
+
+    @Override
+    public void leaveCommentFailed(String companyId, String username) {
+        logger.error("Leaving comment for company " + companyId + "failed.Username " + username + " tried leave comment.");
+    }
+
+    @Override
+    public void leaveCommentSuccess(String companyId, String username) {
+        logger.info("Leaving comment for company " + companyId + "successfully by " + username + ".");
+    }
+
+    @Override
+    public void leaveSalaryCommentFailed(String companyId, String username) {
+        logger.error("Leaving salary comment for company " + companyId + "failed.Username " + username + " tried leave salary comment.");
+    }
+
+    @Override
+    public void leaveSalaryCommentSuccess(String companyId, String username) {
+        logger.info("Leaving salary comment for company " + companyId + "successfully by " + username + ".");
+    }
+
+    @Override
+    public void leaveInterviewCommentFailed(String companyId, String username) {
+        logger.error("Leaving salary comment for company " + companyId + "failed.Username " + username + " tried leave interview comment.");
+    }
+
+    @Override
+    public void leaveInterviewCommentSuccess(String companyId, String username) {
+        logger.info("Leaving interview comment for company " + companyId + "successfully by " + username + ".");
     }
 
 

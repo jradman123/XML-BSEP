@@ -16,7 +16,22 @@ public interface LoggerService {
     void checkCodeSuccess(String username,String ipAddress);
     void resetPasswordSuccess(String username,String ipAddress);
     void changePasswordSuccess(String username,String ipAddress);
-    void getUserInfo(String username);
+    void createCompanyRequestFailed(String companyId);
+    void createCompanyRequestSuccess(String companyId);
+    void approveCompanyRequestFailed(String companyId);
+    void approveCompanyRequestSuccess(String companyId,String username);
+    void rejectCompanyRequestFailed(String companyId);
+    void rejectCompanyRequestSuccess(String companyId,String username);
+    void editCompanyFailed(String companyId);
+    void editCompanySuccess(String companyId,String username);
+    void createJobOfferFailed(String companyId);
+    void createJobOfferSuccess(String companyId,String username);
+    void leaveCommentFailed(String companyId,String username);
+    void leaveCommentSuccess(String companyId,String username);
+    void leaveSalaryCommentFailed(String companyId,String username);
+    void leaveSalaryCommentSuccess(String companyId,String username);
+    void leaveInterviewCommentFailed(String companyId,String username);
+    void leaveInterviewCommentSuccess(String companyId,String username);
 
 
 }

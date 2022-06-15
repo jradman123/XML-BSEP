@@ -23,22 +23,6 @@
             </Policies>
         </RollingFile>
 
-        <RollingFile name="WarnFile" fileName="logs/warn.log"
-                     filePattern="logs/warn.%d{yyyy-MMM-dd}.log.gz">
-            <PatternLayout
-                    pattern="%d{yyyy-MMM-dd HH:mm:ss}{UTC+0}|%level|%c|%msg%n"/>
-            <Filters>
-                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
-                <ThresholdFilter level="fatal" onMatch="DENY" onMismatch="NEUTRAL"/>
-
-                <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
-            </Filters>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB"/>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
-        </RollingFile>
-
         <RollingFile name="ErrorFile" fileName="logs/error.log"
                      filePattern="logs/error.%d{yyyy-MMM-dd}.log.gz">
             <PatternLayout
@@ -58,7 +42,6 @@
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="InfoFile" level="info"/>
-            <AppenderRef ref="WarnFile" level="warn"/>
             <AppenderRef ref="ErrorFile" level="error"/>
         </Root>
     </Loggers>
