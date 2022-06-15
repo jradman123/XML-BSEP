@@ -8,7 +8,9 @@ import com.example.AgentApp.model.User;
 import com.example.AgentApp.model.UserDetails;
 import com.example.AgentApp.security.TokenUtils;
 import com.example.AgentApp.service.CustomTokenService;
+import com.example.AgentApp.service.LoggerService;
 import com.example.AgentApp.service.UserService;
+import com.example.AgentApp.service.impl.LoggerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
@@ -39,6 +42,8 @@ public class AuthenticationController {
 
     private final CustomTokenService customTokenService;
 
+    private final LoggerService loggerService;
+
 
     @Autowired
     public AuthenticationController(UserService userService, TokenUtils tokenUtils, CustomTokenService customTokenService, AuthenticationManager authenticationManager) {
@@ -46,54 +51,67 @@ public class AuthenticationController {
         this.tokenUtils = tokenUtils;
         this.customTokenService = customTokenService;
         this.authenticationManager = authenticationManager;
+        this.loggerService = new LoggerServiceImpl(this.getClass());
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoggedUserDto> login(
-            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
-
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserRole role = userService.findByUsername(authenticationRequest.getUsername()).getRole();
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        String jwt = tokenUtils.generateToken(user.getUser().getUsername());
-        int expiresIn = tokenUtils.getExpiredIn();
-        LoggedUserDto loggedUserDto = new LoggedUserDto(authenticationRequest.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
-        return ResponseEntity.ok(loggedUserDto);
+            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response,HttpServletRequest request) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            UserRole role = userService.findByUsername(authenticationRequest.getUsername()).getRole();
+            UserDetails user = (UserDetails) authentication.getPrincipal();
+            String jwt = tokenUtils.generateToken(user.getUser().getUsername());
+            int expiresIn = tokenUtils.getExpiredIn();
+            LoggedUserDto loggedUserDto = new LoggedUserDto(authenticationRequest.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
+            loggerService.loginSuccess(authenticationRequest.getUsername());
+            return ResponseEntity.ok(loggedUserDto);
+        }
+        catch (Exception ex) {
+            loggerService.loginFailed(authenticationRequest.getUsername(),request.getRemoteAddr());
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationRequestDto userRequest, UriComponentsBuilder ucBuilder) throws UnknownHostException, ParseException {
+    public ResponseEntity<String> addUser(@Valid @RequestBody RegistrationRequestDto userRequest, UriComponentsBuilder ucBuilder, HttpServletRequest request) throws UnknownHostException, ParseException {
         User existUser = this.userService.findByUsername(userRequest.getUsername());
 
         if (existUser != null) {
+            loggerService.signUpFailed(request.getRemoteAddr());
             throw new ResourceConflictException(userRequest.getUsername(), "Username already exists");
         }
 
         User savedUser = userService.addUser(userRequest);
         if (savedUser != null) {
+            loggerService.signUpSuccess(userRequest.getUsername(), request.getRemoteAddr());
             return new ResponseEntity<>("SUCCESS!", HttpStatus.CREATED);
         }
+        loggerService.signUpFailed(request.getRemoteAddr());
         return new ResponseEntity<>("ERROR!", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/confirm-account/{token}")
-    public ResponseEntity<String> confirmAccount(@PathVariable String token) {
+    public ResponseEntity<String> confirmAccount(@PathVariable String token,HttpServletRequest request) {
         CustomToken verificationToken = customTokenService.findByToken(token);
         User user = verificationToken.getUser();
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             customTokenService.deleteById(verificationToken.getId());
             customTokenService.sendVerificationToken(user);
+            loggerService.confirmAccountFailed(user.getUsername(),request.getRemoteAddr());
             return new ResponseEntity<>("Confirmation link is expired,we sent you new one.Please check you mail box.", HttpStatus.BAD_REQUEST);
         }
         User activated = userService.activateAccount(user);
         customTokenService.deleteById(verificationToken.getId());
         if (activated.isConfirmed()) {
+            loggerService.confirmAccountSuccess(user.getUsername(),request.getRemoteAddr());
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create("http://localhost:4200/login")).build();
 
         } else {
+            loggerService.confirmAccountFailed(user.getUsername(),request.getRemoteAddr());
             return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -101,33 +119,39 @@ public class AuthenticationController {
     @PostMapping(value = "/send-code")
     public ResponseEntity<?> sendCode(@RequestBody String username) {
         User user = userService.findByUsername(username);
-        if (user == null)
+        if (user == null) {
+            loggerService.sendCodeFailed(user.getEmail());
             return ResponseEntity.notFound().build();
+        }
+        loggerService.sendCodeSuccess(user.getEmail());
         customTokenService.sendResetPasswordToken(user);
         return ResponseEntity.accepted().build();
     }
 
     @PostMapping(value = "/check-code")
-    public ResponseEntity<String> checkCode(@Valid @RequestBody CheckCodeDto checkCodeDto) {
+    public ResponseEntity<String> checkCode(@Valid @RequestBody CheckCodeDto checkCodeDto,HttpServletRequest request) {
         User user = userService.findByUsername(checkCodeDto.getUsername());
         CustomToken token = customTokenService.findByUser(user);
         if (customTokenService.checkResetPasswordCode(checkCodeDto.getCode(), token.getToken())) {
             if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
                 customTokenService.deleteById(token.getId());
                 customTokenService.sendVerificationToken(user);
+                loggerService.checkCodeFailed(user.getUsername(),request.getRemoteAddr());
                 return new ResponseEntity<>("Reset password code is expired,we sent you new one.Please check you mail box.", HttpStatus.BAD_REQUEST);
             }
 
+            loggerService.checkCodeSuccess(user.getUsername(),request.getRemoteAddr());
             customTokenService.deleteById(token.getId());
             return new ResponseEntity<>("\"Success!\"", HttpStatus.OK);
         }
-
+        loggerService.checkCodeFailed(user.getUsername(),request.getRemoteAddr());
         return new ResponseEntity<>("Entered code is not valid!", HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping(value = "/reset-password")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto,HttpServletRequest request) {
         userService.resetPassword(resetPasswordDto.getUsername(), resetPasswordDto.getNewPassword());
+        loggerService.resetPasswordSuccess(resetPasswordDto.getUsername(),request.getRemoteAddr());
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }
