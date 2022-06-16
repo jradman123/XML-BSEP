@@ -57,6 +57,9 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
 import { ApiKeyComponent } from './components/api-key/api-key.component';
+import { NgxCaptchaModule } from 'ngx-captcha';
+import { TfaComponent } from './components/tfa/tfa.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 
 
@@ -77,6 +80,8 @@ import { ApiKeyComponent } from './components/api-key/api-key.component';
     FiterPipePipe,
     NewJobOfferComponent,
     ApiKeyComponent,
+    TfaComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,7 +91,6 @@ import { ApiKeyComponent } from './components/api-key/api-key.component';
     NgbModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule,
     BrowserAnimationsModule,
     MatCardModule,
     MatAutocompleteModule,
@@ -129,6 +133,8 @@ import { ApiKeyComponent } from './components/api-key/api-key.component';
     MatFormFieldModule,
     MatInputModule,
     MatRippleModule,
+    ReactiveFormsModule,
+    NgxCaptchaModule,
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]

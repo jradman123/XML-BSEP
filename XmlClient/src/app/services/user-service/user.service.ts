@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { ActivateAccount } from 'src/app/interfaces/activate-account';
 import { LoggedUser } from 'src/app/interfaces/logged-user';
-import { LoginRequest } from 'src/app/interfaces/login-request';
+import { ILoginRequest } from 'src/app/interfaces/login-request';
 import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
 
@@ -11,6 +11,7 @@ import { UserData } from 'src/app/interfaces/subject-data';
   providedIn: 'root',
 })
 export class UserService {
+ 
   private currentUserSubject: BehaviorSubject<LoggedUser>;
   public currentUser: Observable<LoggedUser>;
   private user!: LoggedUser;
@@ -28,15 +29,12 @@ export class UserService {
     );
   }
 
-  login(loginRequest: LoginRequest): Observable<LoggedUser> {
+  login(loginRequest: ILoginRequest): Observable<LoggedUser> {
     return this._http
       .post(`http://localhost:9090/users/login/user`, loginRequest)
       .pipe(
         map((response: any) => {
-          console.log(response);
-          console.log(response.Token);
           if (response) {
-            console.log('uso sam');
             localStorage.setItem('token', response.Token);
             localStorage.setItem('currentUser', JSON.stringify(response));
             localStorage.setItem('role', response.Role);
@@ -92,5 +90,11 @@ export class UserService {
       'http://localhost:9090/users/activate/user',
       activateData
     );
+  }
+  enable2FA(username: string): Observable<any> {
+    throw new Error('Method not implemented.');
+  }
+  check2FAStatus(username: string): Observable<any> {
+    throw new Error('Method not implemented.');
   }
 }
