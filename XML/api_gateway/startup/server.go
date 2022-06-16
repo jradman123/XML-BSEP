@@ -61,12 +61,14 @@ func (server *Server) initCustomHandlers() {
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
+	lVerificationRepo := server.InitLoginVerificationRepo(db)
 	userService := server.InitUserService(l, userRepo)
+	passwordlessService := server.InitPasswordlessService(l, lVerificationRepo)
 
 	validator := validator.New()
 
 	passwordUtil := &helpers.PasswordUtil{}
-	authHandler := handlers.NewAuthenticationHandler(l, userService, validator, passwordUtil)
+	authHandler := handlers.NewAuthenticationHandler(l, userService, validator, passwordUtil, passwordlessService)
 	authHandler.Init(server.mux)
 }
 
@@ -96,11 +98,17 @@ var db *gorm.DB
 
 func (server *Server) SetupDatabase() *gorm.DB {
 
-	host := os.Getenv("HOST")
-	port := os.Getenv("PG_DBPORT")
-	user := os.Getenv("PG_USER")
-	dbname := os.Getenv("XML_DB_NAME")
-	password := os.Getenv("PG_PASSWORD")
+	//host := os.Getenv("HOST")
+	//port := os.Getenv("PG_DBPORT")
+	//user := os.Getenv("PG_USER")
+	//dbname := os.Getenv("XML_DB_NAME")
+	//password := os.Getenv("PG_PASSWORD")
+
+	host := os.Getenv("USER_DB_HOST")
+	port := os.Getenv("USER_DB_PORT")
+	user := os.Getenv("USER_DB_USER")
+	dbname := os.Getenv("USER_DB_NAME")
+	password := os.Getenv("USER_DB_PASS")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
@@ -111,8 +119,17 @@ func (server *Server) SetupDatabase() *gorm.DB {
 		fmt.Println("Successfully connected to database!")
 	}
 
-	db.AutoMigrate(&model.User{}) //This will not remove columns
+	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.LoginVerification{}) //This will not remove columns
 	//db.Create(users) // Use this only once to populate db with data
 
 	return db
+}
+
+func (server *Server) InitPasswordlessService(l *log.Logger, repo repositories.LoginVerificationRepository) *services.PasswordLessService {
+	return services.NewPasswordLessService(l, repo, "brancaSecretKeySavedInEnv")
+}
+
+func (server *Server) InitLoginVerificationRepo(db *gorm.DB) repositories.LoginVerificationRepository {
+	return persistance.NewLoginVerificationRepositoryImpl(db)
 }
