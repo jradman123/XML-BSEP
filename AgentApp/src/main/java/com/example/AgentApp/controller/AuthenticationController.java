@@ -139,7 +139,7 @@ public class AuthenticationController {
         User user = token.getUser();
         if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
             customTokenService.deleteById(token.getId());
-            customTokenService.sendVerificationToken(user);
+            customTokenService.sendMagicLink(user);
             return new ResponseEntity<>("Your magic link is expired,we sent you new one. Please check you mail box.", HttpStatus.BAD_REQUEST);
         }
         Authentication authentication = new UsernamePasswordAuthenticationToken(

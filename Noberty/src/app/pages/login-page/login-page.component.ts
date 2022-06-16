@@ -61,7 +61,12 @@ export class LoginPageComponent implements OnInit {
   submitPL() {
     this._userService.sendMagicLink(this.formPL.value.username).subscribe(
       res => {
-        this._snackBar.open('Check your email. Click on the magic link to log in.', '', {
+        this._snackBar.open('Check your email. We sent you a magic link to log-in to your account.', '', {
+          duration: 3000,
+        });
+      },
+      err => {
+        this._snackBar.open('User with this username does not exist.', '', {
           duration: 3000,
         });
       }
