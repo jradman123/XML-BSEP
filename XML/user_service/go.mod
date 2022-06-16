@@ -12,6 +12,7 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/mattevans/pwned-passwords v0.5.0
 	github.com/microcosm-cc/bluemonday v1.0.18
+	github.com/sirupsen/logrus v1.8.1
 	github.com/trycourier/courier-go/v2 v2.5.0
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	google.golang.org/grpc v1.46.2
@@ -38,10 +39,12 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/snowzach/rotatefilehook v0.0.0-20220211133110-53752135082d // indirect
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )

@@ -27,7 +27,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 @RequestMapping(value = "api/auth")
 public class AuthenticationController {
 

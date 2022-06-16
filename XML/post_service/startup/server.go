@@ -2,7 +2,9 @@ package startup
 
 import (
 	"common/module/interceptor"
+	"common/module/logger"
 	postsProto "common/module/proto/posts_service"
+	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,11 +27,13 @@ func NewServer(config *config.Config) *Server {
 }
 
 func (server *Server) Start() {
+	logInfo := logger.InitializeLogger("post-service", context.Background(), "Info")
+	logError := logger.InitializeLogger("post-service", context.Background(), "Error")
 	mongoClient := server.InitMongoClient()
 	postRepo := server.InitPostsRepo(mongoClient)
-	postService := server.InitPostService(postRepo)
-	postHandler := server.InitPostHandler(postService)
-	server.StartGrpcServer(postHandler)
+	postService := server.InitPostService(postRepo, logInfo, logError)
+	postHandler := server.InitPostHandler(postService, logInfo, logError)
+	server.StartGrpcServer(postHandler, logError)
 }
 
 func (server *Server) InitMongoClient() *mongo.Client {
@@ -44,21 +48,21 @@ func (server *Server) InitPostsRepo(client *mongo.Client) repositories.PostRepos
 	return persistence.NewPostRepositoryImpl(client)
 }
 
-func (server *Server) InitPostService(repo repositories.PostRepository) *application.PostService {
-	return application.NewPostService(repo)
+func (server *Server) InitPostService(repo repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger) *application.PostService {
+	return application.NewPostService(repo, logInfo, logError)
 }
 
-func (server *Server) InitPostHandler(service *application.PostService) *handlers.PostHandler {
-	return handlers.NewPostHandler(service)
+func (server *Server) InitPostHandler(service *application.PostService, logInfo *logger.Logger, logError *logger.Logger) *handlers.PostHandler {
+	return handlers.NewPostHandler(service, logInfo, logError)
 }
 
-func (server *Server) StartGrpcServer(handler *handlers.PostHandler) {
+func (server *Server) StartGrpcServer(handler *handlers.PostHandler, logError *logger.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(server.config.PublicKey))
-	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
+	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
 	postsProto.RegisterPostServiceServer(grpcServer, handler)

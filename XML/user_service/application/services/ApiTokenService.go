@@ -1,22 +1,23 @@
 package services
 
 import (
+	"common/module/logger"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"log"
 	"os"
 	"time"
 	"user/module/domain/model"
 )
 
 type ApiTokenService struct {
-	l           *log.Logger
+	logInfo     *logger.Logger
+	logError    *logger.Logger
 	userService *UserService
 }
 
-func NewApiTokenService(l *log.Logger, userService *UserService) *ApiTokenService {
-	return &ApiTokenService{l, userService}
+func NewApiTokenService(logInfo *logger.Logger, logError *logger.Logger, userService *UserService) *ApiTokenService {
+	return &ApiTokenService{logInfo, logError, userService}
 }
 
 func (s ApiTokenService) GenerateApiToken(user *model.User) (string, error) {
