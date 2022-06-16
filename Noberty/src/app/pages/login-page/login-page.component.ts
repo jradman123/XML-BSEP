@@ -42,7 +42,7 @@ export class LoginPageComponent implements OnInit {
           '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!"#$@%&()*<>+_|~]).*$'
         ),
       ]),
-      tfa: new FormControl('', []),
+      code: new FormControl('', []),
     });
   }
 

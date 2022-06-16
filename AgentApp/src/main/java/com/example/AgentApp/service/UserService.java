@@ -14,6 +14,6 @@ public interface UserService {
     void changePassword(String username, ChangePasswordDto changePasswordDto);
     void resetPassword(String username,String newPassword);
     Long getByUsername(String username);
-    String enable2FA(String username);
+    String change2FAStatus(String username, Boolean status);
     boolean check2FAStatus(String username);
 }

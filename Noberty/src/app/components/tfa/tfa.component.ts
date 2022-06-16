@@ -42,12 +42,16 @@ export class TfaComponent implements OnInit {
         this.isChecked = !dialogResult;
         this.getCodeVisible =  !dialogResult;
         this.isCodeVisible =  !dialogResult;
+        this.service.enable2FA(this.username, false).subscribe(
+          res => {
+            this.code = res.secret
+          }
+        )
       });
     } else {
-      this.service.enable2FA(this.username).subscribe(
+      this.service.enable2FA(this.username, true).subscribe(
         res => {
           this.code = res.secret
-          console.log(this.code)
         }
       )
       this.getCodeVisible = true
