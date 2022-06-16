@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	common "common/module"
 	"common/module/interceptor"
+	"common/module/logger"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,23 +13,26 @@ import (
 	"gateway/module/domain/dto"
 	modelGateway "gateway/module/domain/model"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
-	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
 type AuthenticationHandler struct {
-	l            *log.Logger
+	logInfo      *logger.Logger
+	logError     *logger.Logger
 	service      *services.UserService
 	validator    *validator.Validate
 	passwordUtil *helpers.PasswordUtil
 }
 
-func NewAuthenticationHandler(l *log.Logger, service *services.UserService, validator *validator.Validate,
+func NewAuthenticationHandler(logInfo *logger.Logger, logError *logger.Logger, service *services.UserService, validator *validator.Validate,
 	passwordUtil *helpers.PasswordUtil) Handler {
-	return &AuthenticationHandler{l, service, validator, passwordUtil}
+	return &AuthenticationHandler{logInfo, logError, service, validator, passwordUtil}
 }
 
 func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
@@ -38,22 +43,58 @@ func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
 }
 
 func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
-	a.l.Println("Handling LOGIN Users")
-
 	var loginRequest dto.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
 		return
 	}
+	ip := ReadUserIP(r)
+	policy := bluemonday.UGCPolicy()
+	loginRequest.Password = strings.TrimSpace(policy.Sanitize(loginRequest.Password))
+	loginRequest.Username = strings.TrimSpace(policy.Sanitize(loginRequest.Username))
+	//sqlInj := common.CheckForSQLInjection([]string{loginRequest.Username, loginRequest.Password})
+	sqlInj := common.BadUsername(loginRequest.Username)
+	sqlInj2 := common.BadPassword(loginRequest.Password)
+	//fmt.Println(sqlInj2)
+	fmt.Println("username")
+	fmt.Println(sqlInj)
+	if loginRequest.Username == "" || loginRequest.Password == "" {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:XSS")
+		http.Error(rw, "XSS! ", http.StatusBadRequest)
+		return
+	} else if sqlInj || sqlInj2 {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		http.Error(rw, "Chance for sql injection! ", http.StatusBadRequest)
+		return
+	} else {
+		a.logInfo.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Infof("INFO:Handling LOGIN")
+	}
 
 	user, err := a.service.GetByUsername(context.TODO(), loginRequest.Username)
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !user.IsConfirmed {
 		fmt.Println("account not activated")
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT ACTIVATED")
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
@@ -61,6 +102,10 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
 		fmt.Println(err)
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:INCORRECT PASSWORD")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -70,6 +115,10 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 
 	userRoles, err := a.service.GetUserRole(loginRequest.Username)
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:THIS USER HAS NO ROLE")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -82,6 +131,10 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	token, err := auth.GenerateToken(claims, tokenExpirationTime)
 
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:GENERATING TOKEN")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -109,4 +162,15 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(logInResponseJson)
 
+}
+
+func ReadUserIP(r *http.Request) string {
+	IPAddress := r.Header.Get("X-Real-Ip")
+	if IPAddress == "" {
+		IPAddress = r.Header.Get("X-Forwarded-For")
+	}
+	if IPAddress == "" {
+		IPAddress = r.RemoteAddr
+	}
+	return IPAddress
 }

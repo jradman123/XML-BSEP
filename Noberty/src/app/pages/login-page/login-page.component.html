@@ -6,16 +6,21 @@
     <form [formGroup]="form" (submit)="submit()">
       <p>
         <mat-form-field>
-          <input required formControlName="username" [(ngModel)]="usernamee" type="text" matInput placeholder="Username" >
+          <input required formControlName="username" (change) = "check2FAStatus()" [(ngModel)]="usernamee" type="text" matInput placeholder="Username" >
         </mat-form-field>
       </p>
     
       <p>
         <mat-form-field>
-          <input required formControlName="password" type="password" matInput placeholder="Password">
+          <input required formControlName="password"  (change) = "check2FAStatus()" type="password" matInput placeholder="Password">
         </mat-form-field>
       </p>
     
+      <p *ngIf="tfaEnabled">
+        <mat-form-field>
+          <input required formControlName="code" type="text" matInput placeholder="Code">
+        </mat-form-field>
+      </p>
     
       <div class="button">
         <button [disabled]="form.invalid" type="submit" mat-button>Login</button>

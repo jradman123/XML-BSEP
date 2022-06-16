@@ -18,10 +18,12 @@ require (
 )
 
 require (
+	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/gorilla/css v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.12.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -33,10 +35,14 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.18 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
+	github.com/snowzach/rotatefilehook v0.0.0-20220211133110-53752135082d // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )

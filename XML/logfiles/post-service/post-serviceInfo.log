@@ -1,0 +1,29 @@
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-16T08:44:38Z"}
+{"data":{},"file":"PostHandler.go:411","func":"post/module/infrastructure/handlers.PostHandler.GetAllCommentsForPost","level":"info","msg":"INFO:Handling GetAllCommentsForPost","time":"2022-06-16T08:44:43Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:280","func":"post/module/infrastructure/handlers.PostHandler.DislikePost","level":"info","msg":"INFO:Handling DislikePost","time":"2022-06-16T08:45:01Z"}
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-16T08:45:08Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:280","func":"post/module/infrastructure/handlers.PostHandler.DislikePost","level":"info","msg":"INFO:Handling DislikePost","time":"2022-06-16T08:45:19Z"}
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-16T08:45:23Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:280","func":"post/module/infrastructure/handlers.PostHandler.DislikePost","level":"info","msg":"INFO:Handling DislikePost","time":"2022-06-16T08:45:27Z"}
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-16T08:45:32Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:231","func":"post/module/infrastructure/handlers.PostHandler.LikePost","level":"info","msg":"INFO:Handling LikePost","time":"2022-06-16T08:45:50Z"}
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-16T08:45:54Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:231","func":"post/module/infrastructure/handlers.PostHandler.LikePost","level":"info","msg":"INFO:Handling LikePost","time":"2022-06-16T08:45:59Z"}
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-16T08:46:03Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:231","func":"post/module/infrastructure/handlers.PostHandler.LikePost","level":"info","msg":"INFO:Handling LikePost","time":"2022-06-16T08:46:07Z"}
+{"data":{},"file":"PostHandler.go:376","func":"post/module/infrastructure/handlers.PostHandler.GetAllReactionsForPost","level":"info","msg":"INFO:Handling GetAllReactionsForPost","time":"2022-06-16T08:46:19Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:135","func":"post/module/infrastructure/handlers.PostHandler.Create","level":"info","msg":"INFO:Handling Create post","time":"2022-06-16T08:53:19Z"}
+{"data":{},"file":"PostHandler.go:94","func":"post/module/infrastructure/handlers.PostHandler.GetAll","level":"info","msg":"INFO:Handling GetAllPosts","time":"2022-06-16T08:54:20Z"}
+{"data":{},"file":"PostHandler.go:70","func":"post/module/infrastructure/handlers.PostHandler.Get","level":"info","msg":"INFO:Handling Get post","time":"2022-06-16T08:54:50Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:179","func":"post/module/infrastructure/handlers.PostHandler.CreateComment","level":"info","msg":"INFO:Handling CreateComment","time":"2022-06-16T08:56:12Z"}
+{"data":{},"file":"PostHandler.go:411","func":"post/module/infrastructure/handlers.PostHandler.GetAllCommentsForPost","level":"info","msg":"INFO:Handling GetAllCommentsForPost","time":"2022-06-16T08:56:17Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T08:56:37Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T08:57:48Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:09:03Z"}
+{"data":{},"file":"PostHandler.go:338","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"info","msg":"INFO:Handling ShareJobOffer/CreateJobOffer","time":"2022-06-16T09:10:01Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:10:01Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:16:10Z"}
+{"data":{},"file":"PostHandler.go:338","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"info","msg":"INFO:Handling ShareJobOffer/CreateJobOffer","time":"2022-06-16T09:16:47Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:16:47Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:19:54Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:28:32Z"}

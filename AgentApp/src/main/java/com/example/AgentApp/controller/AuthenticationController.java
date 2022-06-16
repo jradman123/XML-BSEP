@@ -11,6 +11,9 @@ import com.example.AgentApp.service.CustomTokenService;
 import com.example.AgentApp.service.LoggerService;
 import com.example.AgentApp.service.UserService;
 import com.example.AgentApp.service.impl.LoggerServiceImpl;
+import de.taimos.totp.TOTP;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +33,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 @RequestMapping(value = "api/auth")
 public class AuthenticationController {
 
@@ -55,11 +58,18 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoggedUserDto> login(
+    public ResponseEntity<Object> login(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response,HttpServletRequest request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+
+        try
+            { Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+
+            User u = userService.findByUsername(authenticationRequest.getUsername());
+            String code = authenticationRequest.getCode();
+            if (u.isUsing2FA() && (code == null || !code.equals(getTOTPCode(u.getSecret())))) {
+                return ResponseEntity.badRequest().body("Code invalid");
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserRole role = userService.findByUsername(authenticationRequest.getUsername()).getRole();
             UserDetails user = (UserDetails) authentication.getPrincipal();
@@ -68,11 +78,18 @@ public class AuthenticationController {
             LoggedUserDto loggedUserDto = new LoggedUserDto(authenticationRequest.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
             loggerService.loginSuccess(authenticationRequest.getUsername());
             return ResponseEntity.ok(loggedUserDto);
-        }
+            }
         catch (Exception ex) {
             loggerService.loginFailed(authenticationRequest.getUsername(),request.getRemoteAddr());
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    public static String getTOTPCode(String secretKey) {
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode(secretKey);
+        String hexKey = Hex.encodeHexString(bytes);
+        return TOTP.getOTP(hexKey);
     }
 
     @PostMapping("/signup")
@@ -153,5 +170,16 @@ public class AuthenticationController {
         userService.resetPassword(resetPasswordDto.getUsername(), resetPasswordDto.getNewPassword());
         loggerService.resetPasswordSuccess(resetPasswordDto.getUsername(),request.getRemoteAddr());
         return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/two-factor-auth")
+    public ResponseEntity<SecretDto> change2FAStatus(@RequestBody Change2FAStatusDto dto) {
+        String secret = userService.change2FAStatus(dto.username, dto.status);
+        return ResponseEntity.ok(new SecretDto(secret));
+    }
+    @GetMapping(value= "/two-factor-auth-status/{username}")
+    public ResponseEntity<Boolean> check2FAStatus(@PathVariable String username, HttpServletRequest request) {
+            boolean twoFAEnabled = userService.check2FAStatus(username);
+            return ResponseEntity.ok(twoFAEnabled);
     }
 }

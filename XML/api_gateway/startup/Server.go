@@ -1,6 +1,7 @@
 package startup
 
 import (
+	"common/module/logger"
 	postsGw "common/module/proto/posts_service"
 	userGw "common/module/proto/user_service"
 	"context"
@@ -58,15 +59,16 @@ func (server *Server) initHandlers() {
 //Gateway ima svoje endpointe
 func (server *Server) initCustomHandlers() {
 
-	l := log.New(os.Stdout, "products-api ", log.LstdFlags) // Logger koji dajemo handlerima
+	logInfo := logger.InitializeLogger("api-gateway", context.Background(), "Info")
+	logError := logger.InitializeLogger("api-gateway", context.Background(), "Error")
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
-	userService := server.InitUserService(l, userRepo)
+	userService := server.InitUserService(logInfo, logError, userRepo)
 
 	validator := validator.New()
 
 	passwordUtil := &helpers.PasswordUtil{}
-	authHandler := handlers.NewAuthenticationHandler(l, userService, validator, passwordUtil)
+	authHandler := handlers.NewAuthenticationHandler(logInfo, logError, userService, validator, passwordUtil)
 	authHandler.Init(server.mux)
 }
 
@@ -85,10 +87,10 @@ func muxMiddleware(server *Server) http.Handler {
 	})
 }
 
-func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository) *services.UserService {
-	return services.NewUserService(l, repo)
+func (server *Server) InitUserService(logInfo *logger.Logger, logError *logger.Logger, repo repositories.UserRepository) *services.UserService {
+	return services.NewUserService(logInfo, logError, repo)
 }
-func (server *Server) InitUserRepo(d *gorm.DB) repositories.UserRepository {
+func (server *Server) InitUserRepo(db *gorm.DB) repositories.UserRepository {
 	return persistance.NewUserRepositoryImpl(db)
 }
 
@@ -101,6 +103,12 @@ func (server *Server) SetupDatabase() *gorm.DB {
 	user := os.Getenv("PG_USER")
 	dbname := os.Getenv("XML_DB_NAME")
 	password := os.Getenv("PG_PASSWORD")
+
+	//host := os.Getenv("USER_DB_HOST")
+	//port := os.Getenv("USER_DB_PORT")
+	//user := os.Getenv("USER_DB_USER")
+	//dbname := os.Getenv("USER_DB_NAME")
+	//password := os.Getenv("USER_DB_PASS")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})

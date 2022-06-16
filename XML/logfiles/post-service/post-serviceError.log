@@ -1,0 +1,5 @@
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:44:48Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:45:37Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:53:08Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:56:02Z"}
+{"data":{},"file":"PostHandler.go:334","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"error","msg":"ERR:XSS","time":"2022-06-16T08:57:44Z"}
