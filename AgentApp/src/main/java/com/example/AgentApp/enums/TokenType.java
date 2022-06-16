@@ -1,5 +1,5 @@
 package com.example.AgentApp.enums;
 
 public enum TokenType {
-    CONFIRMATION, RESET_PASSWORD
+    CONFIRMATION, RESET_PASSWORD, MAGIC_LINK
 }
