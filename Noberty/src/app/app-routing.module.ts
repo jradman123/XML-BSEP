@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './AuthGuard/AuthGuard';
+import { TfaComponent } from './components/tfa/tfa.component';
 import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { CompanyRequestsPageComponent } from './pages/company-requests-page/company-requests-page.component';
