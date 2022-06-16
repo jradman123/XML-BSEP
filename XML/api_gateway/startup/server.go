@@ -127,7 +127,7 @@ func (server *Server) SetupDatabase() *gorm.DB {
 }
 
 func (server *Server) InitPasswordlessService(l *log.Logger, repo repositories.LoginVerificationRepository) *services.PasswordLessService {
-	return services.NewPasswordLessService(l, repo, "brancaSecretKeySavedInEnv")
+	return services.NewPasswordLessService(l, repo)
 }
 
 func (server *Server) InitLoginVerificationRepo(db *gorm.DB) repositories.LoginVerificationRepository {

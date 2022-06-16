@@ -1,0 +1,20 @@
+<app-unauthenticated-header></app-unauthenticated-header>
+<router-outlet></router-outlet>
+<br><br><br><br><br><br>
+<div class="row">
+    <div class="col-md-6 offset-md-3 mt-4">
+        <h3>Login to your account! Check you mail for code! </h3>
+        <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" name="username" ngModel required #userName="ngModel" class="form-control"
+                    id="loginUsername" placeholder="Enter username">
+            </div>
+
+            <div>
+                <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Send code <i
+                        class="fas fa-sign-in-alt"></i></button>
+            </div>
+        </form>
+    </div>
+</div>

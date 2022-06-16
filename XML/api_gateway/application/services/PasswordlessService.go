@@ -7,17 +7,15 @@ import (
 	modelGateway "gateway/module/domain/model"
 	"gateway/module/domain/repositories"
 	"github.com/google/uuid"
-	"github.com/hako/branca"
 	courier "github.com/trycourier/courier-go/v2"
-	"html/template"
 	"log"
+	"math/rand"
 	"regexp"
 	"time"
 )
 
 type PasswordLessService struct {
 	l    *log.Logger
-	cdc  *branca.Branca
 	repo repositories.LoginVerificationRepository
 }
 
@@ -25,74 +23,19 @@ var (
 	ErrUnauthenticated    = errors.New("unauthenticated")
 	ErrInvalidMail        = errors.New("invalid mail")
 	ErrInvalidRedirectUri = errors.New("invalid redirect uri")
+	ErrInvalidVerCode     = errors.New("invalid verification code")
 )
 
-var magicLinkTmpl *template.Template
-
 const tokenLifeSpan = time.Hour * 24 * 14
-const verificationLifeSpan = time.Minute * 3
 
-func NewPasswordLessService(l *log.Logger, repo repositories.LoginVerificationRepository, brancaKey string) *PasswordLessService {
-	cdc := branca.NewBranca(brancaKey)
-	cdc.SetTTL(uint32(tokenLifeSpan.Seconds()))
-	return &PasswordLessService{l, cdc, repo}
+func NewPasswordLessService(l *log.Logger, repo repositories.LoginVerificationRepository) *PasswordLessService {
+
+	return &PasswordLessService{l, repo}
 }
 
-func (s *PasswordLessService) SendMagicLink(ctx context.Context, redirectURI, origin string, user *modelGateway.User) error {
-	fmt.Println("send magic link")
-	badMail := BadEmail(user.Email)
-	if badMail {
-		s.l.Println("invalid mail")
-		return ErrInvalidMail
-	}
-
-	//uri, err := url.ParseRequestURI(redirectURI)
-	//if err != nil {
-	//	return ErrInvalidRedirectUri
-	//}
-
-	var verificationCode string
-	verificationCode = "225883"
-	loginVerification := modelGateway.LoginVerification{
-		ID:       uuid.New(),
-		Username: user.Username,
-		Email:    user.Email,
-		VerCode:  verificationCode,
-		Time:     time.Now(),
-	}
-
-	ver, err := s.repo.CreateEmailVerification(&loginVerification)
-	fmt.Println(ver)
-	fmt.Println(err)
-	//
-	//magicLink, _ := url.Parse(origin)
-	//magicLink.Path = "/api/auth_redirect"
-	//q := magicLink.Query()
-	//q.Set("verification_code", verificationCode)
-	//q.Set("redirect_uri", uri.String())
-	//magicLink.RawQuery = q.Encode()
-	//
-	//if magicLinkTmpl == nil {
-	//	magicLinkTmpl, err := template.ParseFiles("template/magic-link.html")
-	//	fmt.Println(magicLinkTmpl)
-	//	if err != nil {
-	//		fmt.Println(err.Error())
-	//		return errors.New("could not parse magic link mail template")
-	//	}
-	//}
-	//
-	//var mail bytes.Buffer
-	//if err = magicLinkTmpl.Execute(&mail, map[string]interface{}{
-	//	"MagicLink": magicLink.String(),
-	//	"Minutes":   int(verificationLifeSpan.Minutes()),
-	//}); err != nil {
-	//	fmt.Println(err.Error())
-	//	return errors.New("could not execute magic link mail template")
-	//}
-
-	defer sendMailWithCourier(user.Email, "1234", "Passwordless login", "http://localhost:9090/users/login/passwordless-auth/")
-
-	return nil
+func (s *PasswordLessService) GetUsernameByCode(code string) (*modelGateway.LoginVerification, error) {
+	ver, er := s.repo.GetVerificationByCode(code)
+	return ver, er
 }
 
 func sendMailWithCourier(email string, code string, subject string, body string) {
@@ -121,7 +64,62 @@ func sendMailWithCourier(email string, code string, subject string, body string)
 	}
 	fmt.Println(requestID)
 }
+
 func BadEmail(input string) bool {
 	justMail, _ := regexp.MatchString(`^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`, input)
 	return !justMail
+}
+func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin string, user *modelGateway.User) error {
+	fmt.Println("send magic link")
+	badMail := BadEmail(user.Email)
+	if badMail {
+		s.l.Println("invalid mail")
+		return ErrInvalidMail
+	}
+
+	var verificationCode string
+	rand.Seed(time.Now().UnixNano())
+	rn := rand.Intn(100000)
+	verificationCode = fmt.Sprintf("%d", rn)
+
+	loginVerification := modelGateway.LoginVerification{
+		ID:       uuid.New(),
+		Username: user.Username,
+		Email:    user.Email,
+		VerCode:  verificationCode,
+		Time:     time.Now(),
+		Used:     false,
+	}
+
+	ver, err := s.repo.CreateEmailVerification(&loginVerification)
+	fmt.Println(ver)
+	fmt.Println(err)
+
+	defer sendMailWithCourier(user.Email, loginVerification.VerCode, "Passwordless login", "Here is your code :")
+
+	return nil
+}
+
+func (s *PasswordLessService) PasswordlesLogin(ver *modelGateway.LoginVerification) (bool, error) {
+
+	if ver.Time.Add(time.Minute * 3).After(time.Now()) {
+		if !ver.Used {
+			fmt.Println("vreme se uklapa")
+
+			changePassErr := s.repo.UsedCode(ver)
+			if changePassErr != nil {
+				fmt.Println("error pri izmeni koda")
+				return false, errors.New("error while setind code flag used")
+			}
+
+		} else {
+			fmt.Println("kod iskoristen")
+			return false, errors.New("code used")
+		}
+	} else {
+		fmt.Println("istekao kod")
+		return false, errors.New("code expired")
+	}
+
+	return true, nil
 }
