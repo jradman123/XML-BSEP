@@ -54,7 +54,7 @@ public class CustomTokenServiceImpl implements CustomTokenService {
 
     @Override
     public void sendVerificationToken(User user) {
-        String confirmationLink = "https://localhost:8443/api/auth/confirm-account/" + createConfirmationToken(user).getToken();
+        String confirmationLink = "http://localhost:8443/api/auth/confirm-account/" + createConfirmationToken(user).getToken();
         emailSenderService.sendEmail(user.getEmail(),"Confirm account", "Click on following link to confirm " +
                 "your account \n" + confirmationLink);
 
@@ -94,7 +94,7 @@ public class CustomTokenServiceImpl implements CustomTokenService {
         CustomToken token = createTokenForMagicLink(user);
         emailSenderService.sendEmail(user.getEmail(),"Password-less login",
                 "Click on the following link to sign in to your account "
-                        +"https://localhost:8443/api/auth/passwordless-login/"
+                        +"https://localhost:4200/passwordless-login/"
                         + token.getToken()
                 );
     }

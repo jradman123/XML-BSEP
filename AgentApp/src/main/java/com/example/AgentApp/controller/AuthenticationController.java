@@ -133,7 +133,7 @@ public class AuthenticationController {
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping(value = "/password-less-login/{link}")
+    @GetMapping(value = "/password-less-login/{link}")
     public ResponseEntity<?> passwordLessLogin(@PathVariable String link) {
         CustomToken token  = customTokenService.findByToken(link);
         User user = token.getUser();

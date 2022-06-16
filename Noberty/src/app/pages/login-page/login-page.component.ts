@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { UserServiceService } from 'src/app/services/UserService/user-service.service';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-login-page',
@@ -15,13 +15,16 @@ import { UserServiceService } from 'src/app/services/UserService/user-service.se
   styleUrls: ['./login-page.component.css'],
 })
 export class LoginPageComponent implements OnInit {
-  public form!: FormGroup;
+  form!: FormGroup;
+  formPL! : FormGroup;
+
   usernamee!: string;
+  passwordless = false;
   tfaEnabled = false;
   constructor(
     private formBuilder: FormBuilder,
     private _router: Router,
-    private _userService: UserServiceService,
+    private _userService: UserService,
     private _snackBar: MatSnackBar
   ) {}
 
@@ -44,6 +47,29 @@ export class LoginPageComponent implements OnInit {
       ]),
       code: new FormControl('', []),
     });
+
+    this.formPL =  this.formBuilder.group({
+      username: new FormControl('', [
+        Validators.required,
+        Validators.pattern(
+          '^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$'
+        ),
+      ]),
+    });
+  }
+
+  submitPL() {
+    this._userService.sendMagicLink(this.formPL.value.username).subscribe(
+      res => {
+        this._snackBar.open('Check your email. Click on the magic link to log in.', '', {
+          duration: 3000,
+        });
+      }
+    );
+  }
+
+  enablePL() {
+    this.passwordless = true;
   }
 
   check2FAStatus() {

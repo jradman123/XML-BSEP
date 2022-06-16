@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { UserServiceService } from 'src/app/services/UserService/user-service.service';
+import { UserService } from 'src/app/services/UserService/user.service';
 import { ConfirmDialogComponent, ConfirmDialogModel } from '../confirm-dialog/confirm-dialog.component';
 import {Clipboard} from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -17,7 +17,7 @@ export class TfaComponent implements OnInit {
   isCodeVisible = false;
   username = localStorage.getItem('username')!
 
-  constructor(private service : UserServiceService, private dialog: MatDialog,
+  constructor(private service : UserService, private dialog: MatDialog,
      private clipboard: Clipboard, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
