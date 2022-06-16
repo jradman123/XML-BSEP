@@ -26,3 +26,4 @@
 {"data":{},"file":"PostHandler.go:338","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"info","msg":"INFO:Handling ShareJobOffer/CreateJobOffer","time":"2022-06-16T09:16:47Z"}
 {"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:16:47Z"}
 {"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:19:54Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-16T09:28:32Z"}

@@ -4,3 +4,4 @@
 {"data":{"user":"stelena","userIP":"[::1]:52368"},"file":"AuthenticationHandler.go:80","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"info","msg":"INFO:Handling LOGIN","time":"2022-06-16T09:01:06Z"}
 {"data":{"user":"stelena","userIP":"[::1]:52368"},"file":"AuthenticationHandler.go:80","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"info","msg":"INFO:Handling LOGIN","time":"2022-06-16T09:02:21Z"}
 {"data":{"user":"stelena","userIP":"[::1]:62866"},"file":"AuthenticationHandler.go:80","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"info","msg":"INFO:Handling LOGIN","time":"2022-06-16T09:07:54Z"}
+{"data":{"user":"stelena","userIP":"[::1]:52943"},"file":"AuthenticationHandler.go:80","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"info","msg":"INFO:Handling LOGIN","time":"2022-06-16T09:29:26Z"}
