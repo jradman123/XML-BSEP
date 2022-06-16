@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -49,6 +49,9 @@ import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
+import { UserInfoComponent } from './components/user-info/user-info.component';
+import { EditUserComponent } from './pages/edit-user/edit-user.component';
+import { UserInfosComponent } from './components/user-infos/user-infos.component';
 import { UnauthenticatedHeaderComponent } from './components/unauthenticated-header/unauthenticated-header.component';
 import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
@@ -57,6 +60,7 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
 import { ApiKeyComponent } from './components/api-key/api-key.component';
+import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 
 
 
@@ -73,6 +77,9 @@ import { ApiKeyComponent } from './components/api-key/api-key.component';
     RecoverPassRequestComponent,
     RecoverPassComponent,
     ActivateAccountComponent,
+    UserInfoComponent,
+    EditUserComponent,
+    UserInfosComponent,
     JobOfferComponent,
     FiterPipePipe,
     NewJobOfferComponent,
@@ -130,7 +137,8 @@ import { ApiKeyComponent } from './components/api-key/api-key.component';
     MatInputModule,
     MatRippleModule,
   ],
-  providers: [DatePipe],
+  providers: [HttpClientModule,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

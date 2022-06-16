@@ -10,9 +10,11 @@ export class JwtInterceptor implements HttpInterceptor {
         request = request.clone({
                 setHeaders: {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
-                            
+                           
                 }
+                
             });
+            console.log(localStorage.getItem('token'));
         return next.handle(request);
     }
 }

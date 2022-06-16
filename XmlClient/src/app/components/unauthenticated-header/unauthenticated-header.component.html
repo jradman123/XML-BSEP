@@ -8,11 +8,13 @@
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/genApiKey']">Api Key</button>
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/jobOffers']">Job Offers</button>
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/newJobOffer']">Create Job Offer</button>
+          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/editUser']">User information</button>
 
 
         </div>
   
         <div class="d-flex flex-row-reverse">
+          <button class="m-3 btn btn-dark btn-lg " (click)="logout()">Logout</button>
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/login']">Login</button>
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/register']">Register</button>
         </div>

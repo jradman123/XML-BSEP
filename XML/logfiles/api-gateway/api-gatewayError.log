@@ -1,0 +1,3 @@
+{"data":{"user":"stelena","userIP":"[::1]:52368"},"file":"AuthenticationHandler.go:108","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"error","msg":"ERR:INCORRECT PASSWORD","time":"2022-06-16T08:59:33Z"}
+{"data":{"user":"stelena","userIP":"[::1]:52368"},"file":"AuthenticationHandler.go:108","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"error","msg":"ERR:INCORRECT PASSWORD","time":"2022-06-16T08:59:58Z"}
+{"data":{"user":"stelena","userIP":"[::1]:52368"},"file":"AuthenticationHandler.go:108","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"error","msg":"ERR:INCORRECT PASSWORD","time":"2022-06-16T09:01:06Z"}
