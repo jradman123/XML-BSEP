@@ -292,7 +292,7 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 	}
 	err := u.service.UserExists(newUser.Username)
 	if err == nil {
-		u.logError.Logger.Errorf("USER ALREADY EXISTS")
+		u.logError.Logger.Errorf("ERR:USER ALREADY EXISTS")
 		return nil, status.Error(codes.AlreadyExists, "user already exists")
 	}
 
@@ -329,7 +329,7 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 	//sqlInj := common.CheckRegexSQL(requestUsername)
 	sqlInj := common.BadUsername(requestUsername)
 	if requestUsername == "" {
-		u.logError.Logger.Errorf("XSS")
+		u.logError.Logger.Errorf("ERR:XSS")
 		//http.Error(rw, "Field empty or xss attack happened! error:"+err.Error(), http.StatusExpectationFailed) //400
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, errors.New("fields are empty or xss happened")
 	} else if sqlInj {
@@ -340,7 +340,7 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 	}
 	existsErr := u.service.UserExists(requestUsername)
 	if existsErr != nil {
-		u.logError.Logger.Errorf("USER DOES NOT EXIST")
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, existsErr
 	}
 
@@ -456,36 +456,53 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 }
 
 func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDetailsRequest) (*pb.UserDetails, error) {
-	u.l.Println("Handling GetUserDetails")
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
+	sqlInj := common.BadUsername(username)
 	if username == "" {
-		fmt.Println("fields are empty or xss")
+		u.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:XSS")
 		return nil, errors.New("fields are empty or xss happened")
+	} else if sqlInj {
+		u.logError.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		return nil, errors.New("chance for injection")
+	} else {
+		u.logInfo.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Infof("INFO:Handling GetUserDetails")
 	}
 	err := u.service.UserExists(username)
 	if err != nil {
 		fmt.Println(err)
-		return nil, err //ne postoji user
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		//return nil, err //ne postoji user
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	user, er := u.service.GetByUsername(context.TODO(), username)
-	u.l.Println(user.Skills)
+	fmt.Println(user.Skills)
 	if er != nil {
 		fmt.Println(er)
-		return nil, er
+		return nil, status.Error(codes.Internal, er.Error())
 	}
 	return api.MapUserToUserDetails(user), nil
-	return nil, nil
+	//return nil, nil
 }
 
 func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetailsRequest) (*pb.UserDetails, error) {
 
-	u.l.Println("Handling EditUserDetails")
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+
 	userDetails := api.MapPbUserDetailsToUser(request)
 	if err := u.validator.Struct(userDetails); err != nil {
 		fmt.Println(err)
-		return nil, err
+		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
 	policy := bluemonday.UGCPolicy()
 	userDetails.Username = strings.TrimSpace(policy.Sanitize(userDetails.Username))
@@ -495,22 +512,45 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	userDetails.Gender = strings.TrimSpace(policy.Sanitize(userDetails.Gender))
 	userDetails.DateOfBirth = strings.TrimSpace(policy.Sanitize(userDetails.DateOfBirth))
 	userDetails.Biography = strings.TrimSpace(policy.Sanitize(userDetails.Biography))
+
+	p1 := common.BadUsername(userDetails.Username)
+	p2 := common.BadName(userDetails.FirstName)
+	p3 := common.BadName(userDetails.LastName)
+	p4 := common.BadText(userDetails.Gender)
+	p5 := common.BadDate(userDetails.DateOfBirth)
+	p6 := common.BadNumber(userDetails.PhoneNumber)
+	p7 := common.BadText(userDetails.Biography)
+
 	//nzm kako da sanitizeujem ove liste
 	if userDetails.Username == "" || userDetails.FirstName == "" || userDetails.LastName == "" ||
 		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" ||
 		userDetails.Biography == "" {
 		fmt.Println("fields are empty or xss")
-		return nil, errors.New("fields are empty or xss happened")
+		//return nil, errors.New("fields are empty or xss happened")
+		u.logError.Logger.Errorf("ERR:XSS")
+		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
+	} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		//return nil, errors.New("there is chance for sql injection")
+		return nil, status.Error(codes.FailedPrecondition, "there is chance for sql injection")
+	} else {
+		u.logInfo.Logger.WithFields(logrus.Fields{
+			"user": userNameCtx,
+		}).Infof("INFO:Handling EditUserDetails")
 	}
+
 	err := u.service.UserExists(userDetails.Username)
 	if err != nil {
 		fmt.Println(err)
-		return nil, err //ne postoji user
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return nil, status.Error(codes.Internal, err.Error())
+		//return nil, err //ne postoji user
 	}
 	editedUser, er := u.service.EditUser(userDetails)
 	if er != nil {
 		fmt.Println(er)
-		return nil, er
+		//return nil, er
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return api.MapUserToUserDetails(editedUser), nil
 }

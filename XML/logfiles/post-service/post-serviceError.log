@@ -1,7 +1,5 @@
-{"data":{},"file":"PostHandler.go:304","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"error","msg":"ERR:XSS","time":"2022-06-15T19:35:43Z"}
-{"data":{},"file":"PostHandler.go:304","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"error","msg":"ERR:XSS","time":"2022-06-15T19:36:34Z"}
-{"data":{},"file":"PostHandler.go:304","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"error","msg":"ERR:XSS","time":"2022-06-15T19:41:27Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-15T22:00:08Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-15T22:07:26Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-15T22:08:44Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-15T22:09:11Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:44:48Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:45:37Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:53:08Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:56:02Z"}
+{"data":{},"file":"PostHandler.go:334","func":"post/module/infrastructure/handlers.PostHandler.CreateJobOffer","level":"error","msg":"ERR:XSS","time":"2022-06-16T08:57:44Z"}
