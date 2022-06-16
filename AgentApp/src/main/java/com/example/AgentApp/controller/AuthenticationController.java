@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
@@ -141,10 +142,13 @@ public class AuthenticationController {
     }
 
     @PutMapping(value = "/two-factor-auth")
-    public ResponseEntity<String> enable2FA(@RequestBody String username) {
+    public ResponseEntity<SecretDto> enable2FA(@RequestBody String username) {
         String secret = userService.enable2FA(username);
-        return ResponseEntity.ok(secret);
+        return ResponseEntity.ok(new SecretDto(secret));
     }
-
-
+    @GetMapping(value= "/two-factor-auth-status/{username}")
+    public ResponseEntity<Boolean> check2FAStatus(@PathVariable String username, HttpServletRequest request) {
+            boolean twoFAEnabled = userService.check2FAStatus(username);
+            return ResponseEntity.ok(twoFAEnabled);
+    }
 }

@@ -49,6 +49,14 @@ get isLoggedIn() {
   return this.loginStatus.asObservable();
 }
 
+check2FAStatus(username : string) : Observable<any> {
+  return this.http.get(`${this.apiServerUrl}/api/auth/two-factor-auth-status/` + username)
+}
+
+enable2FA(username : string) : Observable<any> {
+  return this.http.put(`${this.apiServerUrl}/api/auth/two-factor-auth/`, username)
+}
+
 login(model: any): Observable<LoggedUserDto> {
   return this.http.post(`${this.apiServerUrl}/api/auth/login`, model).pipe(
     map((response: any) => {
