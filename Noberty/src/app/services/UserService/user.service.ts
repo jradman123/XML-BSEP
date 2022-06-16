@@ -10,7 +10,7 @@ import { environment } from 'src/environments/environment';
 @Injectable({
   providedIn: 'root'
 })
-export class UserServiceService {
+export class UserService {
 
   private currentUserSubject: BehaviorSubject<LoggedUserDto>;
   public currentUser: Observable<LoggedUserDto>;
@@ -58,6 +58,26 @@ enable2FA(username : string, status : boolean) : Observable<any> {
     username,
     status
   })
+}
+
+sendMagicLink(username : string) : Observable<any> {
+  return this.http.post(`${this.apiServerUrl}/api/auth/password-less-login/`, username)
+}
+
+checkPasswordlessToken(token : string) : Observable<any> {
+  return this.http.get(`${this.apiServerUrl}/api/auth/password-less-login/${token}`).pipe(
+    map((response: any) => {
+      if (response && response.token) {
+        this.loginStatus.next(true);
+        localStorage.setItem('token', response.token.accessToken);
+        localStorage.setItem('currentUser', JSON.stringify(response));
+        localStorage.setItem('role' ,response.role)
+        localStorage.setItem('username' ,response.username)
+        this.currentUserSubject.next(response);
+      }
+      return this.user;
+    })
+  );
 }
 
 login(model: any): Observable<LoggedUserDto> {

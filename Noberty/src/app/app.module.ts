@@ -39,6 +39,7 @@ import { UserLandingPageComponent } from './pages/user-landing-page/user-landing
 import { PublishJobOfferComponent } from './components/publish-job-offer/publish-job-offer.component';
 import { TfaComponent } from './components/tfa/tfa.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { PasswordlessLoginComponent } from './components/passwordless-login/passwordless-login.component';
 
 
 
@@ -74,6 +75,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     PublishJobOfferComponent,
     TfaComponent,
     ConfirmDialogComponent,
+    PasswordlessLoginComponent,
 
   ],
   imports: [

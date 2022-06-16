@@ -108,7 +108,7 @@ public class AuthenticationController {
         customTokenService.deleteById(verificationToken.getId());
         if (activated.isConfirmed()) {
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:4200/login")).build();
+                    .location(URI.create("https://localhost:4200/login")).build();
 
         } else {
             return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -123,6 +123,36 @@ public class AuthenticationController {
         customTokenService.sendResetPasswordToken(user);
         return ResponseEntity.accepted().build();
     }
+
+    @PostMapping(value = "/password-less-login")
+    public ResponseEntity<?> sendLinkForPasswordLess(@RequestBody String username) {
+        User user = userService.findByUsername(username);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+        customTokenService.sendMagicLink(user);
+        return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping(value = "/password-less-login/{link}")
+    public ResponseEntity<?> passwordLessLogin(@PathVariable String link) {
+        CustomToken token  = customTokenService.findByToken(link);
+        User user = token.getUser();
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+            customTokenService.deleteById(token.getId());
+            customTokenService.sendMagicLink(user);
+            return new ResponseEntity<>("Your magic link is expired,we sent you new one. Please check you mail box.", HttpStatus.BAD_REQUEST);
+        }
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user.getUsername(), null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserRole role = userService.findByUsername(user.getUsername()).getRole();
+        String jwt = tokenUtils.generateToken(user.getUsername());
+        int expiresIn = tokenUtils.getExpiredIn();
+        LoggedUserDto loggedUserDto = new LoggedUserDto(user.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
+        customTokenService.deleteById(token.getId());
+        return ResponseEntity.ok(loggedUserDto);
+    }
+
 
     @PostMapping(value = "/check-code")
     public ResponseEntity<String> checkCode(@RequestBody CheckCodeDto checkCodeDto) {
