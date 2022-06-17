@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoggedUserDto } from 'src/app/interfaces/logged-user-dto';
@@ -18,7 +19,7 @@ export class UserService {
   private loginStatus = new BehaviorSubject<boolean>(false);
 
   private apiServerUrl = environment.apiBaseUrl;
-  constructor(private http: HttpClient, private router : Router) {
+  constructor(private http: HttpClient, private router : Router, private jwtHelper :JwtHelperService) {
     this.currentUserSubject = new BehaviorSubject<LoggedUserDto>(
       JSON.parse(localStorage.getItem('currentUser')!)
     );
@@ -84,6 +85,11 @@ login(model: any): Observable<LoggedUserDto> {
   return this.http.post(`${this.apiServerUrl}/api/auth/login`, model).pipe(
     map((response: any) => {
       if (response && response.token) {
+
+        console.log(this.jwtHelper.decodeToken( response.token))
+
+        console.log(JSON.stringify(this.jwtHelper.decodeToken( response.token)));
+        
         this.loginStatus.next(true);
         localStorage.setItem('token', response.token.accessToken);
         localStorage.setItem('currentUser', JSON.stringify(response));

@@ -40,8 +40,8 @@ import { PublishJobOfferComponent } from './components/publish-job-offer/publish
 import { TfaComponent } from './components/tfa/tfa.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { PasswordlessLoginComponent } from './components/passwordless-login/passwordless-login.component';
-
-
+import { NgxCaptchaModule } from 'ngx-captcha';
+import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 
 
 @NgModule({
@@ -92,10 +92,12 @@ import { PasswordlessLoginComponent } from './components/passwordless-login/pass
     MatSnackBarModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxCaptchaModule
   ],
 
   providers: [ HttpClientModule,
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS }, JwtHelperService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
   DatePipe],
   bootstrap: [AppComponent]
