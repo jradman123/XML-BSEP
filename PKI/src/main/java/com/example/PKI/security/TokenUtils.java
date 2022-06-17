@@ -50,12 +50,13 @@ public class TokenUtils {
      * @param email Korisničko ime korisnika kojem se token izdaje
      * @return JWT token
      */
-    public String generateToken(String email) {
+    public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(email)
                 .setAudience(generateAudience())
                 .setIssuedAt(new Date())
+                .claim("role", role)
                 .setExpiration(generateExpirationDate())
                 .signWith(SIGNATURE_ALGORITHM, SECRET).compact();
 

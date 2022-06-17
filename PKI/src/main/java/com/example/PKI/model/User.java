@@ -1,9 +1,11 @@
 package com.example.PKI.model;
 
 import javax.persistence.*;
+import java.security.SecureRandom;
 import java.util.*;
 
 import lombok.Data;
+import org.apache.commons.codec.binary.Base32;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -42,6 +44,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     @Fetch(value = FetchMode.SUBSELECT)
     private List<Authority> authorities;
+    private boolean isUsing2FA;
+    private String secret;
 
     public User() {  }
 
@@ -56,7 +60,23 @@ public class User {
         this.locality = locality;
         this.country = country;
         this.recoveryEmail = recoveryEmail;
+        this.isUsing2FA = false;
+        this.secret = generateSecretKey();
     }
+
+    private static String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+        Base32 base32 = new Base32();
+        return base32.encodeToString(bytes);
+    }
+
+    public void setSecret() {
+        this.secret = generateSecretKey();
+    }
+
+
 
     public Integer getId() {
         return id;
