@@ -15,12 +15,13 @@ import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { EditUserComponent } from './pages/edit-user/edit-user.component';
 import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
+import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
 
 const routes: Routes = [
   {
     path: '',
     component: HomePageComponent,
-    children: [
+    /*children: [
       {
         path: 'jobOffers',
         component: JobOfferComponent,canActivate: [AuthGuard]
@@ -32,13 +33,8 @@ const routes: Routes = [
       {
         path: 'newJobOffer',
         component: NewJobOfferComponent,canActivate: [AuthGuard]
-      },
-      {
-        path: "editUser",
-        component: EditUserComponent , canActivate: [AuthGuard]
-       
       }
-    ],
+    ],*/
   },
   {
     path: 'login',
@@ -67,12 +63,28 @@ const routes: Routes = [
   {
     path: 'passwordlessLogin',
     component: PassLessLoginComponent,
-  }
- /* {
-    path: 'userHome',
-    component: UserHomeComponent,
+  },
+ {
+    path: 'editUser',
+    component: EditUserComponent,
     canActivate: [AuthGuard],
-  }*/
+  },
+  {
+    path: 'jobOffers',
+    component: JobOfferComponent,canActivate: [AuthGuard]
+  },
+  {
+    path: 'genApiKey',
+    component: ApiKeyComponent, canActivate: [AuthGuardRegular]
+  },
+  {
+    path: 'newJobOffer',
+    component: NewJobOfferComponent,canActivate: [AuthGuardRegular]
+  },
+  {
+    path: 'userHome',
+    component: UserHomeComponent,canActivate: [AuthGuard]
+  }
 
   
 ];

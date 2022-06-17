@@ -41,11 +41,12 @@ export class PassLessLoginComponent implements OnInit {
         this.router.navigate(['editUser']);
         this._snackBar.open(
           'Welcome!',
-          'Dismiss'
+          'Dismiss',
+          {duration : 3000}
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error + "!", 'Dismiss');
+        this._snackBar.open(err.error + "!", 'Dismiss', {duration : 3000});
       }
 
     }

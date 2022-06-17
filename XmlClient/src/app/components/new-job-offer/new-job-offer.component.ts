@@ -47,7 +47,7 @@ export class NewJobOfferComponent implements OnInit {
     this.createJobOffer();
     this.jobOfferService.createJobOffer(this.newJobOffer).subscribe(res => {
       
-      this.router.navigate(['/jobOffers'])
+      this.router.navigate(['jobOffers'])
     });
   }
 

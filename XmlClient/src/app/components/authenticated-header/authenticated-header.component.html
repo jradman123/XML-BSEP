@@ -5,11 +5,14 @@
   
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/userHome']">Home</button>
+          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/genApiKey']">Api Key</button>
+          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/jobOffers']">Job Offers</button>
+          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/newJobOffer']">Create Job Offer</button>
+          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/editUser']">User information</button>
         </div>
   
         <div class="d-flex flex-row-reverse">
-          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/']">Logout</button>
-          <button class="m-3 btn btn-dark btn-lg " [routerLink]="['/editUser']">User information</button>
+          <button class="m-3 btn btn-dark btn-lg " (click)="logout()">Logout</button>
         </div>
       </nav>
   
