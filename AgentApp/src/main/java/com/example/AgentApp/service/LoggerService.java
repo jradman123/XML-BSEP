@@ -32,6 +32,11 @@ public interface LoggerService {
     void leaveSalaryCommentSuccess(String companyId,String username);
     void leaveInterviewCommentFailed(String companyId,String username);
     void leaveInterviewCommentSuccess(String companyId,String username);
+    void sendLinkForPasswordlessFailed(String email);
+    void sendLinkForPasswordlessSuccess(String email);
+    void passwordlessLoginFailed(String username,String ipAddress);
+    void passwordlessLoginSuccess(String username);
+    void changeTwoFactorStatus(String username,String ipAddress);
 
 
 }

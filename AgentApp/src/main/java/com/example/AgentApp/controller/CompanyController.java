@@ -177,7 +177,7 @@ public class CompanyController {
         SalaryComment savedComment = salaryCommentService.create(comment);
         Set<SalaryComment> allCommentsForCompany = salaryCommentService.getAllForCompany(commentDto.companyID);
         if (savedComment != null && allCommentsForCompany != null){
-            loggerService.leaveInterviewCommentSuccess(company.getId().toString(), tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
+            loggerService.leaveSalaryCommentSuccess(company.getId().toString(), tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<List<SalaryCommentResponseDto>>(salaryCommentMapper.mapToDtos(allCommentsForCompany), HttpStatus.OK);
         }
         loggerService.leaveSalaryCommentFailed(company.getId().toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));

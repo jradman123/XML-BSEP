@@ -148,5 +148,30 @@ public class LoggerServiceImpl implements LoggerService {
         logger.info("Leaving interview comment for company " + companyId + "successfully by " + username + ".");
     }
 
+    @Override
+    public void sendLinkForPasswordlessFailed(String email) {
+        logger.error("Send passwordless code failed. Email: " + email );
+    }
+
+    @Override
+    public void sendLinkForPasswordlessSuccess(String email) {
+        logger.info("Send passwordless code succeed. Email: " + email);
+    }
+
+    @Override
+    public void passwordlessLoginFailed(String username, String ipAddress) {
+        logger.error("Passwordless login failed. Username: " + username + ". Ip address: " + ipAddress);
+    }
+
+    @Override
+    public void passwordlessLoginSuccess(String username) {
+        logger.info("Passwordless login succeed. Username: " + username);
+    }
+
+    @Override
+    public void changeTwoFactorStatus(String username, String ipAddress) {
+        logger.info("Two factor status changed. Username: " + username + ". Ip address: " + ipAddress);
+    }
+
 
 }
