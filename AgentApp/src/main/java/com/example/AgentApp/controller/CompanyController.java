@@ -6,11 +6,13 @@ import com.example.AgentApp.mapper.*;
 import com.example.AgentApp.model.*;
 import com.example.AgentApp.security.TokenUtils;
 import com.example.AgentApp.service.*;
+import com.example.AgentApp.service.impl.LoggerServiceImpl;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.*;
 
@@ -30,6 +32,7 @@ public class CompanyController {
     private final InterviewService interviewService;
     private final InterviewMapper interviewMapper;
     private final TokenUtils tokenUtils;
+    private final LoggerService loggerService;
 
     public CompanyController(CommentMapper commentMapper, CompanyMapper companyMapper,
                              CompanyService companyService, JobOfferService jobOfferService, CommentService commentService,
@@ -47,6 +50,7 @@ public class CompanyController {
         this.interviewService = interviewService;
         this.interviewMapper = interviewMapper;
         this.tokenUtils = tokenUtils;
+        this.loggerService = new LoggerServiceImpl(this.getClass());
     }
     @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
     @GetMapping("/{id}")
@@ -59,53 +63,64 @@ public class CompanyController {
     public ResponseEntity<?> createCompanyRequest(@RequestBody NewCompanyRequestDto requestDto){
         Company newCompany = companyService.createCompany(requestDto);
         if (newCompany != null){
+            loggerService.createCompanyRequestSuccess(newCompany.getId().toString());
             return new ResponseEntity<NewCompanyResponseDto>(companyMapper.mapToCompanyCreateResponse(newCompany), HttpStatus.CREATED);
         }
+
+        loggerService.createCompanyRequestFailed(newCompany.getId().toString());
         return new ResponseEntity<>("Failed to create company registration request!", HttpStatus.CONFLICT);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("approve/{id}")
-    public ResponseEntity<?> approveCompany(@PathVariable Long id) {
+    public ResponseEntity<?> approveCompany(@PathVariable Long id,HttpServletRequest request) {
         Company company = companyService.approveCompany(id,true);
         List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.PENDING);
         if (company != null){
+            loggerService.approveCompanyRequestSuccess(id.toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<List<CompanyResponseDto>>(companyMapper.mapToDtos( companies), HttpStatus.OK);
         }
+        loggerService.approveCompanyRequestFailed(id.toString());
         return new ResponseEntity<>("Failed to approve company!", HttpStatus.CONFLICT);
 
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("reject/{id}")
-    public ResponseEntity<?> rejectCompany(@PathVariable Long id) {
+    public ResponseEntity<?> rejectCompany(@PathVariable Long id,HttpServletRequest request) {
         Company company = companyService.approveCompany(id,false);
         List<Company> companies = companyService.getAllCompaniesWithStatus(CompanyStatus.PENDING);
         if (company != null){
+            loggerService.rejectCompanyRequestSuccess(id.toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<List<CompanyResponseDto>>(companyMapper.mapToDtos( companies), HttpStatus.OK);
         }
+        loggerService.rejectCompanyRequestFailed(id.toString());
         return new ResponseEntity<>("Failed to reject company!", HttpStatus.CONFLICT);
     }
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("edit/{id}")
-    public ResponseEntity<?> editCompany(@PathVariable Long id, @RequestBody EditCompanyRequestDto requestDto){
+    public ResponseEntity<?> editCompany(@PathVariable Long id, @RequestBody EditCompanyRequestDto requestDto,HttpServletRequest request){
         Company company = companyService.editCompany(requestDto,id);
         if (company != null){
+            loggerService.editCompanySuccess(id.toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<NewCompanyResponseDto>(companyMapper.mapToCompanyCreateResponse(company), HttpStatus.OK);
         }
+        loggerService.editCompanyFailed(id.toString());
         return new ResponseEntity<>("Failed to edit company!", HttpStatus.CONFLICT);
     }
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping("create-offer")
-    public ResponseEntity<?> crateJobOffer(@RequestBody CreateJobOfferRequestDto requestDto) throws ParseException {
+    public ResponseEntity<?> crateJobOffer(@RequestBody CreateJobOfferRequestDto requestDto,HttpServletRequest request) throws ParseException {
         Company company = companyService.addJobOffer(requestDto);
         Set<JobOffer> allOffers = jobOfferService.getAllOffersForCompany(requestDto.companyId);
         if (company != null){
+            loggerService.createJobOfferSuccess(company.getId().toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<List<JobOfferResponseDto>>(JobOfferMapper.mapToDtos(allOffers),
                     HttpStatus.OK);
         }
+        loggerService.createJobOfferFailed(company.getId().toString());
         return new ResponseEntity<>("Failed to add job offer to company!", HttpStatus.CONFLICT);
     }
 
@@ -131,14 +146,16 @@ public class CompanyController {
 
     @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/comment")
-    public ResponseEntity<?> leaveAComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<?> leaveAComment(@Valid @RequestBody CommentDto commentDto,HttpServletRequest request){
         Company company = companyService.getById(commentDto.getCompanyId());
         Comment comment = commentMapper.toEntity(commentDto);
         Comment savedComment = commentService.create(comment);
         Set<Comment> allCommentsForCompany = commentService.getAllForCompany(commentDto.getCompanyId());
         if (savedComment != null && allCommentsForCompany != null){
+            loggerService.leaveCommentSuccess(company.getId().toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<List<CommentResponseDto>>(commentMapper.mapToDtos(allCommentsForCompany), HttpStatus.OK);
         }
+        loggerService.leaveCommentFailed(company.getId().toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
         return new ResponseEntity<>("Failed to add comment for company!", HttpStatus.CONFLICT);
     }
 
@@ -154,14 +171,16 @@ public class CompanyController {
 
     @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/salary-comment")
-    public  ResponseEntity<?> leaveSalaryComment(@RequestBody SalaryCommentRequestDto commentDto){
+    public  ResponseEntity<?> leaveSalaryComment(@RequestBody SalaryCommentRequestDto commentDto,HttpServletRequest request){
         Company company = companyService.getById(commentDto.companyID);
         SalaryComment comment = salaryCommentMapper.mapToEntity(commentDto);
         SalaryComment savedComment = salaryCommentService.create(comment);
         Set<SalaryComment> allCommentsForCompany = salaryCommentService.getAllForCompany(commentDto.companyID);
         if (savedComment != null && allCommentsForCompany != null){
+            loggerService.leaveSalaryCommentSuccess(company.getId().toString(), tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<List<SalaryCommentResponseDto>>(salaryCommentMapper.mapToDtos(allCommentsForCompany), HttpStatus.OK);
         }
+        loggerService.leaveSalaryCommentFailed(company.getId().toString(),tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
         return new ResponseEntity<>("Failed to add salary comment for company!", HttpStatus.CONFLICT);
     }
 
@@ -177,14 +196,16 @@ public class CompanyController {
 
     @PreAuthorize("hasAnyAuthority('OWNER', 'REGISTERED_USER')")
     @PostMapping("/interview")
-    public  ResponseEntity<?> leaveInterviewComment(@RequestBody InterviewRequestDto commentDto){
+    public  ResponseEntity<?> leaveInterviewComment(@RequestBody InterviewRequestDto commentDto,HttpServletRequest request){
         Company company = companyService.getById(commentDto.companyID);
         Interview interview = interviewMapper.mapToEntity(commentDto);
         Interview savedInterview = interviewService.create(interview);
         Set<Interview> allInterviewsCompany = interviewService.getAllForCompany(commentDto.companyID);
         if (savedInterview != null && allInterviewsCompany != null){
+            loggerService.leaveInterviewCommentSuccess(company.getId().toString(), tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
             return new ResponseEntity<List<InterviewResponseDto>>(interviewMapper.mapToDtos(allInterviewsCompany), HttpStatus.OK);
         }
+        loggerService.leaveInterviewCommentFailed(company.getId().toString(), tokenUtils.getUsernameFromToken(tokenUtils.getToken(request)));
         return new ResponseEntity<>("Failed to add interview for company!", HttpStatus.CONFLICT);
     }
 

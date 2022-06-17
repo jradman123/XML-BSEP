@@ -5,6 +5,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { NewPassword } from 'src/app/interfaces/new-password';
 import { UserService } from 'src/app/services/UserService/user.service';
@@ -24,7 +25,8 @@ export class ResetPasswordComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private snackBar : MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -51,9 +53,17 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   verify() {
-    this.userService.checkCode(this.kodic).subscribe((res) => {});
-    this.divVisible = true;
+    this.userService.checkCode(this.kodic).subscribe(
+      (res) => {
+        this.divVisible = true;
+      },
+      err => {
+        this.snackBar.open(err.error, '', {
+          duration: 3000
+        })
+      });
   }
+
   onCodeInput(event: any): void {}
 
   onPasswordInput(): void {
@@ -63,6 +73,9 @@ export class ResetPasswordComponent implements OnInit {
 
   onSubmit(): void {
     //this.newPasswordDto.newPassword = this.createForm.value.password;
+    if(this.createForm.invalid){
+      return;
+    }
     this.userService
       .resetPassword(this.createForm.value.password)
       .subscribe((res) => {});

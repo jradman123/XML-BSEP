@@ -6,7 +6,9 @@ import com.example.AgentApp.dto.UserInformationResponseDto;
 import com.example.AgentApp.mapper.UserMapper;
 import com.example.AgentApp.model.User;
 import com.example.AgentApp.security.TokenUtils;
+import com.example.AgentApp.service.LoggerService;
 import com.example.AgentApp.service.UserService;
+import com.example.AgentApp.service.impl.LoggerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +24,12 @@ import javax.validation.Valid;
 public class UserController {
     private final TokenUtils tokenUtils;
     private final UserService userService;
+    private final LoggerService loggerService;
     
     public UserController(TokenUtils tokenUtils, UserService userService) {
         this.tokenUtils = tokenUtils;
         this.userService = userService;
+        this.loggerService = new LoggerServiceImpl(this.getClass());
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'OWNER', 'REGISTERED_USER')")
@@ -33,6 +37,7 @@ public class UserController {
     public ResponseEntity<HttpStatus> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
         String token = tokenUtils.getToken(request);
         userService.changePassword(tokenUtils.getUsernameFromToken(token), changePasswordDto);
+        loggerService.changePasswordSuccess(tokenUtils.getUsernameFromToken(token),request.getRemoteAddr());
         return ResponseEntity.noContent().build();
     }
 

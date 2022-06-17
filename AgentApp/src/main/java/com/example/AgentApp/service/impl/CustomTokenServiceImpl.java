@@ -41,7 +41,8 @@ public class CustomTokenServiceImpl implements CustomTokenService {
     }
 
     private CustomToken createResetPasswordToken(User user) {
-        CustomToken token = new CustomToken(RandomString.make(8),user,TokenType.RESET_PASSWORD);
+        CustomToken token = new CustomToken(RandomString.make(6),user,TokenType.RESET_PASSWORD);
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(5));
         return token;
 
     }

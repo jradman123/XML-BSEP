@@ -1,0 +1,38 @@
+2022-Jun-17 09:32:10|INFO|org.hibernate.validator.internal.util.Version|HV000001: Hibernate Validator 6.2.3.Final
+2022-Jun-17 09:32:10|INFO|com.example.AgentApp.AgentAppApplication|Starting AgentAppApplication using Java 11.0.14 on PC with PID 7036 (C:\Users\USER\Desktop\XML-BSEP\AgentApp\target\classes started by USER in C:\Users\USER\Desktop\XML-BSEP\AgentApp)
+2022-Jun-17 09:32:10|INFO|com.example.AgentApp.AgentAppApplication|No active profile set, falling back to 1 default profile: "default"
+2022-Jun-17 09:32:19|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-Jun-17 09:32:20|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Finished Spring Data repository scanning in 703 ms. Found 7 JPA repository interfaces.
+2022-Jun-17 09:32:33|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat initialized with port(s): 8443 (http)
+2022-Jun-17 09:32:34|INFO|org.apache.coyote.http11.Http11NioProtocol|Initializing ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 09:32:34|INFO|org.apache.catalina.core.StandardService|Starting service [Tomcat]
+2022-Jun-17 09:32:34|INFO|org.apache.catalina.core.StandardEngine|Starting Servlet engine: [Apache Tomcat/9.0.63]
+2022-Jun-17 09:32:38|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring embedded WebApplicationContext
+2022-Jun-17 09:32:38|INFO|org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext|Root WebApplicationContext: initialization completed in 26967 ms
+2022-Jun-17 09:32:45|INFO|org.hibernate.Version|HHH000412: Hibernate ORM core version 5.6.9.Final
+2022-Jun-17 09:32:48|INFO|org.hibernate.annotations.common.Version|HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-Jun-17 09:32:50|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Starting...
+2022-Jun-17 09:32:51|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Start completed.
+2022-Jun-17 09:32:51|INFO|org.hibernate.dialect.Dialect|HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL95Dialect
+2022-Jun-17 09:33:01|INFO|org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator|HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-Jun-17 09:33:01|INFO|org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean|Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='/api/login', POST]
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='/', GET]
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='/webjars/**', GET]
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='/*.html', GET]
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='favicon.ico', GET]
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='/**/*.html', GET]
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='/**/*.css', GET]
+2022-Jun-17 09:33:15|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will not secure Ant [pattern='/**/*.js', GET]
+2022-Jun-17 09:33:16|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4d1f168, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@9e4388d, org.springframework.security.web.context.SecurityContextPersistenceFilter@2b98c310, org.springframework.security.web.header.HeaderWriterFilter@74cf2d5f, org.springframework.web.filter.CorsFilter@28532753, org.springframework.security.web.authentication.logout.LogoutFilter@520eb9f8, com.example.AgentApp.security.TokenAuthenticationFilter@21399e53, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@26361572, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3a286095, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2a6871ad, org.springframework.security.web.session.SessionManagementFilter@26619e5, org.springframework.security.web.access.ExceptionTranslationFilter@ae5d544, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4960b819]
+2022-Jun-17 09:33:17|INFO|org.apache.coyote.http11.Http11NioProtocol|Starting ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 09:33:17|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat started on port(s): 8443 (http) with context path ''
+2022-Jun-17 09:33:17|INFO|com.example.AgentApp.AgentAppApplication|Started AgentAppApplication in 69.975 seconds (JVM running for 77.606)
+2022-Jun-17 09:46:42|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-Jun-17 09:46:42|INFO|org.springframework.web.servlet.DispatcherServlet|Initializing Servlet 'dispatcherServlet'
+2022-Jun-17 09:46:42|INFO|org.springframework.web.servlet.DispatcherServlet|Completed initialization in 192 ms
+2022-Jun-17 09:46:59|INFO|com.example.AgentApp.controller.AuthenticationController|Sign up succeed. Username: jradman12. Ip address: 0:0:0:0:0:0:0:1
+2022-Jun-17 09:47:12|INFO|com.example.AgentApp.controller.AuthenticationController|Confirmation account succeed. Username: jradman12. Ip address: 0:0:0:0:0:0:0:1
+2022-Jun-17 09:47:25|INFO|com.example.AgentApp.controller.AuthenticationController|Login succeed. Username: jradman12
+2022-Jun-17 09:47:36|INFO|com.example.AgentApp.controller.AuthenticationController|Two factor status changed. Username: jradman12. Ip address: 0:0:0:0:0:0:0:1
+2022-Jun-17 09:48:20|INFO|com.example.AgentApp.controller.AuthenticationController|Login succeed. Username: jradman12

@@ -10,7 +10,9 @@ import com.example.PKI.model.User;
 import com.example.PKI.repository.*;
 import com.example.PKI.service.Base64Encoder;
 import com.example.PKI.service.KeyService;
+import com.example.PKI.service.LoggerService;
 import com.example.PKI.service.cert.CertificateService;
+import com.example.PKI.service.impl.LoggerServiceImpl;
 import com.example.PKI.util.keyStoreUtils.KeyStoreReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -40,15 +43,22 @@ public class CertificateController {
     private KeyStoreReader keyStoreReader;
     @Autowired
     private CertificateRepository certificateRepository;
+    private final LoggerService loggerService;
+
+    public CertificateController(){
+        this.loggerService = new LoggerServiceImpl(this.getClass());
+    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/api/certificate/generate")
-    public ResponseEntity<String> generateCertificate(@RequestBody CertificateDto certificateDto) throws Exception {
+    public ResponseEntity<String> generateCertificate(@RequestBody CertificateDto certificateDto, HttpServletRequest request) throws Exception {
         Subject generatedSubjectData = certificateService.generateSubjectData(certificateDto.getSubjectId());
         com.example.PKI.model.Certificate certificate = certificateService.createCertificate(certificateDto, generatedSubjectData);
         if (certificate != null) {
-            return new ResponseEntity<String>("Success!", HttpStatus.OK);
+            loggerService.generateCertificateSuccess(request.getRemoteAddr());
+            return new ResponseEntity<String>("\"Success!\"", HttpStatus.OK);
         } else {
+            loggerService.generateCertificateFailed(request.getRemoteAddr());
             return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -70,6 +80,7 @@ public class CertificateController {
     @PostMapping("/api/certificate/downloadCertificate")
     public ResponseEntity<?> downloadCertificate(@RequestBody String serialNumber) throws Exception {
         base64Encoder.downloadCertificate(serialNumber);
+        loggerService.downloadCertificateSuccess(serialNumber);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER_ROOT') || hasAuthority('USER_INTERMEDIATE') || hasAuthority('USER_END_ENTITY')")
@@ -94,13 +105,15 @@ public class CertificateController {
 
     @PreAuthorize("hasAuthority('USER_ROOT') || hasAuthority('USER_INTERMEDIATE')")
     @PostMapping("/api/certificate/generateByClient")
-    public ResponseEntity<String> generateCertificateByClient(@RequestBody CertificateDto certificateDto) throws Exception {
+    public ResponseEntity<String> generateCertificateByClient(@RequestBody CertificateDto certificateDto,HttpServletRequest request) throws Exception {
         Subject generatedSubjectData = certificateService.generateSubjectData(certificateDto.getSubjectId());
         com.example.PKI.model.Certificate certificate = certificateService.generateCertificateByUser(certificateDto, generatedSubjectData);
         //Certificate certificate = certificateService.saveCertificateDB(certificateDto, certificateDto.getSubjectId());
         if (certificate != null) {
+            loggerService.generateCertificateSuccess(request.getRemoteAddr());
             return new ResponseEntity<String>("Success!", HttpStatus.OK);
         } else {
+            loggerService.generateCertificateFailed(request.getRemoteAddr());
             return new ResponseEntity<String>("Error!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -8,7 +8,6 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "owasp": "owasp-dependency-check --project \"Noberty\" -f HTML JSON"
-  
   },
   "private": true,
   "dependencies": {
