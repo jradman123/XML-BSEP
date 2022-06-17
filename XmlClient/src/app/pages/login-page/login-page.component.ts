@@ -50,7 +50,6 @@ export class LoginPageComponent implements OnInit {
     const loginObserver = {
       next: (res: any) => {
         if (res.twofa == true) {
-          console.log("OVDJE"+res.twofa );
           this.twoFaLogin()
 
         } else {
@@ -73,16 +72,19 @@ export class LoginPageComponent implements OnInit {
   }
   regularLogin() {
     const nextLoginOserver = {
-      next: (x: any) => {
-        this._router.navigate(['/']);
+      next: (res: any) => {
+        if (res == null) {
+          return
+        }
+        this._router.navigate(['/editUser']);
         this._snackBar.open("Welcome!", "Dismiss");
       },
       error: (err: HttpErrorResponse) => {
-  
+
         this._snackBar.open(err.error, 'Dismiss');
       },
     }
-  
+
     this.username = localStorage.getItem('username')!
     if (this.username != null) {
       this.usernameReq = {

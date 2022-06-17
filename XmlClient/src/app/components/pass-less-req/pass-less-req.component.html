@@ -4,15 +4,15 @@
 <div class="row">
     <div class="col-md-6 offset-md-3 mt-4">
         <h3>Login to your account! Check you mail for code! </h3>
-        <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+        <form [formGroup]="aFormGroup" (ngSubmit)="onSubmit()" style="margin-top: 10px;">
+           
             <div class="form-group">
-                <label for="loginUsername">Username</label>
-                <input type="text" name="username" ngModel required #userName="ngModel" class="form-control"
-                    id="loginUsername" placeholder="Enter username">
+                <input type="text" formControlName="username" placeholder="Enter username" class="form-control"
+                 placeholder="Enter username">
             </div>
 
             <div>
-                <button type="submit" [disabled]="f.invalid" class="btn btn-primary">Send code <i
+                <button type="submit" [disabled]="aFormGroup.invalid" class="btn btn-primary">Send code <i
                         class="fas fa-sign-in-alt"></i></button>
             </div>
         </form>

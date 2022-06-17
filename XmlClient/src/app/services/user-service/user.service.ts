@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { ActivateAccount } from 'src/app/interfaces/activate-account';
+import { IAuthenticate } from 'src/app/interfaces/authenticate';
 import { LoggedUser } from 'src/app/interfaces/logged-user';
 import { ILoginRequest } from 'src/app/interfaces/login-request';
 import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
-import { IUsername } from 'src/app/interfaces/username';
 import { UserDetails } from 'src/app/interfaces/user-details';
-import { IAuthenticate } from 'src/app/interfaces/authenticate';
+import { IUsername } from 'src/app/interfaces/username';
+
 
 @Injectable({
   providedIn: 'root',
@@ -165,10 +166,10 @@ export class UserService {
     )
   }
 
-  passwordlessLoginRequest(value: any) {
+  passwordlessLoginRequest(username: any) {
     return this._http.post<any>(
       'http://localhost:9090/users/login/passwordless',
-      value
+      {username}
     );
   }
 

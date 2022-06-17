@@ -374,6 +374,11 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 
 func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *http.Request, params map[string]string) {
 	var loginRequest dto.PasswordLessLoginRequest
+	err := json.NewDecoder(r.Body).Decode(&loginRequest)
+	if err != nil {
+		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
+		return
+	}
 	ip := ReadUserIP(r)
 	policy := bluemonday.UGCPolicy()
 	loginRequest.Username = strings.TrimSpace(policy.Sanitize(loginRequest.Username))

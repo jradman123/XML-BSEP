@@ -41,7 +41,7 @@ export class TwofaPageComponent implements OnInit {
           this._snackBar.open("Invalid code!", 'Dismiss');
           return
         }
-        this._router.navigate(['/']);
+        this._router.navigate(['/editUser']);
         this._snackBar.open("Welcome!", "Dismiss");
       },
       error: (err: HttpErrorResponse) => {
