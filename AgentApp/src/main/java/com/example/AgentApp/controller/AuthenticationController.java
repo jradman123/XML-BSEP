@@ -125,7 +125,7 @@ public class AuthenticationController {
         if (activated.isConfirmed()) {
             loggerService.confirmAccountSuccess(user.getUsername(),request.getRemoteAddr());
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:4200/login")).build();
+                    .location(URI.create("https://localhost:4200/login")).build();
 
         } else {
             loggerService.confirmAccountFailed(user.getUsername(),request.getRemoteAddr());

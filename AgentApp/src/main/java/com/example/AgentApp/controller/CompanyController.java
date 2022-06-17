@@ -16,7 +16,7 @@ import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.*;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 @RequestMapping("/api/company")
 @RestController
 public class CompanyController {
