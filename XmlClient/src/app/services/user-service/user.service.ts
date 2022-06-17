@@ -19,7 +19,6 @@ export class UserService {
   public currentUser: Observable<LoggedUser>;
   private user!: LoggedUser;
   jwtToken! : any;
-  tokenPayload! : any;
 
   constructor(private _http: HttpClient,private jwtHelper :JwtHelperService) {
     this.currentUserSubject = new BehaviorSubject<LoggedUser>(
