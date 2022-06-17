@@ -1,6 +1,7 @@
 package services
 
 import (
+	"common/module/logger"
 	"context"
 	"errors"
 	"fmt"
@@ -8,15 +9,15 @@ import (
 	"gateway/module/domain/repositories"
 	"github.com/google/uuid"
 	courier "github.com/trycourier/courier-go/v2"
-	"log"
 	"math/rand"
 	"regexp"
 	"time"
 )
 
 type PasswordLessService struct {
-	l    *log.Logger
-	repo repositories.LoginVerificationRepository
+	logInfo  *logger.Logger
+	logError *logger.Logger
+	repo     repositories.LoginVerificationRepository
 }
 
 var (
@@ -28,9 +29,9 @@ var (
 
 const tokenLifeSpan = time.Hour * 24 * 14
 
-func NewPasswordLessService(l *log.Logger, repo repositories.LoginVerificationRepository) *PasswordLessService {
+func NewPasswordLessService(logInfo *logger.Logger, logError *logger.Logger, repo repositories.LoginVerificationRepository) *PasswordLessService {
 
-	return &PasswordLessService{l, repo}
+	return &PasswordLessService{logInfo, logError, repo}
 }
 
 func (s *PasswordLessService) GetUsernameByCode(code string) (*modelGateway.LoginVerification, error) {
@@ -73,7 +74,7 @@ func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin 
 	fmt.Println("send magic link")
 	badMail := BadEmail(user.Email)
 	if badMail {
-		s.l.Println("invalid mail")
+		fmt.Println("invalid mail")
 		return ErrInvalidMail
 	}
 

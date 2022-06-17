@@ -32,7 +32,7 @@ export class LoginPageComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
        
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error + "!", 'Dismiss');
       },
     };
     

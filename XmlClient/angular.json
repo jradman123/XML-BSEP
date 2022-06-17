@@ -71,10 +71,14 @@
           "configurations": {
             "production": {
               "browserTarget": "XmlClient:build:production",
+              "sslKey": "ssl/server.key",
+              "sslCert": "ssl/server.crt",
               "proxyConfig": "src/proxy.conf.json"
             },
             "development": {
               "browserTarget": "XmlClient:build:development",
+              "sslKey": "ssl/server.key",
+              "sslCert": "ssl/server.crt",
               "proxyConfig": "src/proxy.conf.json"
             }
           },

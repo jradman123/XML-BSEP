@@ -55,7 +55,8 @@ export class NewJobOfferComponent implements OnInit {
     this.newJobOffer.Position = this.createForm.value.Position;
     this.newJobOffer.Requirements = this.requirements;
     this.newJobOffer.Publisher = localStorage.getItem('username')!;
-    this.newJobOffer.JobDescription = this.createForm.value.JobDescription;
+    this.newJobOffer.JobDescription = this.createForm.value.Description;
+    console.log(this.newJobOffer.JobDescription)
     this.newJobOffer.Duration = this.createForm.value.DueDate;
     let ahora = new Date();
     let stringVal = this.datepipe.transform(ahora, 'yyyy-MM-dd')!;

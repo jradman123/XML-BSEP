@@ -2,7 +2,9 @@ package startup
 
 import (
 	"common/module/interceptor"
+	"common/module/logger"
 	userProto "common/module/proto/user_service"
+	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
@@ -34,25 +36,26 @@ func NewServer(config *config.Config) *Server {
 	}
 }
 func (server *Server) Start() {
-	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
+	logInfo := logger.InitializeLogger("user-service", context.Background(), "Info")
+	logError := logger.InitializeLogger("user-service", context.Background(), "Error")
 	pwnedClient := hibp.NewClient()
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
 	emailVerRepo := server.InitEmailVerRepo(db)
 	recoveryRepo := server.InitRecoveryRepo(db)
-	userService := server.InitUserService(l, userRepo, emailVerRepo, recoveryRepo)
-	apiTokenService := server.InitApiTokenService(l, userService)
+	userService := server.InitUserService(logInfo, logError, userRepo, emailVerRepo, recoveryRepo)
+	apiTokenService := server.InitApiTokenService(logInfo, logError, userService)
 
 	validator := validator.New()
-	jsonConverters := helpers.NewJsonConverters(l)
+	jsonConverters := helpers.NewJsonConverters(logInfo)
 	utils := helpers.PasswordUtil{}
-	userHandler := server.InitUserHandler(l, userService, validator, jsonConverters, &utils, pwnedClient, apiTokenService)
+	userHandler := server.InitUserHandler(logInfo, logError, userService, validator, jsonConverters, &utils, pwnedClient, apiTokenService)
 
-	server.StartGrpcServer(userHandler)
+	server.StartGrpcServer(userHandler, logError)
 
 }
 
-func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
+func (server *Server) StartGrpcServer(handler *handlers.UserHandler, logError *logger.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -62,7 +65,7 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 	if err != nil {
 		log.Fatalf("failed to parse public key: %v", err)
 	}
-	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
+	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
 	userProto.RegisterUserServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
@@ -71,17 +74,17 @@ func (server *Server) StartGrpcServer(handler *handlers.UserHandler) {
 	}
 }
 
-func (server *Server) InitUserHandler(l *log.Logger, userService *services.UserService, validator *validator.Validate,
+func (server *Server) InitUserHandler(logInfo *logger.Logger, logError *logger.Logger, userService *services.UserService, validator *validator.Validate,
 	jsonConverters *helpers.JsonConverters, passwordUtil *helpers.PasswordUtil, pwnedClient *hibp.Client, tokenService *services.ApiTokenService) *handlers.UserHandler {
-	return handlers.NewUserHandler(l, userService, jsonConverters, validator, passwordUtil, pwnedClient, tokenService)
+	return handlers.NewUserHandler(logInfo, logError, userService, jsonConverters, validator, passwordUtil, pwnedClient, tokenService)
 }
 
-func (server *Server) InitUserService(l *log.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {
-	return services.NewUserService(l, repo, emailRepo, recoveryRepo)
+func (server *Server) InitUserService(logInfo *logger.Logger, logError *logger.Logger, repo repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *services.UserService {
+	return services.NewUserService(logInfo, logError, repo, emailRepo, recoveryRepo)
 }
 
-func (server *Server) InitApiTokenService(l *log.Logger, userService *services.UserService) *services.ApiTokenService {
-	return services.NewApiTokenService(l, userService)
+func (server *Server) InitApiTokenService(logInfo *logger.Logger, logError *logger.Logger, userService *services.UserService) *services.ApiTokenService {
+	return services.NewApiTokenService(logInfo, logError, userService)
 }
 
 func (server *Server) InitUserRepo(db *gorm.DB) repositories.UserRepository {
@@ -111,6 +114,12 @@ func (server *Server) SetupDatabase() *gorm.DB {
 	user := os.Getenv("USER_DB_USER")
 	dbname := os.Getenv("USER_DB_NAME")
 	password := os.Getenv("USER_DB_PASS")
+
+	//host := os.Getenv("USER_DB_HOST")
+	//port := os.Getenv("USER_DB_PORT")
+	//user := os.Getenv("USER_DB_USER")
+	//dbname := os.Getenv("USER_DB_NAME")
+	//password := os.Getenv("USER_DB_PASS")
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})

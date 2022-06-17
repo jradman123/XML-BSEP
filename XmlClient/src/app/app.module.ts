@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -62,6 +62,7 @@ import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
 import { ApiKeyComponent } from './components/api-key/api-key.component';
 import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
+import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 
 
 
@@ -140,7 +141,8 @@ import { PassLessLoginComponent } from './components/pass-less-login/pass-less-l
     MatInputModule,
     MatRippleModule,
   ],
-  providers: [DatePipe],
+  providers: [HttpClientModule,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

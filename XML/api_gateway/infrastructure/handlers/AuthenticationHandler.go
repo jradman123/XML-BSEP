@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	common "common/module"
 	"common/module/interceptor"
+	"common/module/logger"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,25 +13,27 @@ import (
 	"gateway/module/domain/dto"
 	modelGateway "gateway/module/domain/model"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 )
 
 type AuthenticationHandler struct {
-	l                   *log.Logger
+	logInfo             *logger.Logger
+	logError            *logger.Logger
 	service             *services.UserService
 	validator           *validator.Validate
 	passwordUtil        *helpers.PasswordUtil
 	passwordlessService *services.PasswordLessService
 }
 
-func NewAuthenticationHandler(l *log.Logger, service *services.UserService, validator *validator.Validate,
+func NewAuthenticationHandler(logInfo *logger.Logger, logError *logger.Logger, service *services.UserService, validator *validator.Validate,
 	passwordUtil *helpers.PasswordUtil, passwordlessService *services.PasswordLessService) Handler {
-	return &AuthenticationHandler{l, service, validator, passwordUtil, passwordlessService}
+	return &AuthenticationHandler{logInfo, logError, service, validator, passwordUtil, passwordlessService}
 }
 
 func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
@@ -49,22 +53,58 @@ func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
 }
 
 func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
-	a.l.Println("Handling LOGIN Users")
-
 	var loginRequest dto.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
 		return
 	}
+	ip := ReadUserIP(r)
+	policy := bluemonday.UGCPolicy()
+	loginRequest.Password = strings.TrimSpace(policy.Sanitize(loginRequest.Password))
+	loginRequest.Username = strings.TrimSpace(policy.Sanitize(loginRequest.Username))
+	//sqlInj := common.CheckForSQLInjection([]string{loginRequest.Username, loginRequest.Password})
+	sqlInj := common.BadUsername(loginRequest.Username)
+	sqlInj2 := common.BadPassword(loginRequest.Password)
+	//fmt.Println(sqlInj2)
+	fmt.Println("username")
+	fmt.Println(sqlInj)
+	if loginRequest.Username == "" || loginRequest.Password == "" {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:XSS")
+		http.Error(rw, "XSS! ", http.StatusBadRequest)
+		return
+	} else if sqlInj || sqlInj2 {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		http.Error(rw, "Chance for sql injection! ", http.StatusBadRequest)
+		return
+	} else {
+		a.logInfo.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Infof("INFO:Handling LOGIN")
+	}
 
 	user, err := a.service.GetByUsername(context.TODO(), loginRequest.Username)
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !user.IsConfirmed {
 		fmt.Println("account not activated")
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT ACTIVATED")
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
@@ -72,6 +112,10 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
 		fmt.Println(err)
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:INCORRECT PASSWORD")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -81,6 +125,10 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 
 	userRoles, err := a.service.GetUserRole(loginRequest.Username)
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:THIS USER HAS NO ROLE")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -93,6 +141,10 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 	token, err := auth.GenerateToken(claims, tokenExpirationTime)
 
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:GENERATING TOKEN")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -123,21 +175,52 @@ func (a AuthenticationHandler) LoginUser(rw http.ResponseWriter, r *http.Request
 }
 
 func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *http.Request, params map[string]string) {
-	a.l.Println("Handling PasswordLessLoginReq")
-
 	var loginRequest dto.PasswordLessLoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
 		return
 	}
+	ip := ReadUserIP(r)
+	policy := bluemonday.UGCPolicy()
+	loginRequest.Username = strings.TrimSpace(policy.Sanitize(loginRequest.Username))
+	sqlInj := common.BadUsername(loginRequest.Username)
+
+	if loginRequest.Username == "" {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:XSS")
+		http.Error(rw, "XSS! ", http.StatusBadRequest)
+		return
+	} else if sqlInj {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		http.Error(rw, "Chance for sql injection! ", http.StatusBadRequest)
+		return
+	} else {
+		a.logInfo.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Infof("INFO:Handling PasswordLessLoginReq")
+	}
 
 	user, err := a.service.GetByUsername(context.TODO(), loginRequest.Username)
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !user.IsConfirmed {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   loginRequest.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT ACTIVATED")
 		fmt.Println("account not activated")
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
@@ -150,6 +233,7 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 
 func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http.Request, params map[string]string) {
 	fmt.Println("PasswordlessLogin")
+	ip := ReadUserIP(r)
 	var code string
 	p := strings.Split(r.URL.Path, "/")
 	if len(p) == 1 {
@@ -158,6 +242,29 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	} else if len(p) > 1 {
 		code = p[len(p)-1]
 	}
+
+	policy := bluemonday.UGCPolicy()
+	code = strings.TrimSpace(policy.Sanitize(code))
+	sqlInj := common.BadId(code)
+
+	if code == "" {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"userIP": ip,
+		}).Errorf("ERR:XSS")
+		http.Error(rw, "XSS! ", http.StatusBadRequest)
+		return
+	} else if sqlInj {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"userIP": ip,
+		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		http.Error(rw, "Chance for sql injection! ", http.StatusBadRequest)
+		return
+	} else {
+		a.logInfo.Logger.WithFields(logrus.Fields{
+			"userIP": ip,
+		}).Infof("INFO:Handling PasswordlessLogin")
+	}
+
 	ver, err := a.passwordlessService.GetUsernameByCode(code)
 	username := ver.Username
 	if err != nil {
@@ -167,21 +274,37 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 
 	user, err := a.service.GetByUsername(context.TODO(), username)
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   user.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !user.IsConfirmed {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   user.Username,
+			"userIP": ip,
+		}).Errorf("ERR:USER NOT ACTIVATED")
 		fmt.Println("account not activated")
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
 	validCode, err := a.passwordlessService.PasswordlesLogin(ver)
 	if !validCode {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   user.Username,
+			"userIP": ip,
+		}).Errorf("ERR:CODE INVALID")
 		fmt.Println("code not valid")
 		http.Error(rw, "Code invalid! ", http.StatusBadRequest)
 		return
 	}
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   user.Username,
+			"userIP": ip,
+		}).Errorf("ERR:CORE FLAG CHANGE")
 		fmt.Println("error while changing code flag for used")
 		http.Error(rw, "Login code error! ", http.StatusBadRequest)
 		return
@@ -192,6 +315,10 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 
 	userRoles, err := a.service.GetUserRole(username)
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   user.Username,
+			"userIP": ip,
+		}).Errorf("ERR:THIS USER HAS NO ROLE")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -204,6 +331,10 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	token, err := auth.GenerateToken(claims, tokenExpirationTime)
 
 	if err != nil {
+		a.logError.Logger.WithFields(logrus.Fields{
+			"user":   user.Username,
+			"userIP": ip,
+		}).Errorf("ERR:GENERATING TOKEN")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -230,5 +361,15 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(logInResponseJson)
+}
 
+func ReadUserIP(r *http.Request) string {
+	IPAddress := r.Header.Get("X-Real-Ip")
+	if IPAddress == "" {
+		IPAddress = r.Header.Get("X-Forwarded-For")
+	}
+	if IPAddress == "" {
+		IPAddress = r.RemoteAddr
+	}
+	return IPAddress
 }

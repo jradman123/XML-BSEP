@@ -58,6 +58,7 @@ export class UserService {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('role');
     localStorage.removeItem('email');
+    localStorage.removeItem('username');
   }
 
   public get currentUserValue(): LoggedUser {

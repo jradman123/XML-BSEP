@@ -72,4 +72,18 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username).getId();
     }
 
+    @Override
+    public String change2FAStatus(String username, Boolean status) {
+        User user = findByUsername(username);
+        user.setUsing2FA(status);
+        user.setSecret();
+        userRepository.save(user);
+        return status ? user.getSecret() : "";
+    }
+
+    @Override
+    public boolean check2FAStatus(String username) {
+        return findByUsername(username).isUsing2FA();
+    }
+
 }

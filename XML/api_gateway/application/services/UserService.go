@@ -1,25 +1,26 @@
 package services
 
 import (
+	"common/module/logger"
 	"context"
 	"gateway/module/domain/model"
 	"gateway/module/domain/repositories"
-	"log"
 )
 
 type UserService struct {
-	l              *log.Logger
+	logInfo        *logger.Logger
+	logError       *logger.Logger
 	userRepository repositories.UserRepository
 }
 
-func NewUserService(l *log.Logger, repository repositories.UserRepository) *UserService {
-	return &UserService{l, repository}
+func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository repositories.UserRepository) *UserService {
+	return &UserService{logInfo, logError, repository}
 }
 func (u UserService) GetByUsername(ctx context.Context, username string) (*model.User, error) {
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
-		u.l.Println("Invalid username")
+		u.logError.Logger.Errorf("Invalid username")
 		return nil, err
 	}
 	return user, nil
