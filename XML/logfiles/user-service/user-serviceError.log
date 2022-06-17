@@ -1,14 +1,2 @@
-{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-16T08:41:42Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T08:41:47Z"}
-{"data":{},"file":"UserHandler.go:295","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"error","msg":"ERR:USER ALREADY EXISTS","time":"2022-06-16T08:42:05Z"}
-{"data":{},"file":"UserService.go:304","func":"user/module/application/services.UserService.CreateNewPassword","level":"error","msg":"ERR:WRONG CODE","time":"2022-06-16T08:43:56Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T08:49:25Z"}
-{"data":{},"file":"UserHandler.go:533","func":"user/module/infrastructure/handlers.UserHandler.EditUserDetails","level":"error","msg":"ERR:BAD VALIDATION: POSIBLE INJECTION","time":"2022-06-16T08:49:38Z"}
-{"data":{},"file":"UserService.go:298","func":"user/module/application/services.UserService.CreateNewPassword","level":"error","msg":"ERR:CODE EXPIRED","time":"2022-06-16T08:51:53Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T08:56:51Z"}
-{"data":{},"file":"UserHandler.go:124","func":"user/module/infrastructure/handlers.UserHandler.ShareJobOffer","level":"error","msg":"ERR:XSS","time":"2022-06-16T08:57:44Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T09:03:26Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T09:05:31Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T09:07:01Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T09:07:55Z"}
-{"data":{},"file":"Interceptor.go:99","func":"common/module/interceptor.parseToken","level":"error","msg":"ERR:UNOTHORIZED:NO AUTH","time":"2022-06-16T09:10:41Z"}
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-17T00:26:26Z"}
+{"data":{},"file":"UserHandler.go:295","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"error","msg":"ERR:USER ALREADY EXISTS","time":"2022-06-17T08:05:30Z"}

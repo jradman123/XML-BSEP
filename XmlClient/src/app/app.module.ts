@@ -60,6 +60,8 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
 import { ApiKeyComponent } from './components/api-key/api-key.component';
+import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
+import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 
 
@@ -84,6 +86,8 @@ import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
     FiterPipePipe,
     NewJobOfferComponent,
     ApiKeyComponent,
+    PassLessReqComponent,
+    PassLessLoginComponent,
   ],
   imports: [
     BrowserModule,

@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.net.URI;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 @RestController
 @RequestMapping(value = "/api")
 public class UserController {

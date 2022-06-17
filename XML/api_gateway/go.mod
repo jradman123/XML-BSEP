@@ -10,6 +10,7 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/handlers v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
+	github.com/trycourier/courier-go/v2 v2.5.0
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	google.golang.org/grpc v1.46.2
 	gopkg.in/go-playground/validator.v9 v9.31.0
