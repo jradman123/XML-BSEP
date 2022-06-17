@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { LoggedUserDto } from 'src/app/interfaces/logged-user-dto';
 import { CompanyService } from 'src/app/services/company-service/company.service';
-import { UserServiceService } from 'src/app/services/UserService/user-service.service';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-my-companies-list',
@@ -14,7 +14,7 @@ export class MyCompaniesListComponent implements OnInit {
   currentUser: LoggedUserDto;
   constructor(
     private companyService: CompanyService,
-    private userService: UserServiceService
+    private userService: UserService
   ) {
     this.currentUser = {} as LoggedUserDto;
   }

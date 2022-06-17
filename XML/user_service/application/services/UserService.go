@@ -1,38 +1,42 @@
 package services
 
 import (
+	"common/module/logger"
 	"context"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/trycourier/courier-go/v2"
-	"log"
 	"math/rand"
 	"net"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+	"user/module/domain/dto"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
+	"user/module/infrastructure/api"
 )
 
 type UserService struct {
-	l              *log.Logger
+	logInfo        *logger.Logger
+	logError       *logger.Logger
 	userRepository repositories.UserRepository
 	emailRepo      repositories.EmailVerificationRepository
 	recoveryRepo   repositories.PasswordRecoveryRequestRepository
 }
 
-func NewUserService(l *log.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
-	return &UserService{l, repository, emailRepo, recoveryRepo}
+func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
+	return &UserService{logInfo, logError, repository, emailRepo, recoveryRepo}
 }
 
 func (u UserService) GetUsers() ([]model.User, error) {
 
 	users, err := u.userRepository.GetUsers()
 	if err != nil {
-		return nil, errors.New("Cant get users")
+		u.logError.Logger.Errorf("ERR:CANT GET USERS")
+		return nil, errors.New("cant get users")
 	}
 
 	return users, err
@@ -44,7 +48,7 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
-		u.l.Println("Invalid username")
+		u.logError.Logger.Errorf("ERR:INVALID USERNAME:" + username)
 		return nil, err
 	}
 
@@ -66,6 +70,7 @@ func (u UserService) UserExists(username string) error {
 	err := u.userRepository.UserExists(username)
 
 	if err != nil {
+		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST:" + username)
 		return err
 	}
 	return nil
@@ -84,10 +89,12 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 
 	var er = checkEmailValid(user.Email)
 	if er != nil {
+		u.logError.Logger.Println("ERR:EMAIL FORMAT INVALID")
 		return nil, errors.New("email format invalid")
 	}
 	var domEr = checkEmailDomain(user.Email)
 	if domEr != nil {
+		u.logError.Logger.Println("ERR:EMAIL DOMAIN INVALID")
 		return nil, errors.New("email domain invalid")
 	}
 	//TODO: ZAMENITI TOKENOM
@@ -105,13 +112,15 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 	_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
 	fmt.Println(e)
 	if e != nil {
+		u.logError.Logger.Println("ERR:SAVING EMAIL VERIFICATION")
 		return nil, errors.New("error saving emailVerification")
 	}
 
-	sendMailWithCourier(user.Email, strconv.Itoa(rn), "Activation code", "Welcome to Dislinkt! Here is your activation code:")
+	sendMailWithCourier(user.Email, strconv.Itoa(rn), "Activation code", "Welcome to Dislinkt! Here is your activation code:", u.logError)
 
 	regUser, err := u.userRepository.CreateRegisteredUser(user)
 	if err != nil {
+		u.logError.Logger.Println("ERR:DB:CREATE USER")
 		return regUser, err
 	}
 	return regUser, nil
@@ -125,6 +134,7 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 
 	if dbEr != nil {
 		fmt.Println(dbEr)
+		u.logError.Logger.Errorf("ERR:DB:CODE DOES NOT EXIST FOR USER")
 		return false, dbEr
 	}
 	fmt.Println("verCode:", codeInfoForUsername.VerCode)
@@ -137,6 +147,8 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 			if err != nil {
 				fmt.Println(err)
 
+				fmt.Println("error u get by username kod ucitavanja usera")
+				u.logError.Logger.Errorf("ERR:DB")
 				return false, err
 			}
 			user.IsConfirmed = true
@@ -148,25 +160,29 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 			}
 			fmt.Println("novo stanje isConfirmed : " + help)
 			activated, actErr := u.userRepository.ActivateUserAccount(user)
-			//editedUser, er := u.userRepository.GetByUsername(context.TODO(), username)
+		
 			if actErr != nil {
 				fmt.Println(actErr)
 				fmt.Println("error while activating user(repo)")
+				u.logError.Logger.Errorf("ERR:WHILE ACTIVATING USER")
 				return false, actErr
 			}
 			if !activated {
 				fmt.Println("user activation failed")
+				u.logError.Logger.Errorf("ERR:ACTIVATION FAILED")
 				return false, errors.New("user not activated")
 			}
 			return true, nil
 
 		} else {
 			fmt.Println("istekao kod")
+			u.logError.Logger.Errorf("ERR:CODE EXPIRED")
 			return false, errors.New("code expired")
 		}
 
 	} else {
 		fmt.Println("ne valjda kod")
+		u.logError.Logger.Errorf("ERR:WRONG CODE")
 		return false, errors.New("wrong code")
 	}
 }
@@ -176,6 +192,7 @@ func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
 	user, err := u.userRepository.GetByUsername(context.TODO(), username)
 
 	if err != nil {
+		u.logError.Logger.Println("ERR:USER DOES NOT EXIST")
 		return false, err
 	}
 
@@ -202,11 +219,14 @@ func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
 
 	fmt.Println(e)
 	if e != nil {
+		u.logError.Logger.Println("ERR:PASS RECOVERY REQ")
 		return false, e
+	} else {
+		u.logInfo.Logger.Infof("INFO:CREATED PASS RECOVERY")
 	}
 
 	//mzd staviti da ovo vraca bool i da ima parametar poruku i zaglavlje
-	sendMailWithCourier(user.RecoveryEmail, strconv.Itoa(rn), "Password recovery code", "Here is your code:")
+	sendMailWithCourier(user.RecoveryEmail, strconv.Itoa(rn), "Password recovery code", "Here is your code:", u.logInfo)
 	return true, nil
 }
 
@@ -217,15 +237,17 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 	passwordRecoveryRequest, dbEr = u.recoveryRepo.GetPasswordRecoveryRequestByUsername(username)
 
 	if dbEr != nil {
+		u.logError.Logger.Errorf("ERR:THERE IS NOT A PASS RECOVERY REQUEST IN DATABASE FOR USER:" + username)
 		fmt.Println(dbEr)
 
 		return false, dbEr
 	}
 	fmt.Println("verCode:", passwordRecoveryRequest.RecoveryCode)
-	///////////////
+	
 
 	var codeInt, convErr = strconv.Atoi(code)
 	if convErr != nil {
+		u.logError.Logger.Errorf("ERR:CONVERTING CODE TO INT")
 		return false, errors.New("error converting code to int")
 	}
 	if passwordRecoveryRequest.RecoveryCode == codeInt {
@@ -238,6 +260,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				user, err := u.userRepository.GetByUsername(context.TODO(), username)
 				if err != nil {
 					fmt.Println(err)
+					u.logError.Logger.Errorf("ERR:NO USER")
 					fmt.Println("error u get by username kod ucitavanja usera")
 					return false, err
 				}
@@ -248,6 +271,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				changePassErr := u.userRepository.ChangePassword(user, newHashedPassword)
 				if changePassErr != nil {
 					fmt.Println("error pri cuvanju novog pass")
+					u.logError.Logger.Errorf("ERR:SAVING NEW PASSWORD")
 					return false, changePassErr
 				}
 				//staviti iskoristen kod na true
@@ -257,21 +281,26 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				if er != nil {
 					fmt.Println(er)
 
+					u.logError.Logger.Errorf("ERR:NO USER")
+					fmt.Println("FAK MAJ LAJF 2")
 					return false, er
 				}
 				return true, nil
 			} else {
 				fmt.Println("kod iskoristen")
+				u.logError.Logger.Errorf("ERR:CODE USED")
 				return false, errors.New("code used")
 			}
 
 		} else {
 			fmt.Println("istekao kod")
+			u.logError.Logger.Errorf("ERR:CODE EXPIRED")
 			return false, errors.New("code expired")
 		}
 
 	} else {
 		fmt.Println("ne valjda kod")
+		u.logError.Logger.Errorf("ERR:WRONG CODE")
 		return false, errors.New("wrong code")
 	}
 }
@@ -308,7 +337,7 @@ func checkEmailDomain(email string) error {
 	}
 	return nil
 }
-func sendMailWithCourier(email string, code string, subject string, body string) {
+func sendMailWithCourier(email string, code string, subject string, body string, logErr *logger.Logger) {
 	client := courier.CreateClient("pk_prod_0FQXVBPMDHMZ3VJ3WN6CYC12KNMH", nil)
 	fmt.Println(code)
 	requestID, err := client.SendMessage(
@@ -330,7 +359,24 @@ func sendMailWithCourier(email string, code string, subject string, body string)
 		})
 
 	if err != nil {
+		logErr.Logger.Println("ERR:SENDING MAIL")
 		fmt.Println(err)
 	}
 	fmt.Println(requestID)
+}
+
+func (u UserService) EditUser(userDetails *dto.UserDetails) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), userDetails.Username)
+	if err != nil {
+		return nil, err
+	}
+	user = api.MapUserDetailsDtoToUser(userDetails, user)
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user was not edited dunno y")
+	}
+	return user, nil
 }

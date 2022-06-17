@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +11,7 @@ export class NavbarComponent implements OnInit {
 
   role! : string;
   show! : boolean ;
-  constructor() { }
+  constructor(private userService : UserService) { }
 
   ngOnInit(): void {
    this.role  = localStorage.getItem('role')!;
@@ -20,6 +21,10 @@ export class NavbarComponent implements OnInit {
    } else {
      this.show = false;
    }
+  }
+
+  logout() : void{
+    this.userService.logout();
   }
    
 

@@ -1,0 +1,2 @@
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-17T00:26:26Z"}
+{"data":{},"file":"UserHandler.go:295","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"error","msg":"ERR:USER ALREADY EXISTS","time":"2022-06-17T08:05:30Z"}

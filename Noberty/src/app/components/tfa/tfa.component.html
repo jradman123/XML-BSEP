@@ -1,0 +1,24 @@
+<div class="container" style="position: relative; top: 20px">
+    <div class="col-12 text-center">
+      <h1>Two factor authentication</h1>
+      <hr />
+      <br />
+    </div>
+    <div>
+      <mat-checkbox  (click) = "enable2fa($event)" [checked] = "isChecked" [(ngModel)] = "isChecked" class="example-margin">
+        Two factor authentication is {{ isChecked ? 'enabled' : 'disabled'}}</mat-checkbox>
+    </div>
+    <div *ngIf="getCodeVisible"> 2FA is now enabled. 
+      <button mat-button color="accent" (click)="showCode()">Show your secret code</button>
+    </div>
+    <div class="col-12">
+      <div class="content">
+        <div  class="input-icons" *ngIf="isCodeVisible">
+          <i (click)="copyMe()" style="cursor: pointer;" class="fa fa-clipboard fa-2x icon "></i>
+         <input class="input-field" type="text" [(ngModel)]="code"/> 
+        </div>
+      </div>
+      <br />
+    </div>
+  </div>
+  

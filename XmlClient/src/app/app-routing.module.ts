@@ -13,6 +13,9 @@ import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
+import { EditUserComponent } from './pages/edit-user/edit-user.component';
+import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
+import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 
 const routes: Routes = [
   {
@@ -21,16 +24,21 @@ const routes: Routes = [
     children: [
       {
         path: 'jobOffers',
-        component: JobOfferComponent,
+        component: JobOfferComponent,canActivate: [AuthGuard]
       },
       {
         path: 'genApiKey',
-        component: ApiKeyComponent,
+        component: ApiKeyComponent, canActivate: [AuthGuard]
       },
       {
         path: 'newJobOffer',
-        component: NewJobOfferComponent,
+        component: NewJobOfferComponent,canActivate: [AuthGuard]
       },
+      {
+        path: "editUser",
+        component: EditUserComponent , canActivate: [AuthGuard]
+       
+      }
     ],
   },
   {
@@ -59,10 +67,18 @@ const routes: Routes = [
     component: ActivateAccountComponent,
   },
   {
+    path: 'passwordlessReq',
+    component: PassLessReqComponent,
+  },
+  {
+    path: 'passwordlessLogin',
+    component: PassLessLoginComponent,
+  }
+ /* {
     path: 'userHome',
     component: UserHomeComponent,
     canActivate: [AuthGuard],
-  },
+  }*/
 
 
 ];

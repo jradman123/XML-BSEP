@@ -1,0 +1,5 @@
+{"data":{"user":"stelena","userIP":"[::1]:60879"},"file":"AuthenticationHandler.go:118","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"error","msg":"ERR:INCORRECT PASSWORD","time":"2022-06-17T00:27:40Z"}
+{"data":{},"file":"UserService.go:23","func":"gateway/module/application/services.UserService.GetByUsername","level":"error","msg":"Invalid username","time":"2022-06-17T00:56:00Z"}
+{"data":{"user":"steena","userIP":"[::1]:54457"},"file":"AuthenticationHandler.go:98","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"error","msg":"ERR:USER NOT FOUND","time":"2022-06-17T00:56:00Z"}
+{"data":{},"file":"UserService.go:23","func":"gateway/module/application/services.UserService.GetByUsername","level":"error","msg":"Invalid username","time":"2022-06-17T00:56:02Z"}
+{"data":{"user":"steena","userIP":"[::1]:54457"},"file":"AuthenticationHandler.go:98","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.LoginUser","level":"error","msg":"ERR:USER NOT FOUND","time":"2022-06-17T00:56:02Z"}

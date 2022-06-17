@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -30,11 +31,18 @@ public class CustomTokenServiceImpl implements CustomTokenService {
         CustomToken token = new CustomToken(UUID.randomUUID().toString(),user, TokenType.CONFIRMATION);
         customTokenRepository.save(token);
         return token;
+    }
 
+    private CustomToken createTokenForMagicLink(User user) {
+        CustomToken token = new CustomToken(UUID.randomUUID().toString(),user, TokenType.MAGIC_LINK);
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(5));
+        customTokenRepository.save(token);
+        return token;
     }
 
     private CustomToken createResetPasswordToken(User user) {
-        CustomToken token = new CustomToken(RandomString.make(8),user,TokenType.RESET_PASSWORD);
+        CustomToken token = new CustomToken(RandomString.make(6),user,TokenType.RESET_PASSWORD);
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(5));
         return token;
 
     }
@@ -75,13 +83,21 @@ public class CustomTokenServiceImpl implements CustomTokenService {
         saveToken(customToken);
         emailSenderService.sendEmail(user.getRecoveryEmail(),"Reset password", "Following code is your new temporary " +
                 "password \nCode : " + passwordCode);
-
-
     }
 
     @Override
     public boolean checkResetPasswordCode(String sentCode, String codeDb) {
         return passwordEncoder.matches(sentCode,codeDb);
+    }
+
+    @Override
+    public void sendMagicLink(User user) {
+        CustomToken token = createTokenForMagicLink(user);
+        emailSenderService.sendEmail(user.getEmail(),"Password-less login",
+                "Click on the following link to sign in to your account "
+                        +"https://localhost:4200/passwordless-login/"
+                        + token.getToken()
+                );
     }
 
 

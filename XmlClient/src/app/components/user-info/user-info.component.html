@@ -1,0 +1,82 @@
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+    <h1>Edit personal data</h1>
+  <form class="form-container" [formGroup]="userDetailsForm">
+    <mat-form-field appearance="standard">
+      <mat-label>First Name</mat-label>
+      <input matInput placeholder="First Name" formControlName="firstName"   />
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+      <mat-label>Last Name</mat-label>
+      <input matInput placeholder="Last Name" formControlName="lastName" />
+    </mat-form-field>
+    <mat-form-field appearance="standard">
+      <mat-label>Phone Number</mat-label>
+      <input matInput placeholder="Phone Number" formControlName="phoneNumber" />
+    </mat-form-field>
+    <div style="width: 100%; display: flex">
+      <mat-form-field appearance="standard">
+        <mat-label>Date of birth</mat-label>
+        <input matInput  formControlName="dateOfBirth" [matDatepicker]="picker" [value]="date">
+        <mat-datepicker-toggle matSuffix [for]="picker" ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <mat-form-field appearance="standard">
+        <mat-label>Gender</mat-label>
+        <mat-select
+          formControlName="gender" 
+        >
+          <mat-option  value="FEMALE">
+            FEMALE
+          </mat-option>
+          <mat-option  value="MALE">
+              MALE
+            </mat-option>
+            <mat-option  value="OTHER">
+              OTHER
+            </mat-option>
+            
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Biography </mat-label>
+        <textarea matInput placeholder="Biography" formControlName="biography" ></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Add new skill(optional) </mat-label>
+        <textarea matInput placeholder="Skill" formControlName="skill" ></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Add new experience(optional) </mat-label>
+        <textarea matInput placeholder="Experience" formControlName="experience" ></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Add new education(optional) </mat-label>
+        <textarea matInput placeholder="Education" formControlName="education" ></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="standard">
+        <mat-label>Add new interest(optional) </mat-label>
+        <textarea matInput placeholder="Interest" formControlName="interest" ></textarea>
+      </mat-form-field>
+      
+
+   
+    <div class="button-container" >
+      <div class="row">
+        <div class="col-sm-6">
+        <button type="button" class="btn btn-primary ml-3 mybtn" (click)="save()">Save</button>
+      </div>
+      <div class="col-sm-6">
+      <button type="button" class="btn btn-danger ml-3 mybtn" (click)="cancel()">Cancel</button>
+    </div>
+      </div>
+    </div>
+   
+  </form>
+
+</div>
+</div>
+</div>
+

@@ -37,6 +37,9 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 import { UserLandingPageComponent } from './pages/user-landing-page/user-landing-page.component';
 import { PublishJobOfferComponent } from './components/publish-job-offer/publish-job-offer.component';
+import { TfaComponent } from './components/tfa/tfa.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { PasswordlessLoginComponent } from './components/passwordless-login/passwordless-login.component';
 
 
 
@@ -70,6 +73,9 @@ import { PublishJobOfferComponent } from './components/publish-job-offer/publish
     MyCompaniesListComponent,
     ChangePasswordComponent,
     PublishJobOfferComponent,
+    TfaComponent,
+    ConfirmDialogComponent,
+    PasswordlessLoginComponent,
 
   ],
   imports: [

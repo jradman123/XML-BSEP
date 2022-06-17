@@ -68,4 +68,13 @@ export class LoginPageComponent implements OnInit {
   }
 
 }
+// console.log(x);
+// this._router.navigate(['/editUser']);
+// this._snackBar.open("Welcome!", "Dismiss");
+// },
+// error: (err: HttpErrorResponse) => {
+
+// this._snackBar.open(err.error + "!", 'Dismiss');
+// >>>>>>> development
+// }, 
 

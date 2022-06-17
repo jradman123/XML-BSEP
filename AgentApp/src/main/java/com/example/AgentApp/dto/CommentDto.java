@@ -1,9 +1,12 @@
 package com.example.AgentApp.dto;
 
+import javax.validation.constraints.Pattern;
+
 public class CommentDto {
 
     public Long companyId;
-   public String userUsername;
+    @Pattern(regexp= "^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$", message =  "Username format not valid")
+    public String userUsername;
     public String comment;
 
     public CommentDto(Long companyId, String userUsername, String comment) {

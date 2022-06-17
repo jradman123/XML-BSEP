@@ -69,10 +69,14 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "PkiClient:build:production"
+              "browserTarget": "PkiClient:build:production",
+              "sslKey": "ssl/server.key",
+              "sslCert": "ssl/server.crt"
             },
             "development": {
-              "browserTarget": "PkiClient:build:development"
+              "browserTarget": "PkiClient:build:development",
+              "sslKey": "ssl/server.key",
+              "sslCert": "ssl/server.crt"
             }
           },
           "defaultConfiguration": "development"

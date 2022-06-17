@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminGuard } from './AuthGuard/AdminGuard';
 import { AuthGuard } from './AuthGuard/AuthGuard';
+import { OwnerGuard } from './AuthGuard/OwnerGuard';
+import { PasswordlessLoginComponent } from './components/passwordless-login/passwordless-login.component';
+import { TfaComponent } from './components/tfa/tfa.component';
 import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { CompanyRequestsPageComponent } from './pages/company-requests-page/company-requests-page.component';
@@ -36,7 +40,7 @@ const routes: Routes = [
     component: CompaniesListComponent
   },
   {
-    path: "mycompanies", canActivate:[AuthGuard],
+    path: "mycompanies", canActivate:[OwnerGuard],
     component: MyCompaniesListComponent
   },
   {
@@ -44,9 +48,13 @@ const routes: Routes = [
     component: CompanyProfileComponent
   },
   {
-    path: "companyRequests", canActivate:[AuthGuard],
+    path: "companyRequests", canActivate:[AdminGuard],
     component: CompanyRequestsPageComponent
   },
+  {
+    path: "passwordless-login/:token",
+    component: PasswordlessLoginComponent
+  }
   
 ];
 

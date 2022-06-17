@@ -5,6 +5,7 @@ import { LogedUser } from 'src/app/interfaces/loged-user';
 import { NewPassword } from 'src/app/interfaces/new-password';
 import { SubjectData } from 'src/app/interfaces/subject-data';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,7 @@ export class UserService {
     return this._http.post<any>('http://localhost:8443/api/sendCode', email);
   }
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient,private router : Router) {
     this.currentUserSubject = new BehaviorSubject<LogedUser>(
       JSON.parse(localStorage.getItem('currentUser')!)
     );
@@ -68,4 +69,13 @@ export class UserService {
   public get currentUserValue(): LogedUser {
     return this.currentUserSubject.value;
 }
+
+logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('role');
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem('email');
+  this.router.navigate(['/']);
+}
+
 }
