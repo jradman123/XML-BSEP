@@ -30,7 +30,7 @@ export class LoginPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-   
+
     this.aFormGroup = this.formBuilder.group({
       recaptcha: ['', Validators.required],
       username: ['', Validators.required],
@@ -43,15 +43,19 @@ export class LoginPageComponent implements OnInit {
     if (this.aFormGroup.invalid) {
       return;
     }
-  
+
     const loginObserver = {
       next: (x: any) => {
-        this._router.navigate(['/']);
-        this._snackBar.open("Welcome!", "Dismiss");
-       
+        if (x == true) {
+          console.log(x);
+          this._router.navigate(['/twofa']);
+        } else {
+          this._router.navigate(['/']);
+          this._snackBar.open("Welcome!", "Dismiss");
+        }
       },
       error: (err: HttpErrorResponse) => {
-      
+
         this._snackBar.open(err.error, 'Dismiss');
       },
     };
@@ -59,8 +63,8 @@ export class LoginPageComponent implements OnInit {
       username: this.aFormGroup.value.username,
       password: this.aFormGroup.value.password
     }
-    
-    this.authService.login(this.loginReq).subscribe(loginObserver);
+
+    this.authService.auth(this.loginReq).subscribe(loginObserver);
   }
 
 }

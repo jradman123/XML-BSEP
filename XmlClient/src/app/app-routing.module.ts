@@ -11,6 +11,7 @@ import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 
 const routes: Routes = [
@@ -37,6 +38,11 @@ const routes: Routes = [
     component: LoginPageComponent,
   },
   {
+
+    path: 'twofa',
+    component: TwofaPageComponent,
+  },
+  {
     path: 'register',
     component: RegisterPageComponent,
   },
@@ -58,11 +64,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
-  
+
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes), MaterialModule],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -6,11 +6,13 @@ import { LoggedUser } from 'src/app/interfaces/logged-user';
 import { ILoginRequest } from 'src/app/interfaces/login-request';
 import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
+import { IUsername } from 'src/app/interfaces/username';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
+
  
   private currentUserSubject: BehaviorSubject<LoggedUser>;
   public currentUser: Observable<LoggedUser>;
@@ -27,6 +29,11 @@ export class UserService {
       'http://localhost:9090/users/register/user',
       registerRequest
     );
+  }
+
+  auth(loginReq: ILoginRequest)  : Observable<any> {
+    return this._http
+      .post(`http://localhost:9090/users/auth/user`, loginReq)
   }
 
   login(loginRequest: ILoginRequest): Observable<LoggedUser> {
@@ -92,9 +99,21 @@ export class UserService {
     );
   }
   enable2FA(username: string): Observable<any> {
-    throw new Error('Method not implemented.');
+    return this._http.post<any>(
+      'http://localhost:9090/2fa/enable',
+      {username}
+    );
+  }
+  disable2FA(username: string) {
+    return this._http.post<any>(
+      'http://localhost:9090/2fa/disable',
+      {username}
+    );
   }
   check2FAStatus(username: string): Observable<any> {
-    throw new Error('Method not implemented.');
+    return this._http.post<any>(
+      'http://localhost:9090/2fa/check',
+      {username}
+    );
   }
 }

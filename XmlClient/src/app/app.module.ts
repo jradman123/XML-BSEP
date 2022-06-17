@@ -60,7 +60,8 @@ import { ApiKeyComponent } from './components/api-key/api-key.component';
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { TfaComponent } from './components/tfa/tfa.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-
+import { QRCodeModule } from 'angular2-qrcode';
+import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
 
 
 @NgModule({
@@ -82,6 +83,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     ApiKeyComponent,
     TfaComponent,
     ConfirmDialogComponent,
+    TwofaPageComponent,
   ],
   imports: [
     BrowserModule,
@@ -135,6 +137,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     MatRippleModule,
     ReactiveFormsModule,
     NgxCaptchaModule,
+    QRCodeModule
   ],
   providers: [DatePipe],
   bootstrap: [AppComponent]
