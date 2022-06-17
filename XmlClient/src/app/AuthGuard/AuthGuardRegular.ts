@@ -10,9 +10,8 @@ export class AuthGuardRegular implements CanActivate {
         private authenticationService: UserService
     ) { }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        const currentUser = this.authenticationService.currentUserValue;
-        var loggedIn = localStorage.getItem("token")
+    canActivate() {
+        const loggedIn = localStorage.getItem("token")
         var role = localStorage.getItem('role');
         if (loggedIn != null && role === 'Regular') {
             // logged in so return true
