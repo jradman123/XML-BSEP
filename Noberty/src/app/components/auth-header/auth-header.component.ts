@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoggedUserDto } from 'src/app/interfaces/logged-user-dto';
 import { CompanyService } from 'src/app/services/company-service/company.service';
-import { UserServiceService } from 'src/app/services/UserService/user-service.service';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-auth-header',
@@ -15,7 +15,7 @@ export class AuthHeaderComponent implements OnInit {
   role!: string;
   id!: number;
   constructor(
-    private userService: UserServiceService,
+    private userService: UserService,
   
     private router: Router) {
     this.currentUser = {} as LoggedUserDto;

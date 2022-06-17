@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { NewUser } from 'src/app/interfaces/new-user';
-import { UserServiceService } from 'src/app/services/UserService/user-service.service';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-register-page',
@@ -24,7 +24,7 @@ export class RegisterPageComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     private router: Router,
-    private userService : UserServiceService,
+    private userService : UserService,
     private datePipe: DatePipe
     ) { 
       this.newUser = {} as NewUser;

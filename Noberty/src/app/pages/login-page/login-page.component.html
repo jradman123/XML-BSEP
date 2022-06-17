@@ -2,8 +2,9 @@
 <div class="container">
     <mat-card>
         <mat-card-title>Login</mat-card-title>
+        <br>
     <mat-card-content>
-    <form [formGroup]="form" (submit)="submit()">
+    <form [formGroup]="form" (submit)="submit()" *ngIf="!passwordless">
       <p>
         <mat-form-field>
           <input required formControlName="username" (change) = "check2FAStatus()" [(ngModel)]="usernamee" type="text" matInput placeholder="Username" >
@@ -24,11 +25,28 @@
     
       <div class="button">
         <button [disabled]="form.invalid" type="submit" mat-button>Login</button>
+       
+      </div>
+      <hr>
+      <div style="align-content:center">
+        <a mat-button  (click)="forgotPass()">Forgot password?</a>
+        <a mat-button  (click)="enablePL()">Passwordless login</a>
+
+      </div>
+      
+    </form> 
+   
+    <form [formGroup]="formPL" (submit)="submitPL()" *ngIf="passwordless">
+      <p>
+        <mat-form-field>
+          <input required formControlName="username" type="text" matInput placeholder="Username" >
+        </mat-form-field>
+      </p>
+      <div class="button">
+        <button [disabled]="formPL.invalid" type="submit" mat-button>Submit</button>
       </div>
     </form> 
-    <p class="text--center">
-        Forgot password? <button mat-raised-button (click)="forgotPass()">Reset password</button>
-      </p>
+
     </mat-card-content>
     </mat-card>
     </div>

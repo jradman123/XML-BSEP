@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ChangePasswordDto } from 'src/app/interfaces/change-password-dto';
-import { UserServiceService } from 'src/app/services/UserService/user-service.service';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-change-password',
@@ -15,7 +15,7 @@ export class ChangePasswordComponent implements OnInit {
 
   passMatch: boolean = false;
   changedPassword! : ChangePasswordDto;
-  constructor(private userService : UserServiceService, private router : Router, private _snackBar : MatSnackBar,private dialogRef: MatDialogRef<ChangePasswordComponent>) {
+  constructor(private userService : UserService, private router : Router, private _snackBar : MatSnackBar,private dialogRef: MatDialogRef<ChangePasswordComponent>) {
     this.changedPassword = {} as ChangePasswordDto;
    }
 
