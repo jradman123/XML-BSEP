@@ -1,0 +1,4 @@
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-17T00:27:52Z"}
+{"data":{"user":"stelena"},"file":"PostHandler.go:179","func":"post/module/infrastructure/handlers.PostHandler.CreateComment","level":"info","msg":"INFO:Handling CreateComment","time":"2022-06-17T00:29:05Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-17T00:50:04Z"}
+{"data":{},"file":"PostHandler.go:352","func":"post/module/infrastructure/handlers.PostHandler.GetAllJobOffers","level":"info","msg":"INFO:Handling GetAllJobOffers","time":"2022-06-17T00:50:06Z"}
