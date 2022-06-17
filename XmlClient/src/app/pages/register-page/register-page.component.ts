@@ -86,11 +86,12 @@ export class RegisterPageComponent implements OnInit {
         this.router.navigate(['/']);
         this._snackBar.open(
           'Your registration request has been sumbitted. Please check your email and confirm your email adress to activate your account.',
-          'Dismiss'
+          'Dismiss',
+          {duration : 3000}
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss', {duration : 3000});
       }
 
     }

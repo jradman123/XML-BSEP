@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { ActivateAccount } from 'src/app/interfaces/activate-account';
 import { LoggedUser } from 'src/app/interfaces/logged-user';
@@ -17,8 +18,9 @@ export class UserService {
   private currentUserSubject: BehaviorSubject<LoggedUser>;
   public currentUser: Observable<LoggedUser>;
   private user!: LoggedUser;
+  jwtToken! : any;
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient,private jwtHelper :JwtHelperService) {
     this.currentUserSubject = new BehaviorSubject<LoggedUser>(
       JSON.parse(localStorage.getItem('currentUser')!)
     );
@@ -36,15 +38,14 @@ export class UserService {
       .post(`http://localhost:9090/users/login/user`, loginRequest)
       .pipe(
         map((response: any) => {
-          console.log(response);
-          console.log(response.Token);
           if (response) {
-            console.log('uso sam');
+            this.jwtToken = this.jwtHelper.decodeToken(response.token);
+            console.log(this.jwtToken.roles[0]);
             localStorage.setItem('token', response.token);
             localStorage.setItem('currentUser', JSON.stringify(response));
-            localStorage.setItem('role', response.role);
+            localStorage.setItem('role', this.jwtToken.roles[0]);
             localStorage.setItem('email', response.email);
-            localStorage.setItem('username', response.username);
+            localStorage.setItem('username', this.jwtToken.username);
 
             this.currentUserSubject.next(response);
           }
@@ -125,15 +126,14 @@ export class UserService {
     )
     .pipe(
       map((response: any) => {
-        console.log(response);
-        console.log(response.Token);
         if (response) {
+          this.jwtToken = this.jwtHelper.decodeToken(response.token);
           console.log('passwordless login');
           localStorage.setItem('token', response.token);
           localStorage.setItem('currentUser', JSON.stringify(response));
-          localStorage.setItem('role', response.role);
+          localStorage.setItem('role', this.jwtToken.roles[0]);
           localStorage.setItem('email', response.email);
-          localStorage.setItem('username', response.username);
+          localStorage.setItem('username', this.jwtToken.username);
 
           this.currentUserSubject.next(response);
         }
@@ -141,5 +141,7 @@ export class UserService {
       })
     );
   }
+
+  
 
 }

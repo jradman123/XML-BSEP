@@ -50,11 +50,13 @@ export class ActivateAccountComponent implements OnInit {
         this.router.navigate(['/login']);
         this._snackBar.open(
           'Your account has been activated!',
-          'Dismiss'
+          'Dismiss',{
+            duration : 3000
+          }
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss',{duration : 3000});
       }
 
     }

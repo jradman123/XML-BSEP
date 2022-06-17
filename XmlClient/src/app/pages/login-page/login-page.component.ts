@@ -27,12 +27,12 @@ export class LoginPageComponent implements OnInit {
     const loginObserver = {
       next: (x: any) => {
         console.log(x);
-        this._router.navigate(['/editUser']);
-        this._snackBar.open("Welcome!", "Dismiss");
+        this._router.navigate(['editUser']);
+        this._snackBar.open("Welcome!", "Dismiss",{duration : 3000});
       },
       error: (err: HttpErrorResponse) => {
        
-        this._snackBar.open(err.error + "!", 'Dismiss');
+        this._snackBar.open(err.error + "!", 'Dismiss', {duration : 3000});
       },
     };
     
