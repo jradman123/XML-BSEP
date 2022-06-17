@@ -97,7 +97,7 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 		u.logError.Logger.Println("ERR:EMAIL DOMAIN INVALID")
 		return nil, errors.New("email domain invalid")
 	}
-	//TODO:ZAMENITI TOKENOM
+	//TODO: ZAMENITI TOKENOM
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
 	emailVerification := model.EmailVerification{
@@ -134,21 +134,19 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 
 	if dbEr != nil {
 		fmt.Println(dbEr)
-		fmt.Println("MAJ LAJF 1")
 		u.logError.Logger.Errorf("ERR:DB:CODE DOES NOT EXIST FOR USER")
 		return false, dbEr
 	}
 	fmt.Println("verCode:", codeInfoForUsername.VerCode)
 
 	if codeInfoForUsername.VerCode == verCode {
-		//kao dala sam kodu trajanje od 1h
-		fmt.Println("kod se poklapa")
+
 		if codeInfoForUsername.Time.Add(time.Hour).After(time.Now()) {
-			fmt.Println("vreme se uklapa")
-			//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
+
 			user, err := u.userRepository.GetByUsername(context.TODO(), username)
 			if err != nil {
 				fmt.Println(err)
+
 				fmt.Println("error u get by username kod ucitavanja usera")
 				u.logError.Logger.Errorf("ERR:DB")
 				return false, err
@@ -162,7 +160,7 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 			}
 			fmt.Println("novo stanje isConfirmed : " + help)
 			activated, actErr := u.userRepository.ActivateUserAccount(user)
-			//editedUser, er := u.userRepository.GetByUsername(context.TODO(), username)
+		
 			if actErr != nil {
 				fmt.Println(actErr)
 				fmt.Println("error while activating user(repo)")
@@ -245,7 +243,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 		return false, dbEr
 	}
 	fmt.Println("verCode:", passwordRecoveryRequest.RecoveryCode)
-	///////////////
+	
 
 	var codeInt, convErr = strconv.Atoi(code)
 	if convErr != nil {
@@ -282,6 +280,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				_, er := u.userRepository.GetByUsername(context.TODO(), username)
 				if er != nil {
 					fmt.Println(er)
+
 					u.logError.Logger.Errorf("ERR:NO USER")
 					fmt.Println("FAK MAJ LAJF 2")
 					return false, er

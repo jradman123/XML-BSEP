@@ -1,0 +1,13 @@
+.links {
+    display: flex;
+    align-items: flex-end;
+
+}
+.links a{
+    margin-right: 10px;
+    border-right: 10px;
+}
+.content {
+    display: flex;
+    justify-content: space-between;
+}

@@ -1,0 +1,29 @@
+<app-unauthenticated-header></app-unauthenticated-header>
+<router-outlet></router-outlet>
+<br><br><br><br><br><br>
+<div class="col-md-6 offset-md-3 mt-4">
+    <div class="row">
+        <form class="container" [formGroup]="createForm" (ngSubmit)="onSbmit()">
+            <br />
+            <div class="separateMe">
+                <div style="width: 100%; display: flex">
+                    <mat-form-field appearance="fill">
+                        <mat-label> Enter 6-digit code </mat-label>
+                        <input type="number" matInput formControlName="code" />
+                        <mat-error *ngIf="
+                  createForm?.get('code')?.valid &&
+                  createForm?.get('code')?.touched &&
+                  createForm?.get('code')?.errors?.['required']
+                ">Code is required.</mat-error>
+                        <mat-error>Code must be 6 characters long </mat-error>
+                    </mat-form-field>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Confirm
+                    <i class="fas fa-sign-in-alt"></i></button>
+            </div>
+
+         
+        </form>
+
+    </div>
+</div>

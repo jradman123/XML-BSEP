@@ -17,5 +17,5 @@ type User struct {
 	Role          Role      `json:"role" gorm:"not null"`
 	IsConfirmed   bool      `json:"is_confirmed" gorm:"not null"`
 	DateOfBirth   time.Time `json:"dateOfBirth" gorm:"not null"`
-	RecoveryEmail string    `json:"recovery_email" gorm:"typevarchar(100);unique;not null"`
+	RecoveryEmail string    `json:"recovery_email" gorm:"type-varchar(100);unique;not null"`
 }

@@ -101,7 +101,7 @@ func (r UserRepositoryImpl) GetUserRole(username string) (string, error) {
 }
 
 func (r UserRepositoryImpl) ChangePassword(user *model.User, password string) error {
-	fmt.Println("molim te")
+
 	result := r.db.Model(&user).Update("password", password)
 	fmt.Print(result)
 	return result.Error
