@@ -17,7 +17,11 @@ export class LandingPageComponent implements OnInit {
     private _snackBar: MatSnackBar
   ) {}
   emaill!: string;
-
+  email!: string;
+  password! : string;
+  code! : string;
+  tfaEnabled = false;
+  passwordless = false;
   ngOnInit(): void {}
 
   forgotPass() {
@@ -47,6 +51,34 @@ export class LandingPageComponent implements OnInit {
     };
 
     this.authService.login(f.value).subscribe(loginObserver);
+  }
+
+  check2FAStatus(){
+    this.authService.check2FAStatus(this.emaill).subscribe(
+      res =>{
+        this.tfaEnabled = res
+        console.log(this.tfaEnabled)
+      }
+    )
+  }
+
+  enablePL() {
+    this.passwordless = true;
+  }
+
+  pswrdless(f2: NgForm ){
+    this.authService.sendMagicLink(this.email).subscribe( 
+      res => {
+        this._snackBar.open('Check your email. We sent you a magic link to log-in to your account.', '', {
+          duration: 3000,
+        });
+      },
+      err => {
+        this._snackBar.open('User with this username does not exist.', '', {
+          duration: 3000,
+        });
+      }
+    )
   }
 }
 // login(f: NgForm) {

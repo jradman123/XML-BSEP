@@ -181,5 +181,8 @@ Caused by: org.postgresql.util.PSQLException: ERROR: column "is_using_2fa" of re
 	at org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer.initializeDatabase(AbstractScriptDatabaseInitializer.java:76) ~[spring-boot-2.6.6.jar:2.6.6]
 	at org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer.afterPropertiesSet(AbstractScriptDatabaseInitializer.java:65) ~[spring-boot-2.6.6.jar:2.6.6]
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.18.jar:5.3.18]
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.18.jar:5.3.18]
+	at org.springframework.beans.factory.support.2022-Jun-17 16:33:32|ERROR|com.example.PKI.controller.CertificateController|Generating certificate failed. Ip address: 0:0:0:0:0:0:0:1
+AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.18.jar:5.3.18]
 	... 18 more
+2022-Jun-17 16:28:31|ERROR|com.example.PKI.controller.CertificateController|Generating certificate failed. Ip address: 0:0:0:0:0:0:0:1
+2022-Jun-17 16:28:42|ERROR|com.example.PKI.controller.CertificateController|Generating certificate failed. Ip address: 0:0:0:0:0:0:0:1

@@ -7,7 +7,7 @@
         </Console>
 
         <RollingFile name="InfoFile" fileName="logging/info.log"
-                     filePattern="logging/info.%d{yyyy-MMM-dd}.log.gz" ignoreExceptions="false">
+                     filePattern="logging/info.%d{yyyy-MMM-dd}.log.gz" >
             <PatternLayout
                     pattern="%d{yyyy-MMM-dd HH:mm:ss}{UTC+0}|%level|%c|%msg%n"/>
             <Filters>
@@ -24,7 +24,7 @@
         </RollingFile>
 
         <RollingFile name="ErrorFile" fileName="logging/error.log"
-                     filePattern="logging/error.%d{yyyy-MMM-dd}.log.gz" ignoreExceptions="false">
+                     filePattern="logging/error.%d{yyyy-MMM-dd}.log.gz" >
             <PatternLayout
                     pattern="%d{yyyy-MMM-dd HH:mm:ss}{UTC+0}|%level|%c|%msg%n"/>
             <Filters>

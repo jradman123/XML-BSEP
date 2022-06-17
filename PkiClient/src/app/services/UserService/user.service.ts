@@ -15,12 +15,44 @@ export class UserService {
   public currentUser: Observable<LogedUser>;
   private user!: LogedUser;
 
+  
+check2FAStatus(email : string) : Observable<any> {
+  return this._http.get('http://localhost:8443/api/two-factor-auth-status/' + email)
+}
+
+enable2FA(email : string, status : boolean) : Observable<any> {
+  return this._http.put('http://localhost:8443/api/two-factor-auth/', {
+    email,
+    status
+  })
+}
+
+sendMagicLink(email : string) : Observable<any> {
+  return this._http.post('http://localhost:8443/api/password-less-login/', email)
+}
+
+checkPasswordlessToken(token : string) : Observable<any> {
+  return this._http.get(`http://localhost:8443/api/password-less-login/${token}`).pipe(
+    map((response: any) => {
+      if (response && response.token) {
+        localStorage.setItem('token', response.token.accessToken);
+        localStorage.setItem('currentUser', JSON.stringify(response));
+        localStorage.setItem('role' ,response.role)
+        localStorage.setItem('email', response.email);
+        this.currentUserSubject.next(response);
+      }
+      return this.user;
+    })
+  );
+}
+
   checkCode(verCode: string): Observable<any> {
     return this._http.post<any>('http://localhost:8443/api/checkCode', {
       email: localStorage.getItem('emailForReset'),
       code: verCode,
     });
   }
+  
 
   sendCode(email: string): Observable<any> {
     return this._http.post<any>('http://localhost:8443/api/sendCode', email);

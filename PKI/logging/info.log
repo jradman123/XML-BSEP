@@ -149,3 +149,134 @@
 2022-Jun-17 15:44:53|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown initiated...
 2022-Jun-17 15:44:53|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown completed.
 2022-Jun-17 15:44:53|INFO|org.apache.catalina.core.StandardService|Stopping service [Tomcat]
+2022-Jun-17 15:45:17|INFO|org.hibernate.validator.internal.util.Version|HV000001: Hibernate Validator 6.2.3.Final
+2022-Jun-17 15:45:17|INFO|com.example.PKI.PkiApplication|Starting PkiApplication using Java 16.0.2 on qb with PID 3864 (C:\Users\hp\Desktop\XML-BSEP\PKI\target\classes started by hp in C:\Users\hp\Desktop\XML-BSEP\PKI)
+2022-Jun-17 15:45:17|INFO|com.example.PKI.PkiApplication|No active profile set, falling back to 1 default profile: "default"
+2022-Jun-17 15:45:19|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-Jun-17 15:45:20|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Finished Spring Data repository scanning in 302 ms. Found 4 JPA repository interfaces.
+2022-Jun-17 15:45:20|INFO|org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker|Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@4397a639' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-Jun-17 15:45:20|INFO|org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker|Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-Jun-17 15:45:21|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat initialized with port(s): 8443 (http)
+2022-Jun-17 15:45:21|INFO|org.apache.coyote.http11.Http11NioProtocol|Initializing ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 15:45:21|INFO|org.apache.catalina.core.StandardService|Starting service [Tomcat]
+2022-Jun-17 15:45:21|INFO|org.apache.catalina.core.StandardEngine|Starting Servlet engine: [Apache Tomcat/9.0.60]
+2022-Jun-17 15:45:22|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring embedded WebApplicationContext
+2022-Jun-17 15:45:22|INFO|org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext|Root WebApplicationContext: initialization completed in 5000 ms
+2022-Jun-17 15:45:23|INFO|org.hibernate.Version|HHH000412: Hibernate ORM core version 5.6.7.Final
+2022-Jun-17 15:45:23|INFO|org.hibernate.annotations.common.Version|HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-Jun-17 15:45:23|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Starting...
+2022-Jun-17 15:45:24|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Start completed.
+2022-Jun-17 15:45:24|INFO|org.hibernate.dialect.Dialect|HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL95Dialect
+2022-Jun-17 15:45:25|INFO|org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator|HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-Jun-17 15:45:25|INFO|org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean|Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/login', POST] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/createObject', POST] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/confirmAccount/*', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/webjars/**', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/*.html', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='favicon.ico', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.html', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.css', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.js', GET] with []
+2022-Jun-17 15:45:29|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4afdb05e, org.springframework.security.web.context.SecurityContextPersistenceFilter@18d09283, org.springframework.security.web.header.HeaderWriterFilter@5b4880b3, org.springframework.web.filter.CorsFilter@2165d4ab, org.springframework.security.web.authentication.logout.LogoutFilter@70b0dc92, com.example.PKI.security.TokenAuthenticationFilter@7f9b851c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6672b0ea, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@211cf27b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6a8ab98f, org.springframework.security.web.session.SessionManagementFilter@601e7c97, org.springframework.security.web.access.ExceptionTranslationFilter@2446be5f, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@530a46f4]
+2022-Jun-17 15:45:29|INFO|org.apache.coyote.http11.Http11NioProtocol|Starting ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 15:45:29|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat started on port(s): 8443 (http) with context path ''
+2022-Jun-17 15:45:29|INFO|com.example.PKI.PkiApplication|Started PkiApplication in 13.251 seconds (JVM running for 15.916)
+2022-Jun-17 15:58:57|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-Jun-17 15:58:57|INFO|org.springframework.web.servlet.DispatcherServlet|Initializing Servlet 'dispatcherServlet'
+2022-Jun-17 15:58:57|INFO|org.springframework.web.servlet.DispatcherServlet|Completed initialization in 45 ms
+2022-Jun-17 15:58:58|INFO|com.example.PKI.controller.UserController|Login succeed. Email: markomarkovic123@gmail.com
+2022-Jun-17 16:01:34|INFO|com.example.PKI.controller.UserController|Login succeed. Email: markomarkovic123@gmail.com
+2022-Jun-17 16:17:59|INFO|com.example.PKI.controller.UserController|Login succeed. Email: markomarkovic123@gmail.com
+2022-Jun-17 16:19:41|INFO|com.example.PKI.controller.UserController|Login succeed. Email: markomarkovic123@gmail.com
+2022-Jun-17 16:22:42|INFO|com.example.PKI.controller.UserController|Login succeed. Email: admin123@gmail.com
+2022-Jun-17 16:24:02|INFO|com.example.PKI.controller.UserController|Login succeed. Email: admin123@gmail.com
+2022-Jun-17 16:26:33|INFO|org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean|Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-Jun-17 16:26:33|INFO|org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl|HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-Jun-17 16:26:33|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown initiated...
+2022-Jun-17 16:26:33|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown completed.
+2022-Jun-17 16:26:49|INFO|org.hibernate.validator.internal.util.Version|HV000001: Hibernate Validator 6.2.3.Final
+2022-Jun-17 16:26:49|INFO|com.example.PKI.PkiApplication|Starting PkiApplication using Java 16.0.2 on qb with PID 15588 (C:\Users\hp\Desktop\XML-BSEP\PKI\target\classes started by hp in C:\Users\hp\Desktop\XML-BSEP\PKI)
+2022-Jun-17 16:26:49|INFO|com.example.PKI.PkiApplication|No active profile set, falling back to 1 default profile: "default"
+2022-Jun-17 16:26:51|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-Jun-17 16:26:51|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Finished Spring Data repository scanning in 243 ms. Found 4 JPA repository interfaces.
+2022-Jun-17 16:26:52|INFO|org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker|Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@60d40ff4' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-Jun-17 16:26:52|INFO|org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker|Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-Jun-17 16:26:53|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat initialized with port(s): 8443 (http)
+2022-Jun-17 16:26:53|INFO|org.apache.coyote.http11.Http11NioProtocol|Initializing ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 16:26:53|INFO|org.apache.catalina.core.StandardService|Starting service [Tomcat]
+2022-Jun-17 16:26:53|INFO|org.apache.catalina.core.StandardEngine|Starting Servlet engine: [Apache Tomcat/9.0.60]
+2022-Jun-17 16:26:54|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring embedded WebApplicationContext
+2022-Jun-17 16:26:54|INFO|org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext|Root WebApplicationContext: initialization completed in 5025 ms
+2022-Jun-17 16:26:55|INFO|org.hibernate.Version|HHH000412: Hibernate ORM core version 5.6.7.Final
+2022-Jun-17 16:26:55|INFO|org.hibernate.annotations.common.Version|HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-Jun-17 16:26:56|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Starting...
+2022-Jun-17 16:26:56|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Start completed.
+2022-Jun-17 16:26:56|INFO|org.hibernate.dialect.Dialect|HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL95Dialect
+2022-Jun-17 16:26:59|INFO|org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator|HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-Jun-17 16:26:59|INFO|org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean|Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/login', POST] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/createObject', POST] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/confirmAccount/*', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/webjars/**', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/*.html', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='favicon.ico', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.html', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.css', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.js', GET] with []
+2022-Jun-17 16:27:05|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@71db6703, org.springframework.security.web.context.SecurityContextPersistenceFilter@62ba3045, org.springframework.security.web.header.HeaderWriterFilter@6344004d, org.springframework.web.filter.CorsFilter@470ad01c, org.springframework.security.web.authentication.logout.LogoutFilter@5b4880b3, com.example.PKI.security.TokenAuthenticationFilter@6e349258, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@d863bb, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4936fbc6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@41092c8, org.springframework.security.web.session.SessionManagementFilter@79080255, org.springframework.security.web.access.ExceptionTranslationFilter@11ec2b2f, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@7ff7e353]
+2022-Jun-17 16:27:05|INFO|org.apache.coyote.http11.Http11NioProtocol|Starting ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 16:27:06|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat started on port(s): 8443 (http) with context path ''
+2022-Jun-17 16:27:06|INFO|com.example.PKI.PkiApplication|Started PkiApplication in 18.058 seconds (JVM running for 20.87)
+2022-Jun-17 16:27:25|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-Jun-17 16:27:25|INFO|org.springframework.web.servlet.DispatcherServlet|Initializing Servlet 'dispatcherServlet'
+2022-Jun-17 16:27:25|INFO|org.springframework.web.servlet.DispatcherServlet|Completed initialization in 1 ms
+2022-Jun-17 16:27:26|INFO|com.example.PKI.controller.UserController|Login succeed. Email: admin123@gmail.com
+2022-Jun-17 16:31:08|INFO|org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean|Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-Jun-17 16:31:08|INFO|org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl|HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-Jun-17 16:31:09|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown initiated...
+2022-Jun-17 16:31:09|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown completed.
+2022-Jun-17 16:31:21|INFO|org.hibernate.validator.internal.util.Version|HV000001: Hibernate Validator 6.2.3.Final
+2022-Jun-17 16:31:21|INFO|com.example.PKI.PkiApplication|Starting PkiApplication using Java 16.0.2 on qb with PID 15136 (C:\Users\hp\Desktop\XML-BSEP\PKI\target\classes started by hp in C:\Users\hp\Desktop\XML-BSEP\PKI)
+2022-Jun-17 16:31:21|INFO|com.example.PKI.PkiApplication|No active profile set, falling back to 1 default profile: "default"
+2022-Jun-17 16:31:24|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2022-Jun-17 16:31:25|INFO|org.springframework.data.repository.config.RepositoryConfigurationDelegate|Finished Spring Data repository scanning in 264 ms. Found 4 JPA repository interfaces.
+2022-Jun-17 16:31:26|INFO|org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker|Bean 'org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler@2e5b7fba' of type [org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-Jun-17 16:31:26|INFO|org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker|Bean 'methodSecurityMetadataSource' of type [org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2022-Jun-17 16:31:26|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat initialized with port(s): 8443 (http)
+2022-Jun-17 16:31:26|INFO|org.apache.coyote.http11.Http11NioProtocol|Initializing ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 16:31:26|INFO|org.apache.catalina.core.StandardService|Starting service [Tomcat]
+2022-Jun-17 16:31:26|INFO|org.apache.catalina.core.StandardEngine|Starting Servlet engine: [Apache Tomcat/9.0.60]
+2022-Jun-17 16:31:28|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring embedded WebApplicationContext
+2022-Jun-17 16:31:28|INFO|org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext|Root WebApplicationContext: initialization completed in 6665 ms
+2022-Jun-17 16:31:29|INFO|org.hibernate.Version|HHH000412: Hibernate ORM core version 5.6.7.Final
+2022-Jun-17 16:31:29|INFO|org.hibernate.annotations.common.Version|HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-Jun-17 16:31:30|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Starting...
+2022-Jun-17 16:31:30|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Start completed.
+2022-Jun-17 16:31:30|INFO|org.hibernate.dialect.Dialect|HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL95Dialect
+2022-Jun-17 16:31:33|INFO|org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator|HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-Jun-17 16:31:33|INFO|org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean|Initialized JPA EntityManagerFactory for persistence unit 'default'
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/login', POST] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/createObject', POST] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/api/confirmAccount/*', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/webjars/**', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/*.html', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='favicon.ico', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.html', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.css', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure Ant [pattern='/**/*.js', GET] with []
+2022-Jun-17 16:31:39|INFO|org.springframework.security.web.DefaultSecurityFilterChain|Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@12948e7a, org.springframework.security.web.context.SecurityContextPersistenceFilter@aca2a0b, org.springframework.security.web.header.HeaderWriterFilter@37b44e8e, org.springframework.web.filter.CorsFilter@497c1d78, org.springframework.security.web.authentication.logout.LogoutFilter@3ef7fb04, com.example.PKI.security.TokenAuthenticationFilter@7d12fb85, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2cdb53d6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4560eb15, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@71db6703, org.springframework.security.web.session.SessionManagementFilter@7945986a, org.springframework.security.web.access.ExceptionTranslationFilter@20276412, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@7d0e43d6]
+2022-Jun-17 16:31:39|INFO|org.apache.coyote.http11.Http11NioProtocol|Starting ProtocolHandler ["http-nio-8443"]
+2022-Jun-17 16:31:39|INFO|org.springframework.boot.web.embedded.tomcat.TomcatWebServer|Tomcat started on port(s): 8443 (http) with context path ''
+2022-Jun-17 16:31:40|INFO|com.example.PKI.PkiApplication|Started PkiApplication in 19.892 seconds (JVM running for 23.926)
+2022-Jun-17 16:31:54|INFO|org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]|Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-Jun-17 16:31:54|INFO|org.springframework.web.servlet.DispatcherServlet|Initializing Servlet 'dispatcherServlet'
+2022-Jun-17 16:31:54|INFO|org.springframework.web.servlet.DispatcherServlet|Completed initialization in 1 ms
+2022-Jun-17 16:31:55|INFO|com.example.PKI.controller.UserController|Login succeed. Email: admin123@gmail.com
+2022-Jun-17 16:34:56|INFO|org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean|Closing JPA EntityManagerFactory for persistence unit 'default'
+2022-Jun-17 16:34:56|INFO|org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl|HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-Jun-17 16:34:56|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown initiated...
+2022-Jun-17 16:34:56|INFO|com.zaxxer.hikari.HikariDataSource|HikariPool-1 - Shutdown completed.

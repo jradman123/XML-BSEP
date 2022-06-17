@@ -234,13 +234,16 @@ public class UserController {
         return ResponseEntity.ok(loggedUserDto);
     }
 
+    @CrossOrigin(origins = "https://localhost:4200")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER_ROOT') || hasAuthority('USER_INTERMEDIATE')  || hasAuthority('USER_END_ENTITY')")
     @PutMapping(value = "/two-factor-auth")
     public ResponseEntity<SecretDto> change2FAStatus(@RequestBody Change2FAStatusDto dto,HttpServletRequest request) {
         String secret = userService.change2FAStatus(dto.email, dto.status);
         //loggerService.changeTwoFactorStatus(dto.email,request.getRemoteAddr());
         return ResponseEntity.ok(new SecretDto(secret));
     }
-    @GetMapping(value= "/two-factor-auth-status/{username}")
+
+    @GetMapping(value= "/two-factor-auth-status/{email}")
     public ResponseEntity<Boolean> check2FAStatus(@PathVariable String email, HttpServletRequest request) {
         boolean twoFAEnabled = userService.check2FAStatus(email);
         return ResponseEntity.ok(twoFAEnabled);
