@@ -38,7 +38,7 @@ export class PassLessLoginComponent implements OnInit {
       next: () => {
        
         
-        this.router.navigate(['jobOffers']);
+        this.router.navigate(['editUser']);
         this._snackBar.open(
           'Welcome!',
           'Dismiss'

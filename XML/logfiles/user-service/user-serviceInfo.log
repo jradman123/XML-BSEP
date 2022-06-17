@@ -1,1 +1,10 @@
 {"data":{},"file":"UserHandler.go:438","func":"user/module/infrastructure/handlers.UserHandler.PwnedPassword","level":"info","msg":"INFO:Handling PWNED PASSWORD","time":"2022-06-17T00:26:43Z"}
+{"data":{},"file":"UserHandler.go:291","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"info","msg":"INFO:Handling RegisterUser","time":"2022-06-17T08:05:30Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:05:42Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:06:44Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:07:27Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:07:28Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:539","func":"user/module/infrastructure/handlers.UserHandler.EditUserDetails","level":"info","msg":"INFO:Handling EditUserDetails","time":"2022-06-17T08:07:33Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:07:34Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:76","func":"user/module/infrastructure/handlers.UserHandler.GenerateAPIToken","level":"info","msg":"INFO:GenerateAPIToken","time":"2022-06-17T08:08:22Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:17:03Z"}
