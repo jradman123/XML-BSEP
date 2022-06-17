@@ -11,6 +11,7 @@ import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
+import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { EditUserComponent } from './pages/edit-user/edit-user.component';
 import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
@@ -39,6 +40,11 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginPageComponent,
+  },
+  {
+
+    path: 'twofa',
+    component: TwofaPageComponent,
   },
   {
     path: 'register',
@@ -86,11 +92,11 @@ const routes: Routes = [
     component: UserHomeComponent,canActivate: [AuthGuard]
   }
 
-  
+
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes), MaterialModule],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

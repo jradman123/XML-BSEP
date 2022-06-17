@@ -63,15 +63,19 @@ func (server *Server) initCustomHandlers() {
 	logError := logger.InitializeLogger("api-gateway", context.Background(), "Error")
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
+	tfauthRepo := server.InitTFAuthRepo(db)
+
+	l := log.New(os.Stdout, "gateway ", log.LstdFlags) // Logger koji dajemo handlerima
+	userService := server.InitUserService(l, logInfo, logError, userRepo)
+	tfauthService := server.InitTFAuthService(l, tfauthRepo)
 	lVerificationRepo := server.InitLoginVerificationRepo(db)
 	passwordlessService := server.InitPasswordlessService(logInfo, logError, lVerificationRepo)
-	userService := server.InitUserService(logInfo, logError, userRepo)
 
 	validator := validator.New()
 
 	passwordUtil := &helpers.PasswordUtil{}
 
-	authHandler := handlers.NewAuthenticationHandler(logInfo, logError, userService, validator, passwordUtil, passwordlessService)
+	authHandler := handlers.NewAuthenticationHandler(l, logInfo, logError, userService, tfauthService, validator, passwordUtil, passwordlessService)
 	authHandler.Init(server.mux)
 }
 
@@ -79,7 +83,7 @@ func (server *Server) Start() {
 	cors := gorilla_handlers.CORS(
 		gorilla_handlers.AllowedOrigins([]string{"https://localhost:4200", "https://localhost:4200/**", "http://localhost:4200", "http://localhost:4200/**", "http://localhost:8080/**"}),
 		gorilla_handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
-		gorilla_handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "Authorization", "Access-Control-Allow-Origin", "*"}),
+		gorilla_handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "Authorization", "Access-Control-Allow-*", "Access-Control-Allow-Origin", "*"}),
 		gorilla_handlers.AllowCredentials(),
 	)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), cors(muxMiddleware(server))))
@@ -90,11 +94,19 @@ func muxMiddleware(server *Server) http.Handler {
 	})
 }
 
-func (server *Server) InitUserService(logInfo *logger.Logger, logError *logger.Logger, repo repositories.UserRepository) *services.UserService {
-	return services.NewUserService(logInfo, logError, repo)
+func (server *Server) InitUserService(l *log.Logger, logInfo *logger.Logger, logError *logger.Logger, repo repositories.UserRepository) *services.UserService {
+	return services.NewUserService(l, logInfo, logError, repo)
+}
+
+func (server *Server) InitTFAuthService(l *log.Logger, repo repositories.TFAuthRepository) *services.TFAuthService {
+	return services.NewTFAuthService(l, repo)
 }
 func (server *Server) InitUserRepo(db *gorm.DB) repositories.UserRepository {
 	return persistance.NewUserRepositoryImpl(db)
+}
+
+func (server *Server) InitTFAuthRepo(db *gorm.DB) repositories.TFAuthRepository {
+	return persistance.NewTFAuthRepositoryImpl(db)
 }
 
 var db *gorm.DB
@@ -122,7 +134,8 @@ func (server *Server) SetupDatabase() *gorm.DB {
 		fmt.Println("Successfully connected to database!")
 	}
 
-	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.User{}) //This will not remove columns
+	db.AutoMigrate(&model.QrCode{})
 	db.AutoMigrate(&model.LoginVerification{}) //This will not remove columns
 	//db.Create(users) // Use this only once to populate db with data
 

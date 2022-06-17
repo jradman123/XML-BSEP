@@ -60,6 +60,11 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
 import { ApiKeyComponent } from './components/api-key/api-key.component';
+import { NgxCaptchaModule } from 'ngx-captcha';
+import { TfaComponent } from './components/tfa/tfa.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { QRCodeModule } from 'angular2-qrcode';
+import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
 import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
@@ -87,6 +92,9 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     FiterPipePipe,
     NewJobOfferComponent,
     ApiKeyComponent,
+    TfaComponent,
+    ConfirmDialogComponent,
+    TwofaPageComponent,
     PassLessReqComponent,
     PassLessLoginComponent,
   ],
@@ -98,7 +106,6 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     NgbModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule,
     BrowserAnimationsModule,
     MatCardModule,
     MatAutocompleteModule,
@@ -141,6 +148,9 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     MatFormFieldModule,
     MatInputModule,
     MatRippleModule,
+    ReactiveFormsModule,
+    NgxCaptchaModule,
+    QRCodeModule
   ],
   providers: [HttpClientModule,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },DatePipe,{ provide: JWT_OPTIONS, useValue: JWT_OPTIONS }, JwtHelperService],
