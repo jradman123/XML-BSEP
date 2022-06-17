@@ -63,12 +63,15 @@ func (server *Server) initCustomHandlers() {
 	logError := logger.InitializeLogger("api-gateway", context.Background(), "Error")
 	db = server.SetupDatabase()
 	userRepo := server.InitUserRepo(db)
+	lVerificationRepo := server.InitLoginVerificationRepo(db)
+	passwordlessService := server.InitPasswordlessService(logInfo, logError, lVerificationRepo)
 	userService := server.InitUserService(logInfo, logError, userRepo)
 
 	validator := validator.New()
 
 	passwordUtil := &helpers.PasswordUtil{}
-	authHandler := handlers.NewAuthenticationHandler(logInfo, logError, userService, validator, passwordUtil)
+
+	authHandler := handlers.NewAuthenticationHandler(logInfo, logError, userService, validator, passwordUtil, passwordlessService)
 	authHandler.Init(server.mux)
 }
 
@@ -119,8 +122,17 @@ func (server *Server) SetupDatabase() *gorm.DB {
 		fmt.Println("Successfully connected to database!")
 	}
 
-	db.AutoMigrate(&model.User{}) //This will not remove columns
+	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.LoginVerification{}) //This will not remove columns
 	//db.Create(users) // Use this only once to populate db with data
 
 	return db
+}
+
+func (server *Server) InitPasswordlessService(logInfo *logger.Logger, logError *logger.Logger, repo repositories.LoginVerificationRepository) *services.PasswordLessService {
+	return services.NewPasswordLessService(logInfo, logError, repo)
+}
+
+func (server *Server) InitLoginVerificationRepo(db *gorm.DB) repositories.LoginVerificationRepository {
+	return persistance.NewLoginVerificationRepositoryImpl(db)
 }

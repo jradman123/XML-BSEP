@@ -6,18 +6,17 @@ import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
-  selector: 'app-login-page',
-  templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.css']
+  selector: 'app-pass-less-req',
+  templateUrl: './pass-less-req.component.html',
+  styleUrls: ['./pass-less-req.component.css']
 })
-export class LoginPageComponent implements OnInit {
-
-  
+export class PassLessReqComponent implements OnInit {
 
   constructor(
     private authService: UserService,
     private _snackBar: MatSnackBar,
-    private _router: Router) { }
+    private _router: Router
+    ) { }
 
   ngOnInit(): void {
   }
@@ -27,17 +26,15 @@ export class LoginPageComponent implements OnInit {
     const loginObserver = {
       next: (x: any) => {
         console.log(x);
-        this._router.navigate(['/editUser']);
-        this._snackBar.open("Welcome!", "Dismiss");
+        this._router.navigate(['passwordlessLogin']);
+        this._snackBar.open("Code is sent to your mail!", "Dismiss");
       },
       error: (err: HttpErrorResponse) => {
        
         this._snackBar.open(err.error + "!", 'Dismiss');
       },
     };
-    
-    this.authService.login(f.value).subscribe(loginObserver);
+    this.authService.passwordlessLoginRequest(f.value).subscribe(loginObserver);
   }
 
 }
-
