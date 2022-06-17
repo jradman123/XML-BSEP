@@ -112,7 +112,7 @@ public class UserController {
         if (activated.isActivated()) {
             loggerService.confirmAccountSuccess(user.getEmail(),request.getRemoteAddr());
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("http://localhost:4200/")).build();
+                    .location(URI.create("https://localhost:4200/")).build();
         } else {
             loggerService.confirmAccountFailed(user.getEmail(),request.getRemoteAddr());
             return new ResponseEntity<>("Error happened!", HttpStatus.INTERNAL_SERVER_ERROR);
