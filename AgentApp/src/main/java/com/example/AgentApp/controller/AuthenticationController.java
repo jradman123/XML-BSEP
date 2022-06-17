@@ -74,7 +74,7 @@ public class AuthenticationController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             UserRole role = userService.findByUsername(authenticationRequest.getUsername()).getRole();
             UserDetails user = (UserDetails) authentication.getPrincipal();
-            String jwt = tokenUtils.generateToken(user.getUser().getUsername());
+            String jwt = tokenUtils.generateToken(user.getUser().getUsername(), role.toString());
             int expiresIn = tokenUtils.getExpiredIn();
             LoggedUserDto loggedUserDto = new LoggedUserDto(authenticationRequest.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
             loggerService.loginSuccess(authenticationRequest.getUsername());
@@ -172,7 +172,7 @@ public class AuthenticationController {
                 user.getUsername(), null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserRole role = userService.findByUsername(user.getUsername()).getRole();
-        String jwt = tokenUtils.generateToken(user.getUsername());
+        String jwt = tokenUtils.generateToken(user.getUsername(), role.toString());
         int expiresIn = tokenUtils.getExpiredIn();
         LoggedUserDto loggedUserDto = new LoggedUserDto(user.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
         customTokenService.deleteById(token.getId());

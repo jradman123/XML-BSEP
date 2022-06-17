@@ -17,6 +17,7 @@ export class UserService {
   public currentUser: Observable<LoggedUserDto>;
   private user! : LoggedUserDto;
   private loginStatus = new BehaviorSubject<boolean>(false);
+  private decoded! : any
 
   private apiServerUrl = environment.apiBaseUrl;
   constructor(private http: HttpClient, private router : Router, private jwtHelper :JwtHelperService) {
@@ -82,19 +83,20 @@ checkPasswordlessToken(token : string) : Observable<any> {
 }
 
 login(model: any): Observable<LoggedUserDto> {
-  return this.http.post(`${this.apiServerUrl}/api/auth/login`, model).pipe(
+  return this.http.post(`${this.apiServerUrl}/api/auth/login`, model)
+  .pipe(
     map((response: any) => {
-      if (response && response.token) {
-
-        console.log(this.jwtHelper.decodeToken( response.token))
-
-        console.log(JSON.stringify(this.jwtHelper.decodeToken( response.token)));
+      if (response) {
         
-        this.loginStatus.next(true);
+        this.decoded = this.jwtHelper.decodeToken(response.token.accessToken)
+        console.log(this.decoded);
+        
         localStorage.setItem('token', response.token.accessToken);
         localStorage.setItem('currentUser', JSON.stringify(response));
-        localStorage.setItem('role' ,response.role)
-        localStorage.setItem('username' ,response.username)
+        localStorage.setItem('role' , this.decoded.role)
+        localStorage.setItem('username', this.decoded.sub)
+
+      
         this.currentUserSubject.next(response);
       }
       return this.user;
