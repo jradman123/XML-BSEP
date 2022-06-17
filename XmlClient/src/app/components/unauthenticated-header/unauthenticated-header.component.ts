@@ -9,13 +9,9 @@ import { UserService } from 'src/app/services/user-service/user.service';
 })
 export class UnauthenticatedHeaderComponent implements OnInit {
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor() { }
 
   ngOnInit(): void {
-  }
-  logout() {
-    this.userService.logout();
-    this.router.navigate(['']);
   }
 
 }
