@@ -12,7 +12,7 @@ export class AuthGuardRegular implements CanActivate {
 
     canActivate() {
         const loggedIn = localStorage.getItem("token")
-        var role = localStorage.getItem('role');
+        const role = localStorage.getItem('role');
         if (loggedIn != null && role === 'Regular') {
             // logged in so return true
             return true;
