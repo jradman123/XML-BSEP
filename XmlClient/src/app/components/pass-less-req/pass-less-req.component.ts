@@ -27,11 +27,11 @@ export class PassLessReqComponent implements OnInit {
       next: (x: any) => {
         console.log(x);
         this._router.navigate(['passwordlessLogin']);
-        this._snackBar.open("Code is sent to your mail!", "Dismiss");
+        this._snackBar.open("Code is sent to your mail!", "Dismiss",{duration : 3000});
       },
       error: (err: HttpErrorResponse) => {
        
-        this._snackBar.open(err.error + "!", 'Dismiss');
+        this._snackBar.open(err.error + "!", 'Dismiss', {duration : 3000});
       },
     };
     this.authService.passwordlessLoginRequest(f.value).subscribe(loginObserver);

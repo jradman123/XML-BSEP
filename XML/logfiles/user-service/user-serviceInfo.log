@@ -8,3 +8,7 @@
 {"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:07:34Z"}
 {"data":{"user":"jradman12"},"file":"UserHandler.go:76","func":"user/module/infrastructure/handlers.UserHandler.GenerateAPIToken","level":"info","msg":"INFO:GenerateAPIToken","time":"2022-06-17T08:08:22Z"}
 {"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T08:17:03Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T14:13:40Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T14:18:29Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T14:18:53Z"}
+{"data":{"user":"jradman12"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-17T14:19:01Z"}

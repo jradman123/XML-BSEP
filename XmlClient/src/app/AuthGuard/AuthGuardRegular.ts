@@ -4,7 +4,7 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { UserService } from 'src/app/services/user-service/user.service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
+export class AuthGuardRegular implements CanActivate {
     constructor(
         private router: Router,
         private authenticationService: UserService
@@ -12,7 +12,8 @@ export class AuthGuard implements CanActivate {
 
     canActivate() {
         const loggedIn = localStorage.getItem("token")
-        if (loggedIn != null) {
+        const role = localStorage.getItem('role');
+        if (loggedIn != null && role === 'Regular') {
             // logged in so return true
             return true;
         }

@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
   selector: 'app-unauthenticated-header',
@@ -9,13 +7,9 @@ import { UserService } from 'src/app/services/user-service/user.service';
 })
 export class UnauthenticatedHeaderComponent implements OnInit {
 
-  constructor(private userService: UserService, private router: Router) { }
+  constructor() { }
 
   ngOnInit(): void {
-  }
-  logout() {
-    this.userService.logout();
-    this.router.navigate(['']);
   }
 
 }
