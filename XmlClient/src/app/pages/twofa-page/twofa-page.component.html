@@ -9,7 +9,7 @@
                 <div style="width: 100%; display: flex">
                     <mat-form-field appearance="fill">
                         <mat-label> Enter 6-digit code </mat-label>
-                        <input matInput formControlName="code" />
+                        <input type="number" matInput formControlName="code" />
                         <mat-error *ngIf="
                   createForm?.get('code')?.valid &&
                   createForm?.get('code')?.touched &&

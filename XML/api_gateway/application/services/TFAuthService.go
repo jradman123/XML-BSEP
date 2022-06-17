@@ -5,7 +5,6 @@ import (
 	"encoding/base32"
 	"gateway/module/domain/repositories"
 	"github.com/dgryski/dgoogauth"
-	"github.com/skip2/go-qrcode"
 	"log"
 )
 
@@ -57,10 +56,11 @@ func (u TFAuthService) Enable2FaForUser(username string) (bool, string, error) {
 	twofa := NewOTPConfig(secret)
 	uri := twofa.ProvisionURI(username)
 	log.Println("This is URI: " + uri)
-	err = qrcode.WriteFile(uri, qrcode.Medium, 256, "qr2.png")
-	if err != nil {
-		return false, "", err
-	}
+	// No more writing to file
+	//err = qrcode.WriteFile(uri, qrcode.Medium, 256, "qr2.png")
+	//if err != nil {
+	//	return false, "", err
+	//}
 
 	if err != nil {
 		return false, "", err

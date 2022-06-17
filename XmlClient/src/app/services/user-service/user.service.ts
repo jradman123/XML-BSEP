@@ -8,11 +8,12 @@ import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
 import { IUsername } from 'src/app/interfaces/username';
 import { UserDetails } from 'src/app/interfaces/user-details';
+import { IAuthenticate } from 'src/app/interfaces/authenticate';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {  
+export class UserService {
   private currentUserSubject: BehaviorSubject<LoggedUser>;
   public currentUser: Observable<LoggedUser>;
   private user!: LoggedUser;
@@ -30,16 +31,27 @@ export class UserService {
     );
   }
 
-  auth(loginReq: ILoginRequest)  : Observable<any> {
+  auth(loginReq: ILoginRequest): Observable<any> {
     return this._http
       .post(`http://localhost:9090/users/auth/user`, loginReq)
-  }
-
-  login(loginRequest: ILoginRequest): Observable<LoggedUser> {
-    return this._http
-      .post(`http://localhost:9090/users/login/user`, loginRequest)
       .pipe(
         map((response: any) => {
+          if (response) {
+          
+            localStorage.setItem('username', response.username);
+            this.currentUserSubject.next(response);
+          }
+          return response;
+        })
+      );
+  }
+  login(loginRegularRequest: IUsername): Observable<LoggedUser> {
+    return this._http
+      .post(`http://localhost:9090/users/auth/user/regular`, loginRegularRequest)
+      .pipe(
+        map((response: any) => {
+          console.log(response);
+          
           if (response) {
             localStorage.setItem('token', response.token);
             localStorage.setItem('currentUser', JSON.stringify(response));
@@ -49,11 +61,29 @@ export class UserService {
 
             this.currentUserSubject.next(response);
           }
-          return this.user;
+          return response;
         })
       );
   }
+  authenticate2FA(request: IAuthenticate): Observable<any> {
+    return this._http.post<any>(
+      'http://localhost:9090/2fa/authenticate',
+     request
+    ) .pipe(
+      map((response: any) => {
+        if (response) {
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('currentUser', JSON.stringify(response));
+          localStorage.setItem('role', response.role);
+          localStorage.setItem('email', response.email);
+          localStorage.setItem('username', response.username);
 
+          this.currentUserSubject.next(response);
+        }
+        return response;
+      })
+    );
+  }
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
@@ -101,31 +131,31 @@ export class UserService {
   enable2FA(username: string): Observable<any> {
     return this._http.post<any>(
       'http://localhost:9090/2fa/enable',
-      {username}
+      { username }
     );
   }
   disable2FA(username: string) {
     return this._http.post<any>(
       'http://localhost:9090/2fa/disable',
-      {username}
+      { username }
     );
   }
   check2FAStatus(username: string): Observable<any> {
     return this._http.post<any>(
       'http://localhost:9090/2fa/check',
-      {username}
+      { username }
     );
   }
 
-  getUserDetails(username : any) {
+  getUserDetails(username: any) {
     return this._http.post<UserDetails>(
       'http://localhost:9090/users/user/details', {
-        username
+      username
     }
-      );
+    );
   }
 
-  updateUser(user : UserDetails) {
+  updateUser(user: UserDetails) {
     return this._http.post<UserDetails>('http://localhost:9090/users/user/edit',
       user
     )
@@ -142,23 +172,23 @@ export class UserService {
     return this._http.get<any>(
       'http://localhost:9090/users/login/passwordless/' + code
     )
-    .pipe(
-      map((response: any) => {
-        console.log(response);
-        console.log(response.Token);
-        if (response) {
-          console.log('passwordless login');
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('currentUser', JSON.stringify(response));
-          localStorage.setItem('role', response.role);
-          localStorage.setItem('email', response.email);
-          localStorage.setItem('username', response.username);
+      .pipe(
+        map((response: any) => {
+          console.log(response);
+          console.log(response.Token);
+          if (response) {
+            console.log('passwordless login');
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('currentUser', JSON.stringify(response));
+            localStorage.setItem('role', response.role);
+            localStorage.setItem('email', response.email);
+            localStorage.setItem('username', response.username);
 
-          this.currentUserSubject.next(response);
-        }
-        return this.user;
-      })
-    );
+            this.currentUserSubject.next(response);
+          }
+          return this.user;
+        })
+      );
   }
 
 }

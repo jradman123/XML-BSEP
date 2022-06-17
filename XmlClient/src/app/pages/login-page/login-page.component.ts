@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ILoginRequest } from 'src/app/interfaces/login-request';
+import { IUsername } from 'src/app/interfaces/username';
 import { UserService } from 'src/app/services/user-service/user.service';
 
 
@@ -17,6 +18,8 @@ export class LoginPageComponent implements OnInit {
   aFormGroup!: FormGroup;
   siteKey!: string;
   loginReq: ILoginRequest;
+  usernameReq!: IUsername;
+  username: string = ""
 
   constructor(
     private authService: UserService,
@@ -45,17 +48,16 @@ export class LoginPageComponent implements OnInit {
     }
 
     const loginObserver = {
-      next: (x: any) => {
-        if (x == true) {
-          console.log(x);
-          this._router.navigate(['/twofa']);
+      next: (res: any) => {
+        if (res.twofa == true) {
+          console.log("OVDJE"+res.twofa );
+          this.twoFaLogin()
+
         } else {
-          this._router.navigate(['/']);
-          this._snackBar.open("Welcome!", "Dismiss");
+          this.regularLogin()
         }
       },
       error: (err: HttpErrorResponse) => {
-
         this._snackBar.open(err.error, 'Dismiss');
       },
     };
@@ -66,15 +68,28 @@ export class LoginPageComponent implements OnInit {
 
     this.authService.auth(this.loginReq).subscribe(loginObserver);
   }
+  twoFaLogin() {
+    this._router.navigate(['/twofa']);
+  }
+  regularLogin() {
+    const nextLoginOserver = {
+      next: (x: any) => {
+        this._router.navigate(['/']);
+        this._snackBar.open("Welcome!", "Dismiss");
+      },
+      error: (err: HttpErrorResponse) => {
+  
+        this._snackBar.open(err.error, 'Dismiss');
+      },
+    }
+  
+    this.username = localStorage.getItem('username')!
+    if (this.username != null) {
+      this.usernameReq = {
+        username: this.username
+      }
+      this.authService.login(this.loginReq).subscribe(nextLoginOserver);
+    }
+  }
 
 }
-// console.log(x);
-// this._router.navigate(['/editUser']);
-// this._snackBar.open("Welcome!", "Dismiss");
-// },
-// error: (err: HttpErrorResponse) => {
-
-// this._snackBar.open(err.error + "!", 'Dismiss');
-// >>>>>>> development
-// }, 
-

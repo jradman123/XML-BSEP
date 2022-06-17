@@ -65,17 +65,17 @@ func (server *Server) initCustomHandlers() {
 	userRepo := server.InitUserRepo(db)
 	tfauthRepo := server.InitTFAuthRepo(db)
 
-	userService := server.InitUserService(l, userRepo)
+	l := log.New(os.Stdout, "gateway ", log.LstdFlags) // Logger koji dajemo handlerima
+	userService := server.InitUserService(l, logInfo, logError, userRepo)
 	tfauthService := server.InitTFAuthService(l, tfauthRepo)
 	lVerificationRepo := server.InitLoginVerificationRepo(db)
 	passwordlessService := server.InitPasswordlessService(logInfo, logError, lVerificationRepo)
-	userService := server.InitUserService(logInfo, logError, userRepo)
 
 	validator := validator.New()
 
 	passwordUtil := &helpers.PasswordUtil{}
 
-	authHandler := handlers.NewAuthenticationHandler(l,logInfo, logError, userService,tfauthService, validator, passwordUtil, passwordlessService)
+	authHandler := handlers.NewAuthenticationHandler(l, logInfo, logError, userService, tfauthService, validator, passwordUtil, passwordlessService)
 	authHandler.Init(server.mux)
 }
 
@@ -94,8 +94,8 @@ func muxMiddleware(server *Server) http.Handler {
 	})
 }
 
-func (server *Server) InitUserService(logInfo *logger.Logger, logError *logger.Logger, repo repositories.UserRepository) *services.UserService {
-	return services.NewUserService(logInfo, logError, repo)
+func (server *Server) InitUserService(l *log.Logger, logInfo *logger.Logger, logError *logger.Logger, repo repositories.UserRepository) *services.UserService {
+	return services.NewUserService(l, logInfo, logError, repo)
 }
 
 func (server *Server) InitTFAuthService(l *log.Logger, repo repositories.TFAuthRepository) *services.TFAuthService {

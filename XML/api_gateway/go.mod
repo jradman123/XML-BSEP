@@ -11,14 +11,14 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/handlers v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0
-	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
+	github.com/microcosm-cc/bluemonday v1.0.18
+	github.com/sirupsen/logrus v1.8.1
 	github.com/trycourier/courier-go/v2 v2.5.0
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	google.golang.org/grpc v1.46.2
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gorm.io/driver/postgres v1.3.6
 	gorm.io/gorm v1.23.5
-	rsc.io/qr v0.2.0
 )
 
 require (
@@ -39,8 +39,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.4 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/microcosm-cc/bluemonday v1.0.18 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/snowzach/rotatefilehook v0.0.0-20220211133110-53752135082d // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
