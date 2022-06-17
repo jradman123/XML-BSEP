@@ -150,10 +150,10 @@ public class AuthenticationController {
     public ResponseEntity<?> sendLinkForPasswordLess(@RequestBody String username) {
         User user = userService.findByUsername(username);
         if (user == null) {
-            loggerService.sendLinkForPasswordlessFailed(user.getEmail());
+            loggerService.sendLinkForPasswordLessFailed(user.getEmail());
             return ResponseEntity.notFound().build();
         }
-        loggerService.sendLinkForPasswordlessSuccess(user.getEmail());
+        loggerService.sendLinkForPasswordLessSuccess(user.getEmail());
         customTokenService.sendMagicLink(user);
         return ResponseEntity.accepted().build();
     }
@@ -165,7 +165,7 @@ public class AuthenticationController {
         if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
             customTokenService.deleteById(token.getId());
             customTokenService.sendMagicLink(user);
-            loggerService.passwordlessLoginFailed(user.getUsername(),request.getRemoteAddr());
+            loggerService.passwordLessLoginFailed(user.getUsername(),request.getRemoteAddr());
             return new ResponseEntity<>("Your magic link is expired,we sent you new one. Please check you mail box.", HttpStatus.BAD_REQUEST);
         }
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -176,7 +176,7 @@ public class AuthenticationController {
         int expiresIn = tokenUtils.getExpiredIn();
         LoggedUserDto loggedUserDto = new LoggedUserDto(user.getUsername(), role.toString(), new UserTokenState(jwt, expiresIn));
         customTokenService.deleteById(token.getId());
-        loggerService.passwordlessLoginSuccess(user.getUsername());
+        loggerService.passwordLessLoginSuccess(user.getUsername());
         return ResponseEntity.ok(loggedUserDto);
     }
 
