@@ -11,4 +11,5 @@ public interface CustomTokenService {
     void deleteById(Long id);
     void sendResetPasswordToken(User user);
     boolean checkResetPasswordCode(String sentCode,String codeDb);
+    void sendMagicLink(User user);
 }

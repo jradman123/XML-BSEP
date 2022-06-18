@@ -78,8 +78,6 @@ public class CustomTokenServiceImpl implements CustomTokenService {
         saveToken(customToken);
         emailSenderService.sendEmail(user.getRecoveryEmail(),"Reset password", "Following code is your new temporary " +
                 "password \nCode : " + passwordCode);
-
-
     }
 
     @Override
@@ -87,5 +85,21 @@ public class CustomTokenServiceImpl implements CustomTokenService {
         return passwordEncoder.matches(sentCode,codeDb);
     }
 
+    @Override
+    public void sendMagicLink(User user) {
+        CustomToken token = createTokenForMagicLink(user);
+        emailSenderService.sendEmail(user.getEmail(),"Password-less login",
+                "Click on the following link to sign in to your account "
+                        +"https://localhost:4200/passwordless-login/"
+                        + token.getToken()
+        );
+    }
 
+    private CustomToken createTokenForMagicLink(User user) {
+        CustomToken token = new CustomToken(UUID.randomUUID().toString(),user, TokenType.MagicLink);
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(5));
+        customTokenRepository.save(token);
+        return token;
+    }
 }
+

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoggedUserDto } from 'src/app/interfaces/logged-user-dto';
@@ -16,9 +17,10 @@ export class UserService {
   public currentUser: Observable<LoggedUserDto>;
   private user! : LoggedUserDto;
   private loginStatus = new BehaviorSubject<boolean>(false);
+  private decoded! : any
 
   private apiServerUrl = environment.apiBaseUrl;
-  constructor(private http: HttpClient, private router : Router) {
+  constructor(private http: HttpClient, private router : Router, private jwtHelper :JwtHelperService) {
     this.currentUserSubject = new BehaviorSubject<LoggedUserDto>(
       JSON.parse(localStorage.getItem('currentUser')!)
     );
@@ -81,14 +83,20 @@ checkPasswordlessToken(token : string) : Observable<any> {
 }
 
 login(model: any): Observable<LoggedUserDto> {
-  return this.http.post(`${this.apiServerUrl}/api/auth/login`, model).pipe(
+  return this.http.post(`${this.apiServerUrl}/api/auth/login`, model)
+  .pipe(
     map((response: any) => {
-      if (response && response.token) {
-        this.loginStatus.next(true);
+      if (response) {
+        
+        this.decoded = this.jwtHelper.decodeToken(response.token.accessToken)
+        console.log(this.decoded);
+        
         localStorage.setItem('token', response.token.accessToken);
         localStorage.setItem('currentUser', JSON.stringify(response));
-        localStorage.setItem('role' ,response.role)
-        localStorage.setItem('username' ,response.username)
+        localStorage.setItem('role' , this.decoded.role)
+        localStorage.setItem('username', this.decoded.sub)
+
+      
         this.currentUserSubject.next(response);
       }
       return this.user;

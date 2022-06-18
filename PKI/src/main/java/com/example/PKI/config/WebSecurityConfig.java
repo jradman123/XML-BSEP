@@ -62,7 +62,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/checkCode").permitAll()
                 .antMatchers("/api/resetPassword").permitAll()
                 .antMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
-                .antMatchers("/api/foo").permitAll()		// /api/foo
+                .antMatchers("/api/foo").permitAll()
+                .antMatchers("/api/two-factor-auth-status/*").permitAll()
+                .antMatchers("/api/password-less-login/*").permitAll()
+                .antMatchers("/api/password-less-login").permitAll()
                 .anyRequest().authenticated().and()
                 .cors().and()
                 .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class)

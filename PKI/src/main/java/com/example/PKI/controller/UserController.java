@@ -12,6 +12,9 @@ import com.example.PKI.service.UserService;
 import com.example.PKI.service.CustomTokenService;
 import com.example.PKI.service.impl.LoggerServiceImpl;
 import com.github.nbaars.pwnedpasswords4j.client.PwnedPasswordChecker;
+import de.taimos.totp.TOTP;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,23 +63,38 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoggedUserDto> login(@Valid
-            @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response,HttpServletRequest request) {
+    public ResponseEntity<Object> login(@Valid @RequestBody JwtAuthenticationRequest authenticationRequest,
+                                               HttpServletResponse response,HttpServletRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authenticationRequest.getEmail(), authenticationRequest.getPassword()));
+
+            User u = userService.findByEmail(authenticationRequest.getEmail());
+            String code = authenticationRequest.getCode();
+            if (u.isUsing2FA() && (code == null || !code.equals(getTOTPCode(u.getSecret())))) {
+                loggerService.loginFailed(authenticationRequest.getEmail(),request.getRemoteAddr());
+                return ResponseEntity.badRequest().body("Code invalid");
+            }
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
             Role role = userService.findByEmail(authenticationRequest.getEmail()).getRole();
             UserDetails user = (UserDetails) authentication.getPrincipal();
-            String jwt = tokenUtils.generateToken(user.getUser().getEmail());
+            String jwt = tokenUtils.generateToken(user.getUser().getEmail(), role.toString());
             int expiresIn = tokenUtils.getExpiredIn();
             LoggedUserDto loggedUserDto = new LoggedUserDto(authenticationRequest.getEmail(), role.toString(), new UserTokenState(jwt, expiresIn));
             loggerService.loginSuccess(authenticationRequest.getEmail());
             return ResponseEntity.ok(loggedUserDto);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             loggerService.loginFailed(authenticationRequest.getEmail(),request.getRemoteAddr());
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    public static String getTOTPCode(String secretKey) {
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode(secretKey);
+        String hexKey = Hex.encodeHexString(bytes);
+        return TOTP.getOTP(hexKey);
     }
 
     @PostMapping("/createSubject")
@@ -119,7 +137,6 @@ public class UserController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
     //ovo moze da radi bilo koji ulogovani korisnik
     @PutMapping(value = "/changePassword")
     public ResponseEntity<HttpStatus> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
@@ -181,6 +198,55 @@ public class UserController {
         userService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getNewPassword());
         loggerService.resetPasswordSuccess(resetPasswordDto.getEmail(),request.getRemoteAddr());
         return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/password-less-login")
+    public ResponseEntity<?> sendLinkForPasswordLess(@RequestBody String email) {
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            //loggerService.sendLinkForPasswordLessFailed(user.getEmail());
+            return ResponseEntity.notFound().build();
+        }
+        //loggerService.sendLinkForPasswordLessSuccess(user.getEmail());
+        customTokenService.sendMagicLink(user);
+        return ResponseEntity.accepted().build();
+    }
+
+    @GetMapping(value = "/password-less-login/{link}")
+    public ResponseEntity<?> passwordLessLogin(@PathVariable String link,HttpServletRequest request) {
+        CustomToken token  = customTokenService.findByToken(link);
+        User user = token.getUser();
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+            customTokenService.deleteById(token.getId());
+            customTokenService.sendMagicLink(user);
+            //loggerService.passwordLessLoginFailed(user.getEmail(),request.getRemoteAddr());
+            return new ResponseEntity<>("Your magic link is expired,we sent you new one. Please check you mail box.", HttpStatus.BAD_REQUEST);
+        }
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user.getEmail(), null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Role role = userService.findByEmail(user.getEmail()).getRole();
+        String jwt = tokenUtils.generateToken(user.getEmail(), role.toString());
+        int expiresIn = tokenUtils.getExpiredIn();
+        LoggedUserDto loggedUserDto = new LoggedUserDto(user.getEmail(), role.toString(), new UserTokenState(jwt, expiresIn));
+        customTokenService.deleteById(token.getId());
+        //loggerService.passwordLessLoginSuccess(user.getEmail());
+        return ResponseEntity.ok(loggedUserDto);
+    }
+
+    @CrossOrigin(origins = "https://localhost:4200")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('USER_ROOT') || hasAuthority('USER_INTERMEDIATE')  || hasAuthority('USER_END_ENTITY')")
+    @PutMapping(value = "/two-factor-auth")
+    public ResponseEntity<SecretDto> change2FAStatus(@RequestBody Change2FAStatusDto dto,HttpServletRequest request) {
+        String secret = userService.change2FAStatus(dto.email, dto.status);
+        //loggerService.changeTwoFactorStatus(dto.email,request.getRemoteAddr());
+        return ResponseEntity.ok(new SecretDto(secret));
+    }
+
+    @GetMapping(value= "/two-factor-auth-status/{email}")
+    public ResponseEntity<Boolean> check2FAStatus(@PathVariable String email, HttpServletRequest request) {
+        boolean twoFAEnabled = userService.check2FAStatus(email);
+        return ResponseEntity.ok(twoFAEnabled);
     }
 
 }

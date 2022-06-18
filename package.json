@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "google-recaptcha-v2": "^1.0.4"
+  }
+}

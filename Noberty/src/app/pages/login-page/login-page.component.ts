@@ -17,6 +17,7 @@ import { UserService } from 'src/app/services/UserService/user.service';
 export class LoginPageComponent implements OnInit {
   form!: FormGroup;
   formPL! : FormGroup;
+  siteKey!: string;
 
   usernamee!: string;
   passwordless = false;
@@ -26,7 +27,10 @@ export class LoginPageComponent implements OnInit {
     private _router: Router,
     private _userService: UserService,
     private _snackBar: MatSnackBar
-  ) {}
+  ) {
+    this.siteKey = "6Lcht3AgAAAAABAzzhnpricVg4eDjZmX-HBFbm6u"
+
+  }
 
   ngOnInit(): void {
     
@@ -46,6 +50,10 @@ export class LoginPageComponent implements OnInit {
         ),
       ]),
       code: new FormControl('', []),
+      recaptcha: new FormControl('', [
+        Validators.required
+      ]),
+
     });
 
     this.formPL =  this.formBuilder.group({

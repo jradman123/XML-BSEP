@@ -13,10 +13,13 @@ import { CreateCertificateUserComponent } from './components/create-certificate-
 import { RegistrationComponent } from './components/registration/registration.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { AuthGuard } from './AuthGuard/AuthGuard';
+import { TwoFactorAuthComponent } from './components/two-factor-auth/two-factor-auth.component';
+import { PasswordlessLoginComponent } from './components/passwordless-login/passwordless-login.component';
 
 const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'registration', component: RegistrationComponent },
+  { path: 'passwordless-login/:token', component: PasswordlessLoginComponent },
   {
     path: 'ahome',
     component: AdminHomeComponent,
@@ -36,6 +39,7 @@ const routes: Routes = [
         canActivate: [AuthGuard]
       },
       { path: 'changePassword', component: ChangePasswordComponent, canActivate: [AuthGuard] },
+      { path: 'two-factor-auth', component: TwoFactorAuthComponent, canActivate: [AuthGuard] }
     ],
   },
 
@@ -53,6 +57,7 @@ const routes: Routes = [
   { path: 'chain', component: CertificateChainComponent, canActivate: [AuthGuard] },
   { path: 'createCertificateUser', component: CreateCertificateUserComponent , canActivate: [AuthGuard]},
   { path: 'resetPassword', component: ResetPasswordComponent },
+  { path: 'two-factor-auth', component: TwoFactorAuthComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

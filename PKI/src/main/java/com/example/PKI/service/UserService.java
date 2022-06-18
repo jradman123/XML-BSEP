@@ -13,4 +13,6 @@ public interface UserService {
     User activateAccount(User user);
     void changePassword(String email, ChangePasswordDto changePasswordDto);
     void resetPassword(String email,String newPassword);
+    String change2FAStatus(String email, Boolean status);
+    boolean check2FAStatus(String email);
 }

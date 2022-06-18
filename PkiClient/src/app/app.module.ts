@@ -25,6 +25,9 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { JwtInterceptor } from './JwtInterceptor/jwt-interceptor';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { TwoFactorAuthComponent } from './components/two-factor-auth/two-factor-auth.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { PasswordlessLoginComponent } from './components/passwordless-login/passwordless-login.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +46,9 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
     ResetPasswordComponent,
     RegistrationComponent,
     ChangePasswordComponent,
+    TwoFactorAuthComponent,
+    ConfirmDialogComponent,
+    PasswordlessLoginComponent,
   ],
   imports: [
     BrowserModule,

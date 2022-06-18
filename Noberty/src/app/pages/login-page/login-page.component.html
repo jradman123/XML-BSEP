@@ -22,6 +22,11 @@
           <input required formControlName="code" type="text" matInput placeholder="Code">
         </mat-form-field>
       </p>
+
+      <p style="margin-left: -17px">
+          <ngx-recaptcha2 #captchaElem [siteKey]="siteKey" formControlName="recaptcha">
+          </ngx-recaptcha2>
+      </p>
     
       <div class="button">
         <button [disabled]="form.invalid" type="submit" mat-button>Login</button>
@@ -31,7 +36,7 @@
       <div style="align-content:center">
         <a mat-button  (click)="forgotPass()">Forgot password?</a>
         <a mat-button  (click)="enablePL()">Passwordless login</a>
-
+       
       </div>
       
     </form> 
