@@ -6,14 +6,20 @@ type Config struct {
 	Port       string
 	UserDBHost string
 	UserDBPort string
+	UserDBUser string
+	UserDBPass string
+	UserDBName string
 	PublicKey  string
 }
 
 func NewConfig() *Config {
 	return &Config{
-		Port:       "8082",
-		UserDBHost: os.Getenv("HOST"),
-		UserDBPort: os.Getenv("PG_DBPORT"),
+		Port:       os.Getenv("USER_SERVICE_PORT"),
+		UserDBHost: os.Getenv("USER_DB_HOST"),
+		UserDBPort: os.Getenv("USER_DB_PORT"),
+		UserDBUser: os.Getenv("USER_DB_USER"),
+		UserDBPass: os.Getenv("USER_DB_PASS"),
+		UserDBName: os.Getenv("USER_DB_NAME"),
 		PublicKey: "-----BEGIN PUBLIC KEY-----\n" +
 			"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0AzWYJTc9jiPn+RMNjMJ\n" +
 			"hscn8hg/Mt0U22efM6IvM83CyQCiFHP1Z8rs2HFqRbid/hQxW23HrXQzKx5hGPdU\n" +

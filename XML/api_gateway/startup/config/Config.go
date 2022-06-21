@@ -1,26 +1,31 @@
 package config
 
+import "os"
+
 type Config struct {
-	Port      string
-	UserHost  string
-	UserPort  string
-	PostsHost string
-	PostsPort string
+	Port       string
+	UserHost   string
+	UserPort   string
+	PostsHost  string
+	PostsPort  string
+	UserDBHost string
+	UserDBPort string
+	UserDBName string
+	UserDBUser string
+	UserDBPass string
 }
 
 func NewConfig() *Config {
 	return &Config{
-		Port:      "9090",
-		UserHost:  "localhost",
-		UserPort:  "8082",
-		PostsHost: "localhost",
-		PostsPort: "8083",
-		//TODO:
-		/*
-			lokalno => localhost
-			preko dockera => ime kontainera
-			Posto svaki kontainer ima svoje adrese,kada samo prosledis ime kontainera to je kao da si
-			rekla localhost unutar tog mog kontainera
-		*/
+		Port:       os.Getenv("GATEWAY_PORT"),
+		UserHost:   os.Getenv("USER_SERVICE_HOST"),
+		UserPort:   os.Getenv("USER_SERVICE_PORT"),
+		PostsHost:  os.Getenv("POST_SERVICE_HOST"),
+		PostsPort:  os.Getenv("POST_SERVICE_PORT"),
+		UserDBHost: os.Getenv("USER_DB_HOST"),
+		UserDBPort: os.Getenv("USER_DB_PORT"),
+		UserDBName: os.Getenv("USER_DB_NAME"),
+		UserDBUser: os.Getenv("USER_DB_USER"),
+		UserDBPass: os.Getenv("USER_DB_PASS"),
 	}
 }

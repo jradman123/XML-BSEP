@@ -1,2 +1,3 @@
 {"data":{"user":"stelenaJajic1"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-18T12:10:44Z"}
 {"data":{"user":"stelenaJajic1"},"file":"UserHandler.go:478","func":"user/module/infrastructure/handlers.UserHandler.GetUserDetails","level":"info","msg":"INFO:Handling GetUserDetails","time":"2022-06-18T12:11:47Z"}
+{"data":{},"file":"UserHandler.go:291","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"info","msg":"INFO:Handling RegisterUser","time":"2022-06-21T18:24:00Z"}

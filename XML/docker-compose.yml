@@ -1,26 +1,70 @@
 version: '3.7'
 services:
-  userservice:
-    build: 
-      context: user_service_old/
-      dockerfile: Dockerfile
-    image: userservice1
-    container_name: user_server
+  user_service:
+    image: user_service
+    container_name: user_service
+    build:
+      context: .
+      dockerfile: ./user_service/Dockerfile
     restart: always
     environment:
-      - HOST=database
-      - PG_DBPORT=5432
-      - PG_USER=postgres
-      - PG_PASSWORD=postgres
-      - XML_DB_NAME=postgres
+      USER_DB_HOST: "user_db"
+      USER_DB_PORT: ${USER_DB_PORT}
+      USER_DB_USER: ${USER_DB_USER}
+      USER_DB_PASS: "postgres"
+      USER_DB_NAME: "postgres"
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
     networks:
       - servers
     ports:
-      - 8082:8082
-    depends_on: 
-      - database
+      - '8082:8082'
+    depends_on:
+      - user_db
 
-  database:  
+  api_gateway:
+    image: api_gateway
+    container_name: api_gateway
+    build:
+      context: .
+      dockerfile: ./api_gateway/Dockerfile
+    restart: always
+    ports:
+      - '9090:9090'
+    environment:
+      USER_DB_HOST: "user_db"
+      USER_DB_PORT: ${USER_DB_PORT}
+      USER_DB_USER: ${USER_DB_USER}
+      USER_DB_PASS: "postgres"
+      USER_DB_NAME: "postgres"
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      USER_SERVICE_HOST: "user_service"
+      POST_SERVICE_HOST: "post_service"
+      POST_SERVICE_PORT: ${POST_SERVICE_PORT}
+    networks:
+      - servers
+    depends_on:
+      - user_db
+
+  post_service:
+    image: post_service
+    container_name: post_service
+    build:
+      context: .
+      dockerfile: ./post_service/Dockerfile
+    restart: always
+    ports:
+      - '8083:8083'
+    environment:
+      POST_DB_HOST: "post_db"
+      POST_DB_PORT: "27017"
+      POST_SERVICE_PORT: ${POST_SERVICE_PORT}
+    depends_on:
+      - post_db
+    networks:
+      - servers
+
+  user_db:
     image: postgres:14.1-alpine
     restart: always
     networks:
@@ -29,14 +73,26 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - '5432:5432'
-    volumes: 
-      - database-data:/var/lib/postgresql/data
+      - '4000:5432'
+    volumes:
+      - user-data:/var/lib/postgresql/data
 
+  post_db:
+    image: mongo
+    container_name: post_db
+    restart: always
+    ports:
+      - '4001:27017'
+    volumes:
+      - posts-data:/data/db
+    networks:
+      - servers
 
 volumes:
-  database-data:
-    name: server-database
+  user-data:
+    name: user-database
+  posts-data:
+    name: posts-database
 
 networks:
   servers:

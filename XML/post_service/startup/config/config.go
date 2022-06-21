@@ -1,5 +1,7 @@
 package config
 
+import "os"
+
 type Config struct {
 	Port       string
 	PostDBHost string
@@ -10,9 +12,9 @@ type Config struct {
 func NewConfig() *Config {
 
 	return &Config{
-		Port:       "8083",
-		PostDBHost: "localhost",
-		PostDBPort: "27017",
+		Port:       os.Getenv("POST_SERVICE_PORT"),
+		PostDBHost: os.Getenv("POST_DB_HOST"),
+		PostDBPort: os.Getenv("POST_DB_PORT"),
 		PublicKey:  "PostService",
 	}
 }
