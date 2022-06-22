@@ -4,6 +4,8 @@ import (
 	"common/module/interceptor"
 	"common/module/logger"
 	postsProto "common/module/proto/posts_service"
+	saga "common/module/saga/messaging"
+	"common/module/saga/messaging/nats"
 	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
@@ -26,13 +28,26 @@ func NewServer(config *config.Config) *Server {
 	return &Server{config: config}
 }
 
+const (
+	QueueGroup = "post_service"
+)
+
 func (server *Server) Start() {
 	logInfo := logger.InitializeLogger("post-service", context.Background(), "Info")
 	logError := logger.InitializeLogger("post-service", context.Background(), "Error")
+
 	mongoClient := server.InitMongoClient()
+
 	postRepo := server.InitPostsRepo(mongoClient)
 	postService := server.InitPostService(postRepo, logInfo, logError)
 	postHandler := server.InitPostHandler(postService, logInfo, logError)
+
+	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
+	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
+	userRepo := server.InitUserRepo(mongoClient)
+	userService := server.InitUserService(userRepo, logInfo, logError)
+	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
+
 	server.StartGrpcServer(postHandler, logError)
 }
 
@@ -56,16 +71,53 @@ func (server *Server) InitPostHandler(service *application.PostService, logInfo 
 	return handlers.NewPostHandler(service, logInfo, logError)
 }
 
-func (server *Server) StartGrpcServer(handler *handlers.PostHandler, logError *logger.Logger) {
+func (server *Server) InitSubscriber(subject string, queueGroup string) saga.Subscriber {
+	subscriber, err := nats.NewNATSSubscriber(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return subscriber
+}
+
+func (server *Server) InitPublisher(subject string) saga.Publisher {
+	publisher, err := nats.NewNATSPublisher(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return publisher
+}
+
+func (server *Server) InitUserRepo(client *mongo.Client) repositories.UserRepository {
+	return persistence.NewUserRepositoryImpl(client)
+}
+
+func (server *Server) InitUserService(repo repositories.UserRepository, logInfo *logger.Logger, logError *logger.Logger) *application.UserService {
+	return application.NewUserService(repo, logInfo, logError)
+}
+
+func (server *Server) InitCreateUserCommandHandler(service *application.UserService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.UserCommandHandler {
+	handler, err := handlers.NewUserCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
+func (server *Server) StartGrpcServer(postHandler *handlers.PostHandler, logError *logger.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(server.config.PublicKey))
-	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
+	intercept := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
 
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
-	postsProto.RegisterPostServiceServer(grpcServer, handler)
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(intercept.Unary()))
+	postsProto.RegisterPostServiceServer(grpcServer, postHandler)
+
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}

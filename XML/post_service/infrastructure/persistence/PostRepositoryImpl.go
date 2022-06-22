@@ -13,23 +13,20 @@ const (
 	DATABASE           = "posts_service"
 	CollectionPost     = "postsData"
 	CollectionJobOffer = "jobOffersData"
-	CollectionUser     = "usersData"
 )
 
 type PostRepositoryImpl struct {
 	posts     *mongo.Collection
 	jobOffers *mongo.Collection
-	users     *mongo.Collection
 }
 
 func NewPostRepositoryImpl(client *mongo.Client) repositories.PostRepository {
 	posts := client.Database(DATABASE).Collection(CollectionPost)
 	jobOffers := client.Database(DATABASE).Collection(CollectionJobOffer)
-	users := client.Database(DATABASE).Collection(CollectionUser)
+
 	return &PostRepositoryImpl{
 		posts:     posts,
 		jobOffers: jobOffers,
-		users:     users,
 	}
 }
 

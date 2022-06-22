@@ -3,17 +3,29 @@ package config
 import "os"
 
 type Config struct {
-	Port       string
-	UserDBHost string
-	UserDBPort string
-	PublicKey  string
+	Port               string
+	UserDBHost         string
+	UserDBPort         string
+	PublicKey          string
+	NatsHost           string
+	NatsPort           string
+	NatsUser           string
+	NatsPass           string
+	UserCommandSubject string
+	UserReplySubject   string
 }
 
 func NewConfig() *Config {
 	return &Config{
-		Port:       "8082",
-		UserDBHost: os.Getenv("HOST"),
-		UserDBPort: os.Getenv("PG_DBPORT"),
+		Port:               "8082",
+		UserDBHost:         os.Getenv("HOST"),
+		UserDBPort:         os.Getenv("PG_DBPORT"),
+		NatsHost:           "nats",
+		NatsPort:           "4222",
+		NatsUser:           "ruser",
+		NatsPass:           "T0pS3cr3t",
+		UserCommandSubject: "user.command",
+		UserReplySubject:   "user.reply",
 		PublicKey: "-----BEGIN PUBLIC KEY-----\n" +
 			"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0AzWYJTc9jiPn+RMNjMJ\n" +
 			"hscn8hg/Mt0U22efM6IvM83CyQCiFHP1Z8rs2HFqRbid/hQxW23HrXQzKx5hGPdU\n" +
