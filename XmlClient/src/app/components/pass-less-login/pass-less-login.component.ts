@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user-service/user.service';
+import { AuthService } from 'src/app/services/auth-service/auth.service';
 
 @Component({
   selector: 'app-pass-less-login',
@@ -19,9 +19,9 @@ export class PassLessLoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     private router: Router,
-    private authService: UserService
+    private authService: AuthService
   ) {
-   }
+  }
 
   ngOnInit(): void {
     this.createForm = this.formBuilder.group({
@@ -36,23 +36,23 @@ export class PassLessLoginComponent implements OnInit {
 
     const registerObserver = {
       next: () => {
-       
-        
+
+
         this.router.navigate(['editUser']);
         this._snackBar.open(
           'Welcome!',
           'Dismiss',
-          {duration : 3000}
+          { duration: 3000 }
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error + "!", 'Dismiss', {duration : 3000});
+        this._snackBar.open(err.error + "!", 'Dismiss', { duration: 3000 });
       }
 
     }
-    this.authService.passwordlessLogin( this.createForm.value.Code).subscribe(registerObserver)
+    this.authService.passwordlessLogin(this.createForm.value.Code).subscribe(registerObserver)
   }
 
-  
+
 
 }

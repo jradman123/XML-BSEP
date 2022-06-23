@@ -57,7 +57,6 @@ import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
-import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
 import { ApiKeyComponent } from './components/api-key/api-key.component';
 import { NgxCaptchaModule } from 'ngx-captcha';
@@ -81,7 +80,6 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     UnauthenticatedHeaderComponent,
     AuthenticatedHeaderComponent,
     FooterComponent,
-    UserHomeComponent,
     RecoverPassRequestComponent,
     RecoverPassComponent,
     ActivateAccountComponent,

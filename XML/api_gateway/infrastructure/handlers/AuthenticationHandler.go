@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type AuthenticationHandler struct {
@@ -267,10 +266,8 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	}
 
 	claims.Roles = append(claims.Roles, userRoles)
-	var tokenCreationTime = time.Now().UTC()
-	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 
-	token, err := auth.GenerateToken(claims, tokenExpirationTime)
+	token, expirationTime, err := auth.GenerateToken(claims)
 
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -293,10 +290,11 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	}
 
 	logInResponse := dto.LogInResponseDto{
-		Token:    token,
-		Role:     roleString,
-		Email:    user.Email,
-		Username: user.Username,
+		Token:          token,
+		Role:           roleString,
+		Email:          user.Email,
+		Username:       user.Username,
+		ExpirationTime: expirationTime,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)
@@ -334,10 +332,7 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 	}
 
 	claims.Roles = append(claims.Roles, userRoles)
-	var tokenCreationTime = time.Now().UTC()
-	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
-
-	token, err := auth.GenerateToken(claims, tokenExpirationTime)
+	token, expirationTime, err := auth.GenerateToken(claims)
 
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -360,10 +355,11 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 	}
 
 	logInResponse := dto.LogInResponseDto{
-		Token:    token,
-		Role:     roleString,
-		Email:    user.Email,
-		Username: user.Username,
+		Token:          token,
+		Role:           roleString,
+		Email:          user.Email,
+		Username:       user.Username,
+		ExpirationTime: expirationTime,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)
@@ -523,10 +519,8 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	}
 
 	claims.Roles = append(claims.Roles, userRoles)
-	var tokenCreationTime = time.Now().UTC()
-	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 
-	token, err := auth.GenerateToken(claims, tokenExpirationTime)
+	token, expirationTime, err := auth.GenerateToken(claims)
 
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -549,10 +543,11 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	}
 
 	logInResponse := dto.LogInResponseDto{
-		Token:    token,
-		Role:     roleString,
-		Email:    user.Email,
-		Username: user.Username,
+		Token:          token,
+		Role:           roleString,
+		Email:          user.Email,
+		Username:       user.Username,
+		ExpirationTime: expirationTime,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)

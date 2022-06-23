@@ -1,11 +1,16 @@
 <div class="container" class="image">
-
-    <app-authenticated-header></app-authenticated-header>
-    <router-outlet></router-outlet>
-    <br><br><br><br><br><br><br>
-    <app-user-infos></app-user-infos>
-    <mat-card>
-        <button type="button" style="margin-left: 10px;" class="btn btn-success mybtn" (click)="opet2fa()">Two factor
-            authentication</button>
-    </mat-card>
+    <div class="third">
+        <app-authenticated-header></app-authenticated-header>
+        <router-outlet></router-outlet>
+    </div>
+    <div class="twothird">
+        <div class="container">
+            <app-user-infos></app-user-infos>
+            <mat-card  style="margin-top: 10px;">
+                <button type="button"  class="btn btn-success mybtn" (click)="opet2fa()">Two
+                    factor
+                    authentication</button>
+            </mat-card>
+        </div>
+    </div>
 </div>

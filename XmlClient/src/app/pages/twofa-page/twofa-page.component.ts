@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { IAuthenticate } from 'src/app/interfaces/authenticate';
-import { UserService } from 'src/app/services/user-service/user.service';
+import { AuthService } from 'src/app/services/auth-service/auth.service';
 
 @Component({
   selector: 'app-twofa-page',
@@ -18,7 +18,7 @@ export class TwofaPageComponent implements OnInit {
 
   constructor(
     private _snackBar: MatSnackBar,
-    private authService: UserService,
+    private authService: AuthService,
     private _router: Router,
     private formBuilder: FormBuilder) { }
 
@@ -37,7 +37,7 @@ export class TwofaPageComponent implements OnInit {
     }
     const loginObserver = {
       next: (res: any) => {
-        if (res == null){
+        if (res == null) {
           this._snackBar.open("Invalid code!", 'Dismiss');
           return
         }
