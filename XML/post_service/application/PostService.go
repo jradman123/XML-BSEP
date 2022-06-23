@@ -14,7 +14,7 @@ type PostService struct {
 }
 
 func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger) *PostService {
-	return &PostService{repository: repository, logInfo: logError, logError: logError}
+	return &PostService{repository: repository, logInfo: logInfo, logError: logError}
 }
 
 func (service *PostService) Get(id primitive.ObjectID) (*model.Post, error) {

@@ -34,7 +34,7 @@ func (p PostHandler) GetAllByUserId(ctx context.Context, request *pb.GetRequest)
 	request.Id = strings.TrimSpace(policy.Sanitize(request.Id))
 	sqlInj := common.BadId(request.Id)
 	if request.Id == "" {
-		p.logError.Logger.Errorf("ERR:XSS")
+		p.logError.Logger.Errorf("XSS")
 	} else if sqlInj {
 		p.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 	} else {
@@ -118,8 +118,6 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 	p2 := common.BadText(request.Post.PostText)
 	p3 := common.BadDate(request.Post.DatePosted)
 	p4 := common.BadPaths(request.Post.ImagePaths)
-	//sqlInj := common.CheckForSQLInjection([]string{request.Post.PostText, request.Post.UserId, request.Post.DatePosted})
-	//sqlInj2 := common.CheckForSQLInjection(request.Post.ImagePaths)
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.Post.UserId == "" || request.Post.PostText == "" || request.Post.DatePosted == "" {
 		p.logError.Logger.WithFields(logrus.Fields{
@@ -161,8 +159,6 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 	p5 := common.BadName(request.Comment.Surname)
 	p6 := common.BadText(request.Comment.CommentText)
 
-	//sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.Comment.UserId, request.Comment.Username,
-	//	request.Comment.Name, request.Comment.Surname, request.Comment.CommentText})
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.PostId == "" || request.Comment.UserId == "" || request.Comment.Username == "" || request.Comment.Name == "" ||
 		request.Comment.Surname == "" || request.Comment.CommentText == "" {
@@ -215,7 +211,6 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	request.UserId = strings.TrimSpace(policy.Sanitize(request.UserId))
 	p1 := common.BadId(request.PostId)
 	p2 := common.BadId(request.UserId)
-	//sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.UserId})
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.PostId == "" || request.UserId == "" {
 		p.logError.Logger.WithFields(logrus.Fields{
@@ -264,7 +259,6 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 	request.UserId = strings.TrimSpace(policy.Sanitize(request.UserId))
 	p1 := common.BadId(request.PostId)
 	p2 := common.BadId(request.UserId)
-	//sqlInj := common.CheckForSQLInjection([]string{request.PostId, request.UserId})
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.PostId == "" || request.UserId == "" {
 		p.logError.Logger.WithFields(logrus.Fields{
@@ -317,17 +311,13 @@ func (p PostHandler) CreateJobOffer(ctx context.Context, request *pb.CreateJobOf
 	}
 	request.JobOffer.DatePosted = strings.TrimSpace(policy.Sanitize(request.JobOffer.DatePosted))
 	request.JobOffer.Duration = strings.TrimSpace(policy.Sanitize(request.JobOffer.Duration))
-	//p1 := common.BadJWTToken(request.ShareJobOffer.ApiToken)
+
 	p2 := common.BadText(request.JobOffer.Publisher)
 	p3 := common.BadText(request.JobOffer.Position)
 	p4 := common.BadText(request.JobOffer.JobDescription)
 	p5 := common.BadTexts(request.JobOffer.Requirements)
 	p6 := common.BadDate(request.JobOffer.DatePosted)
 	p7 := common.BadDate(request.JobOffer.Duration)
-	//sqlInj := common.CheckForSQLInjection([]string{request.JobOffer.Publisher,
-	//	request.JobOffer.Position, request.JobOffer.JobDescription, request.JobOffer.DatePosted,
-	//	request.JobOffer.Duration})
-	//sqlInj2 := common.CheckForSQLInjection(request.JobOffer.Requirements)
 
 	if request.JobOffer.Publisher == "" || request.JobOffer.Position == "" || request.JobOffer.JobDescription == "" ||
 		request.JobOffer.DatePosted == "" || request.JobOffer.Duration == "" {
@@ -401,7 +391,6 @@ func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.Get
 func (p PostHandler) GetAllCommentsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetAllCommentsResponse, error) {
 	policy := bluemonday.UGCPolicy()
 	request.Id = strings.TrimSpace(policy.Sanitize(request.Id))
-	//sqlInj := common.CheckRegexSQL(request.Id)
 	sqlInj := common.BadId(request.Id)
 	if request.Id == "" {
 		p.logError.Logger.Errorf("ERR:XSS")

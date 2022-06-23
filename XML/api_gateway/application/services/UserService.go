@@ -22,7 +22,6 @@ func (u UserService) GetByUsername(ctx context.Context, username string) (*model
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
-		u.logError.Logger.Errorf("Invalid username")
 		return nil, err
 	}
 	return user, nil

@@ -17,6 +17,7 @@ import (
 	"user/module/domain/model"
 	"user/module/domain/repositories"
 	"user/module/infrastructure/api"
+	"user/module/infrastructure/orchestrators"
 )
 
 type UserService struct {
@@ -25,10 +26,22 @@ type UserService struct {
 	userRepository repositories.UserRepository
 	emailRepo      repositories.EmailVerificationRepository
 	recoveryRepo   repositories.PasswordRecoveryRequestRepository
+	orchestrator   *orchestrators.UserOrchestrator
 }
 
-func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository, recoveryRepo repositories.PasswordRecoveryRequestRepository) *UserService {
-	return &UserService{logInfo, logError, repository, emailRepo, recoveryRepo}
+var (
+	EmailFormatInvalid     = errors.New("EMAIL FORMAT INVALID")
+	EmailDomainInvalid     = errors.New("EMAIL DOMAIN INVALID")
+	ErrorEmailVerification = errors.New("SAVING EMAIL VERIFICATION")
+	ErrorOrchestrator      = errors.New("ORCHESTRATOR")
+	DbError                = errors.New("DB ERROR")
+	subject                = "Activation code"
+	body                   = "Welcome to Dislinkt! Here is your activation code:"
+)
+
+func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository repositories.UserRepository, emailRepo repositories.EmailVerificationRepository,
+	recoveryRepo repositories.PasswordRecoveryRequestRepository, orchestrator *orchestrators.UserOrchestrator) *UserService {
+	return &UserService{logInfo, logError, repository, emailRepo, recoveryRepo, orchestrator}
 }
 
 func (u UserService) GetUsers() ([]model.User, error) {
@@ -85,19 +98,20 @@ func (u UserService) GetUserRole(username string) (string, error) {
 	}
 	return role, nil
 }
+
 func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error) {
 
 	var er = checkEmailValid(user.Email)
 	if er != nil {
-		u.logError.Logger.Println("ERR:EMAIL FORMAT INVALID")
-		return nil, errors.New("email format invalid")
+		u.logError.Logger.Println(EmailFormatInvalid)
+		return nil, EmailFormatInvalid
 	}
 	var domEr = checkEmailDomain(user.Email)
 	if domEr != nil {
-		u.logError.Logger.Println("ERR:EMAIL DOMAIN INVALID")
-		return nil, errors.New("email domain invalid")
+		u.logError.Logger.Println(EmailDomainInvalid)
+		return nil, EmailDomainInvalid
 	}
-	//TODO: ZAMENITI TOKENOM
+
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
 	emailVerification := model.EmailVerification{
@@ -107,22 +121,27 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 		VerCode:  rn,
 		Time:     time.Now(),
 	}
-	fmt.Println(emailVerification)
 
 	_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
 	fmt.Println(e)
 	if e != nil {
-		u.logError.Logger.Println("ERR:SAVING EMAIL VERIFICATION")
-		return nil, errors.New("error saving emailVerification")
+		u.logError.Logger.Println(ErrorEmailVerification)
+		return nil, ErrorEmailVerification
 	}
 
-	sendMailWithCourier(user.Email, strconv.Itoa(rn), "Activation code", "Welcome to Dislinkt! Here is your activation code:", u.logError)
+	sendMailWithCourier(user.Email, strconv.Itoa(rn), subject, body, u.logError)
 
 	regUser, err := u.userRepository.CreateRegisteredUser(user)
 	if err != nil {
-		u.logError.Logger.Println("ERR:DB:CREATE USER")
+		u.logError.Logger.Println(DbError)
 		return regUser, err
 	}
+	err = u.orchestrator.CreateUser(user)
+	if err != nil {
+		u.logError.Logger.Println(ErrorOrchestrator)
+		return regUser, err
+	}
+
 	return regUser, nil
 }
 
@@ -160,7 +179,7 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 			}
 			fmt.Println("novo stanje isConfirmed : " + help)
 			activated, actErr := u.userRepository.ActivateUserAccount(user)
-		
+
 			if actErr != nil {
 				fmt.Println(actErr)
 				fmt.Println("error while activating user(repo)")
@@ -243,7 +262,6 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 		return false, dbEr
 	}
 	fmt.Println("verCode:", passwordRecoveryRequest.RecoveryCode)
-	
 
 	var codeInt, convErr = strconv.Atoi(code)
 	if convErr != nil {

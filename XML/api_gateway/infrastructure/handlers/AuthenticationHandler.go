@@ -430,7 +430,7 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 }
 
 func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http.Request, params map[string]string) {
-	fmt.Println("PasswordlessLogin")
+	fmt.Println("Handling PasswordlessLogin Request")
 	ip := ReadUserIP(r)
 	var code string
 	p := strings.Split(r.URL.Path, "/")
@@ -446,21 +446,16 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	sqlInj := common.BadId(code)
 
 	if code == "" {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"userIP": ip,
-		}).Errorf("ERR:XSS")
+		a.LogError(ip, "", "XSS")
 		http.Error(rw, "XSS! ", http.StatusBadRequest)
 		return
 	} else if sqlInj {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"userIP": ip,
-		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		a.LogError(ip, "", "BAD VALIDATION: POSSIBLE INJECTION")
 		http.Error(rw, "Chance for sql injection! ", http.StatusBadRequest)
 		return
 	} else {
-		a.logInfo.Logger.WithFields(logrus.Fields{
-			"userIP": ip,
-		}).Infof("INFO:Handling PasswordlessLogin")
+		a.LogInfo(ip, "Handling PasswordlessLogin")
+
 	}
 
 	ver, err := a.passwordlessService.GetUsernameByCode(code)
@@ -472,38 +467,23 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 
 	user, err := a.userService.GetByUsername(context.TODO(), username)
 	if err != nil {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"user":   user.Username,
-			"userIP": ip,
-		}).Errorf("ERR:USER NOT FOUND")
+		a.LogError(ip, user.Username, "USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	if !user.IsConfirmed {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"user":   user.Username,
-			"userIP": ip,
-		}).Errorf("ERR:USER NOT ACTIVATED")
-		fmt.Println("account not activated")
+		a.LogError(ip, user.Username, "USER NOT ACTIVATED")
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
-	validCode, err := a.passwordlessService.PasswordlesLogin(ver)
+	validCode, err := a.passwordlessService.PasswordlessLogin(ver)
 	if !validCode {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"user":   user.Username,
-			"userIP": ip,
-		}).Errorf("ERR:CODE INVALID")
-		fmt.Println("code not valid")
+		a.LogError(ip, user.Username, "CODE INVALID")
 		http.Error(rw, "Code invalid! ", http.StatusBadRequest)
 		return
 	}
 	if err != nil {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"user":   user.Username,
-			"userIP": ip,
-		}).Errorf("ERR:CORE FLAG CHANGE")
-		fmt.Println("error while changing code flag for used")
+		a.LogError(ip, user.Username, "CORE FLAG CHANGE")
 		http.Error(rw, "Login code error! ", http.StatusBadRequest)
 		return
 	}
@@ -513,10 +493,7 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 
 	userRoles, err := a.userService.GetUserRole(username)
 	if err != nil {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"user":   user.Username,
-			"userIP": ip,
-		}).Errorf("ERR:THIS USER HAS NO ROLE")
+		a.LogError(ip, user.Username, "THIS USER HAS NO ROLE")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -529,10 +506,7 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	token, err := auth.GenerateToken(claims, tokenExpirationTime)
 
 	if err != nil {
-		a.logError.Logger.WithFields(logrus.Fields{
-			"user":   user.Username,
-			"userIP": ip,
-		}).Errorf("ERR:GENERATING TOKEN")
+		a.LogError(ip, user.Username, "GENERATING TOKEN")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 
@@ -561,6 +535,19 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	rw.Write(logInResponseJson)
 }
 
+func (a AuthenticationHandler) LogError(ip string, username string, message string) {
+	a.logError.Logger.WithFields(logrus.Fields{
+		"user":   username,
+		"userIP": ip,
+	}).Errorf(message)
+
+}
+func (a AuthenticationHandler) LogInfo(ip string, message string) {
+	a.logInfo.Logger.WithFields(logrus.Fields{
+		"userIP": ip,
+	}).Infof(message)
+
+}
 func ReadUserIP(r *http.Request) string {
 	IPAddress := r.Header.Get("X-Real-Ip")
 	if IPAddress == "" {

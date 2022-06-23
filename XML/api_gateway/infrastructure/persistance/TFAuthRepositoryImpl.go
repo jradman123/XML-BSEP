@@ -26,12 +26,6 @@ func (t TFAuthRepositoryImpl) Check2FaForUser(username string) (bool, error) {
 }
 
 func (t TFAuthRepositoryImpl) Enable2FaForUser(username string, secret string) (bool, error) {
-
-	check, _ := t.Check2FaForUser(username)
-	if check == true {
-		return false, errors.New("two factor authentication already enabled ")
-	}
-
 	qr := model.QrCode{
 		ID:       uuid.New(),
 		Secret:   secret,

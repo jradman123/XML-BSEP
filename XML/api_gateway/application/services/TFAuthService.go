@@ -3,6 +3,7 @@ package services
 import (
 	"crypto/rand"
 	"encoding/base32"
+	"errors"
 	"gateway/module/domain/repositories"
 	"github.com/dgryski/dgoogauth"
 	"log"
@@ -27,6 +28,10 @@ func NewOTPConfig(secretBase32 string) *dgoogauth.OTPConfig {
 	}
 }
 
+var (
+	TwoFactorEnabled = errors.New("two factor authentication already enabled ")
+)
+
 func GenerateNewUserSecret() []byte {
 	secret := make([]byte, 10)
 	_, err := rand.Read(secret)
@@ -49,13 +54,19 @@ func (u TFAuthService) Check2FaForUser(username string) (bool, error) {
 func (u TFAuthService) Enable2FaForUser(username string) (bool, string, error) {
 	secrets := GenerateNewUserSecret()
 	secret := base32.StdEncoding.EncodeToString(secrets)
+	check, _ := u.repository.Check2FaForUser(username)
+	if check == true {
+		return false, "", TwoFactorEnabled
+	}
+
 	res, err := u.repository.Enable2FaForUser(username, secret)
 	if err != nil {
 		return false, "", err
 	}
+
 	twofa := NewOTPConfig(secret)
 	uri := twofa.ProvisionURI(username)
-	log.Println("This is URI: " + uri)
+	//log.Println("This is URI: " + uri)
 	// No more writing to file
 	//err = qrcode.WriteFile(uri, qrcode.Medium, 256, "qr2.png")
 	//if err != nil {
