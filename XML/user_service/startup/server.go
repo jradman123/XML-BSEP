@@ -18,7 +18,6 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"net"
-	"os"
 	"user/module/application/helpers"
 	"user/module/application/services"
 	"user/module/domain/model"
@@ -146,17 +145,11 @@ var db *gorm.DB
 
 func (server *Server) SetupDatabase() *gorm.DB {
 
-	host := os.Getenv("HOST")
-	port := os.Getenv("PG_DBPORT")
-	user := os.Getenv("PG_USER")
-	dbname := os.Getenv("XML_DB_NAME")
-	password := os.Getenv("PG_PASSWORD")
-
-	//host := os.Getenv("USER_DB_HOST")
-	//port := os.Getenv("USER_DB_PORT")
-	//user := os.Getenv("USER_DB_USER")
-	//dbname := os.Getenv("USER_DB_NAME")
-	//password := os.Getenv("USER_DB_PASS")
+	host := server.config.UserDBHost
+	port := server.config.UserDBPort
+	user := server.config.UserDBUser
+	dbname := server.config.UserDBName
+	password := server.config.UserDBPass
 
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})

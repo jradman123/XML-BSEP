@@ -55,7 +55,10 @@ func (server *Server) InitMongoClient() *mongo.Client {
 	client, err := persistence.GetClient(server.config.PostDBHost, server.config.PostDBPort)
 	if err != nil {
 		log.Fatalln(err)
+	} else {
+		fmt.Println("Successfully connected to mongo database!")
 	}
+
 	return client
 }
 

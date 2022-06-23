@@ -6,6 +6,9 @@ type Config struct {
 	Port               string
 	UserDBHost         string
 	UserDBPort         string
+	UserDBUser         string
+	UserDBPass         string
+	UserDBName         string
 	PublicKey          string
 	NatsHost           string
 	NatsPort           string
@@ -17,15 +20,19 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
-		Port:               "8082",
-		UserDBHost:         os.Getenv("HOST"),
-		UserDBPort:         os.Getenv("PG_DBPORT"),
-		NatsHost:           "nats",
-		NatsPort:           "4222",
-		NatsUser:           "ruser",
-		NatsPass:           "T0pS3cr3t",
-		UserCommandSubject: "user.command",
-		UserReplySubject:   "user.reply",
+
+		Port:               os.Getenv("USER_SERVICE_PORT"),
+		UserDBHost:         os.Getenv("USER_DB_HOST"),
+		UserDBPort:         os.Getenv("USER_DB_PORT"),
+		UserDBUser:         os.Getenv("USER_DB_USER"),
+		UserDBPass:         os.Getenv("USER_DB_PASS"),
+		UserDBName:         os.Getenv("USER_DB_NAME"),
+		NatsPort:           os.Getenv("NATS_PORT"),
+		NatsHost:           os.Getenv("NATS_HOST"),
+		NatsPass:           os.Getenv("NATS_PASS"),
+		NatsUser:           os.Getenv("NATS_USER"),
+		UserCommandSubject: os.Getenv("USER_COMMAND_SUBJECT"),
+		UserReplySubject:   os.Getenv("USER_REPLY_SUBJECT"),
 		PublicKey: "-----BEGIN PUBLIC KEY-----\n" +
 			"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0AzWYJTc9jiPn+RMNjMJ\n" +
 			"hscn8hg/Mt0U22efM6IvM83CyQCiFHP1Z8rs2HFqRbid/hQxW23HrXQzKx5hGPdU\n" +

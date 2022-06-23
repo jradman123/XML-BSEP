@@ -1,5 +1,7 @@
 package config
 
+import "os"
+
 type Config struct {
 	Port               string
 	PostDBHost         string
@@ -16,11 +18,15 @@ type Config struct {
 func NewConfig() *Config {
 
 	return &Config{
-		Port:               "8083",
-		PostDBHost:         "localhost",
-		PostDBPort:         "27017",
+		Port:               os.Getenv("POST_SERVICE_PORT"),
+		PostDBHost:         os.Getenv("POST_DB_HOST"),
+		PostDBPort:         os.Getenv("POST_DB_PORT"),
 		PublicKey:          "PostService",
-		UserCommandSubject: "user.command",
-		UserReplySubject:   "user.reply",
+		UserCommandSubject: os.Getenv("USER_COMMAND_SUBJECT"),
+		UserReplySubject:   os.Getenv("USER_REPLY_SUBJECT"),
+		NatsPort:           os.Getenv("NATS_PORT"),
+		NatsHost:           os.Getenv("NATS_HOST"),
+		NatsPass:           os.Getenv("NATS_PASS"),
+		NatsUser:           os.Getenv("NATS_USER"),
 	}
 }
