@@ -32,7 +32,7 @@ type UserService struct {
 var (
 	EmailFormatInvalid     = errors.New("EMAIL FORMAT INVALID")
 	EmailDomainInvalid     = errors.New("EMAIL DOMAIN INVALID")
-	ErrorEmailVerification = errors.New("SAVING EMAIL VERIFICATION")
+	ErrorEmailVerification = errors.New("ERROR EMAIL VERIFICATION")
 	ErrorOrchestrator      = errors.New("ORCHESTRATOR")
 	DbError                = errors.New("DB ERROR")
 	subject                = "Activation code"
@@ -114,20 +114,20 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
-	emailVerification := model.EmailVerification{
-		ID:       uuid.New(),
-		Username: user.Username,
-		Email:    user.Email,
-		VerCode:  rn,
-		Time:     time.Now(),
-	}
+	//emailVerification := model.EmailVerification{
+	//	ID:       uuid.New(),
+	//	Username: user.Username,
+	//	Email:    user.Email,
+	//	VerCode:  rn,
+	//	Time:     time.Now(),
+	//}
 
-	_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
-	fmt.Println(e)
-	if e != nil {
-		u.logError.Logger.Println(ErrorEmailVerification)
-		return nil, ErrorEmailVerification
-	}
+	//_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
+	//fmt.Println(e)
+	//if e != nil {
+	//	u.logError.Logger.Println(ErrorEmailVerification)
+	//	return nil, ErrorEmailVerification
+	//}
 
 	sendMailWithCourier(user.Email, strconv.Itoa(rn), subject, body, u.logError)
 
@@ -150,57 +150,41 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 	var codeInfoForUsername *model.EmailVerification
 	var dbEr error
 	codeInfoForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username)
-
 	if dbEr != nil {
-		fmt.Println(dbEr)
 		u.logError.Logger.Errorf("ERR:DB:CODE DOES NOT EXIST FOR USER")
 		return false, dbEr
 	}
-	fmt.Println("verCode:", codeInfoForUsername.VerCode)
-
 	if codeInfoForUsername.VerCode == verCode {
 
 		if codeInfoForUsername.Time.Add(time.Hour).After(time.Now()) {
-
 			user, err := u.userRepository.GetByUsername(context.TODO(), username)
 			if err != nil {
 				fmt.Println(err)
-
-				fmt.Println("error u get by username kod ucitavanja usera")
 				u.logError.Logger.Errorf("ERR:DB")
 				return false, err
 			}
 			user.IsConfirmed = true
-			var help string
-			if user.IsConfirmed {
-				help = "true"
-			} else {
-				help = "false"
-			}
-			fmt.Println("novo stanje isConfirmed : " + help)
 			activated, actErr := u.userRepository.ActivateUserAccount(user)
+			err = u.orchestrator.ActivateUserAccount(user)
+			if err != nil {
+				return false, err
+			}
 
 			if actErr != nil {
-				fmt.Println(actErr)
-				fmt.Println("error while activating user(repo)")
 				u.logError.Logger.Errorf("ERR:WHILE ACTIVATING USER")
 				return false, actErr
 			}
 			if !activated {
-				fmt.Println("user activation failed")
 				u.logError.Logger.Errorf("ERR:ACTIVATION FAILED")
 				return false, errors.New("user not activated")
 			}
 			return true, nil
 
 		} else {
-			fmt.Println("istekao kod")
 			u.logError.Logger.Errorf("ERR:CODE EXPIRED")
 			return false, errors.New("code expired")
 		}
-
 	} else {
-		fmt.Println("ne valjda kod")
 		u.logError.Logger.Errorf("ERR:WRONG CODE")
 		return false, errors.New("wrong code")
 	}
@@ -344,6 +328,7 @@ func checkEmailValid(email string) error {
 	}
 	return nil
 }
+
 func checkEmailDomain(email string) error {
 	i := strings.Index(email, "@")
 	host := email[i+1:]
@@ -355,6 +340,7 @@ func checkEmailDomain(email string) error {
 	}
 	return nil
 }
+
 func sendMailWithCourier(email string, code string, subject string, body string, logErr *logger.Logger) {
 	client := courier.CreateClient("pk_prod_0FQXVBPMDHMZ3VJ3WN6CYC12KNMH", nil)
 	fmt.Println(code)
@@ -394,7 +380,11 @@ func (u UserService) EditUser(userDetails *dto.UserDetails) (*model.User, error)
 		return nil, e
 	}
 	if !edited {
-		return nil, errors.New("user was not edited dunno y")
+		return nil, errors.New("user was not edited")
+	}
+	err = u.orchestrator.UpdateUser(user)
+	if err != nil {
+		return nil, err
 	}
 	return user, nil
 }

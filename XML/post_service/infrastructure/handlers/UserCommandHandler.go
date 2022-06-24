@@ -3,9 +3,8 @@ package handlers
 import (
 	saga "common/module/saga/messaging"
 	events "common/module/saga/user_events"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"post/module/application"
-	"post/module/domain/model"
+	"post/module/infrastructure/api"
 )
 
 type UserCommandHandler struct {
@@ -29,38 +28,38 @@ func NewUserCommandHandler(service *application.UserService, publisher saga.Publ
 
 func (handler *UserCommandHandler) handle(command *events.UserCommand) {
 
-	user := model.User{
-		Id:        primitive.NewObjectID(),
-		Username:  command.User.Username,
-		FirstName: command.User.FirstName,
-		LastName:  command.User.LastName,
-	}
-	var reply = events.UserReply{}
+	user := api.MapNewUser(command)
+	var reply = &events.UserReply{}
 	switch command.Type {
 	case events.CreateUser:
-		err := handler.service.CreateUser(user)
+		user, err := handler.service.CreateUser(user)
 		if err != nil {
-			reply.Type = events.UserRolledBack
+			reply = api.MapReplyUser(user, events.UserRolledBack)
 		}
-		reply.Type = events.UserCreated
+		reply = api.MapReplyUser(user, events.UserCreated)
 
-		//TODO:Cannot update users' username
 	case events.UpdateUser:
-		err := handler.service.UpdateUser(user)
+		user, err := handler.service.UpdateUser(user)
 		if err != nil {
-			reply.Type = events.UserRolledBack
+			reply = api.MapReplyUser(user, events.UserRolledBack)
 		}
-		reply.Type = events.UserUpdated
+		reply = api.MapReplyUser(user, events.UserUpdated)
 
 	case events.DeleteUser:
-		err := handler.service.DeleteUser(user.Username)
+		err := handler.service.DeleteUser(user.UserId)
 		if err != nil {
-			reply.Type = events.UserRolledBack
+			reply = api.MapReplyUser(user, events.UserRolledBack)
 		}
-		reply.Type = events.UserDeleted
+		reply = api.MapReplyUser(user, events.UserDeleted)
 
+	case events.ActivateUser:
+		err := handler.service.ActivateUserAccount(user.UserId)
+		if err != nil {
+			reply = api.MapReplyUser(user, events.UserRolledBack)
+		}
+		reply = api.MapReplyUser(user, events.UserDeleted)
 	default:
-		reply.Type = events.UnknownReply
+		reply = api.MapReplyUser(user, events.UnknownReply)
 	}
 
 	if reply.Type != events.UnknownReply {

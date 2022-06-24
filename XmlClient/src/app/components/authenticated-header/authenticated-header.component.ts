@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user-service/user.service';
+import { AuthService } from 'src/app/services/auth-service/auth.service';
+
+
 
 @Component({
   selector: 'app-authenticated-header',
@@ -9,13 +11,13 @@ import { UserService } from 'src/app/services/user-service/user.service';
 })
 export class AuthenticatedHeaderComponent implements OnInit {
 
-  constructor(private userService : UserService,private router : Router) { }
+  constructor(private authService : AuthService,private router : Router) { }
 
   ngOnInit(): void {
   }
 
   logout() {
-    this.userService.logout();
+    this.authService.logout();
     this.router.navigate(['login']);
   }
 

@@ -2,6 +2,7 @@ package api
 
 import (
 	pb "common/module/proto/posts_service"
+	events "common/module/saga/user_events"
 	b64 "encoding/base64"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -102,6 +103,32 @@ func MapNewJobOffer(offerPb *pb.JobOffer) *model.JobOffer {
 	}
 
 	return offer
+}
+func MapNewUser(command *events.UserCommand) *model.User {
+	user := &model.User{
+		Id:        primitive.NewObjectID(),
+		UserId:    command.User.UserId,
+		Username:  command.User.Username,
+		FirstName: command.User.FirstName,
+		LastName:  command.User.LastName,
+		Email:     command.User.Email,
+		Active:    false,
+	}
+	return user
+}
+func MapReplyUser(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
+	reply = &events.UserReply{
+		Type: replyType,
+		PostUser: events.PostUser{
+			Id:        user.Id,
+			UserId:    user.UserId,
+			Username:  user.Username,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Email:     user.Email,
+		},
+	}
+	return reply
 }
 func mapToDate(birth string) time.Time {
 	layout := "2006-01-02T15:04:05.000Z"

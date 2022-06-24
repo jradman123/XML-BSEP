@@ -24,7 +24,7 @@ export class RegisterPageComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
     private _snackBar: MatSnackBar,
     private router: Router,
-    private authService: UserService) {
+    private userService: UserService) {
     this.newUser = {} as UserData;
   }
 
@@ -83,7 +83,7 @@ export class RegisterPageComponent implements OnInit {
       next: () => {
        
         
-        this.router.navigate(['/']);
+        this.router.navigate(['/activate']);
         this._snackBar.open(
           'Your registration request has been sumbitted. Please check your email and confirm your email adress to activate your account.',
           'Dismiss',
@@ -95,7 +95,7 @@ export class RegisterPageComponent implements OnInit {
       }
 
     }
-    this.authService.registerUser(this.newUser).subscribe(registerObserver)
+    this.userService.registerUser(this.newUser).subscribe(registerObserver)
   
   }
 
