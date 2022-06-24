@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ILoginRequest } from 'src/app/interfaces/login-request';
 import { IUsername } from 'src/app/interfaces/username';
-import { UserService } from 'src/app/services/user-service/user.service';
+import { AuthService } from 'src/app/services/auth-service/auth.service';
 
 
 @Component({
@@ -22,7 +22,7 @@ export class LoginPageComponent implements OnInit {
   username: string = ""
 
   constructor(
-    private authService: UserService,
+    private authService: AuthService,
     private _snackBar: MatSnackBar,
     private _router: Router,
     private formBuilder: FormBuilder) {

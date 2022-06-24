@@ -347,7 +347,6 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 	}
 
 	claims.Roles = append(claims.Roles, userRoles)
-
 	token, expirationTime, err := auth.GenerateToken(claims)
 
 	if err != nil {
