@@ -1,5 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminGuard } from './AuthGuard/AdminGuard';
+import { AuthGuard } from './AuthGuard/AuthGuard';
+import { OwnerGuard } from './AuthGuard/OwnerGuard';
+import { PasswordlessLoginComponent } from './components/passwordless-login/passwordless-login.component';
+import { TfaComponent } from './components/tfa/tfa.component';
 import { CompaniesListComponent } from './pages/companies-list/companies-list.component';
 import { CompanyProfileComponent } from './pages/company-profile/company-profile.component';
 import { CompanyRequestsPageComponent } from './pages/company-requests-page/company-requests-page.component';
@@ -24,28 +29,32 @@ const routes: Routes = [
     component: RegisterPageComponent
   },
   {
-    path: "user/landing",
+    path: "user/landing", canActivate:[AuthGuard],
     component: UserLandingPageComponent
   },
   { path: 'resetPassword', 
     component: ResetPasswordComponent 
   },
   {
-    path: "companies",
+    path: "companies", canActivate:[AuthGuard],
     component: CompaniesListComponent
   },
   {
-    path: "mycompanies",
+    path: "mycompanies", canActivate:[OwnerGuard],
     component: MyCompaniesListComponent
   },
   {
-    path: "company/:id",
+    path: "company/:id", canActivate:[AuthGuard],
     component: CompanyProfileComponent
   },
   {
-    path: "companyRequests",
+    path: "companyRequests", canActivate:[AdminGuard],
     component: CompanyRequestsPageComponent
   },
+  {
+    path: "passwordless-login/:token",
+    component: PasswordlessLoginComponent
+  }
   
 ];
 

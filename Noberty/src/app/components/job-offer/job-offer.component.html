@@ -8,8 +8,27 @@
         <div [formGroup]="createForm" class="content">
             <div>
                 <mat-form-field appearance="fill" style="width: 100%">
-                    <mat-label>Name</mat-label>
-                    <input id="text" matInput required formControlName="Name">
+                    <mat-label>Position</mat-label>
+                    <input matInput required formControlName="Position">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 100%">
+              
+                    <mat-label>Due Date</mat-label>
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      formControlName="DueDate"
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>     
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Job Description </mat-label>
+                    <textarea matInput required formControlName="Description">
+                    </textarea>
                 </mat-form-field>
                 <mat-form-field appearance="fill" style="width: 100%">
                     <mat-label>Requirements</mat-label>

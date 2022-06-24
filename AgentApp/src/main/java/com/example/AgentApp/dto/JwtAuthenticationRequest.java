@@ -6,5 +6,5 @@ import lombok.Data;
 public class JwtAuthenticationRequest {
     private String username;
     private String password;
-
+    private String code;
 }

@@ -16,7 +16,19 @@
             <div>
                 <mat-form-field appearance="fill" style="width: 100%">
                     <mat-label>Difficulty</mat-label>
-                    <input id="text" matInput required formControlName="Difficulty">
+                    <mat-select required
+                formControlName="Difficulty"
+              >
+                <mat-option  value="EASY">
+                  EASY
+                </mat-option>
+                <mat-option  value="INTERMEDIATE">
+                    INTERMEDIATE
+                  </mat-option>
+                  <mat-option  value="HARD">
+                    HARD
+                  </mat-option>
+              </mat-select>
                 </mat-form-field>
 
             </div>
@@ -29,7 +41,7 @@
             </div>
         
             <div class="buttons">
-                <button id="submitRequest"  class="btn btn-success text-center">
+                <button id="submitRequest" (click)="submitRequest()" class="btn btn-success text-center">
                     Submit
                 </button>
             </div>

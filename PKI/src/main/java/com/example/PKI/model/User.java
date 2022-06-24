@@ -1,20 +1,20 @@
 package com.example.PKI.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.security.SecureRandom;
+import java.util.*;
 
 import lombok.Data;
+import org.apache.commons.codec.binary.Base32;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Data
 @Entity
 @Table(name="users")
 public class User {
-	
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Integer id;
@@ -23,9 +23,9 @@ public class User {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private boolean isAdmin;
-    @Column(nullable = false)
-    private boolean isLoggedIn;
+    private Role role;
+    @Column
+    private boolean isActivated;
     @Column
     private String commonName;
     @Column
@@ -36,20 +36,47 @@ public class User {
     private String locality;
     @Column
     private String country;
-    
+    @Column(nullable = false)
+    private String recoveryEmail;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_authorities",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<Authority> authorities;
+    private boolean isUsing2FA;
+    private String secret;
+
     public User() {  }
 
-    public User(String email, String password, boolean isAdmin, boolean isLoggedIn, String commonName, String organization, String organizationUnit, String locality, String country) {
+    public User(String email, String password, String commonName, String organization, String organizationUnit, String locality, String country,String recoveryEmail) {
         this.email = email;
         this.password = password;
-        this.isAdmin = isAdmin;
-        this.isLoggedIn = isLoggedIn;
+        this.role = Role.UserOrdinary;
+        this.isActivated = false;
         this.commonName = commonName;
         this.organization = organization;
         this.organizationUnit = organizationUnit;
         this.locality = locality;
         this.country = country;
+        this.recoveryEmail = recoveryEmail;
+        this.isUsing2FA = false;
+        this.secret = generateSecretKey();
     }
+
+    private static String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[20];
+        random.nextBytes(bytes);
+        Base32 base32 = new Base32();
+        return base32.encodeToString(bytes);
+    }
+
+    public void setSecret() {
+        this.secret = generateSecretKey();
+    }
+
+
 
     public Integer getId() {
         return id;
@@ -75,22 +102,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
-	public boolean isLoggedIn() {
-		return isLoggedIn;
-	}
-
-	public void setLoggedIn(boolean isLoggedIn) {
-		this.isLoggedIn = isLoggedIn;
-	}
 
     public String getCommonName() {
         return commonName;
@@ -130,5 +141,29 @@ public class User {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isActivated() {
+        return isActivated;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
+
+    public String getRecoveryEmail() {
+        return recoveryEmail;
+    }
+
+    public void setRecoveryEmail(String recoveryEmail) {
+        this.recoveryEmail = recoveryEmail;
     }
 }

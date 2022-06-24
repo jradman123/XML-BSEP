@@ -9,13 +9,13 @@
             <div>
                 <mat-form-field appearance="fill" style="width: 100%">
                     <mat-label>Comment</mat-label>
-                    <input id="text" matInput required formControlName="Comment">
+                    <input id="text" matInput required formControlName="comment">
                 </mat-form-field>
 
             </div>
         
             <div class="buttons">
-                <button id="submitRequest"  class="btn btn-success text-center">
+                <button id="submitRequest" (click)="submitRequest()"  class="btn btn-success text-center">
                     Submit
                 </button>
             </div>

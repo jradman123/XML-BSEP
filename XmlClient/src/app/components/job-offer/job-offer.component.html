@@ -1,0 +1,41 @@
+<div class="container" class="image">
+
+    <app-authenticated-header></app-authenticated-header>
+    <router-outlet></router-outlet>
+    <br><br><br><br><br><br><br>
+
+<div class="container" style="width:70%; margin: auto;">
+    <br>
+    <div class="row">
+        <h1 style="text-align: center;">Job offers</h1>
+        <input matInput [(ngModel)]="searchText" placeholder="Search here..." style="float:right">
+    </div>
+    <hr>
+    <mat-card class="example-card m-3" *ngFor="let jo of jobOffers | fiterSearch : searchText ">
+            <div class="row">
+              <div class="col-md">
+                <mat-label><h1>{{ jo.Position }}</h1></mat-label>
+            </div>
+              <div class="col-md">
+                  
+                <mat-label><h4 style="text-align:right;"> {{ jo.Duration | date : 'shortDate' }} </h4></mat-label>
+            </div>
+            </div>
+        <mat-label><h4 style="font-weight: 600" >{{ jo.Publisher }} </h4></mat-label>
+       <div>
+        <span> {{ jo.JobDescription }} </span>
+       </div>
+       <br>
+        <mat-card-content class="content">
+            <div>
+                <mat-label>Requirements:</mat-label>
+                <div class="ml-3 info" *ngFor="let req of jo.Requirements  " >
+                    <div >
+                    <label> {{ req }} </label>
+                    </div>
+                </div>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
+</div>

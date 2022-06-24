@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { UserService } from 'src/app/services/UserService/user.service';
+import { ChangePasswordComponent } from '../change-password/change-password.component';
 
 @Component({
   selector: 'app-client-navbar',
@@ -7,9 +10,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ClientNavbarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private userService : UserService) { }
 
   ngOnInit(): void {
   }
+
+  logout() : void{
+    this.userService.logout();
+  }
+
 
 }

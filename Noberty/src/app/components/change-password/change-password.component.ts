@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ChangePasswordDto } from 'src/app/interfaces/change-password-dto';
-import { UserServiceService } from 'src/app/services/UserService/user-service.service';
+import { UserService } from 'src/app/services/UserService/user.service';
 
 @Component({
   selector: 'app-change-password',
@@ -15,7 +15,7 @@ export class ChangePasswordComponent implements OnInit {
 
   passMatch: boolean = false;
   changedPassword! : ChangePasswordDto;
-  constructor(private userService : UserServiceService, private router : Router, private _snackBar : MatSnackBar,private dialogRef: MatDialogRef<ChangePasswordComponent>) {
+  constructor(private userService : UserService, private router : Router, private _snackBar : MatSnackBar,private dialogRef: MatDialogRef<ChangePasswordComponent>) {
     this.changedPassword = {} as ChangePasswordDto;
    }
 
@@ -57,14 +57,20 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   submit() {
+    if (this.form.invalid) {
+      return;
+    }
+    
     this.createNewPassword();
       this.userService.changePassword(this.changedPassword).subscribe(
         (res) => {
           this.logout();
           this._snackBar.open(
             'Password is changed!',
-            'Dismiss'
-          );
+            'Dismiss' , {
+              duration: 3000
+            });
+            
           this.logout();
           this.dialogRef.close();
         },
@@ -72,7 +78,9 @@ export class ChangePasswordComponent implements OnInit {
           let parts = err.error.split(':');
           let mess = parts[parts.length - 1];
           let description = mess.substring(1, mess.length - 4);
-          this._snackBar.open(description, 'Dismiss');
+          this._snackBar.open(description, 'Dismiss', {
+            duration: 3000
+          });
         }
       );
     this.userService.changePassword(this.form.value).subscribe();

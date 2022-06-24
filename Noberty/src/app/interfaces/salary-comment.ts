@@ -1,6 +1,6 @@
 export interface ISalaryComment {
     userUsername:string,
-    companyId: number,
+    companyID: number,
     position:string,
     salary:string
 }

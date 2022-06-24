@@ -1,0 +1,5 @@
+{"data":{},"file":"Interceptor.go:71","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:UNOTHORIZED:TOKEN INVALID","time":"2022-06-17T00:26:26Z"}
+{"data":{},"file":"UserHandler.go:295","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"error","msg":"ERR:USER ALREADY EXISTS","time":"2022-06-17T08:05:30Z"}
+{"data":{"user":"jradman12"},"file":"Interceptor.go:90","func":"common/module/interceptor.(*AuthInterceptor).Authorize","level":"error","msg":"ERR:FORBIDEN","time":"2022-06-17T14:19:34Z"}
+{"data":{},"file":"UserHandler.go:287","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"error","msg":"ERR:BAD VALIDATION: POSIBLE INJECTION","time":"2022-06-17T15:11:01Z"}
+{"data":{},"file":"UserHandler.go:295","func":"user/module/infrastructure/handlers.UserHandler.RegisterUser","level":"error","msg":"ERR:USER ALREADY EXISTS","time":"2022-06-21T18:24:00Z"}

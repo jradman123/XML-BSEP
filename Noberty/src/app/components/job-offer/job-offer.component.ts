@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
@@ -30,20 +31,26 @@ export class JobOfferComponent implements OnInit {
     private _snackBar: MatSnackBar,
     private router: Router,
     private _formBuilder: FormBuilder,
-    private companyService: CompanyService) {
+    private companyService: CompanyService,
+    private datePipe : DatePipe) {
 
     this.jobOfferRequest = {} as IJobOfferRequest
     this.allOffers = {} as IJobOfferResponse
     this.requirements = [];
     this.createForm = this._formBuilder.group({
-      Name: new FormControl('', [
-        Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.-]*$')
-      ]),
       Requirements: new FormControl('', [
         Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_.-]*$')
       ]),
+      Position: new FormControl('', [
+        Validators.required
+      ]),
+      Description: new FormControl('', [
+        Validators.required
+      ]),
+      DueDate : new FormControl( '',
+      [
+        Validators.required
+      ])
     })
 
   }
@@ -59,21 +66,19 @@ export class JobOfferComponent implements OnInit {
 
     this.companyService.CreateJobOffer(this.jobOfferRequest).subscribe({
       next: (res) => {
-        console.log(res);
-
         this.clearForm();
         this.dialogRef.close({ event: "Created Job offer", data: res });
         this._snackBar.open(
           'You have created a job offer.',
-          'Dismiss'
-        );
-
-     
-
+          'Dismiss', {
+            duration: 3000
+          });
       },
       error: (err: HttpErrorResponse) => {
         this.clearForm();
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss', {
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });
@@ -85,9 +90,13 @@ export class JobOfferComponent implements OnInit {
   createJobOfferRequest() {
     console.log(this.createForm.value.Name);
 
-    this.jobOfferRequest.name = this.createForm.value.Name;
     this.jobOfferRequest.requirements = this.requirements;
+    this.jobOfferRequest.position = this.createForm.value.Position;
+    this.jobOfferRequest.jobDescription = this.createForm.value.Description;
     this.jobOfferRequest.companyId = parseInt(this.cid);
+    const dateParsed = this.datePipe.transform(this.createForm.value.DueDate, 'MM/dd/yyyy');
+    this.jobOfferRequest.dueDate = dateParsed;
+
   }
   clearForm() {
     this.createForm.reset()

@@ -1,0 +1,2 @@
+{"data":{"user":"stelena","userIP":"[::1]:60541"},"file":"AuthenticationHandler.go:172","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.AuthenticateUser","level":"info","msg":"INFO:Handling LOGIN","time":"2022-06-18T07:40:00Z"}
+{"data":{"user":"stelena","userIP":"[::1]:60541"},"file":"AuthenticationHandler.go:172","func":"gateway/module/infrastructure/handlers.AuthenticationHandler.AuthenticateUser","level":"info","msg":"INFO:Handling LOGIN","time":"2022-06-18T07:40:42Z"}

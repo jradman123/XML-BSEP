@@ -41,7 +41,7 @@
                 <label> {{userInfo.gender}}</label>
             </div>
         </mat-card>
-        <div class="buttons mr-5">
+        <div *ngIf="showMe" class="buttons mr-5">
             <h3>Register company profile for free ! </h3>
             <br>
             <button type="button" class="btn btn-success mybtn" id="openModal" (click)="openModal()">Register</button>
@@ -50,5 +50,7 @@
     </div>
     <mat-card >
         <button type="button" class="btn btn-success mybtn"  (click)="openModalForChangePassword()">Change password</button>
-    </mat-card>
+
+        <button type="button" style="margin-left: 10px;" class="btn btn-success mybtn"  (click)="opet2fa()">Two factor authentication</button>
+    </mat-card> 
 </div>

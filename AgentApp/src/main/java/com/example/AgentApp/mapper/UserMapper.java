@@ -6,7 +6,6 @@ import com.example.AgentApp.dto.UserInformationResponseDto;
 import com.example.AgentApp.enums.Gender;
 import com.example.AgentApp.enums.UserRole;
 import com.example.AgentApp.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +15,12 @@ import java.util.Date;
 
 @Component
 public class UserMapper {
+    private static PasswordEncoder passwordEncoder;
+    public UserMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public User mapToUser(RegistrationRequestDto dto) throws ParseException {
+    public static User mapToUser(RegistrationRequestDto dto) throws ParseException {
         User user = new User();
         user.setConfirmed(false);
         user.setFirstName(dto.getFirstName());
@@ -36,20 +36,19 @@ public class UserMapper {
         return user;
     }
 
-    private Date getDateOfBirthFromRequest(String dateOfBirth) throws ParseException {
+    private static Date getDateOfBirthFromRequest(String dateOfBirth) throws ParseException {
         return new SimpleDateFormat("MM/dd/yyyy").parse(dateOfBirth);
     }
 
-    private Gender getGenderFromRequest(String gender) {
-        if(gender.equals(Gender.FEMALE.toString())){
+    private static Gender getGenderFromRequest(String gender) {
+        if (gender.equals(Gender.FEMALE.toString())) {
             return Gender.FEMALE;
-        }else{
+        } else {
             return Gender.MALE;
         }
-
     }
 
-    public UserInformationResponseDto mapToDto(User user){
+    public static UserInformationResponseDto mapToDto(User user) {
         UserInformationResponseDto dto = new UserInformationResponseDto();
         dto.setEmail(user.getEmail());
         dto.setUsername(user.getUsername());
@@ -62,8 +61,8 @@ public class UserMapper {
         return dto;
     }
 
-    private String convertDateToString(Date dateOfBirth) {
-        SimpleDateFormat dateFormat= new SimpleDateFormat("MM/dd/yyyy");
+    private static String convertDateToString(Date dateOfBirth) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         return dateFormat.format(dateOfBirth);
     }
 }

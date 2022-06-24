@@ -14,10 +14,15 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" routerLink="/allCertificates" >My Certificates</a>
+            <a class="nav-link" routerLink="/chome/allCertificates" >My Certificates</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" routerLink="/overview" >Details</a>
+            <a class="nav-link" routerLink="/chome/changePassword" >Change Password</a>
+          </li>
+          
+          
+          <li class="nav-item active">
+            <a class="nav-link" (click)="logout()" routerLink="/">Logout</a>
           </li>
           
         </ul>

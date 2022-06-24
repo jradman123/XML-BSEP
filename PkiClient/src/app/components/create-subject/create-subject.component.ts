@@ -22,6 +22,7 @@ export class CreateSubjectComponent implements OnInit {
     organizationUnit: new FormControl(),
     locality: new FormControl(),
     country: new FormControl(),
+    recoveryMail : new FormControl()
   });
 
   getErrorMessage() {
@@ -40,6 +41,9 @@ export class CreateSubjectComponent implements OnInit {
   ngOnInit(): void {}
 
   onFormSubmit(): void {
+    if(this.subjectForm.invalid){
+      return;
+    }
     this.subject = {
       id: 0,
       commonName: this.subjectForm.get('commonName')?.value,
@@ -49,11 +53,14 @@ export class CreateSubjectComponent implements OnInit {
       country: this.subjectForm.get('country')?.value,
       email: this.subjectForm.get('email')?.value,
       password: this.subjectForm.get('password')?.value,
+      recoveryMail : this.subjectForm.get('recoveryMail')?.value
     };
     console.log(this.subject);
     this.userService.createSubject(this.subject).subscribe(
       (res) => {
-        this._snackBar.open('Subject successfully created', 'Dismiss');
+        this._snackBar.open('Subject successfully created', 'Dismiss',{
+          duration : 3000
+         });
         console.log(res);
         this.itsId = res.id;
         console.log(this.itsId);
@@ -62,7 +69,10 @@ export class CreateSubjectComponent implements OnInit {
       (err) => {
         this._snackBar.open(
           'Subject could not be created! Please try again.',
-          'Dismiss'
+          'Dismiss',
+          {
+            duration : 3000
+           }
         );
       }
     );

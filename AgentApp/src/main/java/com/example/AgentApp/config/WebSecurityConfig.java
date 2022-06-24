@@ -24,14 +24,21 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService customUserDetailsService;
+    private final UserDetailsService customUserDetailsService;
 
-    @Autowired
-    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    private final TokenUtils tokenUtils;
+
+
+    public WebSecurityConfig(UserDetailsService customUserDetailsService, RestAuthenticationEntryPoint restAuthenticationEntryPoint, PasswordEncoder passwordEncoder, TokenUtils tokenUtils) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenUtils = tokenUtils;
+    }
 
 
     @Bean
@@ -45,28 +52,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
     }
 
-    @Autowired
-    private TokenUtils tokenUtils;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint).and()
 
-                .authorizeRequests().antMatchers("/api/*").permitAll()
-                .antMatchers("/api/confirmAccount/*").permitAll()
-                .antMatchers("/api/changePassword").permitAll()
-                .antMatchers("/api/checkRecoveryEmail").permitAll()
-                .antMatchers("/api/checkCode").permitAll()
-                .antMatchers("/api/resetPassword").permitAll()
-                .antMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
-                .antMatchers("/api/foo").permitAll()		// /api/foo
-                .antMatchers("/company/**").permitAll() //ovo je privremeno
-                .antMatchers("/offer/**").permitAll() //ovo je privremeno
+                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated().and()
                 .cors().and()
-                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils,authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new TokenAuthenticationFilter(tokenUtils, authenticationManager(), customUserDetailsService), BasicAuthenticationFilter.class)
                 .headers()
                 // xss protection can detect what looks like xss and blocks it - browser wont render if it sees it
                 .xssProtection()

@@ -30,7 +30,9 @@
                 </div>
             </div>
             <div class="description_form">
-                <textarea [readonly]="!editable" class=" description editable" [(ngModel)]="company.companyPolicy">
+        
+                <mat-label>Company policy:</mat-label>
+                <textarea matInput [readonly]="!editable" class=" description editable" [(ngModel)]="company.companyPolicy">
                 </textarea>
             </div>
 

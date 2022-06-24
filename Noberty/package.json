@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --ssl true",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "owasp": "owasp-dependency-check --project \"Noberty\" -f HTML JSON"
   },
   "private": true,
   "dependencies": {
@@ -21,8 +22,12 @@
     "@angular/platform-browser": "~12.2.0",
     "@angular/platform-browser-dynamic": "~12.2.0",
     "@angular/router": "~12.2.0",
+    "@auth0/angular-jwt": "^5.0.2",
     "@ng-bootstrap/ng-bootstrap": "^10.0.0",
     "bootstrap": "^4.5.0",
+    "font-awesome": "^4.7.0",
+    "ngx-captcha": "^11.0.0",
+    "owasp-dependency-check": "^0.0.18",
     "rxjs": "~6.6.0",
     "zone.js": "~0.11.4"
   },

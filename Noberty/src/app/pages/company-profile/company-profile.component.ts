@@ -10,7 +10,6 @@ import { LeaveSallaryCommentComponent } from 'src/app/components/leave-sallary-c
 import { IComment } from 'src/app/interfaces/comment';
 import { CompanyResponseDto } from 'src/app/interfaces/company-response-dto';
 import { IInterview } from 'src/app/interfaces/interview';
-import { IsUsersCompanyDto } from 'src/app/interfaces/is-users-company-dto';
 import { IJobOffer } from 'src/app/interfaces/job-offer';
 import { ISalaryComment } from 'src/app/interfaces/salary-comment';
 import { CompanyService } from 'src/app/services/company-service/company.service';
@@ -106,6 +105,10 @@ export class CompanyProfileComponent implements OnInit {
     this.companyService.getOffersForCompany(this.cid).subscribe({
       next: (result) => {
         this.jobOffers = result;
+        this.jobOffers.forEach(jo =>{
+          jo.companyName = this.company.companyName,
+          jo.companyId = this.company.companyId
+        })
       },
       error: (data) => {
         if (data.error && typeof data.error === 'string')
@@ -123,13 +126,16 @@ export class CompanyProfileComponent implements OnInit {
     this.companyService.UpdateInfo(this.company).subscribe({
       next: () => {
         this._snackBar.open(
-          'Your request has been successfully submitted.',
-          'Dismiss'
+          'Successfully changed company policy info.',
+          'Dismiss',
+          {duration : 3000}
         );
 
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss');
+        this._snackBar.open(err.error.message + "!", 'Dismiss',{
+          duration: 3000
+        });
       },
       complete: () => console.info('complete')
     });
@@ -145,7 +151,7 @@ export class CompanyProfileComponent implements OnInit {
     dialogRef.afterClosed().subscribe({
       next: (res) => {
         console.log(res);
-        this.getOffersForCompany()
+        this.jobOffers = res.data;
       }
     })
   }
@@ -156,7 +162,13 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.id = 'modal-component';
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
-    this.matDialog.open(LeaveCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+    const dialogRef = this.matDialog.open(LeaveCommentComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.comments = res.data;
+      }
+    })
 
   }
 
@@ -166,7 +178,13 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.id = 'modal-component';
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
-    this.matDialog.open(LeaveInterviewCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+    const dialogRef = this.matDialog.open(LeaveInterviewCommentComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.interviews = res.data;
+      }
+    })
 
   }
 
@@ -176,7 +194,13 @@ export class CompanyProfileComponent implements OnInit {
     dialogConfig.id = 'modal-component';
     dialogConfig.height = 'fit-content';
     dialogConfig.width = '500px';
-    this.matDialog.open(LeaveSallaryCommentComponent, dialogConfig); //TODO: OVDJE JOB OFFER
+    const dialogRef = this.matDialog.open(LeaveSallaryCommentComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res);
+        this.salaryComments = res.data;
+      }
+    })
 
   }
 

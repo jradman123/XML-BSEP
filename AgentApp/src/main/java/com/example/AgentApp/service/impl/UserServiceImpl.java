@@ -22,9 +22,6 @@ public class UserServiceImpl implements UserService {
     private CustomTokenService customTokenService;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -39,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(RegistrationRequestDto registrationRequestDto) throws ParseException {
-        User newUser = userMapper.mapToUser(registrationRequestDto);
+        User newUser = UserMapper.mapToUser(registrationRequestDto);
         User created = userRepository.save(newUser);
         customTokenService.sendVerificationToken(created);
         return created;
@@ -73,6 +70,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long getByUsername(String username) {
         return userRepository.findByUsername(username).getId();
+    }
+
+    @Override
+    public String change2FAStatus(String username, Boolean status) {
+        User user = findByUsername(username);
+        user.setUsing2FA(status);
+        user.setSecret();
+        userRepository.save(user);
+        return status ? user.getSecret() : "";
+    }
+
+    @Override
+    public boolean check2FAStatus(String username) {
+        return findByUsername(username).isUsing2FA();
     }
 
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%d{yyyy-MMM-dd HH:mm:ss.SSS}|%level|%c|%msg%n"/>
+        </Console>
+
+        <RollingFile name="InfoFile" fileName="logging/info.log"
+                     filePattern="logging/info.%d{yyyy-MMM-dd}.log.gz" ignoreExceptions="false">
+            <PatternLayout
+                    pattern="%d{yyyy-MMM-dd HH:mm:ss}{UTC+0}|%level|%c|%msg%n"/>
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="fatal" onMatch="DENY" onMismatch="NEUTRAL"/>
+
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="ErrorFile" fileName="logging/error.log"
+                     filePattern="logging/error.%d{yyyy-MMM-dd}.log.gz" ignoreExceptions="false">
+            <PatternLayout
+                    pattern="%d{yyyy-MMM-dd HH:mm:ss}{UTC+0}|%level|%c|%msg%n"/>
+            <Filters>
+                <ThresholdFilter level="fatal" onMatch="DENY" onMismatch="NEUTRAL"/>
+
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="InfoFile" level="info"/>
+            <AppenderRef ref="ErrorFile" level="error"/>
+        </Root>
+    </Loggers>
+</Configuration>
