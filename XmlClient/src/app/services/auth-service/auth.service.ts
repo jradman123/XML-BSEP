@@ -104,18 +104,22 @@ export class AuthService {
     localStorage.setItem('role', this.jwtToken.roles[0]);
     localStorage.setItem('email', response.email);
     localStorage.setItem('username', this.jwtToken.username);
-    // var now = new Date().valueOf();
+    var now = new Date().valueOf();
     // console.log("Now" + now);
     // console.log("Expiration time" + this.jwtToken.exp);
 
+    console.log(this.jwtToken.exp*1000 )
+    console.log(now);
 
-    this.timeout = new Date().valueOf() - this.jwtToken.exp;
+    this.timeout = this.jwtToken.exp*1000 - now;
     this.expirationCounter(this.timeout)
     this.currentUserSubject.next(response);
   }
   expirationCounter(timeout: any) {
     this.tokenSubscription.unsubscribe();
     this.tokenSubscription = of(null).pipe(delay(timeout)).subscribe((expired) => {
+      console.log(expired);
+
       console.log('EXPIRED!!');
 
       this.logout();

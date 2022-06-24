@@ -154,7 +154,6 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 }
 
 func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error) {
-	//TODO:mzd dodati provjeru da li se uspelo ok mapirati?
 	requestDto := api.MapPbToUserActivateRequest(request)
 	err := u.validator.Struct(requestDto)
 	if err != nil {
@@ -162,10 +161,9 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, err
 	}
 	policy := bluemonday.UGCPolicy()
-	//sanitize everything
 	requestDto.Username = strings.TrimSpace(policy.Sanitize(requestDto.Username))
 	requestDto.Code = strings.TrimSpace(policy.Sanitize(requestDto.Code))
-	//sqlInj := common.CheckForSQLInjection([]string{requestDto.Username, requestDto.Code})
+
 	p1 := common.BadUsername(requestDto.Username)
 	p2 := common.BadNumber(requestDto.Code)
 	if requestDto.Username == "" || requestDto.Code == "" {
@@ -191,14 +189,11 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 	}
 	activated, e := u.service.ActivateUserAccount(requestDto.Username, code)
 	if e != nil {
-		//u.logError.Logger.Errorf("ERR:")
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, e
 	}
 	if !activated {
-		//u.logError.Logger.Errorf("account activation failed")
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, errors.New("account activation failed")
 	}
-	//u.logInfo.Logger.Infof("SUCCESS GenerateAPIToken")
 	return &pb.ActivationResponse{Activated: activated, Username: requestDto.Username}, nil
 }
 
@@ -468,17 +463,13 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	p6 := common.BadNumber(userDetails.PhoneNumber)
 	p7 := common.BadText(userDetails.Biography)
 
-	//nzm kako da sanitizeujem ove liste
 	if userDetails.Username == "" || userDetails.FirstName == "" || userDetails.LastName == "" ||
 		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" ||
 		userDetails.Biography == "" {
-		fmt.Println("fields are empty or xss")
-		//return nil, errors.New("fields are empty or xss happened")
 		u.logError.Logger.Errorf("ERR:XSS")
 		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
 	} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
 		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
-		//return nil, errors.New("there is chance for sql injection")
 		return nil, status.Error(codes.FailedPrecondition, "there is chance for sql injection")
 	} else {
 		u.logInfo.Logger.WithFields(logrus.Fields{
@@ -491,12 +482,10 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
-		//return nil, err //ne postoji user
 	}
 	editedUser, er := u.service.EditUser(userDetails)
 	if er != nil {
 		fmt.Println(er)
-		//return nil, er
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return api.MapUserToUserDetails(editedUser), nil

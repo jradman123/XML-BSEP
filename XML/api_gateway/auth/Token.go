@@ -11,7 +11,7 @@ import (
 func GenerateToken(claims *interceptor.JwtClaims) (tokenString string, tokenExpirationTime time.Time, err error) {
 
 	var tokenCreationTime = time.Now().UTC()
-	tokenExpirationTime = tokenCreationTime.Add(time.Duration(5) * time.Minute)
+	tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 
 	claims.ExpiresAt = tokenExpirationTime.Unix()
 	claims.IssuedAt = time.Now().UTC().Unix()
