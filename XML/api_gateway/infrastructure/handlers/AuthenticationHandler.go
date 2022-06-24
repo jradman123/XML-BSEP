@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type AuthenticationHandler struct {
@@ -33,14 +32,14 @@ type AuthenticationHandler struct {
 	tfaService          *services.TFAuthService
 	validator           *validator.Validate
 	passwordUtil        *helpers.PasswordUtil
-	passwordlessService *services.PasswordLessService
+	passwordLessService *services.PasswordLessService
 }
 
 func NewAuthenticationHandler(l *log.Logger, logInfo *logger.Logger, logError *logger.Logger, userService *services.UserService,
 	tfaService *services.TFAuthService,
 	validator *validator.Validate,
-	passwordUtil *helpers.PasswordUtil, passwordlessService *services.PasswordLessService) Handler {
-	return &AuthenticationHandler{l, logInfo, logError, userService, tfaService, validator, passwordUtil, passwordlessService}
+	passwordUtil *helpers.PasswordUtil, passwordLessService *services.PasswordLessService) Handler {
+	return &AuthenticationHandler{l, logInfo, logError, userService, tfaService, validator, passwordUtil, passwordLessService}
 }
 
 func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
@@ -82,7 +81,7 @@ func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
 
 }
 
-func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	a.l.Printf("Handling Check2FaForUser Users ")
 	var request dto.UsernameRequest
 
@@ -101,13 +100,16 @@ func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.R
 	}
 
 	response, _ := json.Marshal(res)
-	rw.Write(response)
+	_, err = rw.Write(response)
+	if err != nil {
+		return
+	}
 
 	rw.Header().Set("Content-Type", "application/json")
 
 }
 
-func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	a.l.Printf("Handling Check2FaForUser Users ")
 	var request dto.UsernameRequest
 
@@ -126,11 +128,14 @@ func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.
 	}
 
 	response, _ := json.Marshal(enable2FaResponse)
-	rw.Write(response)
+	_, err = rw.Write(response)
+	if err != nil {
+		return
+	}
 	rw.Header().Set("Content-Type", "application/json")
 }
 
-func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	a.l.Printf("Handling Disable2FaForUser Users ")
 	var request dto.UsernameRequest
 
@@ -145,12 +150,15 @@ func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http
 	res, _ := a.tfaService.Disable2FaForUser(request.Username)
 
 	response, _ := json.Marshal(res)
-	rw.Write(response)
+	_, err = rw.Write(response)
+	if err != nil {
+		return
+	}
 
 	rw.Header().Set("Content-Type", "application/json")
 }
 
-func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	a.l.Println("Handling AuthenticateUser Users")
 
 	var loginRequest dto.LoginRequest
@@ -214,12 +222,15 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 		TwoFa:    twofa,
 	}
 	response, _ := json.Marshal(res)
-	rw.Write(response)
+	_, err = rw.Write(response)
+	if err != nil {
+		return
+	}
 
 	rw.Header().Set("Content-Type", "application/json")
 }
 
-func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.Request, parameters map[string]string) {
+func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	a.l.Printf("Handling Authenticate2Fa Users ")
 	var request dto.AuthenticateRequest
 
@@ -267,10 +278,8 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	}
 
 	claims.Roles = append(claims.Roles, userRoles)
-	var tokenCreationTime = time.Now().UTC()
-	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 
-	token, err := auth.GenerateToken(claims, tokenExpirationTime)
+	token, expirationTime, err := auth.GenerateToken(claims)
 
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -293,19 +302,23 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	}
 
 	logInResponse := dto.LogInResponseDto{
-		Token:    token,
-		Role:     roleString,
-		Email:    user.Email,
-		Username: user.Username,
+		Token:          token,
+		Role:           roleString,
+		Email:          user.Email,
+		Username:       user.Username,
+		ExpirationTime: expirationTime,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(logInResponseJson)
+	_, err = rw.Write(logInResponseJson)
+	if err != nil {
+		return
+	}
 }
 
-func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	a.l.Println("Handling AuthenticateUserRegular Users")
 
 	var loginRequest dto.UsernameRequest
@@ -334,10 +347,8 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 	}
 
 	claims.Roles = append(claims.Roles, userRoles)
-	var tokenCreationTime = time.Now().UTC()
-	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 
-	token, err := auth.GenerateToken(claims, tokenExpirationTime)
+	token, expirationTime, err := auth.GenerateToken(claims)
 
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -360,19 +371,23 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 	}
 
 	logInResponse := dto.LogInResponseDto{
-		Token:    token,
-		Role:     roleString,
-		Email:    user.Email,
-		Username: user.Username,
+		Token:          token,
+		Role:           roleString,
+		Email:          user.Email,
+		Username:       user.Username,
+		ExpirationTime: expirationTime,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(logInResponseJson)
+	_, err = rw.Write(logInResponseJson)
+	if err != nil {
+		return
+	}
 }
 
-func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	var loginRequest dto.PasswordLessLoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
@@ -423,13 +438,16 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
-	a.passwordlessService.SendLink(context.TODO(), "https://localhost:4200", "http://localhost:9090/", user)
+	err = a.passwordLessService.SendLink(context.TODO(), "https://localhost:4200", "http://localhost:9090/", user)
+	if err != nil {
+		return
+	}
 
 	rw.WriteHeader(http.StatusNoContent)
 
 }
 
-func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
 	fmt.Println("Handling PasswordlessLogin Request")
 	ip := ReadUserIP(r)
 	var code string
@@ -458,7 +476,7 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 
 	}
 
-	ver, err := a.passwordlessService.GetUsernameByCode(code)
+	ver, err := a.passwordLessService.GetUsernameByCode(code)
 	username := ver.Username
 	if err != nil {
 		http.Error(rw, "code doesn't exist ot is invalid", http.StatusBadRequest)
@@ -476,7 +494,7 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
-	validCode, err := a.passwordlessService.PasswordlessLogin(ver)
+	validCode, err := a.passwordLessService.PasswordlessLogin(ver)
 	if !validCode {
 		a.LogError(ip, user.Username, "CODE INVALID")
 		http.Error(rw, "Code invalid! ", http.StatusBadRequest)
@@ -500,10 +518,8 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	}
 
 	claims.Roles = append(claims.Roles, userRoles)
-	var tokenCreationTime = time.Now().UTC()
-	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(30) * time.Minute)
 
-	token, err := auth.GenerateToken(claims, tokenExpirationTime)
+	token, expirationTime, err := auth.GenerateToken(claims)
 
 	if err != nil {
 		a.LogError(ip, user.Username, "GENERATING TOKEN")
@@ -523,16 +539,20 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	}
 
 	logInResponse := dto.LogInResponseDto{
-		Token:    token,
-		Role:     roleString,
-		Email:    user.Email,
-		Username: user.Username,
+		Token:          token,
+		Role:           roleString,
+		Email:          user.Email,
+		Username:       user.Username,
+		ExpirationTime: expirationTime,
 	}
 
 	logInResponseJson, _ := json.Marshal(logInResponse)
 	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json")
-	rw.Write(logInResponseJson)
+	_, err = rw.Write(logInResponseJson)
+	if err != nil {
+		return
+	}
 }
 
 func (a AuthenticationHandler) LogError(ip string, username string, message string) {
