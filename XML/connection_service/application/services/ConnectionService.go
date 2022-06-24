@@ -1,15 +1,26 @@
 package services
 
 import (
-	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
-	"log"
+	"common/module/logger"
+	"connection/module/domain/model"
+	"connection/module/domain/repositories"
 )
 
 type ConnectionService struct {
-	l         *log.Logger
-	neoClient *neo4j.Driver
+	connectionRepo repositories.ConnectionRepository
+	logInfo        *logger.Logger
+	logError       *logger.Logger
 }
 
-func NewConnectionService(l *log.Logger, neoClient *neo4j.Driver) *ConnectionService {
-	return &ConnectionService{l, neoClient}
+func NewConnectionService(connectionRepo repositories.ConnectionRepository, logInfo *logger.Logger, logError *logger.Logger) *ConnectionService {
+	return &ConnectionService{connectionRepo, logInfo, logError}
+}
+
+func (s ConnectionService) CreateConnection() {
+	con := &model.Connection{
+		UserOneUID: "2",
+		UserTwoUID: "3",
+	}
+	s.connectionRepo.CreateConnection(con)
+
 }

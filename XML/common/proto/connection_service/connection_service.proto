@@ -13,6 +13,12 @@ service ConnectionService{
       get: "/connections"
     };
   }
+
+  rpc GetSomething(EmptyRequest) returns(EmptyRequest) {
+    option (google.api.http) = {
+      get: "/something"
+    };
+  }
 }
 
 message EmptyRequest{}
