@@ -83,7 +83,22 @@ func (p PostRepositoryImpl) GetAllJobOffers() ([]*model.JobOffer, error) {
 	filter := bson.D{}
 	return p.filterJobOffers(filter)
 }
-
+func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
+	//filter := bson.M{"user_id": user.UserId}
+	//posts, err := p.filter(filter)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//for _, post := range posts {
+	//	_, err = p.posts.UpdateOne(context.TODO(), bson.M{"_id": post.Id}, bson.D{
+	//		{"$set", bson.D{{"username", user.Username}}},
+	//	})
+	//}
+	p.posts.UpdateMany(context.TODO(), bson.M{"user_id": user.UserId},
+		bson.D{
+			{"$set", bson.D{{"username", user.Username}}}})
+	return nil
+}
 func (p PostRepositoryImpl) LikePost(post *model.Post, userId string) error {
 	var reactions []model.Reaction
 

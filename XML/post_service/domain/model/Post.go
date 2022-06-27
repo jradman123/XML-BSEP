@@ -8,6 +8,7 @@ import (
 type Post struct {
 	Id         primitive.ObjectID `bson:"_id"`
 	UserId     string             `bson:"user_id"`
+	Username   string             `bson:"username"`
 	PostText   string             `bson:"post_text"`
 	ImagePaths [][]byte           `bson:"image_paths"`
 	DatePosted time.Time          `bson:"date_posted"`

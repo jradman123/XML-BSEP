@@ -15,4 +15,5 @@ type PostRepository interface {
 	DislikePost(post *model.Post, username string) error
 	CreateJobOffer(offer *model.JobOffer) error
 	GetAllJobOffers() ([]*model.JobOffer, error)
+	UpdateUserPosts(user *model.User) error
 }

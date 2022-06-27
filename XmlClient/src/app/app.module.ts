@@ -68,6 +68,9 @@ import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.c
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { PostComponent } from './components/post/post.component';
+import { CommentCreateComponent } from './components/comment-create/comment-create.component';
+import { PostCreateComponent } from './components/post-create/post-create.component';
 
 
 
@@ -95,6 +98,10 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     TwofaPageComponent,
     PassLessReqComponent,
     PassLessLoginComponent,
+    PostComponent,
+    CommentCreateComponent,
+    PostCreateComponent,
+   
   ],
   imports: [
     BrowserModule,
@@ -148,7 +155,11 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     MatRippleModule,
     ReactiveFormsModule,
     NgxCaptchaModule,
-    QRCodeModule
+    QRCodeModule,
+  ],
+  exports:[
+    MaterialModule,
+    MatIconModule
   ],
   providers: [HttpClientModule,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },DatePipe,{ provide: JWT_OPTIONS, useValue: JWT_OPTIONS }, JwtHelperService],

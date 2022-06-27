@@ -52,3 +52,7 @@ func (service *PostService) CreateJobOffer(offer *model.JobOffer) error {
 func (service *PostService) GetAllJobOffers() ([]*model.JobOffer, error) {
 	return service.repository.GetAllJobOffers()
 }
+
+func (service *PostService) UpdateUserPosts(user *model.User) error {
+	return service.repository.UpdateUserPosts(user)
+}

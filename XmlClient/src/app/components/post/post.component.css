@@ -1,0 +1,70 @@
+.icon-display {
+    transform: scale(2);
+}
+
+.container {
+    max-width: 500px;
+    max-height: 800px;
+  
+}
+
+.userInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.group {
+    display: flex;
+
+}
+.pink{
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+    cursor: pointer;
+    color: palevioletred; 
+}
+
+
+.material-symbols-outlined {
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 48
+}
+
+.material-symbols-outlined:hover {
+    cursor: pointer;
+    color: palevioletred;
+    border-color: transparent;
+    border-radius: 0px;
+    font-size: 30px;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+
+.border {
+    margin-right: 10px;
+    border-color: transparent;
+}
+.links {
+    display: flex;
+    margin-top: 20px;
+}
+.links p {
+    margin-right: 5px;
+}
+.links a {
+    font-size: 14px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-style: italic;
+}
+.actions {
+    display: flex;
+    justify-content: space-between;
+}
+.decription {
+    margin-top: 5px;
+}
+.image {
+    overflow: hidden;
+}

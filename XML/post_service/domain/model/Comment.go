@@ -1,6 +1,9 @@
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Comment struct {
-	UserId      string `bson:"user_id"`
-	CommentText string `bson:"comment_text"`
+	Id          primitive.ObjectID `bson:"_id"`
+	Username    string             `bson:"username"`
+	CommentText string             `bson:"comment_text"`
 }

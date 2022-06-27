@@ -10,7 +10,100 @@ import (
 	"time"
 )
 
-func MapPost(post *model.Post) *pb.Post {
+func MapNewPost(postPb *pb.Post) *model.Post {
+	post := &model.Post{
+		Id:         primitive.NewObjectID(),
+		UserId:     postPb.UserId,
+		PostText:   postPb.PostText,
+		DatePosted: time.Now(),
+	}
+	post.ImagePaths = convertBase64ToByte(postPb.ImagePaths)
+
+	return post
+}
+func convertBase64ToByte(images []string) [][]byte {
+	var decodedImages [][]byte
+	for _, image := range images {
+		fmt.Println(image)
+		imageDec, _ := b64.StdEncoding.DecodeString(image)
+		fmt.Println(string(imageDec))
+		decodedImages = append(decodedImages, imageDec)
+	}
+	return decodedImages
+}
+func MapNewComment(commentPb *pb.Comment) *model.Comment {
+	comment := &model.Comment{
+		Id:          primitive.NewObjectID(),
+		Username:    commentPb.Username,
+		CommentText: commentPb.CommentText,
+	}
+	return comment
+}
+
+func MapNewJobOffer(offerPb *pb.JobOffer) *model.JobOffer {
+
+	offer := &model.JobOffer{
+		Id:             primitive.NewObjectID(),
+		Publisher:      offerPb.Publisher,
+		Position:       offerPb.Position,
+		JobDescription: offerPb.JobDescription,
+		Requirements:   offerPb.Requirements,
+		DatePosted:     mapToDate(offerPb.DatePosted),
+		Duration:       mapToDate(offerPb.Duration),
+	}
+
+	return offer
+}
+func MapNewUser(command *events.UserCommand) *model.User {
+	user := &model.User{
+		Id:        primitive.NewObjectID(),
+		UserId:    command.User.UserId,
+		Username:  command.User.Username,
+		FirstName: command.User.FirstName,
+		LastName:  command.User.LastName,
+		Email:     command.User.Email,
+		Active:    false,
+	}
+	return user
+}
+func MapUserReply(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
+	reply = &events.UserReply{
+		Type: replyType,
+		PostUser: events.PostUser{
+			Id:        user.Id,
+			UserId:    user.UserId,
+			Username:  user.Username,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			Email:     user.Email,
+		},
+	}
+	return reply
+}
+func mapToDate(birth string) time.Time {
+	layout := "2006-01-02T15:04:05.000Z"
+	dateOfBirth, _ := time.Parse(layout, birth)
+	return dateOfBirth
+
+}
+
+func MapJobOfferReply(offer *model.JobOffer) *pb.JobOffer {
+	id := offer.Id.Hex()
+
+	offerPb := &pb.JobOffer{
+		Id:             id,
+		Publisher:      offer.Publisher,
+		Position:       offer.Position,
+		JobDescription: offer.JobDescription,
+		Requirements:   offer.Requirements,
+		DatePosted:     offer.DatePosted.String(),
+		Duration:       offer.Duration.String(),
+	}
+
+	return offerPb
+}
+
+func MapPostReply(post *model.Post) *pb.Post {
 	id := post.Id.Hex()
 
 	links := &pb.Links{
@@ -59,96 +152,4 @@ func convertByteToBase64(images [][]byte) []string {
 		encodedImages = append(encodedImages, imageEnc)
 	}
 	return encodedImages
-}
-
-func MapNewPost(postPb *pb.Post) *model.Post {
-	post := &model.Post{
-		Id:         primitive.NewObjectID(),
-		UserId:     postPb.UserId,
-		PostText:   postPb.PostText,
-		DatePosted: time.Now(),
-	}
-	post.ImagePaths = convertBase64ToByte(postPb.ImagePaths)
-
-	return post
-}
-func convertBase64ToByte(images []string) [][]byte {
-	var decodedImages [][]byte
-	for _, image := range images {
-		fmt.Println(image)
-		imageDec, _ := b64.StdEncoding.DecodeString(image)
-		fmt.Println(string(imageDec))
-		decodedImages = append(decodedImages, imageDec)
-	}
-	return decodedImages
-}
-func MapNewComment(commentPb *pb.Comment) *model.Comment {
-	comment := &model.Comment{
-		UserId:      commentPb.UserId,
-		CommentText: commentPb.CommentText,
-	}
-	return comment
-}
-
-func MapNewJobOffer(offerPb *pb.JobOffer) *model.JobOffer {
-
-	offer := &model.JobOffer{
-		Id:             primitive.NewObjectID(),
-		Publisher:      offerPb.Publisher,
-		Position:       offerPb.Position,
-		JobDescription: offerPb.JobDescription,
-		Requirements:   offerPb.Requirements,
-		DatePosted:     mapToDate(offerPb.DatePosted),
-		Duration:       mapToDate(offerPb.Duration),
-	}
-
-	return offer
-}
-func MapNewUser(command *events.UserCommand) *model.User {
-	user := &model.User{
-		Id:        primitive.NewObjectID(),
-		UserId:    command.User.UserId,
-		Username:  command.User.Username,
-		FirstName: command.User.FirstName,
-		LastName:  command.User.LastName,
-		Email:     command.User.Email,
-		Active:    false,
-	}
-	return user
-}
-func MapReplyUser(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
-	reply = &events.UserReply{
-		Type: replyType,
-		PostUser: events.PostUser{
-			Id:        user.Id,
-			UserId:    user.UserId,
-			Username:  user.Username,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Email:     user.Email,
-		},
-	}
-	return reply
-}
-func mapToDate(birth string) time.Time {
-	layout := "2006-01-02T15:04:05.000Z"
-	dateOfBirth, _ := time.Parse(layout, birth)
-	return dateOfBirth
-
-}
-
-func MapJobOffer(offer *model.JobOffer) *pb.JobOffer {
-	id := offer.Id.Hex()
-
-	offerPb := &pb.JobOffer{
-		Id:             id,
-		Publisher:      offer.Publisher,
-		Position:       offer.Position,
-		JobDescription: offer.JobDescription,
-		Requirements:   offer.Requirements,
-		DatePosted:     offer.DatePosted.String(),
-		Duration:       offer.Duration.String(),
-	}
-
-	return offerPb
 }
