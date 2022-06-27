@@ -12,7 +12,6 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
-import { UserHomeComponent } from './pages/user-home/user-home.component';
 import { EditUserComponent } from './pages/edit-user/edit-user.component';
 import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
@@ -87,10 +86,6 @@ const routes: Routes = [
     path: 'newJobOffer',
     component: NewJobOfferComponent,canActivate: [AuthGuardRegular]
   },
-  {
-    path: 'userHome',
-    component: UserHomeComponent,canActivate: [AuthGuard]
-  }
 
 
 ];
