@@ -16,6 +16,8 @@ type ConnectionRepositoryImpl struct {
 	logError *logger.Logger
 }
 
+const neo4jSessionError = "Neo4j error on session.Close()"
+
 func NewConnectionRepositoryImpl(client *neo4j.Driver, logInfo *logger.Logger, logError *logger.Logger) repositories.ConnectionRepository {
 	return &ConnectionRepositoryImpl{
 		db:       client,
@@ -28,7 +30,7 @@ func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection)
 	defer func(session neo4j.Session) {
 		err := session.Close()
 		if err != nil {
-
+			r.logError.Logger.Errorf(neo4jSessionError)
 		}
 	}(session)
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
@@ -109,7 +111,7 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection)
 	defer func(session neo4j.Session) {
 		err := session.Close()
 		if err != nil {
-
+			r.logError.Logger.Errorf(neo4jSessionError)
 		}
 	}(session)
 
@@ -188,7 +190,7 @@ func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string) (userN
 	defer func(session neo4j.Session) {
 		err := session.Close()
 		if err != nil {
-
+			r.logError.Logger.Errorf(neo4jSessionError)
 		}
 	}(session)
 
@@ -235,7 +237,7 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 	defer func(session neo4j.Session) {
 		err := session.Close()
 		if err != nil {
-
+			r.logError.Logger.Errorf(neo4jSessionError)
 		}
 	}(session)
 

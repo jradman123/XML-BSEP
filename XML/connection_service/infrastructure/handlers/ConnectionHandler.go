@@ -20,6 +20,12 @@ type ConnectionHandler struct {
 	logError          *logger.Logger
 }
 
+const (
+	xssError        = "ERR:XSS"
+	validationError = "ERR:BAD VALIDATION: POSIBLE INJECTION"
+	getUsersError   = "ERR:GET USERS"
+)
+
 func (c ConnectionHandler) MustEmbedUnimplementedConnectionServiceServer() {
 	//TODO implement me
 	panic("implement me")
@@ -74,11 +80,11 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 	if request.Uid == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
-		}).Errorf("ERR:XSS")
+		}).Errorf(xssError)
 	} else if p1 {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
-		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
@@ -88,7 +94,7 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
-		}).Errorf("ERR:GET USERS")
+		}).Errorf(getUsersError)
 		return nil, err
 	}
 	response := &pb.Users{
@@ -113,11 +119,11 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 	if request.Uid == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
-		}).Errorf("ERR:XSS")
+		}).Errorf(xssError)
 	} else if p1 {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
-		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
@@ -127,7 +133,7 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Uid,
-		}).Errorf("ERR:GET USERS")
+		}).Errorf(getUsersError)
 		return nil, err
 	}
 	response := &pb.Users{
@@ -154,11 +160,11 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 	if connection.Connection.UserSender == "" || connection.Connection.UserReceiver == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderId": connection.Connection.UserSender,
-		}).Errorf("ERR:XSS")
+		}).Errorf(xssError)
 	} else if p1 || p2 {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderId": connection.Connection.UserSender,
-		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
 			"userSenderId": connection.Connection.UserSender,
@@ -190,11 +196,11 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 	if connection.Connection.UserSender == "" || connection.Connection.UserReceiver == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderId": connection.Connection.UserSender,
-		}).Errorf("ERR:XSS")
+		}).Errorf(xssError)
 	} else if p1 || p2 {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderId": connection.Connection.UserSender,
-		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
 			"userSenderId": connection.Connection.UserSender,
