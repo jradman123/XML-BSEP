@@ -68,6 +68,7 @@ import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.c
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { TestingComponent } from './components/testing/testing.component';
 
 
 
@@ -95,6 +96,7 @@ import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
     TwofaPageComponent,
     PassLessReqComponent,
     PassLessLoginComponent,
+    TestingComponent,
   ],
   imports: [
     BrowserModule,

@@ -16,6 +16,7 @@ import { EditUserComponent } from './pages/edit-user/edit-user.component';
 import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
+import { TestingComponent } from './components/testing/testing.component';
 
 const routes: Routes = [
   {
@@ -40,6 +41,10 @@ const routes: Routes = [
     path: 'login',
     component: LoginPageComponent,
   },
+  {
+    path: 'testing',
+    component : TestingComponent
+  }, 
   {
 
     path: 'twofa',
