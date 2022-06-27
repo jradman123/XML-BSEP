@@ -4,6 +4,7 @@ import (
 	"common/module/logger"
 	"connection/module/domain/model"
 	"connection/module/domain/repositories"
+	"fmt"
 )
 
 type UserService struct {
@@ -16,9 +17,24 @@ func NewUserService(userRepo repositories.UserRepository, logInfo *logger.Logger
 	return &UserService{userRepo, logInfo, logError}
 }
 
-func (s UserService) CreateUser() {
-	user := &model.User{UserUID: "2", Status: model.Public}
-	user1 := &model.User{UserUID: "3", Status: model.Public}
-	s.userRepo.Register(user)
-	s.userRepo.Register(user1)
+func (s UserService) CreateUser(user model.User) error {
+
+	_, err := s.userRepo.Register(&user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s UserService) UpdateUser(user model.User) error {
+	err := s.userRepo.UpdateUser(&user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s UserService) DeleteUser(user model.User) error {
+	fmt.Println("TODO:delete user from database")
+	return nil
 }

@@ -1,19 +1,33 @@
 package config
 
+import "os"
+
 type Config struct {
-	Port          string
-	Neo4jUri      string
-	Neo4jUsername string
-	Neo4jPassword string
-	PublicKey     string
+	Port               string
+	Neo4jUri           string
+	Neo4jUsername      string
+	Neo4jPassword      string
+	UserCommandSubject string
+	UserReplySubject   string
+	NatsHost           string
+	NatsUser           string
+	NatsPort           string
+	NatsPass           string
+	PublicKey          string
 }
 
 func NewConfig() *Config {
 	return &Config{
-		Port:          "8084",
-		Neo4jUsername: "neo4j",
-		Neo4jPassword: "90210",
-		Neo4jUri:      "bolt://localhost:7687",
+		Port:               os.Getenv("CONNECTION_SERVICE_PORT"),
+		Neo4jUsername:      os.Getenv("NEO4J_USERNAME"),
+		Neo4jPassword:      os.Getenv("NEO4J_PASS"),
+		Neo4jUri:           "bolt://neo4j:7687",
+		UserCommandSubject: os.Getenv("USER_COMMAND_SUBJECT"),
+		UserReplySubject:   os.Getenv("USER_REPLY_SUBJECT"),
+		NatsPort:           os.Getenv("NATS_PORT"),
+		NatsHost:           os.Getenv("NATS_HOST"),
+		NatsPass:           os.Getenv("NATS_PASS"),
+		NatsUser:           os.Getenv("NATS_USER"),
 		PublicKey: "-----BEGIN PUBLIC KEY-----\n" +
 			"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0AzWYJTc9jiPn+RMNjMJ\n" +
 			"hscn8hg/Mt0U22efM6IvM83CyQCiFHP1Z8rs2HFqRbid/hQxW23HrXQzKx5hGPdU\n" +

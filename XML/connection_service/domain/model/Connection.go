@@ -1,6 +1,6 @@
 package model
 
 type Connection struct {
-	UserOneUID string
-	UserTwoUID string
+	UserOneUID string //sender
+	UserTwoUID string //receiver ,
 }

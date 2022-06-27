@@ -142,6 +142,12 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 		return regUser, err
 	}
 
+	err = u.orchestrator.CreateConnectionUser(user)
+	if err != nil {
+		u.logError.Logger.Println(ErrorOrchestrator)
+		return regUser, err
+	}
+
 	return regUser, nil
 }
 

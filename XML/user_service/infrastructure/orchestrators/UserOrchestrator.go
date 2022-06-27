@@ -21,6 +21,10 @@ func NewUserOrchestrator(publisher saga.Publisher, subscriber saga.Subscriber) (
 	if err != nil {
 		return nil, err
 	}
+	err = o.replySubscriber.Subscribe(o.handleConnection) //slusa odgovore connection servisa nadam se
+	if err != nil {
+		return nil, err
+	}
 	return o, nil
 }
 
@@ -56,4 +60,59 @@ func (o *UserOrchestrator) handle(reply *events.UserReply) events.UserReplyType 
 	fmt.Println("BAAAAAAACKS")
 	return events.UnknownReply
 
+}
+
+func (o *UserOrchestrator) handleConnection(reply *events.UserConnectionReply) events.UserReplyType {
+	//TODO:We check what is the next command type
+	fmt.Println("BAAAAAAACKS connection")
+	return events.UnknownReply
+
+}
+
+func (o *UserOrchestrator) CreateConnectionUser(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.CreateUser,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *UserOrchestrator) EditConnectionUser(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.UpdateUser,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *UserOrchestrator) DeleteConnectionUser(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.DeleteUser,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
 }

@@ -40,3 +40,20 @@ const (
 type UserReply struct {
 	Type UserReplyType
 }
+
+type ConnectionUser struct {
+	UserUID       string
+	Username      string
+	FirstName     string
+	LastName      string
+	ProfileStatus string
+}
+
+type ConnectionUserCommand struct {
+	User ConnectionUser
+	Type UserCommandType
+}
+
+type UserConnectionReply struct {
+	Type UserReplyType
+}

@@ -1,13 +1,16 @@
 package model
 
 type User struct {
-	UserUID string
-	Status  ProfileStatus
+	UserUID   string
+	Username  string
+	FirstName string
+	LastName  string
+	Status    ProfileStatus
 }
 
 type ProfileStatus string
 
 const (
 	Private ProfileStatus = "PRIVATE"
-	Public                = "PUBLIC"
+	Public  ProfileStatus = "PUBLIC"
 )

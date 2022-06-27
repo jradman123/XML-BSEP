@@ -40,16 +40,22 @@ func (u UserRepositoryImpl) Register(userNode *connectionModel.User) (*connectio
 		if checkIfUserExist(userNode.UserUID, tx) {
 			fmt.Println("linija36")
 			return &connectionModel.User{
-				UserUID: "",
-				Status:  "",
+				UserUID:   "",
+				Status:    "",
+				FirstName: "",
+				LastName:  "",
+				Username:  "",
 			}, nil
 		}
 
 		fmt.Println("[ConnectionDBStore Register1]")
 		fmt.Println(userNode)
-		records, err := tx.Run("CREATE (n:UserNode { uid: $uid, status: $status  }) RETURN n.uid, n.status", map[string]interface{}{
-			"uid":    userNode.UserUID,
-			"status": userNode.Status,
+		records, err := tx.Run("CREATE (n:UserNode { uid: $uid, status: $status, username: $username, firstName: $firstName, lastName: $lastName  }) RETURN n.uid, n.status", map[string]interface{}{
+			"uid":       userNode.UserUID,
+			"status":    userNode.Status,
+			"username":  userNode.Username,
+			"firstName": userNode.FirstName,
+			"lastName":  userNode.LastName,
 		})
 		fmt.Println("TU SAM")
 		if err != nil {
@@ -82,7 +88,7 @@ func checkIfUserExist(uid string, transaction neo4j.Transaction) bool {
 	}
 	return false
 }
-func (u UserRepositoryImpl) UpdateUser(userUUID string, private bool) error {
+func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User) error {
 	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -93,21 +99,24 @@ func (u UserRepositoryImpl) UpdateUser(userUUID string, private bool) error {
 
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		fmt.Println("UUID " + userUUID)
-		if checkIfUserExist(userUUID, tx) {
+		fmt.Println("UUID " + userNode.UserUID)
+		if checkIfUserExist(userNode.UserUID, tx) {
 
-			var status string
-			if private {
-				status = "PRIVATE"
-			} else {
-				status = "PUBLIC"
-			}
-			fmt.Println("MENJAM U " + status)
+			//var status string
+			//if userNode.Status == connectionModel.Private {
+			//	status = "PRIVATE"
+			//} else {
+			//	status = "PUBLIC"
+			//}
+			//fmt.Println("MENJAM U " + status)
 
-			_, err := tx.Run("MATCH (n:UserNode { uid: $uid}) set n.status = $status",
+			_, err := tx.Run("MATCH (n:UserNode { uid: $uid}) set n.status = $status, n.username = $username, n.firstName = $firstName, n.lastName = $lastName",
 				map[string]interface{}{
-					"uid":    userUUID,
-					"status": status,
+					"uid":       userNode.UserUID,
+					"status":    userNode.Status,
+					"username":  userNode.Username,
+					"firstName": userNode.FirstName,
+					"lastName":  userNode.LastName,
 				})
 
 			if err != nil {

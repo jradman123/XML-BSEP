@@ -4,6 +4,8 @@ import (
 	"common/module/interceptor"
 	"common/module/logger"
 	connectionProto "common/module/proto/connection_service"
+	saga "common/module/saga/messaging"
+	"common/module/saga/messaging/nats"
 	"connection/module/application/services"
 	"connection/module/domain/repositories"
 	"connection/module/infrastructure/handlers"
@@ -28,20 +30,29 @@ func NewServer(config *config.Config) *Server {
 	}
 }
 
+const (
+	QueueGroup = "connection_service"
+)
+
 func (server *Server) Start() {
 	logInfo := logger.InitializeLogger("connection-service", context.Background(), "Info")
 	logError := logger.InitializeLogger("connection-service", context.Background(), "Error")
+
 	fmt.Println("starting connection service server")
 	neoClient := server.SetupDatabase()
-	//vidjecu dal cu imati repo ili nesto malo drugacije
-	//validator := validator.New()
+
 	connectionRepo := server.InitConnectionRepository(neoClient, logInfo, logError)
 	connectionService := server.InitConnectionService(connectionRepo, logInfo, logError)
-	connectionRequestRepo := server.InitConnectionRequestRepository(neoClient, logInfo, logError)
-	connectionRequestService := server.InitConnectionRequestService(connectionRequestRepo, logInfo, logError)
+
 	userRepo := server.InitUserRepository(neoClient, logInfo, logError)
 	userService := server.InitUserService(userRepo, logInfo, logError)
-	connectionHandler := server.InitConnectionHandler(connectionService, connectionRequestService, userService, logInfo, logError)
+
+	connectionHandler := server.InitConnectionHandler(connectionService, userService, logInfo, logError)
+
+	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
+	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
+	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
+
 	server.StartGrpcServer(connectionHandler, logError)
 
 }
@@ -84,8 +95,8 @@ func GetClient(uri, username, password string) (*neo4j.Driver, error) {
 	return &driver, nil //TODO: ref driver ?
 }
 
-func (server *Server) InitConnectionHandler(conSer *services.ConnectionService, conReqSer *services.ConnectionRequestService, userSer *services.UserService, logInfo *logger.Logger, logError *logger.Logger) *handlers.ConnectionHandler {
-	return handlers.NewConnectionHandler(conSer, conReqSer, userSer, logInfo, logError)
+func (server *Server) InitConnectionHandler(conSer *services.ConnectionService, userSer *services.UserService, logInfo *logger.Logger, logError *logger.Logger) *handlers.ConnectionHandler {
+	return handlers.NewConnectionHandler(conSer, userSer, logInfo, logError)
 }
 func (server *Server) InitConnectionService(repo repositories.ConnectionRepository, logInfo *logger.Logger, logError *logger.Logger) *services.ConnectionService {
 	return services.NewConnectionService(repo, logInfo, logError)
@@ -95,18 +106,39 @@ func (server *Server) InitConnectionRepository(client *neo4j.Driver, logInfo *lo
 	return persistance.NewConnectionRepositoryImpl(client, logInfo, logError)
 }
 
-func (server *Server) InitConnectionRequestService(repo repositories.ConnectionRequestRepository, logInfo *logger.Logger, logError *logger.Logger) *services.ConnectionRequestService {
-	return services.NewConnectionRequestService(repo, logInfo, logError)
-}
-
-func (server *Server) InitConnectionRequestRepository(client *neo4j.Driver, logInfo *logger.Logger, logError *logger.Logger) repositories.ConnectionRequestRepository {
-	return persistance.NewConnectionRequestRepositoryImpl(client, logInfo, logError)
-}
-
 func (server *Server) InitUserService(repo repositories.UserRepository, logInfo *logger.Logger, logError *logger.Logger) *services.UserService {
 	return services.NewUserService(repo, logInfo, logError)
 }
 
 func (server *Server) InitUserRepository(client *neo4j.Driver, logInfo *logger.Logger, logError *logger.Logger) repositories.UserRepository {
 	return persistance.NewUserRepositoryImpl(client, logInfo, logError)
+}
+
+func (server *Server) InitSubscriber(subject string, queueGroup string) saga.Subscriber {
+	subscriber, err := nats.NewNATSSubscriber(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return subscriber
+}
+
+func (server *Server) InitPublisher(subject string) saga.Publisher {
+	publisher, err := nats.NewNATSPublisher(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return publisher
+}
+
+func (server *Server) InitCreateUserCommandHandler(service *services.UserService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.UserCommandHandler {
+	handler, err := handlers.NewUserCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
 }

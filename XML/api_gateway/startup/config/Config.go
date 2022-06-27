@@ -30,6 +30,6 @@ func NewConfig() *Config {
 		UserDBUser:      os.Getenv("USER_DB_USER"),
 		UserDBPass:      os.Getenv("USER_DB_PASS"),
 		ConnectionsPort: "8084",
-		ConnectionsHost: "localhost",
+		ConnectionsHost: "connection_service",
 	}
 }

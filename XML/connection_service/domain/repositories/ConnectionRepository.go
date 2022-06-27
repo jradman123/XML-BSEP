@@ -1,7 +1,13 @@
 package repositories
 
-import connectionModel "connection/module/domain/model"
+import (
+	"connection/module/domain/dto"
+	connectionModel "connection/module/domain/model"
+)
 
 type ConnectionRepository interface {
-	CreateConnection(connection *connectionModel.Connection) (interface{}, error)
+	CreateConnection(connection *connectionModel.Connection) (*dto.ConnectionResponse, error)
+	AcceptConnection(connection *connectionModel.Connection) (*dto.ConnectionResponse, error)
+	GetAllConnectionForUser(userUid string) (userNodes []*connectionModel.User, error1 error)
+	GetAllConnectionRequestsForUser(userUid string) (userNodes []*connectionModel.User, error1 error)
 }
