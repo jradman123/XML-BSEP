@@ -1,7 +1,4 @@
-mat-form-field {
-    width: 300px;
-  }
-  
+
 
 .separateMe {
   display: flex;
@@ -19,4 +16,101 @@ mat-form-field {
   flex-direction: column;
   align-items: center;
   margin-top: 2px;
+  width: 450px;
+}
+ 
+.options {
+  margin-bottom: 7px;
+}
+
+.radio-buttons{
+  display: flex;
+  flex-direction: column;
+  margin-left: 8px;
+}
+
+.radio-buttons mat-label {
+  color: #6c757d;
+}
+
+.dislinkt {
+  font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #012970;
+    font-family: "Segoe UI", sans-serif;
+    margin-top: 3px;
+}
+
+.logo img {
+  max-height: 46px;
+  margin-right: 6px;
+}
+
+:root {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  background: #f6f9ff;
+  color: #444444;
+}
+
+a {
+  color: #4154f1;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #717ff5;
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Segoe UI", sans-serif;
+}
+
+
+/* Card */
+.card {
+  margin-bottom: 30px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+}
+
+.card-header, .card-footer {
+  border-color: #ebeef4;
+  background-color: #fff;
+  color: #798eb3;
+  padding: 15px;
+}
+
+.card-title {
+  padding: 20px 0 15px 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #012970;
+  font-family: "Poppins", sans-serif;
+}
+.card-title span {
+  color: #899bbd;
+  font-size: 18px;
+  font-weight: 500;
+}
+.card-body {
+  padding: 0 20px 20px 20px;
+}
+
+.card-img-overlay {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.hero {
+  background-color: #dde0e9c4;
+}
+
+mat-form-field {
+  width: 100%;
 }
