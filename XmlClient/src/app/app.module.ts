@@ -69,6 +69,12 @@ import { PassLessLoginComponent } from './components/pass-less-login/pass-less-l
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { TestingComponent } from './components/testing/testing.component';
+import { MyProfileComponent } from './components/my-profile/my-profile.component';
+import { RegisteredHeaderComponent } from './components/registered-header/registered-header.component';
+import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { OverviewProfileComponent } from './components/overview-profile/overview-profile.component';
 
 
 
@@ -97,6 +103,12 @@ import { TestingComponent } from './components/testing/testing.component';
     PassLessReqComponent,
     PassLessLoginComponent,
     TestingComponent,
+    MyProfileComponent,
+    RegisteredHeaderComponent,
+    ProfileEditComponent,
+    SettingsComponent,
+    ChangePasswordComponent,
+    OverviewProfileComponent,
   ],
   imports: [
     BrowserModule,
