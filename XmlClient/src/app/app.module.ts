@@ -75,6 +75,9 @@ import { ProfileEditComponent } from './components/profile-edit/profile-edit.com
 import { SettingsComponent } from './components/settings/settings.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { OverviewProfileComponent } from './components/overview-profile/overview-profile.component';
+import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
+import { ProfileListComponent } from './components/profile-list/profile-list.component';
+import { ProfileSearchPipe } from './pipes/profile-search.pipe';
 
 
 
@@ -109,6 +112,9 @@ import { OverviewProfileComponent } from './components/overview-profile/overview
     SettingsComponent,
     ChangePasswordComponent,
     OverviewProfileComponent,
+    ProfilePreviewComponent,
+    ProfileListComponent,
+    ProfileSearchPipe,
   ],
   imports: [
     BrowserModule,

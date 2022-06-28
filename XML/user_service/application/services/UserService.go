@@ -48,6 +48,7 @@ func (u UserService) GetUsers() ([]model.User, error) {
 
 	users, err := u.userRepository.GetUsers()
 	if err != nil {
+		fmt.Sprintln("evo ovde sam puko - service")
 		u.logError.Logger.Errorf("ERR:CANT GET USERS")
 		return nil, errors.New("cant get users")
 	}

@@ -18,6 +18,8 @@ import { PassLessLoginComponent } from './components/pass-less-login/pass-less-l
 import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
 import { TestingComponent } from './components/testing/testing.component';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
+import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
+import { ProfileListComponent } from './components/profile-list/profile-list.component';
 
 const routes: Routes = [
   {
@@ -37,6 +39,10 @@ const routes: Routes = [
         component: NewJobOfferComponent,canActivate: [AuthGuard]
       }
     ],*/
+  },
+  {
+    path: 'people',
+    component: ProfileListComponent,
   },
   {
     path: 'login',
@@ -82,7 +88,7 @@ const routes: Routes = [
   },
   {
     path: 'jobOffers',
-    component: JobOfferComponent,canActivate: [AuthGuard]
+    component: JobOfferComponent,// canActivate: [AuthGuard]
   },
   {
     path: 'genApiKey',

@@ -1,0 +1,29 @@
+.info {
+    justify-content: flex-start;
+}
+
+.info h1 {
+    margin-bottom: 10px;
+    line-height: 50px;
+    font-size: 30px;
+    font-weight: 550;
+    color: #012970;
+  }
+
+  .info h4 {
+    color: #444444;
+    font-size: 18px;
+    line-height: 27px;
+    letter-spacing: 1px;
+  }
+
+  .connect-button {
+    margin: 0;
+    transform: translateY(30%);
+  }
+
+  .avatar {
+    border-radius: 50%; 
+    width:100px;
+    float: right
+  }
