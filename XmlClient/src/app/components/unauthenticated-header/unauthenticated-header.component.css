@@ -1,0 +1,232 @@
+
+/*--------------------------------------------------------------
+# landing-header
+--------------------------------------------------------------*/
+.landing-header {
+    transition: all 0.5s;
+    z-index: 997;
+    padding: 20px 0;
+  }
+  .landing-header.landing-header-scrolled {
+    background: #fff;
+    padding: 15px 0;
+    box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1);
+  }
+  .landing-header .logo {
+    line-height: 0;
+    text-decoration: none;
+  }
+  .landing-header .logo img {
+    max-height: 40px;
+    margin-right: 6px;
+  }
+  .landing-header .logo span {
+    font-size: 37px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #012970;
+    font-family: "Segoe UI", sans-serif;
+    margin-top: 3px;
+  }
+
+  .vl {
+    border-right: 6px black;
+    height: 35px;
+  }
+/*--------------------------------------------------------------
+# Navigation Menu
+--------------------------------------------------------------*/
+/**
+* Desktop Navigation 
+*/
+.landing-navbar {
+    padding: 0;
+  }
+  .landing-navbar ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+    align-items: center;
+  }
+  .landing-navbar li {
+    position: relative;
+  }
+  .landing-navbar a, .landing-navbar a:focus {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0 10px 30px;
+    font-family: "Nunito", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #013289;
+    white-space: nowrap;
+    transition: 0.3s;
+  }
+  .landing-navbar a i, .landing-navbar a:focus i {
+    font-size: 12px;
+    line-height: 0;
+    margin-left: 5px;
+  }
+  .landing-navbar a:hover, .landing-navbar .active, .landing-navbar .active:focus, .landing-navbar li:hover > a {
+    color: #4154f1;
+  }
+  .landing-navbar .getstarted, .landing-navbar .getstarted:focus {
+    background: #4154f1;
+    padding: 8px 20px;
+    margin-left: 30px;
+    border-radius: 4px;
+    color: #fff;
+    text-decoration: none;
+
+  }
+  .landing-navbar .getstarted:hover, .landing-navbar .getstarted:focus:hover {
+    color: #fff;
+    background: #5969f3;
+  }
+  .landing-navbar .dropdown ul {
+    display: block;
+    position: absolute;
+    left: 14px;
+    top: calc(100% + 30px);
+    margin: 0;
+    padding: 10px 0;
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    background: #fff;
+    box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
+    transition: 0.3s;
+    border-radius: 4px;
+  }
+  .landing-navbar .dropdown ul li {
+    min-width: 200px;
+  }
+  .landing-navbar .dropdown ul a {
+    padding: 10px 20px;
+    font-size: 15px;
+    text-transform: none;
+    font-weight: 600;
+  }
+  .landing-navbar .dropdown ul a i {
+    font-size: 12px;
+  }
+  .landing-navbar .dropdown ul a:hover, .landing-navbar .dropdown ul .active:hover, .landing-navbar .dropdown ul li:hover > a {
+    color: #4154f1;
+  }
+  .landing-navbar .dropdown:hover > ul {
+    opacity: 1;
+    top: 100%;
+    visibility: visible;
+  }
+  .landing-navbar .dropdown .dropdown ul {
+    top: 0;
+    left: calc(100% - 30px);
+    visibility: hidden;
+  }
+  .landing-navbar .dropdown .dropdown:hover > ul {
+    opacity: 1;
+    top: 0;
+    left: 100%;
+    visibility: visible;
+  }
+  @media (max-width: 1366px) {
+    .landing-navbar .dropdown .dropdown ul {
+      left: -90%;
+    }
+    .landing-navbar .dropdown .dropdown:hover > ul {
+      left: -100%;
+    }
+  }
+  
+  /**
+  * Mobile Navigation 
+  */
+  .mobile-nav-toggle {
+    color: #012970;
+    font-size: 28px;
+    cursor: pointer;
+    display: none;
+    line-height: 0;
+    transition: 0.5s;
+  }
+  .mobile-nav-toggle.bi-x {
+    color: #fff;
+  }
+  
+  @media (max-width: 991px) {
+    .mobile-nav-toggle {
+      display: block;
+    }
+  
+    .landing-navbar ul {
+      display: none;
+    }
+  }
+  .landing-navbar-mobile {
+    position: fixed;
+    overflow: hidden;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(1, 22, 61, 0.9);
+    transition: 0.3s;
+  }
+  .landing-navbar-mobile .mobile-nav-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+  .landing-navbar-mobile ul {
+    display: block;
+    position: absolute;
+    top: 55px;
+    right: 15px;
+    bottom: 15px;
+    left: 15px;
+    padding: 10px 0;
+    border-radius: 10px;
+    background-color: #fff;
+    overflow-y: auto;
+    transition: 0.3s;
+  }
+  .landing-navbar-mobile a, .landing-navbar-mobile a:focus {
+    padding: 10px 20px;
+    font-size: 15px;
+    color: #012970;
+  }
+  .landing-navbar-mobile a:hover, .landing-navbar-mobile .active, .landing-navbar-mobile li:hover > a {
+    color: #4154f1;
+  }
+  .landing-navbar-mobile .getstarted, .landing-navbar-mobile .getstarted:focus {
+    margin: 15px;
+  }
+  .landing-navbar-mobile .dropdown ul {
+    position: static;
+    display: none;
+    margin: 10px 20px;
+    padding: 10px 0;
+    z-index: 99;
+    opacity: 1;
+    visibility: visible;
+    background: #fff;
+    box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
+  }
+  .landing-navbar-mobile .dropdown ul li {
+    min-width: 200px;
+  }
+  .landing-navbar-mobile .dropdown ul a {
+    padding: 10px 20px;
+  }
+  .landing-navbar-mobile .dropdown ul a i {
+    font-size: 12px;
+  }
+  .landing-navbar-mobile .dropdown ul a:hover, .landing-navbar-mobile .dropdown ul .active:hover, .landing-navbar-mobile .dropdown ul li:hover > a {
+    color: #4154f1;
+  }
+  .landing-navbar-mobile .dropdown > .dropdown-active {
+    display: block;
+  }
+  
