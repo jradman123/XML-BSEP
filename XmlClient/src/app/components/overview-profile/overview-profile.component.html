@@ -25,52 +25,6 @@
     <div class="col-lg-3 col-md-4 label">Gender</div>
     <div class="col-lg-9 col-md-8">{{userDetails.gender}}</div>
 </div>
-<h5 class="card-title">Profesional Details</h5>
-<div>
-<ul class="nav nav-tabs nav-tabs-bordered">
-  
-    <li class="nav-item">
-      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#education">Education</button>
-    </li>
-
-    <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#experience">Experiences</button>
-    </li>
-
-    <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#skill">Skills</button>
-    </li>
-
-    <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#interest">Interests</button>
-    </li>
-
-  </ul>
-
-  <div class="tab-content pt-2">
-  
-    <div class="tab-pane fade show active profile-overview" id="education">
-        <div class="col-lg-9 col-md-8" *ngFor="let education of userDetails.educations">{{education.education}}</div>
-        
-    </div>
-
-    <div class="tab-pane fade profile-edit pt-3" id="experience">
-        <div class="col-lg-9 col-md-8" *ngFor="let experience of userDetails.experiences">{{experience.experience}}</div>
-     
-    </div>
-
-    <div class="tab-pane fade pt-3" id="skill">
-        <div class="col-lg-9 col-md-8" *ngFor="let skill of userDetails.skills">{{skill.skill}}</div>
-      
-    </div>
-
-    <div class="tab-pane fade pt-3" id="interest">
-        <div class="col-lg-9 col-md-8" *ngFor="let interest of userDetails.interests">{{interest.interest}}</div>
-    
-    </div>
-
-  </div>
-</div>
 
   
                 

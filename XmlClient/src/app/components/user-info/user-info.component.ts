@@ -105,8 +105,7 @@ export class UserInfoComponent implements OnInit {
     console.log(this.userDetails);
     const registerObserver = {
       next: () => {
-       
-        
+
         this.dialogRef.close();
         this._snackBar.open(
           'Success!.',

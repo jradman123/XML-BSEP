@@ -75,6 +75,8 @@ import { ProfileEditComponent } from './components/profile-edit/profile-edit.com
 import { SettingsComponent } from './components/settings/settings.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { OverviewProfileComponent } from './components/overview-profile/overview-profile.component';
+import { ProfileAboutComponent } from './components/profile-about/profile-about.component';
+import { EducationDialogComponent } from './components/dialogs/education-dialog/education-dialog.component';
 
 
 
@@ -109,6 +111,8 @@ import { OverviewProfileComponent } from './components/overview-profile/overview
     SettingsComponent,
     ChangePasswordComponent,
     OverviewProfileComponent,
+    ProfileAboutComponent,
+    EducationDialogComponent
   ],
   imports: [
     BrowserModule,

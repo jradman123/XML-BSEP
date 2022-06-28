@@ -44,38 +44,45 @@
                 <li class="nav-item">
                   <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
                 </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-about">About</button>
+                </li>
   
                 <li class="nav-item">
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+                </li>
+
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
                 </li>
   
                 <li class="nav-item">
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
                 </li>
-  
-                <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
-                </li>
-  
               </ul>
               <div class="tab-content pt-2">
   
                 <div class="tab-pane fade show active profile-overview" id="profile-overview">
                     <app-overview-profile></app-overview-profile>
                 </div>
+
+                <div class="tab-pane fade pt-3" id="profile-about">
+                  <app-profile-about></app-profile-about>  
+                </div>
   
                 <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
                   <app-profile-edit></app-profile-edit>
                 </div>
   
-                <div class="tab-pane fade pt-3" id="profile-settings">
-                  <app-settings></app-settings>
-                </div>
-  
                 <div class="tab-pane fade pt-3" id="profile-change-password">
                   <app-change-password></app-change-password>  
                 </div>
-  
+
+                <div class="tab-pane fade pt-3" id="profile-settings">
+                  <app-settings></app-settings>
+                </div>
+
               </div><!-- End Bordered Tabs -->
   
             </div>
