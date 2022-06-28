@@ -1,0 +1,70 @@
+
+.dislinkt {
+    font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #012970;
+      font-family: "Segoe UI", sans-serif;
+      margin-top: 3px;
+  }
+  
+  .logo img {
+    max-height: 46px;
+    margin-right: 6px;
+  }
+  
+  :root {
+    scroll-behavior: smooth;
+  }
+
+  hr {
+    border: 0;
+    clear:both;
+    display:block;
+    width: 96%;               
+    background-color:black;
+    height: 1px;
+  }
+
+/* Card */
+.card {
+    margin-bottom: 30px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+  }
+  
+  .card-header, .card-footer {
+    border-color: #ebeef4;
+    background-color: #fff;
+    color: #798eb3;
+    padding: 15px;
+  }
+  
+  .card-title {
+    padding: 20px 0 15px 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #012970;
+    font-family: "Poppins", sans-serif;
+  }
+  .card-title span {
+    color: #899bbd;
+    font-size: 22px;
+    font-weight: 500;
+  }
+  .card-body {
+    padding: 0 20px 20px 20px;
+  }
+  
+  .card-img-overlay {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .hero {
+    background-color: #dde0e9c4;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
