@@ -22,5 +22,4 @@ export class ProfileListComponent implements OnInit {
     )
   }
 
-
 }

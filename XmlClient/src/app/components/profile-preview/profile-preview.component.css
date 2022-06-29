@@ -2,6 +2,14 @@
     justify-content: flex-start;
 }
 
+.card {
+  max-width: 900px;
+  margin-bottom: 30px;
+  border: none;
+  border-radius: 5px;
+  box-shadow:  14px 20px 30px rgba(1, 41, 112, 0.1);
+}
+
 .info h1 {
     margin-bottom: 10px;
     line-height: 50px;
