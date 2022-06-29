@@ -100,7 +100,7 @@ const routes: Routes = [
   },
   {
     path: 'myProfile',
-    component: MyProfileComponent,//canActivate: [AuthGuardRegular]
+    component: MyProfileComponent, canActivate: [AuthGuardRegular]
   },
 
 
