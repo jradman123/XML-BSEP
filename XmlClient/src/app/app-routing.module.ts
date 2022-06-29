@@ -13,8 +13,6 @@ import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
 import { EditUserComponent } from './pages/edit-user/edit-user.component';
-import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
-import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
 import { TestingComponent } from './components/testing/testing.component';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
@@ -72,14 +70,6 @@ const routes: Routes = [
   {
     path: 'activate',
     component: ActivateAccountComponent,
-  },
-  {
-    path: 'passwordlessReq',
-    component: PassLessReqComponent,
-  },
-  {
-    path: 'passwordlessLogin',
-    component: PassLessLoginComponent,
   },
  {
     path: 'editUser',
