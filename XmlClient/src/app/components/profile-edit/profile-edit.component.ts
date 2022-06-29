@@ -3,10 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
-import { EducationDto } from 'src/app/interfaces/education-dto';
-import { ExperienceDto } from 'src/app/interfaces/experience-dto';
-import { InterestDto } from 'src/app/interfaces/interest-dto';
-import { SkillDto } from 'src/app/interfaces/skill-dto';
 import { UserDetails } from 'src/app/interfaces/user-details';
 import { UserService } from 'src/app/services/user-service/user.service';
 
