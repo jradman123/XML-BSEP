@@ -1,0 +1,70 @@
+<form>
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-3 col-lg-3 col-form-label">Two
+        factor
+        authentication</label>
+      <div class="col-md-4 col-lg-4">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="changesMade" (click)="enable2fa($event)" [checked]="isChecked"  name="checked">
+          <label class="form-check-label" for="changesMade">
+            Two factor authentication is {{ isChecked ? 'enabled' : 'disabled'}}
+          </label>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-4" *ngIf="isChecked">
+        <div *ngIf="getCodeVisible"> 2FA is now enabled.
+          <button class="btn btn-primary" (click)="showCode()">Show your secret code</button>
+        </div>
+        <div class="col-12">
+          <div class="content">
+      
+            <div style="margin-top: 20px;" *ngIf="isCodeVisible">
+              <qr-code [value]="code" [size]="200"></qr-code>
+            </div>
+            
+          </div>
+          <br />
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-3 col-lg-3 col-form-label">API key</label>
+      <div class="col-md-8 col-lg-9">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="changesMade" (click)="generate()">
+          <label class="form-check-label" for="changesMade">
+            Generate
+          </label>
+        </div>
+        <div class="form-check" *ngIf="clicked">
+          Make sure to copy your personal access token now. You will not be able to
+              see it again!
+            <mat-form-field appearance="fill" style="width: 100%">
+              <mat-label>Your API key is </mat-label>
+              <input matInput [(ngModel)]="apiKey" name="input" />
+            </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-3 col-lg-3 col-form-label">Profile privacy</label>
+      <div class="col-md-8 col-lg-9">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="changesMade">
+          <label class="form-check-label" for="changesMade">
+            Private 
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="changesMade" checked>
+          <label class="form-check-label" for="changesMade">
+            Public 
+          </label>
+        </div>
+      </div>
+      
+    </div>
+
+  </form>

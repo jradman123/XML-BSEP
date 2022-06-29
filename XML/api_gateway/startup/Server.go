@@ -43,7 +43,11 @@ func NewServer(config *cfg.Config) *Server {
 
 func (server *Server) initHandlers() {
 	//Povezuje sa grpc generisanim fajlovima
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(20*1024*1024),
+			grpc.MaxCallSendMsgSize(20*1024*1024)),
+	}
 	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
 	postsEndpoint := fmt.Sprintf("%s:%s", server.config.PostsHost, server.config.PostsPort)
 	connectionsEndpoint := fmt.Sprintf("%s:%s", server.config.ConnectionsHost, server.config.ConnectionsPort)

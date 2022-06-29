@@ -1,0 +1,78 @@
+<form class="form-container" [formGroup]="userDetailsForm">
+    <div class="row mb-3">
+      <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+      <div class="col-md-8 col-lg-9">
+        <img src="../../../assets/userMale.png" alt="Profile">
+        <div class="pt-2">
+          <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i class="bi bi-upload"></i></a>
+          <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i class="bi bi-trash"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">First Name</label>
+      <div class="col-md-8 col-lg-9">
+        <input name="fullName" type="text" class="form-control" id="firstName" formControlName="firstName">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Last Name</label>
+      <div class="col-md-8 col-lg-9">
+        <input name="fullName" type="text" class="form-control" id="fullName" formControlName="lastName">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="company" class="col-md-4 col-lg-3 col-form-label">Date of birth</label>
+      <div class="col-md-8 col-lg-9">
+        <input matInput formControlName="dateOfBirth" [matDatepicker]="picker"  [value]="date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="about" class="col-md-4 col-lg-3 col-form-label">Biography</label>
+      <div class="col-md-8 col-lg-9">
+        <textarea name="about" class="form-control" id="about" style="height: 100px" formControlName="biography"></textarea>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="company" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+      <div class="col-md-8 col-lg-9">
+        <input name="phone" type="text" class="form-control" id="phone" formControlName="phoneNumber">
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <label for="company" class="col-md-4 col-lg-3 col-form-label">Gender</label>
+      <div class="col-md-8 col-lg-9">
+        <mat-select formControlName="gender">
+          <mat-option value="FEMALE">
+            FEMALE
+          </mat-option>
+          <mat-option value="MALE">
+            MALE
+          </mat-option>
+          <mat-option value="OTHER">
+            OTHER
+          </mat-option>
+
+        </mat-select>
+      </div>
+    </div>
+
+    <div class="row mb-6">
+      <div class="col-md-3 col-lg-3">
+          <button type="submit" class="btn btn-primary" (click)="save()">Save Changes</button>
+      </div>
+
+      <div class="col-md-3 col-lg-3">
+          <button type="submit" class="btn btn-danger" (click)="cancel()">Cancel</button>
+      </div>
+    </div>
+
+  </form>

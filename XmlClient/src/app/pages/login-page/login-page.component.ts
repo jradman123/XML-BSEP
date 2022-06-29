@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { ILoginRequest } from 'src/app/interfaces/login-request';
@@ -16,10 +16,13 @@ import { AuthService } from 'src/app/services/auth-service/auth.service';
 export class LoginPageComponent implements OnInit {
 
   aFormGroup!: FormGroup;
+  formPL! : FormGroup;
+  passwordless = false;
   siteKey!: string;
   loginReq: ILoginRequest;
   usernameReq!: IUsername;
-  username: string = ""
+  username: string = "";
+  showCode = false;
 
   constructor(
     private authService: AuthService,
@@ -40,7 +43,53 @@ export class LoginPageComponent implements OnInit {
       password: ['', Validators.required]
     });
 
+    this.formPL =  this.formBuilder.group({
+      username: new FormControl('', [
+        Validators.required,
+      ]),
+      code : new FormControl('', 
+      Validators.required)
+    });
   }
+
+  submitPL(){
+
+    const plObserver = {
+      next: () => {
+        this._router.navigate(['myProfile']);
+        this._snackBar.open(
+          'Welcome!',
+          'Dismiss',
+          { duration: 3000 }
+        );
+      },
+      error: (err: HttpErrorResponse) => {
+        this._snackBar.open(err.error + "!", 'Dismiss', { duration: 3000 });
+      }
+    }
+
+    const sendCodeObserver = {
+      next: (x: any) => {
+        this._snackBar.open("Code is sent to your mail!", "Dismiss", { duration: 3000 });
+        this.showCode = true;
+      },
+      error: (err: HttpErrorResponse) => {
+
+        this._snackBar.open(err.error + "!", 'Dismiss', { duration: 3000 });
+      },
+    };
+
+    if(!this.showCode)
+      this.authService.passwordlessLoginRequest(this.formPL.value.username).subscribe(sendCodeObserver);
+    else 
+      this.authService.passwordlessLogin(this.formPL.value.code).subscribe(plObserver)
+  }
+
+  pswrdless(){
+    this.passwordless = true;
+  }
+
+  
 
   onSubmit() {
     if (this.aFormGroup.invalid) {
@@ -76,7 +125,7 @@ export class LoginPageComponent implements OnInit {
         if (res == null) {
           return
         }
-        this._router.navigate(['/editUser']);
+        this._router.navigate(['/myProfile']);
         this._snackBar.open("Welcome!", "Dismiss");
       },
       error: (err: HttpErrorResponse) => {

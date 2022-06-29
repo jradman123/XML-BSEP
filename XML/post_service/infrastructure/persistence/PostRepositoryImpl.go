@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -50,8 +51,8 @@ func (p PostRepositoryImpl) Create(post *model.Post) error {
 	return nil
 }
 
-func (p PostRepositoryImpl) GetAllByUserId(uuid string) ([]*model.Post, error) {
-	filter := bson.M{"user_id": uuid}
+func (p PostRepositoryImpl) GetAllByUsername(username string) ([]*model.Post, error) {
+	filter := bson.M{"username": username}
 	return p.filter(filter)
 }
 
@@ -83,13 +84,28 @@ func (p PostRepositoryImpl) GetAllJobOffers() ([]*model.JobOffer, error) {
 	filter := bson.D{}
 	return p.filterJobOffers(filter)
 }
-
-func (p PostRepositoryImpl) LikePost(post *model.Post, userId string) error {
+func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
+	//filter := bson.M{"user_id": user.UserId}
+	//posts, err := p.filter(filter)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//for _, post := range posts {
+	//	_, err = p.posts.UpdateOne(context.TODO(), bson.M{"_id": post.Id}, bson.D{
+	//		{"$set", bson.D{{"username", user.Username}}},
+	//	})
+	//}
+	p.posts.UpdateMany(context.TODO(), bson.M{"user_id": user.UserId},
+		bson.D{
+			{"$set", bson.D{{"username", user.Username}}}})
+	return nil
+}
+func (p PostRepositoryImpl) LikePost(post *model.Post, userId uuid.UUID) error {
 	var reactions []model.Reaction
 
 	reactionExists := false
 	for _, reaction := range post.Reactions {
-		if reaction.UserId != userId {
+		if reaction.UserId != userId.String() {
 			reactions = append(reactions, reaction)
 		} else {
 			if reaction.Reaction != model.LIKED {
@@ -102,7 +118,7 @@ func (p PostRepositoryImpl) LikePost(post *model.Post, userId string) error {
 	}
 	if !reactionExists {
 		reaction := model.Reaction{
-			UserId:   userId,
+			UserId:   userId.String(),
 			Reaction: model.LIKED,
 		}
 		reactions = append(reactions, reaction)
@@ -119,12 +135,12 @@ func (p PostRepositoryImpl) LikePost(post *model.Post, userId string) error {
 	return nil
 }
 
-func (p PostRepositoryImpl) DislikePost(post *model.Post, userId string) error {
+func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID) error {
 	var reactions []model.Reaction
 
 	reactionExists := false
 	for _, reaction := range post.Reactions {
-		if reaction.UserId != userId {
+		if reaction.UserId != userId.String() {
 			reactions = append(reactions, reaction)
 		} else {
 			if reaction.Reaction != model.DISLIKED {
@@ -137,7 +153,7 @@ func (p PostRepositoryImpl) DislikePost(post *model.Post, userId string) error {
 	}
 	if !reactionExists {
 		reaction := model.Reaction{
-			UserId:   userId,
+			UserId:   userId.String(),
 			Reaction: model.DISLIKED,
 		}
 		reactions = append(reactions, reaction)

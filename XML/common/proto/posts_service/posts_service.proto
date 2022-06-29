@@ -10,7 +10,7 @@ import "google/protobuf/timestamp.proto";
 
 service PostService{
 
-  rpc getAllByUserId(GetRequest) returns(GetMultipleResponse) {
+  rpc getAllByUsername(GetRequest) returns(GetMultipleResponse) {
     option (google.api.http) = {
       get: "/post/user/{Id}"
     };
@@ -110,14 +110,14 @@ message CreateCommentResponse {
 
 message ReactionRequest {
   string PostId = 1;
-  string UserId = 2;
+  string Username = 2;
 }
 
 message Post {
   string Id = 1;
-  string UserId = 2;
+  string Username = 2;
   string PostText = 3;
-  repeated string ImagePaths = 4;
+  string ImagePaths = 4;
   string DatePosted = 6;
   int32 LikesNumber = 7;
   int32 DislikesNumber = 8;

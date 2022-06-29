@@ -2,6 +2,7 @@ package application
 
 import (
 	"common/module/logger"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
@@ -29,19 +30,19 @@ func (service *PostService) Create(post *model.Post) error {
 	return service.repository.Create(post)
 }
 
-func (service *PostService) GetAllByUserId(uuid string) ([]*model.Post, error) {
-	return service.repository.GetAllByUserId(uuid)
+func (service *PostService) GetAllByUsername(username string) ([]*model.Post, error) {
+	return service.repository.GetAllByUsername(username)
 }
 
 func (service *PostService) CreateComment(post *model.Post, comment *model.Comment) error {
 	return service.repository.CreateComment(post, comment)
 }
 
-func (service *PostService) LikePost(post *model.Post, userId string) error {
+func (service *PostService) LikePost(post *model.Post, userId uuid.UUID) error {
 	return service.repository.LikePost(post, userId)
 }
 
-func (service *PostService) DislikePost(post *model.Post, userId string) error {
+func (service *PostService) DislikePost(post *model.Post, userId uuid.UUID) error {
 	return service.repository.DislikePost(post, userId)
 }
 
@@ -51,4 +52,8 @@ func (service *PostService) CreateJobOffer(offer *model.JobOffer) error {
 
 func (service *PostService) GetAllJobOffers() ([]*model.JobOffer, error) {
 	return service.repository.GetAllJobOffers()
+}
+
+func (service *PostService) UpdateUserPosts(user *model.User) error {
+	return service.repository.UpdateUserPosts(user)
 }

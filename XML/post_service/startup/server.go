@@ -40,13 +40,13 @@ func (server *Server) Start() {
 
 	postRepo := server.InitPostsRepo(mongoClient)
 	postService := server.InitPostService(postRepo, logInfo, logError)
-	postHandler := server.InitPostHandler(postService, logInfo, logError)
 
 	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	userRepo := server.InitUserRepo(mongoClient)
 	userService := server.InitUserService(userRepo, logInfo, logError)
-	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
+	postHandler := server.InitPostHandler(postService, userService, logInfo, logError)
+	server.InitCreateUserCommandHandler(userService, postService, replyPublisher, commandSubscriber)
 
 	server.StartGrpcServer(postHandler, logError)
 }
@@ -70,8 +70,8 @@ func (server *Server) InitPostService(repo repositories.PostRepository, logInfo 
 	return application.NewPostService(repo, logInfo, logError)
 }
 
-func (server *Server) InitPostHandler(service *application.PostService, logInfo *logger.Logger, logError *logger.Logger) *handlers.PostHandler {
-	return handlers.NewPostHandler(service, logInfo, logError)
+func (server *Server) InitPostHandler(postService *application.PostService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger) *handlers.PostHandler {
+	return handlers.NewPostHandler(postService, userService, logInfo, logError)
 }
 
 func (server *Server) InitSubscriber(subject string, queueGroup string) saga.Subscriber {
@@ -102,9 +102,9 @@ func (server *Server) InitUserService(repo repositories.UserRepository, logInfo 
 	return application.NewUserService(repo, logInfo, logError)
 }
 
-func (server *Server) InitCreateUserCommandHandler(service *application.UserService, publisher saga.Publisher,
+func (server *Server) InitCreateUserCommandHandler(userService *application.UserService, postService *application.PostService, publisher saga.Publisher,
 	subscriber saga.Subscriber) *handlers.UserCommandHandler {
-	handler, err := handlers.NewUserCommandHandler(service, publisher, subscriber)
+	handler, err := handlers.NewUserCommandHandler(userService, postService, publisher, subscriber)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
