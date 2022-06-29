@@ -28,7 +28,7 @@ export class ProfileEditComponent implements OnInit {
   email! : string;
 
   constructor(private userService : UserService,private _snackBar : MatSnackBar) {
-     
+     this.date = "";
    }
 
   ngOnInit(): void {
