@@ -1,0 +1,23 @@
+<mat-card class="container">
+    <div class="text-center">
+        <h3> Leave comment </h3>
+    </div>
+    <div class="col-12">
+        <div [formGroup]="createForm" class="content">
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Comment</mat-label>
+                    <input id="text" matInput required formControlName="comment">
+                </mat-form-field>
+
+            </div>
+        
+            <div class="buttons">
+                <button id="submitRequest" (click)="submitRequest()"  class="btn btn-success text-center">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+</mat-card>

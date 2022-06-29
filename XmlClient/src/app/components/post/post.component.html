@@ -1,0 +1,59 @@
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,300,0,0" />
+<mat-card class="example-card container">
+    <div *ngIf="item">
+        <div class="userInfo">
+            <div class="group">
+                <mat-icon class="icon-display" aria-hidden="false" style="margin-right: 10px;"> account_circle
+                </mat-icon>
+                <h2>{{item.Username}}</h2>
+            </div>
+            <h3>{{item.DatePosted | date:'shortDate'}}</h3>
+        </div>
+        <div class="image" style="margin-bottom: 10px;">
+            <picture *ngIf="!imageSrc">
+                <source media='(min-width:0px)' srcset="./../../../assets/template.jpg">
+                <img mat-card-image src="" alt="Photo of a Shiba Inu">
+            </picture>
+            <img [src]="imageSrc" *ngIf=imageSrc style="height: 300px; width: 500px;">
+        </div>
+        <div class="reactions" *ngIf="reactions">
+            <p class="text-muted">likes {{reactions.LikesNumber}}</p>
+            <p class="text-muted">dislikes {{reactions.DislikesNumber}}</p>
+        </div>
+        <div class="actions">
+            <div class="group">
+
+                <button *ngIf="isLiked" mat-flat-button class="liked" (click)="likePost()">
+                    <mat-icon class="broken"> favorite</mat-icon>
+                </button>
+                <button *ngIf="!isLiked" mat-flat-button class="broken" (click)="likePost()">
+                    <mat-icon class="broken"> favorite</mat-icon>
+                </button>
+                <button mat-flat-button class="broken" (click)="leaveComment()">
+                    <mat-icon class="broken"> comment</mat-icon>
+                </button>
+                <button mat-flat-button class="broken" (click)="seeComments()">
+                    <mat-icon class="broken" > forum</mat-icon>
+                </button>
+                <button *ngIf="isDisliked" mat-flat-button class="disliked"  (click)="dislikePost()">
+                    <mat-icon class="broken">heart_broken</mat-icon>
+                </button>
+                <button *ngIf="!isDisliked" mat-flat-button class="broken" (click)="dislikePost()">
+                    <mat-icon class="broken">heart_broken</mat-icon>
+                </button>
+            </div>
+        </div>
+        <div class="decription">
+            <mat-card class="descript">
+                <p>
+                    {{item.PostText}}
+                </p>
+            </mat-card>
+        </div>
+    </div>
+</mat-card>

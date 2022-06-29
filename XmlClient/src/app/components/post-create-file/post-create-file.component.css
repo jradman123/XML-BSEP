@@ -1,0 +1,89 @@
+.icon-display {
+    transform: scale(2);
+}
+
+.container {
+    max-width: 500px;
+    max-height: 800px;
+
+}
+
+.userInfo {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+}
+
+.group {
+    display: flex;
+
+}
+
+.border {
+    margin-right: 10px;
+    border-color: transparent;
+}
+
+.links {
+    width: 100%;
+    display: flex;
+    margin-top: 20px;
+    flex-direction: column;
+}
+
+.links p {
+    margin-right: 5px;
+}
+
+.links a {
+    font-size: 14px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-style: italic;
+}
+
+.decription {
+    margin-top: 5px;
+    border-color: transparent;
+    width: 100%;
+}
+
+.image {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.linkGroup {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+
+}
+
+.plus {
+    height: 10px;
+    width: 10px;
+    border-radius: 5px;
+    margin-left: 5px;
+    border-color: black;
+    border: 5px;
+}
+
+.hrefs {
+    display: flex;
+    flex-direction: row;
+    overflow-wrap:break-word;
+    width: 100%;
+    
+    
+}
+.hrefs a {
+    margin-left: 5px;
+}
+.bbuton {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
