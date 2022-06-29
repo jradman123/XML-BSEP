@@ -13,6 +13,8 @@ import { NewPass } from 'src/app/interfaces/new-pass';
 })
 export class RecoverPassComponent implements OnInit {
 
+  enterNew = false;
+  showCode = false;
   createForm!: FormGroup;
   formData!: FormData;
   passMatch: boolean = false;
@@ -60,24 +62,39 @@ export class RecoverPassComponent implements OnInit {
 
   onSubmit(): void {
 
-    this.createRequest();
-    console.log(this.recoverPass);
-    const registerObserver = {
-      next: () => {
-       
-        
-        this.router.navigate(['/login']);
-        this._snackBar.open(
-          'Your password has been changed!',
-          'Dismiss'
-        );
-      },
-      error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', {duration : 3000});
-      }
-
+    if (!this.showCode && !this.enterNew){
+      // send code request
+      console.log(this.createForm.value.Username);
+      
+      this.authService.recoverPassRequest(this.createForm.value.Username).subscribe(
+        res => this.showCode = true);
     }
-    this.authService.recoverPass(this.recoverPass).subscribe(registerObserver)
+    else if(!this.enterNew && this.showCode) {
+        // verify code entered
+        if ( this.createForm.value.Code.size() >= 5) this.enterNew = true;
+    }
+    else if(this.enterNew && this.showCode) {
+      this.createRequest();
+      console.log(this.recoverPass);
+      const registerObserver = {
+        next: () => {
+         
+          
+          this.router.navigate(['/login']);
+          this._snackBar.open(
+            'Your password has been changed!',
+            'Dismiss'
+          );
+        },
+        error: (err: HttpErrorResponse) => {
+          this._snackBar.open(err.error.message + "!", 'Dismiss', {duration : 3000});
+        }
+  
+      }
+      this.authService.recoverPass(this.recoverPass).subscribe(registerObserver)
+    }
+
+   
   }
 
   createRequest(): void {

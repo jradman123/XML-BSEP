@@ -77,6 +77,9 @@ import { ChangePasswordComponent } from './components/change-password/change-pas
 import { OverviewProfileComponent } from './components/overview-profile/overview-profile.component';
 import { ProfileAboutComponent } from './components/profile-about/profile-about.component';
 import { EducationDialogComponent } from './components/dialogs/education-dialog/education-dialog.component';
+import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
+import { ProfileListComponent } from './components/profile-list/profile-list.component';
+import { ProfileSearchPipe } from './pipes/profile-search.pipe';
 
 
 
@@ -112,7 +115,10 @@ import { EducationDialogComponent } from './components/dialogs/education-dialog/
     ChangePasswordComponent,
     OverviewProfileComponent,
     ProfileAboutComponent,
-    EducationDialogComponent
+    EducationDialogComponent,
+    ProfilePreviewComponent,
+    ProfileListComponent,
+    ProfileSearchPipe,
   ],
   imports: [
     BrowserModule,

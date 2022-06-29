@@ -78,6 +78,13 @@ export class UserService {
     );
   }
 
+
+  getUsers() {
+    return this._http.get<any>(
+      'http://localhost:9090/users'
+    );
+  }
+
   updateUser(user: UserDetails) {
     return this._http.post<UserDetails>('http://localhost:9090/users/user/edit',
       user
