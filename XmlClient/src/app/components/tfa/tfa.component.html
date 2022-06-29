@@ -4,10 +4,10 @@
     <hr />
     <br />
   </div>
-  <div>
+ <div>
     <mat-checkbox (click)="enable2fa($event)" [checked]="isChecked" [(ngModel)]="isChecked" class="example-margin">
       Two factor authentication is {{ isChecked ? 'enabled' : 'disabled'}}</mat-checkbox>
-  </div>
+  </div> 
   <div *ngIf="getCodeVisible"> 2FA is now enabled.
     <button mat-button color="accent" (click)="showCode()">Show your secret code</button>
   </div>

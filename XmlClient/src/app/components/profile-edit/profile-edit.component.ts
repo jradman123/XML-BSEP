@@ -24,18 +24,11 @@ export class ProfileEditComponent implements OnInit {
   id!: number;
   date : any;
   initialDate : any;
-  skills! : SkillDto[];
-  educations! : EducationDto[];
-  interests! : InterestDto[];
-  experiences! : ExperienceDto[];
   username! : string;
   email! : string;
 
   constructor(private userService : UserService,private _snackBar : MatSnackBar) {
-      this.skills = [] as SkillDto[];
-      this.educations = [] as EducationDto[];
-      this.experiences = [] as ExperienceDto[];
-      this.interests = [] as InterestDto[];
+     
    }
 
   ngOnInit(): void {
@@ -44,10 +37,6 @@ export class ProfileEditComponent implements OnInit {
   getUserDetails() {
     this.sub = this.userService.getUserDetails(localStorage.getItem('username')).subscribe({
       next: (data: UserDetails) => {
-        this.skills = data.skills;
-        this.interests = data.interests;
-        this.experiences = data.experiences;
-        this.educations = data.educations;
         this.username = data.username;
         this.email = data.email;
         this.userDetails = data
@@ -66,24 +55,16 @@ export class ProfileEditComponent implements OnInit {
   userDetailsForm = new FormGroup({
     firstName: new FormControl('', Validators.required),
     lastName: new FormControl('', Validators.required),
-    //email: new FormControl('',Validators.required),
     phoneNumber: new FormControl('', Validators.required),
-    username: new FormControl('', Validators.required),
     dateOfBirth: new FormControl('', Validators.required),
     gender: new FormControl('', Validators.required),
     biography: new FormControl('', Validators.required),
-    skill : new FormControl('',null),
-    experience : new FormControl('',null),
-    interest : new FormControl('',null),
-    education : new FormControl('',null)
   })
 
   cancel() {
     this.userDetailsForm.controls['firstName'].setValue(this.initialDetails.firstName)
     this.userDetailsForm.controls['lastName'].setValue(this.initialDetails.lastName)
-    //this.userDetailsForm.controls['email'].setValue(this.initialDetails.email)
     this.userDetailsForm.controls['phoneNumber'].setValue(this.initialDetails.phoneNumber)
-    this.userDetailsForm.controls['username'].setValue(this.initialDetails.username)
     this.userDetailsForm.controls['dateOfBirth'].setValue(this.initialDate)
     this.userDetailsForm.controls['gender'].setValue(this.initialDetails.gender)
     this.userDetailsForm.controls['biography'].setValue(this.initialDetails.biography)
@@ -127,34 +108,6 @@ export class ProfileEditComponent implements OnInit {
       this.userDetails.dateOfBirth = d.toISOString();
     }
     this.userDetails.biography = this.userDetailsForm.value.biography;
-    /*this.newSkill.skill = this.userDetailsForm.value.skill;
-    if(this.newSkill.skill == ""){
-      this.userDetails.skills = this.skills;
-    }else{
-      this.skills.push(this.newSkill);*/
-      this.userDetails.skills = this.skills;
-    //}
-    /*this.newEducation.education = this.userDetailsForm.value.education;
-    if(this.newEducation.education == ""){
-      this.userDetails.educations =this.educations;
-    }else{
-      this.educations.push(this.newEducation);*/
-      this.userDetails.educations =this.educations;
-   // }
-    /*this.newExperience.experience = this.userDetailsForm.value.experience;
-    if(this.newExperience.experience == ""){
-      this.userDetails.experiences = this.experiences;
-    }else{
-      this.experiences.push(this.newExperience);*/
-      this.userDetails.experiences = this.experiences;
-    //}
-    /*this.newInterest.interest = this.userDetailsForm.value.interest;
-    if(this.newInterest.interest == ""){
-      this.userDetails.interests = this.interests;
-    }else{
-      this.interests.push(this.newInterest);*/
-      this.userDetails.interests = this.interests;
-    //}
   }
 
 }
