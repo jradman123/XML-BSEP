@@ -99,20 +99,20 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 	}
 	request.ShareJobOffer.JobOffer.DatePosted = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.DatePosted))
 	request.ShareJobOffer.JobOffer.Duration = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.Duration))
-	p1 := common.BadJWTToken(request.ShareJobOffer.ApiToken)
+	/*p1 := common.BadJWTToken(request.ShareJobOffer.ApiToken)
 	p2 := common.BadText(request.ShareJobOffer.JobOffer.Publisher)
 	p3 := common.BadText(request.ShareJobOffer.JobOffer.Position)
 	p4 := common.BadText(request.ShareJobOffer.JobOffer.JobDescription)
 	p5 := common.BadTexts(request.ShareJobOffer.JobOffer.Requirements)
 	p6 := common.BadDate(request.ShareJobOffer.JobOffer.DatePosted)
-	p7 := common.BadDate(request.ShareJobOffer.JobOffer.Duration)
+	p7 := common.BadDate(request.ShareJobOffer.JobOffer.Duration)*/
 
 	if request.ShareJobOffer.ApiToken == "" || request.ShareJobOffer.JobOffer.Publisher == "" ||
 		request.ShareJobOffer.JobOffer.Position == "" || request.ShareJobOffer.JobOffer.JobDescription == "" ||
 		request.ShareJobOffer.JobOffer.DatePosted == "" || request.ShareJobOffer.JobOffer.Duration == "" {
 		u.logError.Logger.Errorf("ERR:XSS")
-	} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
-		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		/*} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
+		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")*/
 	} else {
 		u.logInfo.Logger.Infof("INFO:Handling ShareJobOffer")
 	}
@@ -455,22 +455,22 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	userDetails.DateOfBirth = strings.TrimSpace(policy.Sanitize(userDetails.DateOfBirth))
 	userDetails.Biography = strings.TrimSpace(policy.Sanitize(userDetails.Biography))
 
-	p1 := common.BadUsername(userDetails.Username)
+	/*p1 := common.BadUsername(userDetails.Username)
 	p2 := common.BadName(userDetails.FirstName)
 	p3 := common.BadName(userDetails.LastName)
 	p4 := common.BadText(userDetails.Gender)
 	p5 := common.BadDate(userDetails.DateOfBirth)
 	p6 := common.BadNumber(userDetails.PhoneNumber)
-	p7 := common.BadText(userDetails.Biography)
+	p7 := common.BadText(userDetails.Biography)*/
 
 	if userDetails.Username == "" || userDetails.FirstName == "" || userDetails.LastName == "" ||
 		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" ||
 		userDetails.Biography == "" {
 		u.logError.Logger.Errorf("ERR:XSS")
 		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
-	} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
+		/*} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
 		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
-		return nil, status.Error(codes.FailedPrecondition, "there is chance for sql injection")
+		return nil, status.Error(codes.FailedPrecondition, "there is chance for sql injection")*/
 	} else {
 		u.logInfo.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
