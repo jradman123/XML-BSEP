@@ -465,8 +465,8 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	p7 := common.BadText(userDetails.Biography)*/
 
 	if userDetails.Username == "" || userDetails.FirstName == "" || userDetails.LastName == "" ||
-		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" ||
-		userDetails.Biography == "" {
+		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" { /* ||
+		userDetails.Biography == ""*/
 		u.logError.Logger.Errorf("ERR:XSS")
 		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
 		/*} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
