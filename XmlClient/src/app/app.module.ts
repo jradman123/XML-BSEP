@@ -43,24 +43,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
-import { AuthenticatedHeaderComponent } from './components/authenticated-header/authenticated-header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
-import { UserInfoComponent } from './components/user-info/user-info.component';
-import { EditUserComponent } from './pages/edit-user/edit-user.component';
-import { UserInfosComponent } from './components/user-infos/user-infos.component';
 import { UnauthenticatedHeaderComponent } from './components/unauthenticated-header/unauthenticated-header.component';
 import { MaterialModule } from './material/material.module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { FiterPipePipe } from './pipes/fiter-pipe.pipe';
-import { ApiKeyComponent } from './components/api-key/api-key.component';
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { TfaComponent } from './components/tfa/tfa.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { QRCodeModule } from 'angular2-qrcode';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
@@ -73,7 +67,6 @@ import { CommentCreateComponent } from './components/comment-create/comment-crea
 import { PostCreateFileComponent } from './components/post-create-file/post-create-file.component';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
 import { PostsCommentsViewComponent } from './components/posts-comments-view/posts-comments-view.component';
-import { TestingComponent } from './components/testing/testing.component';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { RegisteredHeaderComponent } from './components/registered-header/registered-header.component';
 import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
@@ -95,19 +88,13 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     LoginPageComponent,
     RegisterPageComponent,
     UnauthenticatedHeaderComponent,
-    AuthenticatedHeaderComponent,
     FooterComponent,
     RecoverPassRequestComponent,
     RecoverPassComponent,
     ActivateAccountComponent,
-    UserInfoComponent,
-    EditUserComponent,
-    UserInfosComponent,
     JobOfferComponent,
     FiterPipePipe,
     NewJobOfferComponent,
-    ApiKeyComponent,
-    TfaComponent,
     ConfirmDialogComponent,
     TwofaPageComponent,
     PassLessReqComponent,
@@ -117,7 +104,6 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     PostCreateFileComponent,
     PostsViewComponent,
     PostsCommentsViewComponent,
-    TestingComponent,
     MyProfileComponent,
     RegisteredHeaderComponent,
     ProfileEditComponent,
