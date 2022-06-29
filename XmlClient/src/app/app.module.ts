@@ -68,6 +68,11 @@ import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.c
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { PostComponent } from './components/post/post.component';
+import { CommentCreateComponent } from './components/comment-create/comment-create.component';
+import { PostCreateFileComponent } from './components/post-create-file/post-create-file.component';
+import { PostsViewComponent } from './components/posts-view/posts-view.component';
+import { PostsCommentsViewComponent } from './components/posts-comments-view/posts-comments-view.component';
 import { TestingComponent } from './components/testing/testing.component';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { RegisteredHeaderComponent } from './components/registered-header/registered-header.component';
@@ -105,6 +110,11 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     TwofaPageComponent,
     PassLessReqComponent,
     PassLessLoginComponent,
+    PostComponent,
+    CommentCreateComponent,
+    PostCreateFileComponent,
+    PostsViewComponent,
+    PostsCommentsViewComponent,
     TestingComponent,
     MyProfileComponent,
     RegisteredHeaderComponent,
@@ -168,7 +178,11 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     MatRippleModule,
     ReactiveFormsModule,
     NgxCaptchaModule,
-    QRCodeModule
+    QRCodeModule,
+  ],
+  exports:[
+    MaterialModule,
+    MatIconModule
   ],
   providers: [HttpClientModule,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },DatePipe,{ provide: JWT_OPTIONS, useValue: JWT_OPTIONS }, JwtHelperService],

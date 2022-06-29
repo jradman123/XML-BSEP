@@ -1,0 +1,8 @@
+.container {
+    max-width: 500px;
+    max-height: 200px;
+}
+  
+  .example-full-width {
+    width: 100%;
+  }

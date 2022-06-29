@@ -6,85 +6,75 @@ import (
 	b64 "encoding/base64"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"image"
+	"image/jpeg"
+	"log"
+	"os"
 	"post/module/domain/model"
+	"strings"
 	"time"
 )
 
-func MapPost(post *model.Post) *pb.Post {
-	id := post.Id.Hex()
-
-	links := &pb.Links{
-		Comment: "/post/" + id + "/comment",
-		Like:    "/post/" + id + "/like",
-		Dislike: "/post/" + id + "/dislike",
-		User:    "/user/" + post.UserId,
-	}
-
-	likesNum, dislikesNum := FindNumberOfReactions(post)
-
-	postPb := &pb.Post{
-		Id:             id,
-		UserId:         post.UserId,
-		PostText:       post.PostText,
-		DatePosted:     post.DatePosted.String(),
-		Links:          links,
-		LikesNumber:    int32(likesNum),
-		DislikesNumber: int32(dislikesNum),
-		CommentsNumber: int32(len(post.Comments)),
-	}
-	postPb.ImagePaths = convertByteToBase64(post.ImagePaths)
-
-	return postPb
-}
-
-func FindNumberOfReactions(post *model.Post) (int, int) {
-	likesNum := 0
-	dislikesNum := 0
-
-	for _, reaction := range post.Reactions {
-		if reaction.Reaction == model.LIKED {
-			likesNum++
-		} else if reaction.Reaction == model.DISLIKED {
-			dislikesNum++
-		}
-	}
-	return likesNum, dislikesNum
-}
-func convertByteToBase64(images [][]byte) []string {
-	var encodedImages []string
-	for _, image := range images {
-		fmt.Println(image)
-		imageEnc := b64.StdEncoding.EncodeToString(image)
-		fmt.Println(string(imageEnc))
-		encodedImages = append(encodedImages, imageEnc)
-	}
-	return encodedImages
-}
-
-func MapNewPost(postPb *pb.Post) *model.Post {
+func MapNewPost(postPb *pb.Post, user *model.User) *model.Post {
 	post := &model.Post{
 		Id:         primitive.NewObjectID(),
-		UserId:     postPb.UserId,
+		Username:   user.Username,
+		UserId:     user.UserId,
 		PostText:   postPb.PostText,
 		DatePosted: time.Now(),
+		IsDeleted:  false,
 	}
+	base64toJpg(postPb.ImagePaths)
 	post.ImagePaths = convertBase64ToByte(postPb.ImagePaths)
-
 	return post
 }
-func convertBase64ToByte(images []string) [][]byte {
-	var decodedImages [][]byte
-	for _, image := range images {
-		fmt.Println(image)
-		imageDec, _ := b64.StdEncoding.DecodeString(image)
-		fmt.Println(string(imageDec))
-		decodedImages = append(decodedImages, imageDec)
+func base64toJpg(img string) {
+	data := img[strings.IndexByte(img, ',')+1:]
+	reader := b64.NewDecoder(b64.StdEncoding, strings.NewReader(data))
+	m, formatString, err := image.Decode(reader)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return decodedImages
+	bounds := m.Bounds()
+	fmt.Println("base64toJpg", bounds, formatString)
+
+	//Encode from image format to writer
+	pngFilename := "test"
+	f, err := os.OpenFile(pngFilename, os.O_WRONLY|os.O_CREATE, 0777)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	err = jpeg.Encode(f, m, &jpeg.Options{Quality: 75})
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Println("Jpg file", pngFilename, "created")
+	err = f.Close()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+}
+
+func convertBase64ToByte(image string) []byte {
+
+	fmt.Println("convertBase64ToByte")
+	imageDec := image[strings.IndexByte(image, ',')+1:]
+	dec, err := b64.StdEncoding.DecodeString(imageDec)
+	if err != nil {
+		panic(err)
+	}
+	return dec
+
 }
 func MapNewComment(commentPb *pb.Comment) *model.Comment {
 	comment := &model.Comment{
-		UserId:      commentPb.UserId,
+		Id:          primitive.NewObjectID(),
+		Username:    commentPb.Username,
 		CommentText: commentPb.CommentText,
 	}
 	return comment
@@ -116,7 +106,7 @@ func MapNewUser(command *events.UserCommand) *model.User {
 	}
 	return user
 }
-func MapReplyUser(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
+func MapUserReply(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
 	reply = &events.UserReply{
 		Type: replyType,
 		PostUser: events.PostUser{
@@ -137,7 +127,7 @@ func mapToDate(birth string) time.Time {
 
 }
 
-func MapJobOffer(offer *model.JobOffer) *pb.JobOffer {
+func MapJobOfferReply(offer *model.JobOffer) *pb.JobOffer {
 	id := offer.Id.Hex()
 
 	offerPb := &pb.JobOffer{
@@ -151,4 +141,58 @@ func MapJobOffer(offer *model.JobOffer) *pb.JobOffer {
 	}
 
 	return offerPb
+}
+
+func MapPostReply(post *model.Post) *pb.Post {
+	id := post.Id.Hex()
+
+	links := &pb.Links{
+		Comment: "/post/" + id + "/comment",
+		Like:    "/post/" + id + "/like",
+		Dislike: "/post/" + id + "/dislike",
+		User:    "/user/" + post.UserId.String(),
+	}
+
+	likesNum, dislikesNum := FindNumberOfReactions(post)
+
+	postPb := &pb.Post{
+		Id:             id,
+		Username:       post.Username,
+		PostText:       post.PostText,
+		DatePosted:     post.DatePosted.String(),
+		Links:          links,
+		LikesNumber:    int32(likesNum),
+		DislikesNumber: int32(dislikesNum),
+		CommentsNumber: int32(len(post.Comments)),
+	}
+	postPb.ImagePaths = convertByteToBase64(post.ImagePaths)
+
+	return postPb
+}
+
+func FindNumberOfReactions(post *model.Post) (int, int) {
+	likesNum := 0
+	dislikesNum := 0
+
+	for _, reaction := range post.Reactions {
+		if reaction.Reaction == model.LIKED {
+			likesNum++
+		} else if reaction.Reaction == model.DISLIKED {
+			dislikesNum++
+		}
+	}
+	return likesNum, dislikesNum
+}
+func convertByteToBase64(image []byte) string {
+	imageEnc := b64.StdEncoding.EncodeToString(image)
+	return imageEnc
+}
+func MapUserCommentsForPost(user *model.User, commentText string) *pb.Comment {
+
+	commentPb := &pb.Comment{
+		Username:    user.Username,
+		CommentText: commentText,
+	}
+
+	return commentPb
 }

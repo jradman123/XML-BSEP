@@ -105,8 +105,6 @@ export class AuthService {
     localStorage.setItem('email', response.email);
     localStorage.setItem('username', this.jwtToken.username);
     var now = new Date().valueOf();
-    // console.log("Now" + now);
-    // console.log("Expiration time" + this.jwtToken.exp);
 
     console.log(this.jwtToken.exp*1000 )
     console.log(now);
