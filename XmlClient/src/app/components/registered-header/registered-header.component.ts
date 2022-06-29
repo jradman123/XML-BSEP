@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth-service/auth.service';
 
 @Component({
   selector: 'app-registered-header',
@@ -9,7 +11,7 @@ export class RegisteredHeaderComponent implements OnInit {
 
   username : any;
   visible : boolean = false;
-  constructor() { }
+  constructor(private authService : AuthService,private router : Router) { }
 
   ngOnInit(): void {
     this.username=localStorage.getItem('username');
@@ -24,6 +26,15 @@ export class RegisteredHeaderComponent implements OnInit {
       console.log('false')
       this.visible=true;
     }
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['login']);
+  }
+
+  showProfile() {
+    this.router.navigate(['myProfile']);
   }
 
 }
