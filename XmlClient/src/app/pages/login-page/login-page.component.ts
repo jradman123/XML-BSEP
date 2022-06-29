@@ -125,7 +125,7 @@ export class LoginPageComponent implements OnInit {
         if (res == null) {
           return
         }
-        this._router.navigate(['/editUser']);
+        this._router.navigate(['/myProfile']);
         this._snackBar.open("Welcome!", "Dismiss");
       },
       error: (err: HttpErrorResponse) => {
