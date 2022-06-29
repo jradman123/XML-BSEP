@@ -1,51 +1,71 @@
-<div class="container">
-    <app-unauthenticated-header></app-unauthenticated-header>
-    <router-outlet></router-outlet>
-    <br><br>
-    <mat-card>
-        <mat-card-title>Recover password</mat-card-title>
-        <br /><br />
-        <mat-card-content>
-            <div class="container" [formGroup]="createForm">
-                <br />
-                <div class="separateMe">
-                    <div style="width: 100%; display: flex">
-                        <mat-form-field appearance="fill">
-                            <mat-label> Username </mat-label>
-                            <input matInput formControlName="Username" />
-                            <mat-error *ngIf="
-                                createForm?.get('Username')?.valid &&
-                                createForm?.get('Username')?.touched &&
-                                createForm?.get('Username')?.errors?.['required']
-                                ">Username is required.
-                            </mat-error>
-                            <mat-error>Username must be more than 7 characters long </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <div style="width: 100%; display: flex">
-                        <mat-form-field appearance="fill">
-                            <mat-label>Code</mat-label>
-                            <input matInput formControlName="Code" />
-                            <mat-error *ngIf="
-                                createForm?.get('Code')?.valid &&
-                                createForm?.get('Code')?.touched &&
-                                createForm?.get('Code')?.errors?.['required']
-                                ">Code is required.
-                            </mat-error>
-                            <mat-error>Invalid input</mat-error>
-                        </mat-form-field>
-                    </div>
-                    <br /><br />
-                    <div>
-                        <button mat-raised-button (click)="onSubmit()" style="color: white;
-                             background: rgb(17, 16, 16)" class="icon-display">
-                            Activate account
-                        </button>
-                    </div>
-                </div>
-                
-            </div>           
-        </mat-card-content>
-    </mat-card>
-    <br />
+<main class="hero">
+    <div class="container">
+
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a href="index.html" class="logo d-flex align-items-center w-auto">
+                  <img class="logo" src="../../../assets/logo.png" alt="">
+                  <span class="d-none d-lg-block dislinkt">dislinkt</span>
+                </a>
+              </div>
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Begin your journey
+                    </h5>
+                    <p class="text-center small">Enter code sent to your email</p>
+                  </div>
+ 
+                    <form class="row g-3 container"[formGroup]="createForm">
+                       
+                        <div class="separateMe">
+                            <div style="width: 100%; display: flex">
+                                <mat-form-field appearance="fill">
+                                    <mat-label> Username </mat-label>
+                                    <input matInput formControlName="Username" />
+                                    <mat-error *ngIf="
+                                        createForm?.get('Username')?.valid &&
+                                        createForm?.get('Username')?.touched &&
+                                        createForm?.get('Username')?.errors?.['required']
+                                        ">Username is required.
+                                    </mat-error>
+                                    <mat-error>Username must be more than 7 characters long </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div style="width: 100%; display: flex">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Code</mat-label>
+                                    <input matInput formControlName="Code" />
+                                    <mat-error *ngIf="
+                                        createForm?.get('Code')?.valid &&
+                                        createForm?.get('Code')?.touched &&
+                                        createForm?.get('Code')?.errors?.['required']
+                                        ">Code is required.
+                                    </mat-error>
+                                    <mat-error>Invalid input</mat-error>
+                                </mat-form-field>
+                            </div>
+                            <br><br>
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100" type="submit" (click)="onSubmit()"  mat-button>Activate</button>
+                              </div>
+                        </div>
+                    
+</form>
 </div>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+
+</div>
+</main>

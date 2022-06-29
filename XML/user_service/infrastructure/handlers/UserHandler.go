@@ -198,12 +198,13 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 }
 
 func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.GetAllResponse, error) {
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	u.logInfo.Logger.WithFields(logrus.Fields{
-		"user": userNameCtx,
-	}).Infof("INFO:Handling GetAll Users")
+	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	//u.logInfo.Logger.WithFields(logrus.Fields{
+	//	"user": userNameCtx,
+	//}).Infof("INFO:Handling GetAll Users")
 	users, err := u.service.GetUsers()
 	if err != nil {
+		fmt.Sprintln("evo ovde sam puko - handler")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	response := &pb.GetAllResponse{

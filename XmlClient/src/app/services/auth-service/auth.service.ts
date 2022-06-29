@@ -88,7 +88,7 @@ export class AuthService {
       .pipe(
         map((response: any) => {
           if (response) {
-
+            this.storeUserData(response)
           }
           return this.user;
         })

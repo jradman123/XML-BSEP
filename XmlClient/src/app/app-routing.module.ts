@@ -16,6 +16,10 @@ import { EditUserComponent } from './pages/edit-user/edit-user.component';
 import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
 import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
+import { TestingComponent } from './components/testing/testing.component';
+import { MyProfileComponent } from './components/my-profile/my-profile.component';
+import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
+import { ProfileListComponent } from './components/profile-list/profile-list.component';
 
 const routes: Routes = [
   {
@@ -37,9 +41,17 @@ const routes: Routes = [
     ],*/
   },
   {
+    path: 'people',
+    component: ProfileListComponent,
+  },
+  {
     path: 'login',
     component: LoginPageComponent,
   },
+  {
+    path: 'testing',
+    component : TestingComponent
+  }, 
   {
 
     path: 'twofa',
@@ -76,7 +88,7 @@ const routes: Routes = [
   },
   {
     path: 'jobOffers',
-    component: JobOfferComponent,canActivate: [AuthGuard]
+    component: JobOfferComponent,// canActivate: [AuthGuard]
   },
   {
     path: 'genApiKey',
@@ -85,6 +97,10 @@ const routes: Routes = [
   {
     path: 'newJobOffer',
     component: NewJobOfferComponent,canActivate: [AuthGuardRegular]
+  },
+  {
+    path: 'myProfile',
+    component: MyProfileComponent,//canActivate: [AuthGuardRegular]
   },
 
 

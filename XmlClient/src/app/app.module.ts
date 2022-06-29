@@ -73,6 +73,16 @@ import { CommentCreateComponent } from './components/comment-create/comment-crea
 import { PostCreateFileComponent } from './components/post-create-file/post-create-file.component';
 import { PostsViewComponent } from './components/posts-view/posts-view.component';
 import { PostsCommentsViewComponent } from './components/posts-comments-view/posts-comments-view.component';
+import { TestingComponent } from './components/testing/testing.component';
+import { MyProfileComponent } from './components/my-profile/my-profile.component';
+import { RegisteredHeaderComponent } from './components/registered-header/registered-header.component';
+import { ProfileEditComponent } from './components/profile-edit/profile-edit.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { OverviewProfileComponent } from './components/overview-profile/overview-profile.component';
+import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
+import { ProfileListComponent } from './components/profile-list/profile-list.component';
+import { ProfileSearchPipe } from './pipes/profile-search.pipe';
 
 
 
@@ -105,7 +115,16 @@ import { PostsCommentsViewComponent } from './components/posts-comments-view/pos
     PostCreateFileComponent,
     PostsViewComponent,
     PostsCommentsViewComponent,
-   
+    TestingComponent,
+    MyProfileComponent,
+    RegisteredHeaderComponent,
+    ProfileEditComponent,
+    SettingsComponent,
+    ChangePasswordComponent,
+    OverviewProfileComponent,
+    ProfilePreviewComponent,
+    ProfileListComponent,
+    ProfileSearchPipe,
   ],
   imports: [
     BrowserModule,
