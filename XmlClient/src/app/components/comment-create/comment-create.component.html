@@ -5,13 +5,15 @@
     <div class="col-12">
         <div [formGroup]="createForm" class="content">
             <div>
-                <mat-form-field class="example-full-width" appearance="fill">
+                <mat-form-field appearance="fill" style="width: 100%">
                     <mat-label>Comment</mat-label>
-                    <textarea matInput equired formControlName="comment"></textarea>
+                    <input id="text" matInput required formControlName="comment">
                 </mat-form-field>
+
             </div>
+        
             <div class="buttons">
-                <button id="submitRequest" (click)="submitRequest()" class="btn btn-success text-center">
+                <button id="submitRequest" (click)="submitRequest()"  class="btn btn-success text-center">
                     Submit
                 </button>
             </div>

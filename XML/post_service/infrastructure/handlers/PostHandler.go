@@ -17,22 +17,23 @@ import (
 )
 
 type PostHandler struct {
-	service  *application.PostService
-	logInfo  *logger.Logger
-	logError *logger.Logger
+	postService *application.PostService
+	userService *application.UserService
+	logInfo     *logger.Logger
+	logError    *logger.Logger
 }
 
-func NewPostHandler(service *application.PostService, logInfo *logger.Logger, logError *logger.Logger) *PostHandler {
-	return &PostHandler{service: service, logInfo: logInfo, logError: logError}
+func NewPostHandler(service *application.PostService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger) *PostHandler {
+	return &PostHandler{postService: service, userService: userService, logInfo: logInfo, logError: logError}
 }
 func (p PostHandler) MustEmbedUnimplementedPostServiceServer() {
 
 }
 
-func (p PostHandler) GetAllByUserId(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
-	request = p.sanitizeGetRequest(request)
+func (p PostHandler) GetAllByUsername(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+	//request = p.sanitizeGetRequest(request)
 
-	posts, err := p.service.GetAllByUserId(request.Id)
+	posts, err := p.postService.GetAllByUsername(request.Id)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
@@ -51,7 +52,7 @@ func (p PostHandler) GetAllByUserId(_ context.Context, request *pb.GetRequest) (
 
 func (p PostHandler) Get(_ context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
 
-	request = p.sanitizeGetRequest(request)
+	//request = p.sanitizeGetRequest(request)
 
 	objectId, err := primitive.ObjectIDFromHex(request.GetId())
 	if err != nil {
@@ -60,7 +61,7 @@ func (p PostHandler) Get(_ context.Context, request *pb.GetRequest) (*pb.GetResp
 		}).Errorf("ERR:HEX STRING INVALID")
 		return nil, err
 	}
-	post, err := p.service.Get(objectId)
+	post, err := p.postService.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
@@ -74,7 +75,7 @@ func (p PostHandler) Get(_ context.Context, request *pb.GetRequest) (*pb.GetResp
 
 func (p PostHandler) GetAll(_ context.Context, _ *pb.Empty) (*pb.GetMultipleResponse, error) {
 	p.logInfo.Logger.Infof("INFO:Handling GetAllPosts")
-	posts, err := p.service.GetAll()
+	posts, err := p.postService.GetAll()
 	if err != nil {
 		p.logError.Logger.Errorf("ERR:GETTING ALL POSTS FROM DB")
 		return nil, err
@@ -89,10 +90,11 @@ func (p PostHandler) GetAll(_ context.Context, _ *pb.Empty) (*pb.GetMultipleResp
 
 func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) (*pb.Empty, error) {
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	request = p.sanitizePost(request, userNameCtx)
+	//request = p.sanitizePost(request, userNameCtx)
 
-	post := api.MapNewPost(request.Post)
-	err := p.service.Create(post)
+	user, _ := p.userService.GetByUsername(request.Post.Username)
+	post := api.MapNewPost(request.Post, user[0])
+	err := p.postService.Create(post)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
@@ -104,10 +106,10 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 
 func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommentRequest) (*pb.CreateCommentResponse, error) {
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	request = p.sanitizeComment(request, userNameCtx)
+	//request = p.sanitizeComment(request, userNameCtx)
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 
-	post, err := p.service.Get(objectId)
+	post, err := p.postService.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -115,7 +117,7 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 		}).Errorf("ERR:GET POST FROM DB")
 	}
 	comment := api.MapNewComment(request.Comment)
-	err = p.service.CreateComment(post, comment)
+	err = p.postService.CreateComment(post, comment)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": userNameCtx,
@@ -131,10 +133,10 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 
 func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) (*pb.Empty, error) {
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	request = p.sanitizeReactionRequest(request, userNameCtx)
+	//request = p.sanitizeReactionRequest(request, userNameCtx)
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 
-	post, err := p.service.Get(objectId)
+	post, err := p.postService.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -142,7 +144,12 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 		}).Errorf("ERR:GET POST FROM DB")
 		return nil, err
 	}
-	err = p.service.LikePost(post, request.UserId)
+	fmt.Println("USERNAME")
+	fmt.Println(request.Username)
+	user, err := p.userService.GetByUsername(request.Username)
+	fmt.Println("USER")
+	fmt.Println(user[0])
+	err = p.postService.LikePost(post, user[0].UserId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -156,10 +163,10 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 
 func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionRequest) (*pb.Empty, error) {
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	request = p.sanitizeReactionRequest(request, userNameCtx)
+	//request = p.sanitizeReactionRequest(request, userNameCtx)
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 
-	post, err := p.service.Get(objectId)
+	post, err := p.postService.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -167,7 +174,8 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 		}).Errorf("ERR:GET POST FROM DB")
 		return nil, err
 	}
-	err = p.service.DislikePost(post, request.UserId)
+	user, err := p.userService.GetByUsername(request.Username)
+	err = p.postService.DislikePost(post, user[0].UserId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -183,7 +191,7 @@ func (p PostHandler) CreateJobOffer(_ context.Context, request *pb.CreateJobOffe
 	request = p.sanitizeJobOffer(request)
 	offer := api.MapNewJobOffer(request.JobOffer)
 
-	err := p.service.CreateJobOffer(offer)
+	err := p.postService.CreateJobOffer(offer)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"jobOfferId": request.JobOffer.Id,
@@ -195,7 +203,7 @@ func (p PostHandler) CreateJobOffer(_ context.Context, request *pb.CreateJobOffe
 
 func (p PostHandler) GetAllJobOffers(_ context.Context, _ *pb.Empty) (*pb.GetAllJobOffers, error) {
 	p.logInfo.Logger.Infof("INFO:Handling GetAllJobOffers")
-	offers, err := p.service.GetAllJobOffers()
+	offers, err := p.postService.GetAllJobOffers()
 	if err != nil {
 		p.logError.Logger.Errorf("ERR:GETTING ALL JOB OFFERS FROM DB")
 		return nil, err
@@ -221,7 +229,7 @@ func (p PostHandler) GetAllReactionsForPost(_ context.Context, request *pb.GetRe
 	}
 	objectId, err := primitive.ObjectIDFromHex(request.Id)
 
-	post, err := p.service.Get(objectId)
+	post, err := p.postService.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
@@ -238,7 +246,7 @@ func (p PostHandler) GetAllReactionsForPost(_ context.Context, request *pb.GetRe
 }
 
 func (p PostHandler) GetAllCommentsForPost(_ context.Context, request *pb.GetRequest) (*pb.GetAllCommentsResponse, error) {
-	request = p.sanitizeGetRequest(request)
+	//request = p.sanitizeGetRequest(request)
 	objectId, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
@@ -246,7 +254,7 @@ func (p PostHandler) GetAllCommentsForPost(_ context.Context, request *pb.GetReq
 		}).Errorf("ERR:HEX STRING INVALID")
 		return nil, err
 	}
-	_, err = p.service.Get(objectId)
+	post, err := p.postService.Get(objectId)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
@@ -255,5 +263,14 @@ func (p PostHandler) GetAllCommentsForPost(_ context.Context, request *pb.GetReq
 	}
 
 	response := &pb.GetAllCommentsResponse{Comments: []*pb.Comment{}}
+	for _, comment := range post.Comments {
+		user, err := p.userService.GetByUsername(comment.Username)
+		if err != nil {
+			return nil, err
+		}
+		current := api.MapUserCommentsForPost(user[0], comment.CommentText)
+		response.Comments = append(response.Comments, current)
+	}
+
 	return response, nil
 }

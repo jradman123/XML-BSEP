@@ -14,9 +14,10 @@ type UserCommandHandler struct {
 	commandSubscriber saga.Subscriber
 }
 
-func NewUserCommandHandler(userService *application.UserService, publisher saga.Publisher, subscriber saga.Subscriber) (*UserCommandHandler, error) {
+func NewUserCommandHandler(userService *application.UserService, postService *application.PostService, publisher saga.Publisher, subscriber saga.Subscriber) (*UserCommandHandler, error) {
 	o := &UserCommandHandler{
 		userService:       userService,
+		postService:       postService,
 		replyPublisher:    publisher,
 		commandSubscriber: subscriber,
 	}

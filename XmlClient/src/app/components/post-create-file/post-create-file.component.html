@@ -1,0 +1,37 @@
+<mat-card class="example-card m-5 container">
+    <div>
+        <div class="userInfo">
+            <div class="group">
+                <mat-icon class="icon-display" aria-hidden="false" style="margin-right: 10px;"> account_circle
+                </mat-icon>
+                <h2>{{username}}</h2>
+            </div>
+        </div>
+        <div class="image">
+            <picture *ngIf="!imageSrc">
+                <source media='(min-width:0px)' srcset="./../../../assets/template.jpg">
+                <img mat-card-image src="" alt="Photo of a Shiba Inu">
+            </picture>
+            <img [src]="imageSrc" *ngIf=imageSrc style="height: auto; width: 500px;">
+            <div class="links" [formGroup]="createForm">
+                <div class="form-group">
+                    <input formControlName="file" type="file" class="form-control" (change)="onFileChange($event)">
+                </div>
+                <div class="decription" >
+                    <mat-card>
+                        <textarea formControlName="postText"style="width: 100%; border-color: transparent; "
+                            placeholder="Write your description ..." matInput></textarea>
+                    </mat-card>
+
+                </div>
+
+            </div>
+
+            <div class="bbuton" style="margin-top: 10px;">
+                <button mat-flat-button color="primary" (click)="submitPost()">
+                    <mat-icon>check_circle</mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</mat-card>

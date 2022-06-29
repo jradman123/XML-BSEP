@@ -39,23 +39,23 @@ func (p PostHandler) sanitizeJobOffer(request *pb.CreateJobOfferRequest) *pb.Cre
 
 func (p PostHandler) sanitizePost(request *pb.CreatePostRequest, userNameCtx string) *pb.CreatePostRequest {
 	policy := bluemonday.UGCPolicy()
-	request.Post.UserId = strings.TrimSpace(policy.Sanitize(request.Post.UserId))
+	request.Post.Username = strings.TrimSpace(policy.Sanitize(request.Post.Username))
 	request.Post.PostText = strings.TrimSpace(policy.Sanitize(request.Post.PostText))
-	for i := range request.Post.ImagePaths {
-		request.Post.ImagePaths[i] = strings.TrimSpace(policy.Sanitize(request.Post.ImagePaths[i]))
-	}
+	//for i := range request.Post.ImagePaths {
+	//	request.Post.ImagePaths[i] = strings.TrimSpace(policy.Sanitize(request.Post.ImagePaths[i]))
+	//}
 	request.Post.DatePosted = strings.TrimSpace(policy.Sanitize(request.Post.DatePosted))
 
-	p1 := common.BadId(request.Post.UserId)
+	p1 := common.BadId(request.Post.Username)
 	p2 := common.BadText(request.Post.PostText)
 	p3 := common.BadDate(request.Post.DatePosted)
-	p4 := common.BadPaths(request.Post.ImagePaths)
+	//p4 := common.BadPaths(request.Post.ImagePaths)
 
-	if request.Post.UserId == "" || request.Post.PostText == "" || request.Post.DatePosted == "" {
+	if request.Post.Username == "" || request.Post.PostText == "" || request.Post.DatePosted == "" {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
 		}).Errorf("ERR:XSS")
-	} else if p1 || p2 || p3 || p4 {
+	} else if p1 || p2 || p3 {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
 		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
@@ -117,11 +117,11 @@ func (p PostHandler) sanitizeGetRequest(request *pb.GetRequest) *pb.GetRequest {
 func (p PostHandler) sanitizeReactionRequest(request *pb.ReactionRequest, userNameCtx string) *pb.ReactionRequest {
 	policy := bluemonday.UGCPolicy()
 	request.PostId = strings.TrimSpace(policy.Sanitize(request.PostId))
-	request.UserId = strings.TrimSpace(policy.Sanitize(request.UserId))
+	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
 	p1 := common.BadId(request.PostId)
-	p2 := common.BadId(request.UserId)
+	p2 := common.BadId(request.Username)
 
-	if request.PostId == "" || request.UserId == "" {
+	if request.PostId == "" || request.Username == "" {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
 		}).Errorf("ERR:XSS")

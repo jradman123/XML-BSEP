@@ -70,7 +70,9 @@ import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { PostComponent } from './components/post/post.component';
 import { CommentCreateComponent } from './components/comment-create/comment-create.component';
-import { PostCreateComponent } from './components/post-create/post-create.component';
+import { PostCreateFileComponent } from './components/post-create-file/post-create-file.component';
+import { PostsViewComponent } from './components/posts-view/posts-view.component';
+import { PostsCommentsViewComponent } from './components/posts-comments-view/posts-comments-view.component';
 
 
 
@@ -100,7 +102,9 @@ import { PostCreateComponent } from './components/post-create/post-create.compon
     PassLessLoginComponent,
     PostComponent,
     CommentCreateComponent,
-    PostCreateComponent,
+    PostCreateFileComponent,
+    PostsViewComponent,
+    PostsCommentsViewComponent,
    
   ],
   imports: [

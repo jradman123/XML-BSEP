@@ -278,7 +278,7 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 		u.logError.Logger.Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return nil, errors.New("there is chance for sql injection")
 	} else {
-		u.logInfo.Logger.Println("INFO:Handling PASSWORD RECCOVERY ")
+		u.logInfo.Logger.Println("INFO:Handling PASSWORD RECOVERY ")
 	}
 	existsErr := u.service.UserExists(requestUsername)
 	if existsErr != nil {

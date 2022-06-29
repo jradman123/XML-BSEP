@@ -3,8 +3,10 @@
 }
 
 .container {
-    max-width: 500px;
-    max-height: 800px;
+    width: 400px;
+    height: 500px;
+    margin: 10px;
+
   
 }
 
@@ -68,3 +70,26 @@
 .image {
     overflow: hidden;
 }
+
+.broken :hover{
+    color:palevioletred
+}
+
+.liked {
+    color: red;
+}
+.disliked {
+    color: red;
+}
+.reactions {
+    display: flex;
+    overflow: hidden;
+}
+.reactions p {
+    margin-bottom: 0px;
+    font-size: small;
+    border-right: 5px;
+}
+/* .descript {
+    overflow: scroll;
+} */
