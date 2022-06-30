@@ -1,1 +1,15 @@
-<p>posts-comments-view works!</p>
+    <div class="comments">
+        <h1 class="heading">Comment section</h1>
+        <p class="no-coms" *ngIf="comments.length === 0">There are no comments for this post.</p>
+        <ul>
+            <li *ngFor="let comment of comments">
+                <div class="user-comment">
+                    <img src="../../../assets/userFemale.png" alt="">
+                    <header><a href="#" class="name">{{ comment.FirstName }} {{ comment.LastName }} </a><span>@{{ comment.Username }}</span></header>
+                    <div class="content">
+                        <p>{{ comment.CommentText}}</p>
+                    </div>
+                </div>
+            </li>                      
+        </ul>
+    </div>

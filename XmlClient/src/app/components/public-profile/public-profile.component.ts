@@ -16,6 +16,8 @@ export class PublicProfileComponent implements OnInit {
   id!: number;
   searchText : string = "";
   username! : string;
+  isLoggedIn = localStorage.getItem('token') !== null
+
 
   constructor(private userService : UserService, private _router : Router) {
     this.username = this._router.url.substring(16) ?? '';
@@ -25,6 +27,11 @@ export class PublicProfileComponent implements OnInit {
 
   ngOnInit(): void {
   }
+
+  handleMe(searchText : string){
+    this.searchText = searchText;
+  }
+  
   getUserDetails() {
     this.sub = this.userService.getUserDetails(this.username).subscribe({
       next: (data: UserDetails) => {

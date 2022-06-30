@@ -77,6 +77,7 @@ import { ProfilePreviewComponent } from './components/profile-preview/profile-pr
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
 import { ProfileSearchPipe } from './pipes/profile-search.pipe';
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
+import { NonregisteredSearchHeaderComponent } from './components/nonregistered-search-header/nonregistered-search-header.component';
 
 
 
@@ -113,6 +114,7 @@ import { PublicProfileComponent } from './components/public-profile/public-profi
     ProfileListComponent,
     ProfileSearchPipe,
     PublicProfileComponent,
+    NonregisteredSearchHeaderComponent,
   ],
   imports: [
     BrowserModule,
