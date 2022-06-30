@@ -1,41 +1,127 @@
 <div class="container" class="image">
 
-    <app-registered-header></app-registered-header>
-    <router-outlet></router-outlet>
-    <br><br><br><br><br><br><br>
+    <header id="header" class="header fixed-top d-flex align-items-center">
 
-<div class="container" style="width:70%; margin: auto;">
-    <br>
-    <div class="row">
-        <h1 style="text-align: center;">Job offers</h1>
-        <input matInput [(ngModel)]="searchText" placeholder="Search here..." style="float:right">
-    </div>
-    <hr>
-    <mat-card class="example-card m-3" *ngFor="let jo of jobOffers | fiterSearch : searchText ">
-            <div class="row">
-              <div class="col-md">
-                <mat-label><h1>{{ jo.Position }}</h1></mat-label>
-            </div>
-              <div class="col-md">
-                  
-                <mat-label><h4 style="text-align:right;"> {{ jo.Duration | date : 'shortDate' }} </h4></mat-label>
-            </div>
-            </div>
-        <mat-label><h4 style="font-weight: 600" >{{ jo.Publisher }} </h4></mat-label>
-       <div>
-        <span> {{ jo.JobDescription }} </span>
-       </div>
-       <br>
-        <mat-card-content class="content">
-            <div>
-                <mat-label>Requirements:</mat-label>
-                <div class="ml-3 info" *ngFor="let req of jo.Requirements  " >
-                    <div >
-                    <label> {{ req }} </label>
-                    </div>
+        <a href="/" class="logo d-flex align-items-center">
+          <img src="../../../assets/logo.png" alt="">
+          <span>dislinkt</span>
+        </a>
+        
+          <div class="search-bar">
+            <form class="search-form d-flex align-items-center">
+              <input type="text" name="query" placeholder="Search" [(ngModel)]="searchText" title="Enter search keyword">
+            </form>
+          </div>
+        
+          <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center">
+        
+              <li class="nav-item d-block d-lg-none">
+                <a class="nav-link nav-icon search-bar-toggle " href="#">
+                  <i class="fa fa-search"></i>
+                </a>
+              </li>
+      
+              <li class="nav-item">
+        
+                <a class="nav-link nav-icon" [routerLink]="['/jobOffers']">
+                  <i class="bi bi-briefcase"></i>
+                </a>
+                </li>
+        
+              <li class="nav-item dropdown">
+        
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                  <i class="bi bi-bell"></i>
+                  <span class="badge bg-primary badge-number">4</span>
+                </a>      
+              </li>
+        
+              <li class="nav-item dropdown">
+        
+                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+                  <i class="bi bi-chat-left-text"></i>
+                  <span class="badge bg-success badge-number">3</span>
+                </a>
+              </li>
+        
+              <li class="nav-item dropdown pe-3">
+      
+                <div ngbDropdown class="d-inline-block">
+                  <a type="button" class="nav-link nav-profile d-flex align-items-center pe-0" id="dropdownBasic1" ngbDropdownToggle><img src="../../../assets/userMale.png" alt="Profile" class="rounded-circle">
+                    <span class="d-none d-md-block">{{username}}</span>
+                  </a>
+                  <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button class="dropdown-item d-flex align-items-center" (click)="showProfile()">
+                      <i class="bi bi-person"></i>
+                      <span>My Profile</span>
+                    </button>
+                    <button class="dropdown-item d-flex align-items-center" (click)="logout()">
+                      <i class="bi bi-box-arrow-right"></i>
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
                 </div>
+              </li>
+        
+            </ul>
+          </nav>
+        
+        </header>
+    <router-outlet></router-outlet>
+    <br><br>
+    <main id="main" class="main">
+
+    <section class="section profile">
+      <div class="row">
+        <div class="col-xl-4">
+  
+          <div class="card">
+            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+              <button type="button" class="btn btn-primary" (click)="openCreateJobOffer()"><i class="bi bi-pencil-square"></i> Post job offer</button>
+          </div>
+  
+        
+        </div>
+        </div>
+      <!--<div class="col-xl-3" style="margin-left: 20px;"></div>-->
+     
+      <div class="col-xl-8" >
+          <mat-card class="profile profile-overview label" *ngFor="let jo of jobOffers | fiterSearch : searchText ">
+                  <div class="row">
+                    <div class="col-md">
+                      <div class="row">
+                        <h1>{{ jo.Position }}</h1>
+                    </div>
+                  </div>
+                    <div class="col-md">
+                      <div class="row">
+                        <h4 style="text-align:right;">{{ jo.Duration | date : 'shortDate' }} </h4>
+                    </div>
+                  </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 label">Publisher: </div>
+                    <div class="col-lg-9 col-md-8">{{ jo.Publisher }} </div>
+                </div>
+            
+              <div class="row">
+                <div class="col-lg-3 col-md-4 label">Job description: </div>
+                <div class="col-lg-9 col-md-8">{{ jo.JobDescription }} </div>
             </div>
-        </mat-card-content>
-    </mat-card>
+            <div class="row">
+              <div class="col-lg-3 col-md-4 label">Requirements:  </div>
+            <div class="ml-3 info" *ngFor="let req of jo.Requirements  ">
+              <div class="col-lg-3 col-md-4 label"></div>
+              <div class="col-lg-9 col-md-8" >{{ req }} </div>
+            </div>
+            </div>
+          </mat-card>
+      </div>
+<br>
+ </div>
+</section>
+    </main>
 </div>
-</div>
+<br><br>
+<app-footer></app-footer>
