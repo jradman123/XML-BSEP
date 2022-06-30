@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserDetails } from 'src/app/interfaces/user-details';
 
 @Component({
@@ -11,10 +12,15 @@ export class ProfilePreviewComponent implements OnInit {
   @Input()
   profile! : UserDetails;
   isLoggedIn! : boolean;
-  constructor() { }
+  constructor(private _router: Router) { }
 
   ngOnInit(): void {
     this.isLoggedIn = localStorage.getItem('token') !== null;
+  }
+
+  openProfile(){
+    let path = '/public-profile/' + this.profile.username;
+    this._router.navigate([path]);
   }
 
 }

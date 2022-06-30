@@ -10,9 +10,9 @@ export class PostService {
 
   constructor(private _http: HttpClient,) {
   }
-  GetAllPosts() {
+  GetAllPosts(username : string) {
     return this._http.get<any>(
-      'http://localhost:9090/post/user/' + localStorage.getItem('username'),
+      'http://localhost:9090/post/user/' + username,
     );
   }
   GetUserReactionToPost(username: string, Id: string) {

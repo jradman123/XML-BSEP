@@ -120,16 +120,16 @@ func (p PostHandler) CheckLikedStatus(_ context.Context, request *pb.UserReactio
 }
 
 func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) (*pb.Empty, error) {
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	//request = p.sanitizePost(request, userNameCtx)
 
 	user, _ := p.userService.GetByUsername(request.Post.Username)
 	post := api.MapNewPost(request.Post, user[0])
 	err := p.postService.Create(post)
 	if err != nil {
-		p.logError.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Errorf("ERR:CREATE POST")
+		//p.logError.Logger.WithFields(logrus.Fields{
+		//	"user": userNameCtx,
+		//}).Errorf("ERR:CREATE POST")
 		return nil, err
 	}
 	return &pb.Empty{}, nil

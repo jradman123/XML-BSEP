@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PassLessReqComponent } from './pass-less-req.component';
+import { PublicProfileComponent } from './public-profile.component';
 
-describe('PassLessReqComponent', () => {
-  let component: PassLessReqComponent;
-  let fixture: ComponentFixture<PassLessReqComponent>;
+describe('PublicProfileComponent', () => {
+  let component: PublicProfileComponent;
+  let fixture: ComponentFixture<PublicProfileComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PassLessReqComponent ]
+      declarations: [ PublicProfileComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PassLessReqComponent);
+    fixture = TestBed.createComponent(PublicProfileComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

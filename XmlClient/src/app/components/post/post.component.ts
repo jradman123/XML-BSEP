@@ -88,7 +88,7 @@ export class PostComponent implements OnInit {
       },
     }
 
-    this.service.GetUserReactionToPost(this.username, this.item.Id).subscribe(reactionObserver)
+    if( this.username ) this.service.GetUserReactionToPost(this.username, this.item.Id).subscribe(reactionObserver)
   }
   likePost() {
 
