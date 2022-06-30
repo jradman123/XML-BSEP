@@ -4,10 +4,9 @@
 
 .container {
     width: 400px;
-    height: 500px;
+    height: 550px;
     margin: 10px;
 
-  
 }
 
 .userInfo {
@@ -64,9 +63,7 @@
     display: flex;
     justify-content: space-between;
 }
-.decription {
-    margin-top: 5px;
-}
+
 .image {
     overflow: hidden;
 }
@@ -90,6 +87,15 @@
     font-size: small;
     border-right: 5px;
 }
-/* .descript {
-    overflow: scroll;
-} */
+.decription {
+    margin-top: 5px;
+    height: 100px;
+    width: 100%;
+    overflow-x: scroll; /* For horiz. scroll, otherwise overflow-y: scroll; */
+    -ms-overflow-style: none;
+    overflow: -moz-scrollbars-none;
+    scrollbar-width: none;
+}
+.decription::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}

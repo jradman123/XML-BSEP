@@ -1,1 +1,14 @@
-<p>posts-comments-view works!</p>
+    <div class="comments">
+        <ul>
+            <li *ngFor="let comment of comments">
+                <div class="user-comment">
+                    <img src="../../../assets/userFemale.png" alt="">
+                    <header><a href="#" class="name">{{ comment.FirstName }} {{ comment.LastName }} </a><span>ovde moze datum al jbgzz</span></header>
+                    <div class="content">
+                        <p>{{ comment.CommentText}}</p>
+                    </div>
+                    <a href="" class="reply">Reply</a>
+                </div>
+            </li>                      
+        </ul>
+    </div>
