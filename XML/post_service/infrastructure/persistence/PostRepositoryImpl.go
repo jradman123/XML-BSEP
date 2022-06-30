@@ -149,7 +149,6 @@ func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID) erro
 			}
 			reactionExists = true
 		}
-
 	}
 	if !reactionExists {
 		reaction := model.Reaction{
@@ -168,6 +167,18 @@ func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID) erro
 	}
 
 	return nil
+}
+func (p PostRepositoryImpl) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID) (model.ReactionType, error) {
+	post, err := p.Get(id)
+	if err != nil {
+		panic(err)
+	}
+	for _, reaction := range post.Reactions {
+		if reaction.UserId == userId.String() {
+			return reaction.Reaction, nil
+		}
+	}
+	return model.Neutral, nil
 }
 
 func (p PostRepositoryImpl) filterOne(filter interface{}) (post *model.Post, err error) {
