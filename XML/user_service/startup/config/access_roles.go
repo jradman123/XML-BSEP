@@ -8,7 +8,6 @@ func AccessibleRoles() map[string][]string {
 	return map[string][]string{
 		userService + "UpdateUser":       {"Regular"},
 		userService + "GenerateAPIToken": {"Regular"},
-		userService + "GetUserDetails":   {"Regular"},
 		userService + "EditUserDetails":  {"Regular"},
 	}
 }

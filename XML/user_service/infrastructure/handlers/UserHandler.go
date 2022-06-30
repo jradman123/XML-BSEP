@@ -399,31 +399,32 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 }
 
 func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDetailsRequest) (*pb.UserDetails, error) {
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
 	sqlInj := common.BadUsername(username)
 	if username == "" {
-		u.logError.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Errorf("ERR:XSS")
+		//u.logError.Logger.WithFields(logrus.Fields{
+		//	"user": userNameCtx,
+		//}).Errorf("ERR:XSS")
 		return nil, errors.New("fields are empty or xss happened")
 	} else if sqlInj {
-		u.logError.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		//u.logError.Logger.WithFields(logrus.Fields{
+		//	"user": userNameCtx,
+		//}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return nil, errors.New("chance for injection")
-	} else {
-		u.logInfo.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Infof("INFO:Handling GetUserDetails")
 	}
+	// else {
+	//u.logInfo.Logger.WithFields(logrus.Fields{
+	//	"user": userNameCtx,
+	//}).Infof("INFO:Handling GetUserDetails")
+	// }
 	err := u.service.UserExists(username)
 	if err != nil {
 		fmt.Println(err)
-		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		//return nil, err //ne postoji user
 		return nil, status.Error(codes.Internal, err.Error())
 	}

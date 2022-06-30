@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
@@ -17,8 +17,13 @@ import { EducationDialogComponent } from '../dialogs/education-dialog/education-
 })
 export class ProfileAboutComponent implements OnInit {
 
+    
+  @Input()
+  user! : UserDetails;
   sub!: Subscription;
-  userDetails! : UserDetails;
+
+  storageUsername : string | null = '';
+
   id!: number;
   skills! : SkillDto[];
   educations! : EducationDto[];
@@ -49,18 +54,15 @@ export class ProfileAboutComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.getUserDetails();
+    this.storageUsername = localStorage.getItem('username');
+    this.setUserDetails();
   }
-  getUserDetails() {
-    this.sub = this.userService.getUserDetails(localStorage.getItem('username')).subscribe({
-      next: (data: UserDetails) => {
-        this.userDetails = data
-        this.skills = data.skills;
-        this.interests = data.interests;
-        this.experiences = data.experiences;
-        this.educations = data.educations;
-      },
-    });
+  
+  setUserDetails() {
+        this.skills = this.user.skills;
+        this.interests = this.user.interests;
+        this.experiences = this.user.experiences;
+        this.educations = this.user.educations;
   }
 
     openEducationDialog() {
@@ -130,7 +132,7 @@ export class ProfileAboutComponent implements OnInit {
     save() {
       this.createUserDetails();
       
-      this.userService.updateUser(this.userDetails).subscribe({
+      this.userService.updateUser(this.user).subscribe({
         next: () => {
           this.skills = [] as SkillDto[];
         this.educations = [] as EducationDto[];
@@ -144,7 +146,7 @@ export class ProfileAboutComponent implements OnInit {
         this.skill = "";
         this.experience = "";
         this.interest = "";
-          this.getUserDetails();
+          this.setUserDetails();
         }});
   
     }
@@ -152,31 +154,31 @@ export class ProfileAboutComponent implements OnInit {
     createUserDetails(): void {
       this.newSkill.skill = this.skill
       if(this.skill == ""){
-        this.userDetails.skills = this.skills;
+        this.user.skills = this.skills;
       }else{
         this.skills.push(this.newSkill);
-        this.userDetails.skills = this.skills;
+        this.user.skills = this.skills;
       }
       this.newEducation.education = this.education
       if(this.newEducation.education == ""){
-        this.userDetails.educations =this.educations;
+        this.user.educations =this.educations;
       }else{
         this.educations.push(this.newEducation);
-        this.userDetails.educations =this.educations;
+        this.user.educations =this.educations;
       }
       this.newExperience.experience = this.experience
       if(this.newExperience.experience == ""){
-        this.userDetails.experiences = this.experiences;
+        this.user.experiences = this.experiences;
       }else{
         this.experiences.push(this.newExperience);
-        this.userDetails.experiences = this.experiences;
+        this.user.experiences = this.experiences;
       }
       this.newInterest.interest = this.interest
       if(this.newInterest.interest == ""){
-        this.userDetails.interests = this.interests;
+        this.user.interests = this.interests;
       }else{
         this.interests.push(this.newInterest);
-        this.userDetails.interests = this.interests;
+        this.user.interests = this.interests;
       }
     }
   }

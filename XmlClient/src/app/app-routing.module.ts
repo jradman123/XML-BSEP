@@ -12,8 +12,10 @@ import { RegisterPageComponent } from './pages/register-page/register-page.compo
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
 import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
-import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
+import { PostsViewComponent } from './components/posts-view/posts-view.component';
+import { PostCreateFileComponent } from './components/post-create-file/post-create-file.component';
+import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 
 const routes: Routes = [
   {
@@ -33,6 +35,18 @@ const routes: Routes = [
         component: NewJobOfferComponent,canActivate: [AuthGuard]
       }
     ],*/
+  },
+  {
+    path : 'public-profile/:username',
+    component: PublicProfileComponent
+  },
+  {
+    path : 'posts',
+    component: PostsViewComponent,
+  },
+  {
+    path : 'post-create',
+    component: PostCreateFileComponent,
   },
   {
     path: 'people',
