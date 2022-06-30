@@ -191,6 +191,8 @@ func MapUserCommentsForPost(user *model.User, commentText string) *pb.Comment {
 
 	commentPb := &pb.Comment{
 		Username:    user.Username,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
 		CommentText: commentText,
 	}
 

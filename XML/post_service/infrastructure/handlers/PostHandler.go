@@ -10,6 +10,7 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"post/module/domain/model"
 	"post/module/infrastructure/api"
 	"strings"
 
@@ -84,6 +85,36 @@ func (p PostHandler) GetAll(_ context.Context, _ *pb.Empty) (*pb.GetMultipleResp
 	for _, post := range posts {
 		current := api.MapPostReply(post)
 		response.Posts = append(response.Posts, current)
+	}
+	return response, nil
+}
+
+func (p PostHandler) CheckLikedStatus(_ context.Context, request *pb.UserReactionRequest) (*pb.GetUserReactionResponse, error) {
+	objectId, err := primitive.ObjectIDFromHex(request.Id)
+	if err != nil {
+		panic(err)
+	}
+	user, err := p.userService.GetByUsername(request.Username)
+	if err != nil {
+		panic(err)
+	}
+	reaction, err := p.postService.CheckLikedStatus(objectId, user[0].UserId)
+	if err != nil {
+		panic(err)
+	}
+	response := &pb.GetUserReactionResponse{
+		Liked:    false,
+		Disliked: false,
+		Neutral:  false,
+	}
+	if reaction == model.LIKED {
+		response.Liked = true
+	}
+	if reaction == model.DISLIKED {
+		response.Disliked = true
+	}
+	if reaction == model.Neutral {
+		response.Neutral = true
 	}
 	return response, nil
 }

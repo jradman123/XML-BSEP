@@ -70,25 +70,25 @@ func (p PostHandler) sanitizePost(request *pb.CreatePostRequest, userNameCtx str
 func (p PostHandler) sanitizeComment(request *pb.CreateCommentRequest, userNameCtx string) *pb.CreateCommentRequest {
 	policy := bluemonday.UGCPolicy()
 	request.PostId = strings.TrimSpace(policy.Sanitize(request.PostId))
-	request.Comment.UserId = strings.TrimSpace(policy.Sanitize(request.Comment.UserId))
+
 	request.Comment.Username = strings.TrimSpace(policy.Sanitize(request.Comment.Username))
-	request.Comment.Name = strings.TrimSpace(policy.Sanitize(request.Comment.Name))
-	request.Comment.Surname = strings.TrimSpace(policy.Sanitize(request.Comment.Surname))
+	request.Comment.FirstName = strings.TrimSpace(policy.Sanitize(request.Comment.FirstName))
+	request.Comment.LastName = strings.TrimSpace(policy.Sanitize(request.Comment.LastName))
 	request.Comment.CommentText = strings.TrimSpace(policy.Sanitize(request.Comment.CommentText))
 
 	p1 := common.BadId(request.PostId)
-	p2 := common.BadId(request.Comment.UserId)
+
 	p3 := common.BadUsername(request.Comment.Username)
-	p4 := common.BadName(request.Comment.Name)
-	p5 := common.BadName(request.Comment.Surname)
+	p4 := common.BadName(request.Comment.FirstName)
+	p5 := common.BadName(request.Comment.LastName)
 	p6 := common.BadText(request.Comment.CommentText)
 
-	if request.PostId == "" || request.Comment.UserId == "" || request.Comment.Username == "" || request.Comment.Name == "" ||
-		request.Comment.Surname == "" || request.Comment.CommentText == "" {
+	if request.PostId == "" || request.Comment.Username == "" || request.Comment.FirstName == "" ||
+		request.Comment.LastName == "" || request.Comment.CommentText == "" {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
 		}).Errorf("ERR:XSS")
-	} else if p1 || p2 || p3 || p4 || p5 || p6 {
+	} else if p1 || p3 || p4 || p5 || p6 {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
 		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")

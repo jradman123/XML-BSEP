@@ -1,95 +1,99 @@
 <app-registered-header></app-registered-header>
-  
-  <main id="main" class="main">
-  
-    <div class="pagetitle">
-      <h1>Profile</h1>
-    </div>
-  
-    <section class="section profile">
-      <div class="row">
-        <div class="col-xl-4">
-  
-          <div class="card">
-            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-  
-              <img src="../../../assets/userMale.png" alt="Profile" class="rounded-circle">
-              <h2>{{userDetails?.firstName}} {{userDetails?.lastName}}</h2>
-              <div class="social-links mt-2">
-                <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-                <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-              </div>
+
+<main id="main" class="main">
+
+  <div class="pagetitle">
+    <h1>Profile</h1>
+  </div>
+
+  <section class="section profile">
+    <div class="row">
+      <div class="col-xl-4">
+
+        <div class="card">
+          <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+            <img src="../../../assets/userMale.png" alt="Profile" class="rounded-circle">
+            <h2>{{userDetails?.firstName}} {{userDetails?.lastName}}</h2>
+            <div class="social-links mt-2">
+              <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+              <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
             </div>
           </div>
-  
         </div>
-  
-        <div class="col-xl-8">
-  
-          <div class="card">
-            <div class="card-body pt-3">
-              <ul class="nav nav-tabs nav-tabs-bordered">
-  
-                <li class="nav-item">
-                  <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-overview">Overview</button>
-                </li>
 
-                <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-about">About</button>
-                </li>
-  
-                <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
-                </li>
-
-                <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
-                </li>
-  
-                <li class="nav-item">
-                  <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
-                </li>
-              </ul>
-              <div class="tab-content pt-2">
-  
-                <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                    <app-overview-profile></app-overview-profile>
-                </div>
-
-                <div class="tab-pane fade pt-3" id="profile-about">
-                  <app-profile-about></app-profile-about>  
-                </div>
-  
-                <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-                  <app-profile-edit></app-profile-edit>
-                </div>
-  
-                <div class="tab-pane fade pt-3" id="profile-change-password">
-                  <app-change-password></app-change-password>  
-                </div>
-
-                <div class="tab-pane fade pt-3" id="profile-settings">
-                  <app-settings></app-settings>
-                </div>
-
-              </div>
-  
-            </div>
-          </div>
-  
-        </div>
       </div>
-    </section>
-  
-  </main>
-  
 
-  <footer id="footer" class="footer">
-    <div class="copyright">
-      &copy; Copyright <strong><span>Team 22 , 2022 </span></strong>. All Rights Reserved
+      <div class="col-xl-8">
+
+        <div class="card">
+          <div class="card-body pt-3">
+            <ul class="nav nav-tabs nav-tabs-bordered">
+
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab"
+                  data-bs-target="#profile-overview">Overview</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-about">About</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Edit Profile</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change
+                  Password</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
+              </li>
+            </ul>
+            <div class="tab-content pt-2">
+
+              <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                <app-overview-profile></app-overview-profile>
+              </div>
+
+              <div class="tab-pane fade pt-3" id="profile-about">
+                <app-profile-about></app-profile-about>
+              </div>
+
+              <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+                <app-profile-edit></app-profile-edit>
+              </div>
+
+              <div class="tab-pane fade pt-3" id="profile-change-password">
+                <app-change-password></app-change-password>
+              </div>
+
+              <div class="tab-pane fade pt-3" id="profile-settings">
+                <app-settings></app-settings>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
     </div>
+  </section>
+  <app-posts-view></app-posts-view>
+  <app-post-create-file></app-post-create-file>
 
-  </footer>
-  
+
+</main>
+
+
+<footer id="footer" class="footer">
+  <div class="copyright">
+    &copy; Copyright <strong><span>Team 22 , 2022 </span></strong>. All Rights Reserved
+  </div>
+
+</footer>

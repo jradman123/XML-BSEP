@@ -19,8 +19,7 @@ export class PostsCommentsViewComponent implements OnInit {
     private service: PostService,
   ) { 
     this.username = localStorage.getItem('username')!
-    console.log(data);
-    
+  
     const reactionsObserver = {
       next: (res: any) => {
        console.log(res);
