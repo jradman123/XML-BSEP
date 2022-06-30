@@ -31,9 +31,31 @@
     margin: 5px 30px 0 0px;
   }
   
+  .comments .heading{ 
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    color: #012970;
+    font-family: "Nunito", sans-serif;
+    margin-bottom: 40px;
+  }
+
+  .comments .no-coms {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #012970;
+    font-family: "Nunito", sans-serif;
+    margin-bottom: 20px;
+  }
+  
  .comments .user-comment {
     position: relative;
     width: 100%;
+    padding: 5px 36px 3px 45px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 8px 7px 10px rgb(1 41 112 / 10%);
   }
   
  .comments .user-comment img {
@@ -75,20 +97,7 @@
     border-radius: 0;
     height: auto;
   }
-  
- .comments .user-comment .reply {
-    position: absolute;
-    color: #b4b9c8;
-    font-size: 12px;
-    font-weight: 500;
-    top: 3px;
-    right: 0;
-  }
-  
- .comments .user-comment .reply:hover {
-    color: #79829d;
-  }
-  
+
  .comments ul {
     display: block;
     list-style: none;
@@ -112,3 +121,5 @@
     flex-direction: column;
     justify-content: flex-start;
   }
+
+  

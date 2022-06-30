@@ -25,7 +25,7 @@ export class PostsCommentsViewComponent implements OnInit {
     const reactionsObserver = {
       next: (res: any) => {
        console.log(res);
-       this.comments = res;
+       this.comments = res.Comments;
       },
       error: (err: HttpErrorResponse) => {
         this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
