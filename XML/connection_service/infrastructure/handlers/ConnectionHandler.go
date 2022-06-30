@@ -73,27 +73,36 @@ func (c ConnectionHandler) GetSomething(ctx context.Context, request *pb.EmptyRe
 func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
 	fmt.Println("GetConnections handler")
 	policy := bluemonday.UGCPolicy()
-	request.Uid = strings.TrimSpace(policy.Sanitize(request.Uid))
+	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
 
-	p1 := common.BadId(request.Uid)
+	p1 := common.BadUsername(request.Username)
 	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	if request.Uid == "" {
+	if request.Username == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
 		}).Errorf(xssError)
 	} else if p1 {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
 		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
 		}).Infof("INFO:Handling Get connections for user")
 	}
-	users, err := c.connectionService.GetAllConnectionForUser(request.Uid)
+
+	userId, err := c.userService.GetUserId(request.Username)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
+	users, err := c.connectionService.GetAllConnectionForUser(userId)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
@@ -105,6 +114,8 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 		current := pb.UserNode{UserUID: user.UserUID, Status: string(user.Status), Username: user.Username, FirstName: user.FirstName, LastName: user.LastName}
 		response.Users = append(response.Users, &current)
 	}
+	fmt.Println("duzina svih usera koje vracam kao konekcije")
+	fmt.Println(len(response.Users))
 
 	return response, nil
 }
@@ -112,27 +123,36 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
 	fmt.Println("GetConnections handler")
 	policy := bluemonday.UGCPolicy()
-	request.Uid = strings.TrimSpace(policy.Sanitize(request.Uid))
+	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
 
-	p1 := common.BadId(request.Uid)
+	p1 := common.BadUsername(request.Username)
 	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	if request.Uid == "" {
+	if request.Username == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
 		}).Errorf(xssError)
 	} else if p1 {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
 		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
 		}).Infof("INFO:Handling Get connections for user")
 	}
-	users, err := c.connectionService.GetAllConnectionRequestsForUser(request.Uid)
+
+	userId, err := c.userService.GetUserId(request.Username)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userId": request.Uid,
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
+	users, err := c.connectionService.GetAllConnectionRequestsForUser(userId)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
 		}).Errorf(getUsersError)
 		return nil, err
 	}

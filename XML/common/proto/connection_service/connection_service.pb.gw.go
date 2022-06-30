@@ -60,14 +60,14 @@ func request_ConnectionService_GetConnections_0(ctx context.Context, marshaler r
 		_   = err
 	)
 
-	val, ok = pathParams["uid"]
+	val, ok = pathParams["username"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "uid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "username")
 	}
 
-	protoReq.Uid, err = runtime.String(val)
+	protoReq.Username, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "uid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "username", err)
 	}
 
 	msg, err := client.GetConnections(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -86,14 +86,14 @@ func local_request_ConnectionService_GetConnections_0(ctx context.Context, marsh
 		_   = err
 	)
 
-	val, ok = pathParams["uid"]
+	val, ok = pathParams["username"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "uid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "username")
 	}
 
-	protoReq.Uid, err = runtime.String(val)
+	protoReq.Username, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "uid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "username", err)
 	}
 
 	msg, err := server.GetConnections(ctx, &protoReq)
@@ -112,14 +112,14 @@ func request_ConnectionService_GetConnectionRequests_0(ctx context.Context, mars
 		_   = err
 	)
 
-	val, ok = pathParams["uid"]
+	val, ok = pathParams["username"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "uid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "username")
 	}
 
-	protoReq.Uid, err = runtime.String(val)
+	protoReq.Username, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "uid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "username", err)
 	}
 
 	msg, err := client.GetConnectionRequests(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -138,14 +138,14 @@ func local_request_ConnectionService_GetConnectionRequests_0(ctx context.Context
 		_   = err
 	)
 
-	val, ok = pathParams["uid"]
+	val, ok = pathParams["username"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "uid")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "username")
 	}
 
-	protoReq.Uid, err = runtime.String(val)
+	protoReq.Username, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "uid", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "username", err)
 	}
 
 	msg, err := server.GetConnectionRequests(ctx, &protoReq)
@@ -258,7 +258,7 @@ func RegisterConnectionServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnections", runtime.WithHTTPPathPattern("/connection/connected/{uid}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnections", runtime.WithHTTPPathPattern("/connection/connected/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -282,7 +282,7 @@ func RegisterConnectionServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnectionRequests", runtime.WithHTTPPathPattern("/connection/requests/{uid}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnectionRequests", runtime.WithHTTPPathPattern("/connection/requests/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -414,7 +414,7 @@ func RegisterConnectionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnections", runtime.WithHTTPPathPattern("/connection/connected/{uid}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnections", runtime.WithHTTPPathPattern("/connection/connected/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -435,7 +435,7 @@ func RegisterConnectionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnectionRequests", runtime.WithHTTPPathPattern("/connection/requests/{uid}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/connection_service.ConnectionService/GetConnectionRequests", runtime.WithHTTPPathPattern("/connection/requests/{username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -499,9 +499,9 @@ func RegisterConnectionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 var (
 	pattern_ConnectionService_GetSomething_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"something"}, ""))
 
-	pattern_ConnectionService_GetConnections_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"connection", "connected", "uid"}, ""))
+	pattern_ConnectionService_GetConnections_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"connection", "connected", "username"}, ""))
 
-	pattern_ConnectionService_GetConnectionRequests_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"connection", "requests", "uid"}, ""))
+	pattern_ConnectionService_GetConnectionRequests_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"connection", "requests", "username"}, ""))
 
 	pattern_ConnectionService_CreateConnection_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"connection", "new"}, ""))
 

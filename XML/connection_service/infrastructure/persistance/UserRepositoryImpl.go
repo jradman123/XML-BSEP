@@ -134,3 +134,32 @@ func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User) error {
 	}
 	return nil
 }
+
+func (u UserRepositoryImpl) GetUserId(username string) (string, error) {
+
+	fmt.Println("[ConnectionDBStore GetUserId]")
+	fmt.Println(username)
+	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+
+		}
+	}(session)
+
+	fmt.Println(session)
+	result, err := session.Run(
+		"MATCH (n:UserNode { username: $username }) RETURN n.uid",
+		map[string]interface{}{"username": username})
+
+	if err != nil {
+		return "", err
+	}
+
+	if result != nil && result.Next() {
+		return result.Record().Values[0].(string), nil
+	}
+
+	return "", nil
+}

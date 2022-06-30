@@ -16,12 +16,12 @@ service ConnectionService{
 
   rpc GetConnections(GetRequest) returns(Users) {
     option (google.api.http) = {
-      get: "/connection/connected/{uid}"
+      get: "/connection/connected/{username}"
     };
   }
   rpc GetConnectionRequests(GetRequest) returns(Users) {
     option (google.api.http) = {
-      get: "/connection/requests/{uid}"
+      get: "/connection/requests/{username}"
     };
   }
 
@@ -43,7 +43,7 @@ service ConnectionService{
 message EmptyRequest{}
 
 message GetRequest {
-  string uid = 1;
+  string username = 1;
 }
 
 message Users {

@@ -5,6 +5,7 @@ import (
 	"connection/module/domain/dto"
 	"connection/module/domain/model"
 	"connection/module/domain/repositories"
+	"fmt"
 )
 
 type ConnectionService struct {
@@ -32,6 +33,7 @@ func (s ConnectionService) AcceptConnection(connection *model.Connection) (*dto.
 
 func (s ConnectionService) GetAllConnectionForUser(userUid string) (userNodes []*model.User, error1 error) {
 	response, err := s.connectionRepo.GetAllConnectionForUser(userUid)
+	fmt.Println("dobila sam niz konekcija ove duzine i prvi username je  username" + response[0].Username)
 	return response, err
 }
 

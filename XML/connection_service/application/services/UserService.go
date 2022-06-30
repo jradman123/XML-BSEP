@@ -38,3 +38,12 @@ func (s UserService) DeleteUser(user model.User) error {
 	fmt.Println("TODO:delete user from database")
 	return nil
 }
+
+func (s UserService) GetUserId(username string) (string, error) {
+	userId, err := s.userRepo.GetUserId(username)
+	fmt.Println("dobila sam ovaj user id za username " + userId)
+	if err != nil {
+		return "", err
+	}
+	return userId, nil
+}

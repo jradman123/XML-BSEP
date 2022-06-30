@@ -87,6 +87,8 @@ func (server *Server) initCustomHandlers() {
 
 	authHandler := handlers.NewAuthenticationHandler(l, logInfo, logError, userService, tfauthService, validator, passwordUtil, passwordlessService)
 	authHandler.Init(server.mux)
+	userFeedHandler := handlers.NewUserFeedHandler(logInfo, logError, server.config)
+	userFeedHandler.Init(server.mux)
 }
 
 func (server *Server) Start() {
