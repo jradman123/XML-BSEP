@@ -58,8 +58,6 @@ import { NgxCaptchaModule } from 'ngx-captcha';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { QRCodeModule } from 'angular2-qrcode';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
-import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
-import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { PostComponent } from './components/post/post.component';
@@ -78,6 +76,7 @@ import { EducationDialogComponent } from './components/dialogs/education-dialog/
 import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
 import { ProfileSearchPipe } from './pipes/profile-search.pipe';
+import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 
 
 
@@ -97,8 +96,6 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     NewJobOfferComponent,
     ConfirmDialogComponent,
     TwofaPageComponent,
-    PassLessReqComponent,
-    PassLessLoginComponent,
     PostComponent,
     CommentCreateComponent,
     PostCreateFileComponent,
@@ -115,6 +112,7 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     ProfilePreviewComponent,
     ProfileListComponent,
     ProfileSearchPipe,
+    PublicProfileComponent,
   ],
   imports: [
     BrowserModule,

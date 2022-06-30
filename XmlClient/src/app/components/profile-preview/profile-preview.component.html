@@ -2,7 +2,7 @@
  <mat-card class="card m-3" >
     <div class="row">
         <div class="col-md-2">
-            <img src="../../../assets/userFemale.png" alt="avatar" class="avatar">
+            <img src="../../../assets/userFemale.png" alt="avatar" class="avatar" (click)="openProfile()">
         </div>
         <div class="col-md-8 d-flex flex-column info ml-5">
             <h1>{{ profile.firstName }} {{ profile.lastName}} </h1>
