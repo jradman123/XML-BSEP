@@ -9,7 +9,7 @@
         
           <div class="search-bar">
             <form class="search-form d-flex align-items-center">
-              <input type="text" name="query" placeholder="Search" [(ngModel)]="searchText" title="Enter search keyword">
+              <input type="text" name="query" placeholder="Search job offers..." [(ngModel)]="searchText" title="Enter search keyword">
             </form>
           </div>
         
@@ -84,8 +84,6 @@
         
         </div>
         </div>
-      <!--<div class="col-xl-3" style="margin-left: 20px;"></div>-->
-     
       <div class="col-xl-8" >
           <mat-card class="profile profile-overview label" *ngFor="let jo of jobOffers | fiterSearch : searchText ">
                   <div class="row">
