@@ -11,15 +11,20 @@ export class ProfileListComponent implements OnInit {
 
   profiles! : UserDetails[];
   searchText : string = "";
-
+  isLoggedIn = localStorage.getItem('token') !== null
+  
   constructor(private _service : UserService) { }
 
   ngOnInit(): void {
     this._service.getUsers().subscribe(
       res => {
-        this.profiles = res.users;
+        this.profiles =res.users.filter( (user: any ) => !(user.username === localStorage.getItem('username')));
       }
     )
+  }
+
+  handleMe(searchText : string){
+    this.searchText = searchText;
   }
 
 }

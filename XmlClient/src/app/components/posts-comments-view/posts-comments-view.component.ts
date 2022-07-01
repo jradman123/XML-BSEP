@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PostService } from 'src/app/services/post-service/post.service';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { IComment } from 'src/app/interfaces/comment';
 
 @Component({
   selector: 'app-posts-comments-view',
@@ -12,6 +13,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 })
 export class PostsCommentsViewComponent implements OnInit {
   username:string=""
+  comments : IComment[] = []
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public _matDialog: MatDialog,
@@ -23,7 +25,7 @@ export class PostsCommentsViewComponent implements OnInit {
     const reactionsObserver = {
       next: (res: any) => {
        console.log(res);
-       
+       this.comments = res.Comments;
       },
       error: (err: HttpErrorResponse) => {
         this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
