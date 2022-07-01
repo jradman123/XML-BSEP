@@ -41,7 +41,6 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
 
 	p1 := common.BadUsername(request.Username)
-	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.Username == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -74,13 +73,17 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 	response := &pb.Users{
 		Users: []*pb.UserNode{},
 	}
+	if users == nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return response, nil
+	}
 
 	for _, user := range users {
 		current := pb.UserNode{UserUID: user.UserUID, Status: string(user.Status), Username: user.Username, FirstName: user.FirstName, LastName: user.LastName}
 		response.Users = append(response.Users, &current)
 	}
-	fmt.Println("duzina svih usera koje vracam kao konekcije")
-	fmt.Println(len(response.Users))
 
 	return response, nil
 }
@@ -91,7 +94,6 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
 
 	p1 := common.BadUsername(request.Username)
-	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	if request.Username == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -123,6 +125,12 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 	}
 	response := &pb.Users{
 		Users: []*pb.UserNode{},
+	}
+	if users == nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return response, nil
 	}
 
 	for _, user := range users {

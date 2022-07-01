@@ -78,10 +78,6 @@ func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection)
 					return nil, err
 				}
 			}
-
-			fmt.Println(status)
-			fmt.Println(connectionStatus)
-			// You can also retrieve values by name, with e.g. `id, found := record.Get("n.id")`
 			return &dto.ConnectionResponse{
 				UserOneUID:       connection.UserOneUID,
 				UserTwoUID:       connection.UserTwoUID,
@@ -102,7 +98,6 @@ func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection)
 		return nil, err
 	}
 
-	fmt.Println(result)
 	return result.(*dto.ConnectionResponse), nil
 }
 
@@ -118,7 +113,6 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection)
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
 		if checkIfUserExist(connection.UserOneUID, tx) && checkIfUserExist(connection.UserTwoUID, tx) {
-			//u ovom slucaju sender je user koji je privaatan i prihvata zahtev requestGet koji mu je prethodno poslao taj zahtjev
 			records, err := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u1)-[r1:CONNECTION]->(u2) return r1.status", map[string]interface{}{
 				"requestSender": connection.UserOneUID,
 				"requestGet":    connection.UserTwoUID,
@@ -156,14 +150,11 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection)
 				}
 			}
 
-			fmt.Println(connectionStatus)
-			// You can also retrieve values by name, with e.g. `id, found := record.Get("n.id")`
 			return &dto.ConnectionResponse{
 				UserOneUID:       connection.UserOneUID,
 				UserTwoUID:       connection.UserTwoUID,
 				ConnectionStatus: connectionStatus,
 			}, nil
-			//return nil, nil
 		} else {
 			//return &pb.NewConnectionResponse{
 			//	BaseUserUUID:       "",
@@ -179,9 +170,7 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection)
 		return nil, err
 	}
 
-	fmt.Println(result)
 	return result.(*dto.ConnectionResponse), nil
-	//return nil, nil
 }
 
 func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string) (userNodes []*model.User, error1 error) {
@@ -243,8 +232,6 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		fmt.Println("UUID ")
-		fmt.Println(userUid)
 		if !checkIfUserExist(userUid, tx) {
 			fmt.Println("NE POSTOJI")
 			return &model.User{
@@ -260,10 +247,8 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 		})
 
 		for records.Next() {
-			fmt.Println(records.Record())
 			node := model.User{UserUID: records.Record().Values[0].(string), Status: model.ProfileStatus(records.Record().Values[1].(string)), Username: records.Record().Values[2].(string), FirstName: records.Record().Values[3].(string), LastName: records.Record().Values[4].(string)}
 			userNodes = append(userNodes, &node)
-			fmt.Println("USAO")
 		}
 
 		if err != nil {
