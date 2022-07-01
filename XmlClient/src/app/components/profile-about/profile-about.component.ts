@@ -7,6 +7,7 @@ import { ExperienceDto } from 'src/app/interfaces/experience-dto';
 import { InterestDto } from 'src/app/interfaces/interest-dto';
 import { SkillDto } from 'src/app/interfaces/skill-dto';
 import { UserDetails } from 'src/app/interfaces/user-details';
+import { UserProfessionalDetails } from 'src/app/interfaces/user-professional-details';
 import { UserService } from 'src/app/services/user-service/user.service';
 import { EducationDialogComponent } from '../dialogs/education-dialog/education-dialog.component';
 
@@ -38,6 +39,7 @@ export class ProfileAboutComponent implements OnInit {
   education! : string;
   experience! : string;
   initialDetails : any;
+  userProfessionalDetails! : UserProfessionalDetails;
   constructor(private userService : UserService,private matDialog : MatDialog,private _snackBar : MatSnackBar) {
       this.skills = [] as SkillDto[];
       this.educations = [] as EducationDto[];
@@ -51,11 +53,20 @@ export class ProfileAboutComponent implements OnInit {
       this.skill = "";
       this.experience = "";
       this.interest = "";
+      this.userProfessionalDetails = {} as UserProfessionalDetails;
    }
 
   ngOnInit(): void {
     this.storageUsername = localStorage.getItem('username');
     this.setUserDetails();
+    this.setUserProfessionalDetails();
+  }
+  setUserProfessionalDetails() {
+    this.userProfessionalDetails.username = this.user.username;
+    this.userProfessionalDetails.skills = this.user.skills;
+    this.userProfessionalDetails.interests = this.user.interests;
+    this.userProfessionalDetails.experiences = this.user.experiences;
+
   }
   
   setUserDetails() {
@@ -147,6 +158,7 @@ export class ProfileAboutComponent implements OnInit {
         this.experience = "";
         this.interest = "";
           this.setUserDetails();
+          this.setUserProfessionalDetails();
         }});
   
     }
