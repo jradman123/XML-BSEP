@@ -22,7 +22,7 @@ type ConnectionHandler struct {
 
 const (
 	xssError        = "ERR:XSS"
-	validationError = "ERR:BAD VALIDATION: POSIBLE INJECTION"
+	validationError = "ERR:BAD VALIDATION: POSSIBLE INJECTION"
 	getUsersError   = "ERR:GET USERS"
 )
 
@@ -33,41 +33,6 @@ func (c ConnectionHandler) MustEmbedUnimplementedConnectionServiceServer() {
 
 func NewConnectionHandler(connectionService *services.ConnectionService, userSer *services.UserService, logInfo *logger.Logger, logError *logger.Logger) *ConnectionHandler {
 	return &ConnectionHandler{connectionService, userSer, logInfo, logError}
-}
-
-func (c ConnectionHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.EmptyRequest, error) {
-
-	return nil, nil
-}
-
-func (c ConnectionHandler) GetSomething(ctx context.Context, request *pb.EmptyRequest) (*pb.EmptyRequest, error) {
-	fmt.Println("usao u get something")
-	user := model.User{
-		UserUID:   "1",
-		Username:  "username1",
-		FirstName: "name1",
-		LastName:  "lastname1",
-		Status:    model.Public,
-	}
-	user1 := model.User{
-		UserUID:   "2",
-		Username:  "username2",
-		FirstName: "name2",
-		LastName:  "lastname2",
-		Status:    model.Public,
-	}
-	user2 := model.User{
-		UserUID:   "3",
-		Username:  "username3",
-		FirstName: "name3",
-		LastName:  "lastname3",
-		Status:    model.Private,
-	}
-	c.userService.CreateUser(user)
-	c.userService.CreateUser(user1)
-	c.userService.CreateUser(user2)
-	//c.connectionService.CreateConnection()
-	return &pb.EmptyRequest{}, nil
 }
 
 func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
@@ -174,12 +139,11 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 	connection.Connection.UserSender = strings.TrimSpace(policy.Sanitize(connection.Connection.UserSender))
 	connection.Connection.UserReceiver = strings.TrimSpace(policy.Sanitize(connection.Connection.UserReceiver))
 
-	p1 := common.BadId(connection.Connection.UserSender)
-	p2 := common.BadId(connection.Connection.UserReceiver)
-	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	p1 := common.BadUsername(connection.Connection.UserSender)
+	p2 := common.BadUsername(connection.Connection.UserReceiver)
 	if connection.Connection.UserSender == "" || connection.Connection.UserReceiver == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userSenderId": connection.Connection.UserSender,
+			"userSenderUsername": connection.Connection.UserSender,
 		}).Errorf(xssError)
 	} else if p1 || p2 {
 		c.logError.Logger.WithFields(logrus.Fields{
@@ -187,17 +151,32 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
-			"userSenderId": connection.Connection.UserSender,
+			"userSenderUsername": connection.Connection.UserSender,
 		}).Infof("INFO:Handling Create connection")
 	}
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": connection.Connection.UserSender,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": connection.Connection.UserSender,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
 	con := &model.Connection{
-		UserOneUID: connection.Connection.UserSender,
-		UserTwoUID: connection.Connection.UserReceiver,
+		UserOneUID: userSenderId,
+		UserTwoUID: userReceiverId,
 	}
 	conResult, err := c.connectionService.CreateConnection(con)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userSenderId": connection.Connection.UserSender,
+			"userSenderUsername": connection.Connection.UserSender,
 		}).Errorf("ERR:CREATE CONNECTION")
 		return nil, err
 	}
@@ -210,30 +189,45 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 	connection.Connection.UserSender = strings.TrimSpace(policy.Sanitize(connection.Connection.UserSender))
 	connection.Connection.UserReceiver = strings.TrimSpace(policy.Sanitize(connection.Connection.UserReceiver))
 
-	p1 := common.BadId(connection.Connection.UserSender)
-	p2 := common.BadId(connection.Connection.UserReceiver)
-	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	p1 := common.BadUsername(connection.Connection.UserSender)
+	p2 := common.BadUsername(connection.Connection.UserReceiver)
 	if connection.Connection.UserSender == "" || connection.Connection.UserReceiver == "" {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userSenderId": connection.Connection.UserSender,
+			"userSenderUsername": connection.Connection.UserSender,
 		}).Errorf(xssError)
 	} else if p1 || p2 {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userSenderId": connection.Connection.UserSender,
+			"userSenderUsername": connection.Connection.UserSender,
 		}).Errorf(validationError)
 	} else {
 		c.logInfo.Logger.WithFields(logrus.Fields{
-			"userSenderId": connection.Connection.UserSender,
+			"userSenderUsername": connection.Connection.UserSender,
 		}).Infof("INFO:Handling Create connection")
 	}
+
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": connection.Connection.UserSender,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": connection.Connection.UserSender,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
 	con := &model.Connection{
-		UserOneUID: connection.Connection.UserSender,
-		UserTwoUID: connection.Connection.UserReceiver,
+		UserOneUID: userSenderId,
+		UserTwoUID: userReceiverId,
 	}
 	conResult, err := c.connectionService.AcceptConnection(con)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
-			"userSenderId": connection.Connection.UserSender,
+			"userSenderUsername": connection.Connection.UserSender,
 		}).Errorf("ERR:CREATE CONNECTION")
 		return nil, err
 	}

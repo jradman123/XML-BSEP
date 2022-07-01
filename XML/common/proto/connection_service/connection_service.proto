@@ -8,12 +8,6 @@ import "google/api/annotations.proto";
 
 service ConnectionService{
 
-  rpc GetSomething(EmptyRequest) returns(EmptyRequest) {
-    option (google.api.http) = {
-      get: "/something"
-    };
-  }
-
   rpc GetConnections(GetRequest) returns(Users) {
     option (google.api.http) = {
       get: "/connection/connected/{username}"
