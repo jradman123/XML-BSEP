@@ -4,6 +4,8 @@ import (
 	"common/module/interceptor"
 	"common/module/logger"
 	connectionProto "common/module/proto/connection_service"
+	saga "common/module/saga/messaging"
+	"common/module/saga/messaging/nats"
 	"connection/module/application/services"
 	"connection/module/domain/repositories"
 	"connection/module/infrastructure/handlers"
@@ -47,9 +49,9 @@ func (server *Server) Start() {
 
 	connectionHandler := server.InitConnectionHandler(connectionService, userService, logInfo, logError)
 
-	//commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
-	//replyPublisher := server.InitPublisher(server.config.UserReplySubject)
-	//server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
+	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
+	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
+	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
 
 	server.StartGrpcServer(connectionHandler, logError)
 
@@ -112,31 +114,31 @@ func (server *Server) InitUserRepository(client *neo4j.Driver, logInfo *logger.L
 	return persistance.NewUserRepositoryImpl(client, logInfo, logError)
 }
 
-//func (server *Server) InitSubscriber(subject string, queueGroup string) saga.Subscriber {
-//	subscriber, err := nats.NewNATSSubscriber(
-//		server.config.NatsHost, server.config.NatsPort,
-//		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	return subscriber
-//}
-//
-//func (server *Server) InitPublisher(subject string) saga.Publisher {
-//	publisher, err := nats.NewNATSPublisher(
-//		server.config.NatsHost, server.config.NatsPort,
-//		server.config.NatsUser, server.config.NatsPass, subject)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	return publisher
-//}
-//
-//func (server *Server) InitCreateUserCommandHandler(service *services.UserService, publisher saga.Publisher,
-//	subscriber saga.Subscriber) *handlers.UserCommandHandler {
-//	handler, err := handlers.NewUserCommandHandler(service, publisher, subscriber)
-//	if err != nil {
-//		log.Fatalf("failed to listen: %v", err)
-//	}
-//	return handler
-//}
+func (server *Server) InitSubscriber(subject string, queueGroup string) saga.Subscriber {
+	subscriber, err := nats.NewNATSSubscriber(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject, queueGroup)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return subscriber
+}
+
+func (server *Server) InitPublisher(subject string) saga.Publisher {
+	publisher, err := nats.NewNATSPublisher(
+		server.config.NatsHost, server.config.NatsPort,
+		server.config.NatsUser, server.config.NatsPass, subject)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return publisher
+}
+
+func (server *Server) InitCreateUserCommandHandler(service *services.UserService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.UserCommandHandler {
+	handler, err := handlers.NewUserCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
