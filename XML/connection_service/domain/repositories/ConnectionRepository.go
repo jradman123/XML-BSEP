@@ -10,4 +10,5 @@ type ConnectionRepository interface {
 	AcceptConnection(connection *connectionModel.Connection) (*dto.ConnectionResponse, error)
 	GetAllConnectionForUser(userUid string) (userNodes []*connectionModel.User, error1 error)
 	GetAllConnectionRequestsForUser(userUid string) (userNodes []*connectionModel.User, error1 error)
+	ConnectionStatusForUsers(senderId string, receiverId string) (*dto.ConnectionResponse, error)
 }

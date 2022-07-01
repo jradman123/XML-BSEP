@@ -261,3 +261,62 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 	}
 	return userNodes, nil
 }
+
+func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, receiverId string) (*dto.ConnectionResponse, error) {
+	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+			r.logError.Logger.Errorf(neo4jSessionError)
+		}
+	}(session)
+
+	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		if checkIfUserExist(senderId, tx) && checkIfUserExist(receiverId, tx) {
+			records, err := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u1)-[r1:CONNECTION]->(u2) return r1.status", map[string]interface{}{
+				"requestSender": senderId,
+				"requestGet":    receiverId,
+			})
+			status := ""
+			if err != nil {
+				return nil, err
+			}
+			if records == nil {
+				records, err = tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u1)-[r1:CONNECTION]->(u2) return r1.status", map[string]interface{}{
+					"requestSender": receiverId,
+					"requestGet":    senderId,
+				})
+			}
+			if records == nil {
+				status = "NO_CONNECTION"
+			} else {
+				record, err1 := records.Single()
+				if err1 != nil {
+					return nil, err
+				}
+				status = record.Values[0].(string)
+			}
+
+			return &dto.ConnectionResponse{
+				UserOneUID:       senderId,
+				UserTwoUID:       receiverId,
+				ConnectionStatus: status,
+			}, nil
+		} else {
+			//return &pb.NewConnectionResponse{
+			//	BaseUserUUID:       "",
+			//	ConnectUserUUID:    "",
+			//	ConnectionResponse: "Connection refused - user not found",
+			//}, nil
+			return nil, nil
+		}
+
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result.(*dto.ConnectionResponse), nil
+}

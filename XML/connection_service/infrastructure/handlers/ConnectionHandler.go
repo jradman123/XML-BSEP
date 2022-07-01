@@ -20,6 +20,11 @@ type ConnectionHandler struct {
 	logError          *logger.Logger
 }
 
+func (c ConnectionHandler) mustEmbedUnimplementedConnectionServiceServer() {
+	//TODO implement me
+	panic("implement me")
+}
+
 const (
 	xssError        = "ERR:XSS"
 	validationError = "ERR:BAD VALIDATION: POSSIBLE INJECTION"
@@ -237,6 +242,54 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
 		}).Errorf("ERR:CREATE CONNECTION")
+		return nil, err
+	}
+	return &pb.ConnectionResponse{UserReceiver: conResult.UserOneUID, UserSender: conResult.UserTwoUID, ConnectionStatus: conResult.ConnectionStatus}, nil
+
+}
+
+func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
+	fmt.Println("ConnectionStatusForUsers handler")
+	policy := bluemonday.UGCPolicy()
+	connection.Connection.UserSender = strings.TrimSpace(policy.Sanitize(connection.Connection.UserSender))
+	connection.Connection.UserReceiver = strings.TrimSpace(policy.Sanitize(connection.Connection.UserReceiver))
+
+	p1 := common.BadUsername(connection.Connection.UserSender)
+	p2 := common.BadUsername(connection.Connection.UserReceiver)
+	if connection.Connection.UserSender == "" || connection.Connection.UserReceiver == "" {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"userSenderUsername": connection.Connection.UserSender,
+		}).Errorf(xssError)
+	} else if p1 || p2 {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"userSenderUsername": connection.Connection.UserSender,
+		}).Errorf(validationError)
+	} else {
+		c.logInfo.Logger.WithFields(logrus.Fields{
+			"userSenderUsername": connection.Connection.UserSender,
+		}).Infof("INFO:Handling ConnectionStatusForUsers")
+	}
+
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": connection.Connection.UserSender,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": connection.Connection.UserSender,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
+	conResult, err := c.connectionService.ConnectionStatusForUsers(userSenderId, userReceiverId)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"userSenderUsername": connection.Connection.UserSender,
+		}).Errorf("ERR:GET CONNECTION")
 		return nil, err
 	}
 	return &pb.ConnectionResponse{UserReceiver: conResult.UserOneUID, UserSender: conResult.UserTwoUID, ConnectionStatus: conResult.ConnectionStatus}, nil

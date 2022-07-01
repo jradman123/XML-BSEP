@@ -26,6 +26,7 @@ type ConnectionServiceClient interface {
 	GetConnectionRequests(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Users, error)
 	CreateConnection(ctx context.Context, in *NewConnection, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	AcceptConnection(ctx context.Context, in *NewConnection, opts ...grpc.CallOption) (*ConnectionResponse, error)
+	ConnectionStatusForUsers(ctx context.Context, in *NewConnection, opts ...grpc.CallOption) (*ConnectionResponse, error)
 }
 
 type connectionServiceClient struct {
@@ -72,6 +73,15 @@ func (c *connectionServiceClient) AcceptConnection(ctx context.Context, in *NewC
 	return out, nil
 }
 
+func (c *connectionServiceClient) ConnectionStatusForUsers(ctx context.Context, in *NewConnection, opts ...grpc.CallOption) (*ConnectionResponse, error) {
+	out := new(ConnectionResponse)
+	err := c.cc.Invoke(ctx, "/connection_service.ConnectionService/ConnectionStatusForUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConnectionServiceServer is the server API for ConnectionService service.
 // All implementations must embed UnimplementedConnectionServiceServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type ConnectionServiceServer interface {
 	GetConnectionRequests(context.Context, *GetRequest) (*Users, error)
 	CreateConnection(context.Context, *NewConnection) (*ConnectionResponse, error)
 	AcceptConnection(context.Context, *NewConnection) (*ConnectionResponse, error)
+	ConnectionStatusForUsers(context.Context, *NewConnection) (*ConnectionResponse, error)
 	MustEmbedUnimplementedConnectionServiceServer()
 }
 
@@ -98,6 +109,9 @@ func (UnimplementedConnectionServiceServer) CreateConnection(context.Context, *N
 }
 func (UnimplementedConnectionServiceServer) AcceptConnection(context.Context, *NewConnection) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptConnection not implemented")
+}
+func (UnimplementedConnectionServiceServer) ConnectionStatusForUsers(context.Context, *NewConnection) (*ConnectionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConnectionStatusForUsers not implemented")
 }
 func (UnimplementedConnectionServiceServer) MustEmbedUnimplementedConnectionServiceServer() {}
 
@@ -184,6 +198,24 @@ func _ConnectionService_AcceptConnection_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ConnectionService_ConnectionStatusForUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewConnection)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConnectionServiceServer).ConnectionStatusForUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/connection_service.ConnectionService/ConnectionStatusForUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConnectionServiceServer).ConnectionStatusForUsers(ctx, req.(*NewConnection))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ConnectionService_ServiceDesc is the grpc.ServiceDesc for ConnectionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +238,10 @@ var ConnectionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AcceptConnection",
 			Handler:    _ConnectionService_AcceptConnection_Handler,
+		},
+		{
+			MethodName: "ConnectionStatusForUsers",
+			Handler:    _ConnectionService_ConnectionStatusForUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
