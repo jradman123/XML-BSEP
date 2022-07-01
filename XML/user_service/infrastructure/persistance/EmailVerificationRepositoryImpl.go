@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"log"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
 )
@@ -21,11 +22,14 @@ func (e EmailVerificationRepositoryImpl) CreateEmailVerification(ver *model.Emai
 	fmt.Print(result)
 	return ver, result.Error
 }
-func (e EmailVerificationRepositoryImpl) GetVerificationByUsername(username string) (*model.EmailVerification, error) {
-	verification := &model.EmailVerification{}
-	if e.db.First(&verification, "username = ?", username).RowsAffected == 0 {
-		return nil, errors.New("user not found")
-
+func (e EmailVerificationRepositoryImpl) GetVerificationByUsername(username string) ([]model.EmailVerification, error) {
+	var verifications []model.EmailVerification
+	records := e.db.Find(&verifications, "username = ?", username)
+	if records.Error != nil {
+		log.Fatalln(records.Error)
 	}
-	return verification, nil
+	if records.RowsAffected == 0 {
+		return nil, errors.New("user not found")
+	}
+	return verifications, nil
 }

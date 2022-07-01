@@ -36,6 +36,11 @@ func MapUserToPbResponseUser(user *model.User) *pb.RegisteredUser {
 	return usersPb
 }
 func MapDtoToUser(userPb *dto.NewUser) *model.User {
+	status := model.Public
+	if userPb.ProfileStatus == "PRIVATE" {
+		status = model.Private
+	}
+
 	userD := &model.User{
 		ID:            uuid.New(),
 		FirstName:     userPb.FirstName,
@@ -49,6 +54,7 @@ func MapDtoToUser(userPb *dto.NewUser) *model.User {
 		Role:          model.Regular,
 		IsConfirmed:   false,
 		RecoveryEmail: userPb.RecoveryEmail,
+		ProfileStatus: status,
 	}
 	return userD
 }
@@ -189,6 +195,7 @@ func MapPbUserToNewUserDto(userPb *pb.RegisterUserRequest) *dto.NewUser {
 		DateOfBirth:   userPb.UserRequest.DateOfBirth,
 		Password:      userPb.UserRequest.Password,
 		RecoveryEmail: userPb.UserRequest.RecoveryEmail,
+		ProfileStatus: userPb.UserRequest.ProfileStatus,
 	}
 	return userD
 }

@@ -250,4 +250,5 @@ message RegisterUser {
   string gender = 7;
   string dateOfBirth = 8;
   string recoveryEmail = 9;
+  string profileStatus = 10;
 }

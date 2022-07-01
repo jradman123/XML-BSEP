@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+option go_package = "common/module/connection_service";
+
+package connection_service;
+import "google/api/annotations.proto";
+
+
+service ConnectionService{
+
+  rpc GetSomething(EmptyRequest) returns(EmptyRequest) {
+    option (google.api.http) = {
+      get: "/something"
+    };
+  }
+
+  rpc GetConnections(GetRequest) returns(Users) {
+    option (google.api.http) = {
+      get: "/connection/connected/{username}"
+    };
+  }
+  rpc GetConnectionRequests(GetRequest) returns(Users) {
+    option (google.api.http) = {
+      get: "/connection/requests/{username}"
+    };
+  }
+
+  rpc CreateConnection(NewConnection) returns (ConnectionResponse) {
+    option (google.api.http) = {
+      post: "/connection/new"
+      body: "connection"
+    };
+  }
+
+  rpc AcceptConnection(NewConnection) returns (ConnectionResponse) {
+    option (google.api.http) = {
+      post: "/connection/accepted"
+      body: "connection"
+    };
+  }
+}
+
+message EmptyRequest{}
+
+message GetRequest {
+  string username = 1;
+}
+
+message Users {
+  repeated UserNode users = 1;
+}
+
+message UserNode {
+  string userUID = 1;
+  string status = 2;
+  string username = 3;
+  string firstName = 4;
+  string lastName = 5;
+}
+
+message NewConnection {
+  Connection connection = 1;
+}
+
+message Connection {
+  string userSender = 1;
+  string userReceiver = 2;
+}
+
+message ConnectionResponse {
+  string userSender = 1;
+  string userReceiver = 2;
+  string connectionStatus = 3;
+}

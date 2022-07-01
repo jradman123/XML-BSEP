@@ -1,0 +1,6 @@
+{"data":{"userSenderId":"2"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-26T23:52:55Z"}
+{"data":{"userSenderId":"3"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-26T23:54:54Z"}
+{"data":{"userSenderId":"2"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-27T00:15:28Z"}
+{"data":{"userSenderId":"3"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-27T00:20:09Z"}
+{"data":{"userSenderId":"3"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-27T00:22:51Z"}
+{"data":{"userSenderId":"3"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-27T12:28:11Z"}
