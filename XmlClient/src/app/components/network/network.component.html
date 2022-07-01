@@ -1,0 +1,47 @@
+<app-registered-header (searchInput)="handleMe($event)"></app-registered-header>
+
+<main class="main">
+  
+    <section class="section profile">
+      <div class="row">
+        <div class="col-xl-3">
+  
+          <div class="card">
+            <div class="d-flex flex-column align-items-center">
+  
+              <button>My connections</button>
+              <button>Pending requests</button>
+
+            </div>
+          </div>
+  
+        </div>
+  
+        <div class="col-xl-9">
+  
+          <div class="card">
+            <div class="card-body pt-3">
+              <h4>Pending invitations</h4>
+              <div *ngFor="let profile of profiles | profileSearch : searchText ">
+                <app-profile-preview [profile]="profile" ></app-profile-preview>
+            </div>
+            </div>
+          </div>
+          <br>
+          <hr>
+          <br>
+          <div class="card">
+            <div class="card-body pt-3">
+                <p> KONEKCIJA </p>
+                <p> KONEKCIJA </p>
+                <p> KONEKCIJA </p>
+                <p> KONEKCIJA </p>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+    </section>
+  
+  </main>
+
