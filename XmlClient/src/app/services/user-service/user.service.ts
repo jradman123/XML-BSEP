@@ -101,7 +101,7 @@ export class UserService {
   }
 
   updateUserProfessionalDetails(user : UserProfessionalDetails){
-    return this._http.post<UserProfessionalDetails>('http://localhost:9090/users/user/editPersonal',
+    return this._http.post<UserProfessionalDetails>('http://localhost:9090/users/user/editProfessional',
       user
     )
   }

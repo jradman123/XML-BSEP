@@ -22,6 +22,7 @@ export class ProfileAboutComponent implements OnInit {
   @Input()
   user! : UserDetails;
   sub!: Subscription;
+  userDetails! : UserDetails;
 
   storageUsername : string | null = '';
 
@@ -54,28 +55,41 @@ export class ProfileAboutComponent implements OnInit {
       this.experience = "";
       this.interest = "";
       this.userProfessionalDetails = {} as UserProfessionalDetails;
+      this.userDetails = {} as UserDetails;
    }
 
   ngOnInit(): void {
     this.storageUsername = localStorage.getItem('username');
-    this.setUserDetails();
-    this.setUserProfessionalDetails();
+    this.getUserDetails();
   }
+
+  getUserDetails() {
+    this.sub = this.userService.getUserDetails(localStorage.getItem('username')).subscribe({
+      next: (data: UserDetails) => {
+        this.userDetails = data
+        this.skills = data.skills;
+        this.interests=data.interests;
+        this.educations = data.educations;
+        this.experiences = data.experiences;
+        this.userProfessionalDetails.username = this.userDetails.username;
+        this.userProfessionalDetails.skills = data.skills;
+        this.userProfessionalDetails.interests = data.interests;
+        this.userProfessionalDetails.experiences = data.experiences;
+        this.userProfessionalDetails.educations = data.educations;
+      },
+    });
+  }
+  
   setUserProfessionalDetails() {
-    this.userProfessionalDetails.username = this.user.username;
-    this.userProfessionalDetails.skills = this.user.skills;
-    this.userProfessionalDetails.interests = this.user.interests;
-    this.userProfessionalDetails.experiences = this.user.experiences;
+    this.userProfessionalDetails.username = this.userDetails.username;
+    this.userProfessionalDetails.skills = this.skills;
+    this.userProfessionalDetails.interests = this.interests;
+    this.userProfessionalDetails.experiences = this.experiences;
+    this.userProfessionalDetails.educations = this.educations;
+    console.log(this.userProfessionalDetails.experiences);
 
   }
   
-  setUserDetails() {
-        this.skills = this.user.skills;
-        this.interests = this.user.interests;
-        this.experiences = this.user.experiences;
-        this.educations = this.user.educations;
-  }
-
     openEducationDialog() {
       const dialogConfig = new MatDialogConfig();
       dialogConfig.disableClose = false;
@@ -143,7 +157,7 @@ export class ProfileAboutComponent implements OnInit {
     save() {
       this.createUserDetails();
       
-      this.userService.updateUser(this.user).subscribe({
+      this.userService.updateUserProfessionalDetails(this.userProfessionalDetails).subscribe({
         next: () => {
           this.skills = [] as SkillDto[];
         this.educations = [] as EducationDto[];
@@ -157,40 +171,41 @@ export class ProfileAboutComponent implements OnInit {
         this.skill = "";
         this.experience = "";
         this.interest = "";
-          this.setUserDetails();
-          this.setUserProfessionalDetails();
+        this.getUserDetails();
+
         }});
   
     }
   
     createUserDetails(): void {
+      this.userProfessionalDetails.username = this.user.username;
       this.newSkill.skill = this.skill
       if(this.skill == ""){
-        this.user.skills = this.skills;
+        this.userProfessionalDetails.skills = this.skills;
       }else{
         this.skills.push(this.newSkill);
-        this.user.skills = this.skills;
+        this.userProfessionalDetails.skills = this.skills;
       }
       this.newEducation.education = this.education
       if(this.newEducation.education == ""){
-        this.user.educations =this.educations;
+        this.userProfessionalDetails.educations =this.educations;
       }else{
         this.educations.push(this.newEducation);
-        this.user.educations =this.educations;
+        this.userProfessionalDetails.educations =this.educations;
       }
       this.newExperience.experience = this.experience
       if(this.newExperience.experience == ""){
-        this.user.experiences = this.experiences;
+        this.userProfessionalDetails.experiences = this.experiences;
       }else{
         this.experiences.push(this.newExperience);
-        this.user.experiences = this.experiences;
+        this.userProfessionalDetails.experiences = this.experiences;
       }
       this.newInterest.interest = this.interest
       if(this.newInterest.interest == ""){
-        this.user.interests = this.interests;
+        this.userProfessionalDetails.interests = this.interests;
       }else{
         this.interests.push(this.newInterest);
-        this.user.interests = this.interests;
+        this.userProfessionalDetails.interests = this.interests;
       }
     }
   }
