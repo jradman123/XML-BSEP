@@ -89,10 +89,10 @@ service UserService{
     };
   }
 
-  rpc EditUserProfessionalDetails(UserPersonalDetailsRequest) returns(UserPersonalDetails) {
+  rpc EditUserProfessionalDetails(UserProfessionalDetailsRequest) returns(UserProfessionalDetails) {
     option (google.api.http) = {
       post: "/users/user/editProfessional"
-      body: "userPersonalDetails"
+      body: "userProfessionalDetails"
     };
   }
 }
