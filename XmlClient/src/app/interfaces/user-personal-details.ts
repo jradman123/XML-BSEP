@@ -4,5 +4,6 @@ export interface UserPersonalDetails {
 	firstName   : string;
 	lastName    : string;
 	gender      : string;
-	biography   : string 
+	dateOfBirth : string;
+	biography   : string
 }

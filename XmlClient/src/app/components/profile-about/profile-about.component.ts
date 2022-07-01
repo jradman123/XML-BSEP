@@ -80,15 +80,6 @@ export class ProfileAboutComponent implements OnInit {
     });
   }
   
-  setUserProfessionalDetails() {
-    this.userProfessionalDetails.username = this.userDetails.username;
-    this.userProfessionalDetails.skills = this.skills;
-    this.userProfessionalDetails.interests = this.interests;
-    this.userProfessionalDetails.experiences = this.experiences;
-    this.userProfessionalDetails.educations = this.educations;
-    console.log(this.userProfessionalDetails.experiences);
-
-  }
   
     openEducationDialog() {
       const dialogConfig = new MatDialogConfig();
