@@ -32,6 +32,13 @@ service ConnectionService{
       body: "connection"
     };
   }
+
+  rpc ConnectionStatusForUsers(NewConnection) returns (ConnectionResponse) {
+    option (google.api.http) = {
+      post: "/connection/status"
+      body: "connection"
+    };
+  }
 }
 
 message EmptyRequest{}
