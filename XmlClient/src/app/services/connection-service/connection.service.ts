@@ -16,15 +16,15 @@ export class ConnectionService {
 
   getUsersInvitations(username: string) {
     return this._http.get<any>(
-      'http://localhost:9090/connection/requests/connected/' + username
+      'http://localhost:9090/connection/requests/' + username
     );
   }
 
   connectUsers(senderUsername: string, recieverUsername: string){
     return this._http.post<any>(
       'http://localhost:9090/connection/new', {
-        userSender : senderUsername,
-        userReciever : recieverUsername
+          "userSender": senderUsername,
+          "userReceiver": recieverUsername,
       }
     );
   }
@@ -32,9 +32,9 @@ export class ConnectionService {
   acceptConnection(senderUsername: string, recieverUsername: string){
     return this._http.post<any>(
       'http://localhost:9090/connection/accepted', {
-        userSender : senderUsername,
-        userReciever : recieverUsername
-      }
+        "userSender": senderUsername,
+        "userReceiver": recieverUsername,
+    }
     );
   }
 

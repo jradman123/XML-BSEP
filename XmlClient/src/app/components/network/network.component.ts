@@ -12,31 +12,30 @@ export class NetworkComponent implements OnInit {
   searchText : string = "";
   connections! : UserDetails[];
   invitations! : UserDetails[];
+  people! : UserDetails[];
 
   constructor(private _connectionService : ConnectionService, private userService : UserService) { }
 
   ngOnInit(): void {
 
-
     this.userService.getUsers().subscribe(
       res => {
-        this.connections = res.users;
-        this.invitations = res.users;
+        this.people = res.users;
       }
     )
 
-    // this._connectionService.getUsersConnections(localStorage.getItem('username')!).subscribe(
-    //   res => {
-    //     this.connections = res.users;
-    //   }
-    // );
+    this._connectionService.getUsersConnections(localStorage.getItem('username')!).subscribe(
+      res => {
+        this.connections = res.users;
+      }
+    );
 
-    // this._connectionService.getUsersInvitations(localStorage.getItem('username')!).subscribe(
-    //   res => {
-    //     this.invitations = res.users;
-    //   }
+    this._connectionService.getUsersInvitations(localStorage.getItem('username')!).subscribe(
+      res => {
+        this.invitations = res.users;
+      }
       
-    // )
+    )
   }
 
   handleMe(searchText : string){

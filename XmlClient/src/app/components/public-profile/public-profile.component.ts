@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UserDetails } from 'src/app/interfaces/user-details';
+import { ConnectionService } from 'src/app/services/connection-service/connection.service';
 import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
@@ -16,10 +17,11 @@ export class PublicProfileComponent implements OnInit {
   id!: number;
   searchText : string = "";
   username! : string;
-  isLoggedIn = localStorage.getItem('token') !== null
+  isLoggedIn = localStorage.getItem('token') !== null;
+  buttonText = "Connect"
 
 
-  constructor(private userService : UserService, private _router : Router) {
+  constructor(private userService : UserService, private _router : Router, private _connectionService : ConnectionService) {
     this.username = this._router.url.substring(16) ?? '';
     this.user = {} as UserDetails;
     this.getUserDetails();
@@ -41,6 +43,16 @@ export class PublicProfileComponent implements OnInit {
         this.initialDetails = JSON.parse(JSON.stringify(data)); 
       },
     });
+  }
+
+  connect(username:string){
+    this._connectionService.connectUsers(localStorage.getItem('username')!, username).subscribe(
+      res => {
+        let status = res.connectionStatus;
+        status === "CONNECTED" ? this.buttonText = "Following" : this.buttonText = "Pending";
+
+      }
+    )
   }
 
 }

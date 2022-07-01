@@ -36,7 +36,17 @@
             </div>
             </div>
           </div>
-  
+          <br>
+          <hr>
+          <br>
+          <div class="card  card-ride">
+            <div id="suggestions" class="card-body pt-3">
+              <h2 class="nw-title">Suggested users</h2>
+              <div  *ngFor="let person of people | profileSearch : searchText ">
+                <app-profile-preview [profile]="person" ></app-profile-preview>
+            </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

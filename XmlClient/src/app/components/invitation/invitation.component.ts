@@ -19,7 +19,7 @@ export class InvitationComponent implements OnInit {
   }
 
   acceptInvite(username: string){
-    this._connectionService.acceptConnection(username, localStorage.getItem('username')!).subscribe(
+    this._connectionService.acceptConnection(localStorage.getItem('username')!, username).subscribe(
       res => {
         this.accepted = true;
       }
