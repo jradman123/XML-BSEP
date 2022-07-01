@@ -383,7 +383,7 @@ func MapUserToUserPersonalDetails(user *model.User) *pb.UserPersonalDetails {
 func MapPbUserProfessionalDetailsToUser(userProfessionalDetailsPb *pb.UserProfessionalDetailsRequest) *dto.UserProfessionalDetails {
 
 	userD := &dto.UserProfessionalDetails{
-		Username:    userProfessionalDetailsPb.UserProfessionalDetails.Username,,
+		Username: userProfessionalDetailsPb.UserProfessionalDetails.Username,
 	}
 	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Educations {
 		fmt.Println(i, s)

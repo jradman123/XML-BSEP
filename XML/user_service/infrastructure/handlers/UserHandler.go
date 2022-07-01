@@ -495,31 +495,13 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 
 func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.UserPersonalDetailsRequest) (*pb.UserPersonalDetails, error) {
 
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 
 	userPersonalDetails := api.MapPbUserPersonalDetailsToUser(request)
 	if err := u.validator.Struct(userPersonalDetails); err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
-	}
-	policy := bluemonday.UGCPolicy()
-	userPersonalDetails.Username = strings.TrimSpace(policy.Sanitize(userPersonalDetails.Username))
-	userPersonalDetails.PhoneNumber = strings.TrimSpace(policy.Sanitize(userPersonalDetails.PhoneNumber))
-	userPersonalDetails.FirstName = strings.TrimSpace(policy.Sanitize(userPersonalDetails.FirstName))
-	userPersonalDetails.LastName = strings.TrimSpace(policy.Sanitize(userPersonalDetails.LastName))
-	userPersonalDetails.Gender = strings.TrimSpace(policy.Sanitize(userPersonalDetails.Gender))
-	userPersonalDetails.DateOfBirth = strings.TrimSpace(policy.Sanitize(userPersonalDetails.DateOfBirth))
-	userPersonalDetails.Biography = strings.TrimSpace(policy.Sanitize(userPersonalDetails.Biography))
-
-	if userPersonalDetails.Username == "" || userPersonalDetails.FirstName == "" || userPersonalDetails.LastName == "" ||
-		userPersonalDetails.Gender == "" || userPersonalDetails.DateOfBirth == "" || userPersonalDetails.PhoneNumber == "" {
-		u.logError.Logger.Errorf("ERR:XSS")
-		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
-	} else {
-		u.logInfo.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Infof("INFO:Handling EditUserPersonalDetails")
 	}
 
 	err := u.service.UserExists(userPersonalDetails.Username)
@@ -538,29 +520,23 @@ func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.Us
 
 func (u UserHandler) EditUserProfessionalDetails(ctx context.Context, request *pb.UserProfessionalDetailsRequest) (*pb.UserProfessionalDetails, error) {
 
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-
 	userProfessionalDetails := api.MapPbUserProfessionalDetailsToUser(request)
 	if err := u.validator.Struct(userProfessionalDetails); err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
-
-	u.logInfo.Logger.WithFields(logrus.Fields{
-		"user": userNameCtx,
-	}).Infof("INFO:Handling EditUserProfessionalDetails")
-
+	
 	err := u.service.UserExists(userProfessionalDetails.Username)
 	if err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	editedUser, er := u.service.EditUserPersonalDetails(userProfessionalDetails)
+	editedUser, er := u.service.EditUserProfessionalDetails(userProfessionalDetails)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return api.MapUserToUserPersonalDetails(editedUser), nil
+	return api.MapUserToUserProfessionalDetails(editedUser), nil
 }
