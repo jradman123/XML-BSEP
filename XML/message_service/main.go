@@ -1,4 +1,4 @@
-package message_service
+package main
 
 import (
 	_ "go.mongodb.org/mongo-driver/mongo"
