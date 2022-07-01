@@ -22,8 +22,8 @@
           <div class="card">
             <div class="card-body pt-3">
               <h4>Pending invitations</h4>
-              <div *ngFor="let profile of profiles | profileSearch : searchText ">
-                <app-profile-preview [profile]="profile" ></app-profile-preview>
+              <div *ngFor="let invitation of invitations | profileSearch : searchText ">
+                <app-profile-preview [profile]="invitation" ></app-profile-preview>
             </div>
             </div>
           </div>
@@ -32,10 +32,10 @@
           <br>
           <div class="card">
             <div class="card-body pt-3">
-                <p> KONEKCIJA </p>
-                <p> KONEKCIJA </p>
-                <p> KONEKCIJA </p>
-                <p> KONEKCIJA </p>
+              <h4>My connections</h4>
+              <div *ngFor="let connection of connections | profileSearch : searchText ">
+                <app-profile-preview [profile]="connection" ></app-profile-preview>
+            </div>
             </div>
           </div>
   

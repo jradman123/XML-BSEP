@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -5,5 +6,36 @@ import { Injectable } from '@angular/core';
 })
 export class ConnectionService {
 
-  constructor() { }
+  constructor(private _http: HttpClient) { }
+
+  getUsersConnections(username: string) {
+    return this._http.get<any>(
+      'http://localhost:9090/connection/connected/' + username
+    );
+  }
+
+  getUsersInvitations(username: string) {
+    return this._http.get<any>(
+      'http://localhost:9090/connection/requests/connected/' + username
+    );
+  }
+
+  connectUsers(senderUsername: string, recieverUsername: string){
+    return this._http.post<any>(
+      'http://localhost:9090/connection/new', {
+        userSender : senderUsername,
+        userReciever : recieverUsername
+      }
+    );
+  }
+   
+  acceptConnection(senderUsername: string, recieverUsername: string){
+    return this._http.post<any>(
+      'http://localhost:9090/connection/accepted', {
+        userSender : senderUsername,
+        userReciever : recieverUsername
+      }
+    );
+  }
+
 }

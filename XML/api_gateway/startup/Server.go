@@ -125,13 +125,13 @@ var db *gorm.DB
 
 func (server *Server) SetupDatabase() *gorm.DB {
 
-	host := server.config.UserDBHost
-	port := server.config.UserDBPort
-	user := server.config.UserDBUser
-	dbname := server.config.UserDBName
-	password := server.config.UserDBPass
+	//host := server.config.UserDBHost
+	//port := server.config.UserDBPort
+	//user := server.config.UserDBUser
+	//dbname := server.config.UserDBName
+	//password := server.config.UserDBPass
 
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", "localhost", "5432", "postgres", "Bleed9", "xws_project")
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 
 	if err != nil {
