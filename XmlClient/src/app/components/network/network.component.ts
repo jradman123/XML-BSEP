@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserDetails } from 'src/app/interfaces/user-details';
 import { ConnectionService } from 'src/app/services/connection-service/connection.service';
+import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
   selector: 'app-network',
@@ -12,21 +13,30 @@ export class NetworkComponent implements OnInit {
   connections! : UserDetails[];
   invitations! : UserDetails[];
 
-  constructor(private _connectionService : ConnectionService) { }
+  constructor(private _connectionService : ConnectionService, private userService : UserService) { }
 
   ngOnInit(): void {
-    this._connectionService.getUsersConnections(localStorage.getItem('username')!).subscribe(
+
+
+    this.userService.getUsers().subscribe(
       res => {
         this.connections = res.users;
-      }
-    );
-
-    this._connectionService.getUsersInvitations(localStorage.getItem('username')!).subscribe(
-      res => {
         this.invitations = res.users;
       }
-      
     )
+
+    // this._connectionService.getUsersConnections(localStorage.getItem('username')!).subscribe(
+    //   res => {
+    //     this.connections = res.users;
+    //   }
+    // );
+
+    // this._connectionService.getUsersInvitations(localStorage.getItem('username')!).subscribe(
+    //   res => {
+    //     this.invitations = res.users;
+    //   }
+      
+    // )
   }
 
   handleMe(searchText : string){

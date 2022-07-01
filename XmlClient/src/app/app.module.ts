@@ -79,6 +79,7 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { NonregisteredSearchHeaderComponent } from './components/nonregistered-search-header/nonregistered-search-header.component';
 import { NetworkComponent } from './components/network/network.component';
+import { InvitationComponent } from './components/invitation/invitation.component';
 
 
 
@@ -117,6 +118,7 @@ import { NetworkComponent } from './components/network/network.component';
     PublicProfileComponent,
     NonregisteredSearchHeaderComponent,
     NetworkComponent,
+    InvitationComponent,
   ],
   imports: [
     BrowserModule,

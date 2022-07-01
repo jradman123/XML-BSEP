@@ -6,33 +6,32 @@
       <div class="row">
         <div class="col-xl-3">
   
-          <div class="card">
+          <div class="card  card-ride">
             <div class="sidenav">
-              <a href="#">About</a>
-              <a href="#">Services</a>
-              <a href="#">Clients</a>
-              <a href="#">Contact</a>
+              <a  href="/network#connections" class="block">Connections</a>
+              <a href="/network#invitations" class="block">Invitations</a>
+              <a class="block">Suggestions</a>
             </div>
           </div>
         </div>
   
         <div class="col-xl-9">
   
-          <div class="card">
-            <div class="card-body pt-3">
-              <h4>Pending invitations</h4>
+          <div class="card card-ride">
+            <div id="invitations" class="card-body pt-3">
+              <h2 class="nw-title">Pending invitations</h2>
               <div *ngFor="let invitation of invitations | profileSearch : searchText ">
-                <app-profile-preview [profile]="invitation" ></app-profile-preview>
+                <app-invitation [profile]="invitation" ></app-invitation>
             </div>
             </div>
           </div>
           <br>
           <hr>
           <br>
-          <div class="card">
-            <div class="card-body pt-3">
-              <h4>My connections</h4>
-              <div *ngFor="let connection of connections | profileSearch : searchText ">
+          <div class="card  card-ride">
+            <div id="connections" class="card-body pt-3">
+              <h2 class="nw-title">My connections</h2>
+              <div  *ngFor="let connection of connections | profileSearch : searchText ">
                 <app-profile-preview [profile]="connection" ></app-profile-preview>
             </div>
             </div>
