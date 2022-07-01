@@ -1,0 +1,125 @@
+ .hide-comments {
+    position: relative;
+    width: 100%;
+    text-align: center;
+  }
+  
+ .hide-comments:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 100%;
+    border-bottom: 1px solid #e4e9f5;
+    top: 49px;
+  }
+  
+ .hide-comments .button {
+    z-index: 1;
+    margin-bottom: 50px;
+    position: relative;
+  }
+  
+ .hide-comments #hide-button {
+    display: none;
+  }
+  
+ .hide-comments #hide-button + label {
+    width: 200px;
+  }
+  
+ .comments {
+    margin: 5px 30px 0 0px;
+  }
+  
+  .comments .heading{ 
+    text-align: center;
+    font-size: 26px;
+    font-weight: 600;
+    color: #012970;
+    font-family: "Nunito", sans-serif;
+    margin-bottom: 40px;
+  }
+
+  .comments .no-coms {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #012970;
+    font-family: "Nunito", sans-serif;
+    margin-bottom: 20px;
+  }
+  
+ .comments .user-comment {
+    position: relative;
+    width: 100%;
+    padding: 5px 36px 3px 45px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 8px 7px 10px rgb(1 41 112 / 10%);
+  }
+  
+ .comments .user-comment img {
+    vertical-align: top;
+    width: 32px;
+    height: 32px;
+    background-color: #7bb0ff;
+    border-radius: 50%;
+    margin-right: 20px;
+    float: left;
+  }
+  
+ .comments .user-comment header {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 75%;
+    line-height: 16px;
+  }
+  
+ .comments .user-comment header span {
+    color: #b4b9c8;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 25px;
+    line-height: 10px;
+  }
+  
+ .comments .user-comment .content {
+    margin: 5px 0 0 50px;
+    height: auto;
+    display: block;
+    overflow: auto;
+  }
+  
+ .comments .user-comment .content img {
+    display: block;
+    width: 100%;
+    border-radius: 0;
+    height: auto;
+  }
+
+ .comments ul {
+    display: block;
+    list-style: none;
+  }
+  
+ .comments ul li {
+    display: block;
+    padding-bottom: 40px;
+  }
+  
+ .comments ul li > ul {
+    padding-top: 40px;
+  }
+  
+ .comments ul li > ul li {
+    padding-bottom: 0;
+  }
+
+  .comments-wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  

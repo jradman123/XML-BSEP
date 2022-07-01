@@ -1,4 +1,8 @@
 <div class="displaySection">
+    <div class="post-button">
+        <button class="btn btn-outline-primary" (click)="openPostDialog()">Post something</button>
+    </div>
+    <hr>
     <div class="sectionOverflow">
         <div *ngFor="let item of Posts.Posts">
             <app-post [item]="item" class="profile"></app-post>

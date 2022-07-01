@@ -33,6 +33,7 @@ type PostServiceClient interface {
 	GetAllJobOffers(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetAllJobOffers, error)
 	GetAllReactionsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error)
 	GetAllCommentsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetAllCommentsResponse, error)
+	CheckLikedStatus(ctx context.Context, in *UserReactionRequest, opts ...grpc.CallOption) (*GetUserReactionResponse, error)
 }
 
 type postServiceClient struct {
@@ -142,6 +143,15 @@ func (c *postServiceClient) GetAllCommentsForPost(ctx context.Context, in *GetRe
 	return out, nil
 }
 
+func (c *postServiceClient) CheckLikedStatus(ctx context.Context, in *UserReactionRequest, opts ...grpc.CallOption) (*GetUserReactionResponse, error) {
+	out := new(GetUserReactionResponse)
+	err := c.cc.Invoke(ctx, "/post_service.PostService/checkLikedStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
@@ -157,6 +167,7 @@ type PostServiceServer interface {
 	GetAllJobOffers(context.Context, *Empty) (*GetAllJobOffers, error)
 	GetAllReactionsForPost(context.Context, *GetRequest) (*GetReactionsResponse, error)
 	GetAllCommentsForPost(context.Context, *GetRequest) (*GetAllCommentsResponse, error)
+	CheckLikedStatus(context.Context, *UserReactionRequest) (*GetUserReactionResponse, error)
 	MustEmbedUnimplementedPostServiceServer()
 }
 
@@ -196,6 +207,9 @@ func (UnimplementedPostServiceServer) GetAllReactionsForPost(context.Context, *G
 }
 func (UnimplementedPostServiceServer) GetAllCommentsForPost(context.Context, *GetRequest) (*GetAllCommentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommentsForPost not implemented")
+}
+func (UnimplementedPostServiceServer) CheckLikedStatus(context.Context, *UserReactionRequest) (*GetUserReactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckLikedStatus not implemented")
 }
 func (UnimplementedPostServiceServer) MustEmbedUnimplementedPostServiceServer() {}
 
@@ -408,6 +422,24 @@ func _PostService_GetAllCommentsForPost_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_CheckLikedStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserReactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).CheckLikedStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/post_service.PostService/checkLikedStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).CheckLikedStatus(ctx, req.(*UserReactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -458,6 +490,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "getAllCommentsForPost",
 			Handler:    _PostService_GetAllCommentsForPost_Handler,
+		},
+		{
+			MethodName: "checkLikedStatus",
+			Handler:    _PostService_CheckLikedStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

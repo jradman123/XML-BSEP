@@ -70,7 +70,8 @@ export class UserService {
     );
   }
 
-  getUserDetails(username: any) {
+  getUserDetails(username: string | null) {
+    console.log('evo me u metodi, username je ovde ' + username)
     return this._http.post<UserDetails>(
       'http://localhost:9090/users/user/details', {
       username

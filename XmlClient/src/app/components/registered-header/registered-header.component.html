@@ -8,8 +8,9 @@
   
     <div class="search-bar">
       <form class="search-form d-flex align-items-center">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        <input type="search" placeholder="Search"  (input)="emitMe($event)">
+        <button ><i class="bi bi-search search-bar-toggle"></i></button>
+
       </form>
     </div>
   
@@ -21,6 +22,20 @@
             <i class="fa fa-search"></i>
           </a>
         </li>
+
+        <li class="nav-item">
+  
+          <a class="nav-link nav-icon" [routerLink]="['/jobOffers']">
+            <i class="bi bi-briefcase"></i>
+          </a>
+          </li>
+
+          <li class="nav-item">
+  
+            <a class="nav-link nav-icon" [routerLink]="['/people']">
+              <i class="bi bi-people"></i>
+            </a>
+            </li>
   
         <li class="nav-item dropdown">
   

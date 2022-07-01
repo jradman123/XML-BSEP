@@ -1,8 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IPosts } from 'src/app/interfaces/post-request';
+import { UserDetails } from 'src/app/interfaces/user-details';
 import { PostService } from 'src/app/services/post-service/post.service';
+import { PostCreateFileComponent } from '../post-create-file/post-create-file.component';
 
 @Component({
   selector: 'app-posts-view',
@@ -10,15 +13,27 @@ import { PostService } from 'src/app/services/post-service/post.service';
   styleUrls: ['./posts-view.component.css']
 })
 export class PostsViewComponent implements OnInit {
-  Posts: IPosts
- 
+  
+  @Input()
+  username! : string;
+  Posts: IPosts;
+
+  
   constructor(
     private _service: PostService,
     private _snackBar: MatSnackBar,
+    private _matDialog : MatDialog
 
   ) { 
     this.Posts = {} as IPosts
+  }
+
+  ngOnInit(): void {
     
+   this.getPosts();
+  }
+
+  getPosts(){
     const getPostsObserver = {
       next: (res: IPosts) => {
         console.log(res);
@@ -34,11 +49,21 @@ export class PostsViewComponent implements OnInit {
         this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
       },
     }
-    this._service.GetAllPosts().subscribe(getPostsObserver)
-  }
-
-  ngOnInit(): void {
+    console.log(this.username);
+    this._service.GetAllPosts(this.username).subscribe(getPostsObserver);
   }
  
+  openPostDialog(){
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.id = 'modal-component';
+    const dialogRef = this._matDialog.open(PostCreateFileComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe({
+      next: (res) => {
+        console.log(res.data);
+        this.getPosts()
+      }
+    })
+  }
 }
 

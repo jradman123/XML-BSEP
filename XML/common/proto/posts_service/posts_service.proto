@@ -70,10 +70,24 @@ service PostService{
       get: "/post/{Id}/comments"
     };
   }
+  rpc checkLikedStatus(UserReactionRequest) returns(GetUserReactionResponse) {
+    option (google.api.http) = {
+      get: "/post/{Id}/{Username}/reaction"
+    };
+  }
 }
 
 message GetRequest {
   string Id = 1;
+}
+message UserReactionRequest {
+  string Id = 1;
+  string Username = 2;
+}
+message GetUserReactionResponse {
+  bool Liked = 1;
+  bool Neutral = 2;
+  bool Disliked = 3;
 }
 
 message GetResponse {
@@ -132,11 +146,10 @@ message User {
 }
 
 message Comment {
-  string UserId = 1;
-  string Username = 2;
-  string Name = 3;
-  string Surname = 4;
-  string CommentText = 5;
+  string Username = 1;
+  string FirstName = 2;
+  string LastName = 3;
+  string CommentText = 4;
 }
 
 message Links{

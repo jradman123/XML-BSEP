@@ -7,22 +7,27 @@ import { IPostRequest } from 'src/app/interfaces/post-request';
 })
 export class PostService {
 
+
   constructor(private _http: HttpClient,) {
   }
-  GetAllPosts() {
+  GetAllPosts(username : string) {
     return this._http.get<any>(
-      'http://localhost:9090/post/user/' + localStorage.getItem('username'),
+      'http://localhost:9090/post/user/' + username,
     );
   }
-
+  GetUserReactionToPost(username: string, Id: string) {
+    return this._http.get<any>(
+      'http://localhost:9090/post/' + Id + "/" + username + '/reaction'
+    );
+  }
   GetAllReactionsForPost(Id: string) {
     return this._http.get<any>(
       'http://localhost:9090/post/' + Id + '/reactions'
     );
   }
-  GetAllCommentsForPost(link: any) {
+  GetAllCommentsForPost(Id: any) {
     return this._http.get<any>(
-      'http://localhost:9090' + link
+      'http://localhost:9090/post/' + Id + '/comments'
     );
   }
 
