@@ -28,7 +28,7 @@ export class SettingsComponent implements OnInit {
   privateChecked! : boolean;
 
   constructor(private service: UserService, private dialog: MatDialog,
-    private clipboard: Clipboard, private _snackBar: MatSnackBar,private apiKeyService: ApiKeyService) { }
+    private clipboard: Clipboard, private _snackBar: MatSnackBar, private apiKeyService: ApiKeyService) { }
 
   ngOnInit(): void {
     this.service.check2FAStatus(this.username).subscribe((res) =>
@@ -40,8 +40,10 @@ export class SettingsComponent implements OnInit {
   changeStatus() {
     this.service.changePrivacyStatus(this.user.username, this.privateChecked ? "PRIVATE" : "PUBLIC").subscribe(
       res => {
-        // success bby, some cool note
-      }
+        this._snackBar.open('Privacy settings updated.', '', {
+          duration: 3000
+        });
+      },
     );
   }
 

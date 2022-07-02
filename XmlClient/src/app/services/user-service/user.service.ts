@@ -91,10 +91,10 @@ export class UserService {
     )
   }
 
-  changePrivacyStatus(username : string, status : string){
+  changePrivacyStatus(username : string, newStatus : string){
     return this._http.post<any>(
-      'http://localhost:9090/users/change-privacy',
-      {username, status}
+      'http://localhost:9090/users/user/changeStatus',
+      {username, newStatus}
     )
   }
 }
