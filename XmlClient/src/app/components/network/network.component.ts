@@ -20,13 +20,13 @@ export class NetworkComponent implements OnInit {
 
     this.userService.getUsers().subscribe(
       res => {
-        this.people = res.users;
+        this.people = res.users.filter( (user: any ) => !(user.username === localStorage.getItem('username')));
       }
     )
 
     this._connectionService.getUsersConnections(localStorage.getItem('username')!).subscribe(
       res => {
-        this.connections = res.users;
+        this.connections = res.users
       }
     );
 

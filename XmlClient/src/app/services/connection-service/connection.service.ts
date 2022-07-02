@@ -38,4 +38,12 @@ export class ConnectionService {
     );
   }
 
+  connectionStatus(senderUsername: string, recieverUsername: string){
+    return this._http.post<any>(
+      'http://localhost:9090/connection/status', {
+          "userSender": senderUsername,
+          "userReceiver": recieverUsername,
+      }
+    );
+  }
 }

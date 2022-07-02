@@ -28,6 +28,17 @@ export class PublicProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this._connectionService.connectionStatus(localStorage.getItem('username')!, this.username).subscribe(
+      res => {
+        if (res.connectionStatus === "CONNECTED"){
+          this.buttonText = "Following";
+        }
+        else if (res.connectionStatus === "REQUEST_SENT"){
+          this.buttonText = "Pending"
+        }
+        else this.buttonText = "Connect"
+      }
+    );
   }
 
   handleMe(searchText : string){
