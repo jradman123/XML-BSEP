@@ -66,7 +66,12 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand)
 			reply.Type = events.UserRolledBack
 		}
 		reply.Type = events.UserDeleted
-
+	case events.ChangeProfileStatus:
+		err := handler.service.ChangeProfileStatus(user)
+		if err != nil {
+			reply.Type = events.UserRolledBack
+		}
+		reply.Type = events.ProfileStatusChanged
 	default:
 		reply.Type = events.UnknownReply
 	}

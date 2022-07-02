@@ -425,5 +425,29 @@ func (u UserService) EditUser(userDetails *dto.UserDetails) (*model.User, error)
 	if err != nil {
 		return nil, err
 	}
+	err = u.orchestrator.EditConnectionUser(user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u UserService) ChangeProfileStatus(username string, newStatus string) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), username)
+	if err != nil {
+		return nil, err
+	}
+	user.ProfileStatus = model.ProfileStatus(newStatus)
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user status was not edited")
+	}
+	err = u.orchestrator.ChangeProfileStatus(user)
+	if err != nil {
+		return nil, err
+	}
 	return user, nil
 }

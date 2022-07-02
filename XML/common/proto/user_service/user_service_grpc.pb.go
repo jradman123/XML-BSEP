@@ -33,6 +33,7 @@ type UserServiceClient interface {
 	ShareJobOffer(ctx context.Context, in *ShareJobOfferRequest, opts ...grpc.CallOption) (*EmptyRequest, error)
 	GetUserDetails(ctx context.Context, in *GetUserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error)
 	EditUserDetails(ctx context.Context, in *UserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error)
+	ChangeProfileStatus(ctx context.Context, in *ChangeStatusRequest, opts ...grpc.CallOption) (*ChangeStatus, error)
 }
 
 type userServiceClient struct {
@@ -142,6 +143,15 @@ func (c *userServiceClient) EditUserDetails(ctx context.Context, in *UserDetails
 	return out, nil
 }
 
+func (c *userServiceClient) ChangeProfileStatus(ctx context.Context, in *ChangeStatusRequest, opts ...grpc.CallOption) (*ChangeStatus, error) {
+	out := new(ChangeStatus)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/ChangeProfileStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -157,6 +167,7 @@ type UserServiceServer interface {
 	ShareJobOffer(context.Context, *ShareJobOfferRequest) (*EmptyRequest, error)
 	GetUserDetails(context.Context, *GetUserDetailsRequest) (*UserDetails, error)
 	EditUserDetails(context.Context, *UserDetailsRequest) (*UserDetails, error)
+	ChangeProfileStatus(context.Context, *ChangeStatusRequest) (*ChangeStatus, error)
 	MustEmbedUnimplementedUserServiceServer()
 }
 
@@ -196,6 +207,9 @@ func (UnimplementedUserServiceServer) GetUserDetails(context.Context, *GetUserDe
 }
 func (UnimplementedUserServiceServer) EditUserDetails(context.Context, *UserDetailsRequest) (*UserDetails, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditUserDetails not implemented")
+}
+func (UnimplementedUserServiceServer) ChangeProfileStatus(context.Context, *ChangeStatusRequest) (*ChangeStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeProfileStatus not implemented")
 }
 func (UnimplementedUserServiceServer) MustEmbedUnimplementedUserServiceServer() {}
 
@@ -408,6 +422,24 @@ func _UserService_EditUserDetails_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ChangeProfileStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangeProfileStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/ChangeProfileStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangeProfileStatus(ctx, req.(*ChangeStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -458,6 +490,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EditUserDetails",
 			Handler:    _UserService_EditUserDetails_Handler,
+		},
+		{
+			MethodName: "ChangeProfileStatus",
+			Handler:    _UserService_ChangeProfileStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
