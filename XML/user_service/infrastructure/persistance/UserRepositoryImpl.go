@@ -63,7 +63,7 @@ func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (*model.User,
 	fmt.Print(result)
 	regUser := &model.User{}
 	r.db.First(&regUser, user.ID)
-	return regUser, nil
+	return regUser, result.Error
 }
 
 func (r UserRepositoryImpl) UserExists(username string) error {

@@ -11,4 +11,5 @@ type NewUser struct {
 	Gender        string `json:"gender" validate:"oneof=MALE FEMALE OTHER"`
 	DateOfBirth   string `json:"dateOfBirth" validate:"required"`
 	RecoveryEmail string `json:"recoveryEmail" validate:"required,email"`
+	ProfileStatus string `json:"profileStatus"`
 }

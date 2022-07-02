@@ -264,6 +264,7 @@ message RegisterUser {
   string gender = 7;
   string dateOfBirth = 8;
   string recoveryEmail = 9;
+  string profileStatus = 10;
 }
 
 message UserPersonalDetailsRequest{
@@ -289,5 +290,4 @@ message UserProfessionalDetails{
   repeated Interest interests = 3;
   repeated Education educations = 4;
   repeated Experience experiences = 5;
-
 }

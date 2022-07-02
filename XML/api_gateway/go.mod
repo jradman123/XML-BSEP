@@ -14,6 +14,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.18
 	github.com/sirupsen/logrus v1.8.1
 	github.com/trycourier/courier-go/v2 v2.5.0
+	go.mongodb.org/mongo-driver v1.9.1
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 	google.golang.org/grpc v1.46.2
 	gopkg.in/go-playground/validator.v9 v9.31.0
