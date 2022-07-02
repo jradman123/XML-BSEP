@@ -19,7 +19,7 @@
                 <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
               </div><br>
               <div class="mt-2">
-                <button class="btn btn-outline-primary" *ngIf="isLoggedIn">Connect</button>
+                <button class="btn btn-outline-primary" *ngIf="isLoggedIn" (click)="connect(user.username)">{{buttonText}}</button>
                 <button class="btn btn-outline-primary" *ngIf="!isLoggedIn" [routerLink]="['/register']">Join to connect</button>
 
               </div>

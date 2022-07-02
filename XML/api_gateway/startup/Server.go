@@ -2,6 +2,7 @@ package startup
 
 import (
 	"common/module/logger"
+	connGw "common/module/proto/connection_service"
 	postsGw "common/module/proto/posts_service"
 	userGw "common/module/proto/user_service"
 	"context"
@@ -49,12 +50,17 @@ func (server *Server) initHandlers() {
 	}
 	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
 	postsEndpoint := fmt.Sprintf("%s:%s", server.config.PostsHost, server.config.PostsPort)
+	connectionsEndpoint := fmt.Sprintf("%s:%s", server.config.ConnectionsHost, server.config.ConnectionsPort)
 
 	err := userGw.RegisterUserServiceHandlerFromEndpoint(context.TODO(), server.mux, userEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
 	err = postsGw.RegisterPostServiceHandlerFromEndpoint(context.TODO(), server.mux, postsEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+	err = connGw.RegisterConnectionServiceHandlerFromEndpoint(context.TODO(), server.mux, connectionsEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
@@ -81,6 +87,8 @@ func (server *Server) initCustomHandlers() {
 
 	authHandler := handlers.NewAuthenticationHandler(l, logInfo, logError, userService, tfauthService, validator, passwordUtil, passwordlessService)
 	authHandler.Init(server.mux)
+	userFeedHandler := handlers.NewUserFeedHandler(logInfo, logError, server.config)
+	userFeedHandler.Init(server.mux)
 }
 
 func (server *Server) Start() {

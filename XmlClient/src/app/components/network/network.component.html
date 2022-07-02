@@ -1,0 +1,55 @@
+<app-registered-header (searchInput)="handleMe($event)"></app-registered-header>
+
+<main class="main">
+  
+    <section class="section profile">
+      <div class="row">
+        <div class="col-xl-3">
+  
+          <div class="card  card-ride">
+            <div class="sidenav">
+              <a  href="/network#connections" class="block">Connections</a>
+              <a href="/network#invitations" class="block">Invitations</a>
+              <a href="/network#suggestions" class="block">Suggestions</a>
+            </div>
+          </div>
+        </div>
+  
+        <div class="col-xl-9">
+  
+          <div class="card card-ride">
+            <div id="invitations" class="card-body pt-3">
+              <h2 class="nw-title">Pending invitations</h2>
+              <div *ngFor="let invitation of invitations | profileSearch : searchText ">
+                <app-invitation [profile]="invitation" ></app-invitation>
+            </div>
+            </div>
+          </div>
+          <br>
+          <hr>
+          <br>
+          <div class="card  card-ride">
+            <div id="connections" class="card-body pt-3">
+              <h2 class="nw-title">My connections</h2>
+              <div  *ngFor="let connection of connections | profileSearch : searchText ">
+                <app-profile-preview [profile]="connection" ></app-profile-preview>
+            </div>
+            </div>
+          </div>
+          <br>
+          <hr>
+          <br>
+          <div class="card  card-ride">
+            <div id="suggestions" class="card-body pt-3">
+              <h2 class="nw-title">Suggested users</h2>
+              <div  *ngFor="let person of people | profileSearch : searchText ">
+                <app-profile-preview [profile]="person" ></app-profile-preview>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+  </main>
+

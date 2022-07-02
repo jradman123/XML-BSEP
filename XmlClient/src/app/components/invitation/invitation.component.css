@@ -1,0 +1,62 @@
+.info {
+    justify-content: flex-start;
+}
+
+.bdr {
+    border: 1px solid #b7d0db;
+    border-radius: 1%;
+    padding: 10px 0 0 5px
+}
+
+.card {
+  max-width: 900px;
+  margin-bottom: 30px;
+  border: none;
+  border-radius: 5px;
+  box-shadow:  8px 10px 20px rgba(1, 41, 112, 0.1);
+}
+
+.accepted {
+  line-height: 30px;
+  font-size: 20px;
+  font-weight: 500;
+  color: #012970;
+  margin-top: 2px;
+}
+
+.info h1 {
+    margin-bottom: 10px;
+    line-height: 30px;
+    font-size: 24px;
+    font-weight: 500;
+    color: #012970;
+  }
+
+  .info h4 {
+    color: #444444;
+    font-size: 15px;
+    line-height: 24px;
+    letter-spacing: 1px;
+  }
+
+  .connect-button {
+    margin: 0;
+    transform: translateY(30%);
+  }
+
+  .icon-button {
+    border-radius: 50%;
+  }
+
+  .green {
+    background-color: #6acf56da;
+  }
+
+  .red {
+    background-color: #e92f2fcb;
+  }
+  .avatar {
+    border-radius: 50%; 
+    width:70px;
+    float: right
+  }
