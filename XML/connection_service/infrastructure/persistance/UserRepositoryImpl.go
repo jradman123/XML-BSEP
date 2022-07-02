@@ -179,7 +179,7 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 		MATCH (u1:UserNode)   MATCH (u2:UserNode) WHERE u1.uid = "3" match (u2)-[r2:CONNECTION {status:"REQUEST_SENT"}]->(u1) SET r2.status="CONNECTED" CREATE (u1)-[r1:CONNECTION {status: "CONNECTED"}]->(u2)
 	*/
 
-	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
 		fmt.Println("UUID " + m.UserUID)
 		if checkIfUserExist(m.UserUID, tx) {
@@ -202,28 +202,34 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 				fmt.Println(err)
 				return nil, err
 			}
-			if results.Record().Values[0].(string) == "PUBLIC" {
-				dateNow := time.Now().Local().Unix()
-				_, goldErr := tx.Run("MATCH (u1:UserNode)   MATCH (u2:UserNode) WHERE u1.uid =$oldPrivateUser match (u1)-[r2:CONNECTION {status:$oldStatus}]->(u2) SET r2.status=$newStatus CREATE (u2)-[r1:CONNECTION {status:$newStatus, date: $date}]->(u1)",
-					map[string]interface{}{
-						"oldPrivateUser": m.UserUID,
-						"oldStatus":      "REQUEST_SENT",
-						"newStatus":      "CONNECTED",
-						"date":           dateNow,
-					})
-				if goldErr != nil {
-					return nil, goldErr
+			fmt.Println("kao nasao je status usera")
+			if results.Next() {
+				if results.Record().Values[0].(string) == "PUBLIC" {
+					fmt.Println("checkpoint 1")
+					dateNow := time.Now().Local().Unix()
+					_, goldErr := tx.Run("MATCH (u1:UserNode)   MATCH (u2:UserNode) WHERE u1.uid =$oldPrivateUser match (u1)-[r2:CONNECTION {status:$oldStatus}]->(u2) SET r2.status=$newStatus CREATE (u2)-[r1:CONNECTION {status:$newStatus, date: $date}]->(u1)",
+						map[string]interface{}{
+							"oldPrivateUser": m.UserUID,
+							"oldStatus":      "REQUEST_SENT",
+							"newStatus":      "CONNECTED",
+							"date":           dateNow,
+						})
+					fmt.Println("checkpoint 2")
+					if goldErr != nil {
+						return nil, goldErr
+					}
+
 				}
-
 			}
-
-			return nil, nil
 		} else {
 			fmt.Println("NEPOSTOJI")
 			return nil, nil
 		}
 
+		return true, nil
 	})
+	fmt.Println(result)
+	fmt.Println("checkpoint 4")
 	if err != nil {
 		return err
 	}
