@@ -46,4 +46,14 @@ export class ConnectionService {
       }
     );
   }
+
+  blockUser(senderUsername: string, recieverUsername: string){
+    //   return this._http.post<any>(
+    //     'http://localhost:9090/connection/block', {
+    //         "userSender": senderUsername,
+    //         "userReceiver": recieverUsername,
+    //     }
+    //   );
+    // }
+  }
 }
