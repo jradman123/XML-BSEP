@@ -4,3 +4,5 @@
 {"data":{"userSenderId":"3"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-27T00:20:09Z"}
 {"data":{"userSenderId":"3"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-27T00:22:51Z"}
 {"data":{"userSenderId":"3"},"file":"ConnectionHandler.go:211","func":"connection/module/infrastructure/handlers.ConnectionHandler.AcceptConnection","level":"error","msg":"ERR:CREATE CONNECTION","time":"2022-06-27T12:28:11Z"}
+{"data":{"username":"marijana"},"file":"ConnectionHandler.go:277","func":"connection/module/infrastructure/handlers.ConnectionHandler.ConnectionStatusForUsers","level":"error","msg":"ERR:GET USERS","time":"2022-07-02T13:30:20Z"}
+{"data":{"username":"marijana"},"file":"ConnectionHandler.go:277","func":"connection/module/infrastructure/handlers.ConnectionHandler.ConnectionStatusForUsers","level":"error","msg":"ERR:GET USERS","time":"2022-07-02T13:31:47Z"}
