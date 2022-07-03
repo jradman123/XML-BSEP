@@ -187,9 +187,6 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection)
 
 			} else if status == "CONNECTED" {
 				connectionStatus = "CONNECTION EXISTS"
-				//if err != nil {
-				//	return nil, err
-				//}
 			}
 
 			return &dto.ConnectionResponse{
@@ -279,7 +276,6 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
 		if !checkIfUserExist(userUid, tx) {
-			fmt.Println("NE POSTOJI")
 			return &model.User{
 				UserUID: "",
 				Status:  "",
@@ -378,4 +374,171 @@ func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, rece
 	}
 
 	return result.(*dto.ConnectionResponse), err
+}
+
+func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection) (*dto.ConnectionResponse, error) {
+	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+			r.logError.Logger.Errorf(neo4jSessionError)
+		}
+	}(session)
+
+	result, resultErr := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		replayStatus := ""
+		if checkIfUserExist(con.UserOneUID, tx) && checkIfUserExist(con.UserTwoUID, tx) {
+
+			records, err := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u1)-[r1:CONNECTION]->(u2) return r1.status", map[string]interface{}{
+				"requestSender": con.UserOneUID,
+				"requestGet":    con.UserTwoUID,
+			})
+			if err != nil {
+				return &dto.ConnectionResponse{
+					UserOneUID:       "",
+					UserTwoUID:       "",
+					ConnectionStatus: "",
+				}, err
+			}
+
+			if records.Next() {
+				status := records.Record().Values[0].(string)
+				if status == "CONNECTED" {
+					_, err1 := tx.Run("MATCH (u1:UserNode {uid:$requestSender})  MATCH (u2:UserNode {uid:$requestGet}) match (u1)-[r2:CONNECTION ]->(u2) match (u2)-[r1:CONNECTION ]->(u1) SET r2.status=$blockStatus , r1.status=$blockStatus", map[string]interface{}{
+						"requestSender": con.UserOneUID,
+						"requestGet":    con.UserTwoUID,
+						"blockStatus":   "BLOCKED",
+					})
+
+					if err1 != nil {
+						replayStatus = "ERROR"
+						return &dto.ConnectionResponse{
+							UserOneUID:       "",
+							UserTwoUID:       "",
+							ConnectionStatus: "",
+						}, err1
+					}
+					replayStatus = "BLOCKED"
+					return &dto.ConnectionResponse{
+						UserOneUID:       con.UserOneUID,
+						UserTwoUID:       con.UserTwoUID,
+						ConnectionStatus: "BLOCKED",
+					}, nil
+				} else if status == "REQUEST_SENT" {
+					dateNow := time.Now().Local().Unix()
+					_, err1 := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet match (u1)-[r2:CONNECTION]->(u2) SET r2.status=$blockStatus CREATE (u2)-[r1:CONNECTION {status:$blockStatus, date: $date}]->(u1)", map[string]interface{}{
+						"requestSender": con.UserOneUID,
+						"requestGet":    con.UserTwoUID,
+						"blockStatus":   "BLOCKED",
+						"date":          dateNow,
+					})
+
+					if err1 != nil {
+						replayStatus = "ERROR"
+						return &dto.ConnectionResponse{
+							UserOneUID:       "",
+							UserTwoUID:       "",
+							ConnectionStatus: "",
+						}, err1
+					}
+					replayStatus = "BLOCKED"
+					return &dto.ConnectionResponse{
+						UserOneUID:       con.UserOneUID,
+						UserTwoUID:       con.UserTwoUID,
+						ConnectionStatus: "BLOCKED",
+					}, nil
+				}
+
+			} else {
+				recordsNew, errr := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u2)-[r1:CONNECTION]->(u1) return r1.status", map[string]interface{}{
+					"requestSender": con.UserOneUID,
+					"requestGet":    con.UserTwoUID,
+				})
+				if errr != nil {
+					replayStatus = "ERROR"
+					return &dto.ConnectionResponse{
+						UserOneUID:       "",
+						UserTwoUID:       "",
+						ConnectionStatus: "",
+					}, errr
+				}
+
+				if recordsNew.Next() {
+					statusNew := recordsNew.Record().Values[0].(string)
+					if statusNew == "REQUEST_SENT" {
+						dateNow := time.Now().Local().Unix()
+						_, err1 := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet match (u2)-[r2:CONNECTION]->(u1) SET r2.status=$blockStatus CREATE (u1)-[r1:CONNECTION {status:$blockStatus, date: $date}]->(u2)", map[string]interface{}{
+							"requestSender": con.UserOneUID,
+							"requestGet":    con.UserTwoUID,
+							"blockStatus":   "BLOCKED",
+							"date":          dateNow,
+						})
+
+						if err1 != nil {
+							replayStatus = "ERROR"
+							return &dto.ConnectionResponse{
+								UserOneUID:       "",
+								UserTwoUID:       "",
+								ConnectionStatus: "",
+							}, err1
+						}
+						replayStatus = "BLOCKED"
+						return &dto.ConnectionResponse{
+							UserOneUID:       con.UserOneUID,
+							UserTwoUID:       con.UserTwoUID,
+							ConnectionStatus: "BLOCKED",
+						}, nil
+					}
+				} else {
+					dateNow := time.Now().Local().Unix()
+					_, err1 := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet CREATE (u1)-[r1:CONNECTION {status:$blockStatus, date: $date}]->(u2) CREATE (u2)-[r2:CONNECTION {status:$blockStatus, date: $date}]->(u1)", map[string]interface{}{
+						"requestSender": con.UserOneUID,
+						"requestGet":    con.UserTwoUID,
+						"blockStatus":   "BLOCKED",
+						"date":          dateNow,
+					})
+
+					if err1 != nil {
+						replayStatus = "ERROR"
+						return &dto.ConnectionResponse{
+							UserOneUID:       "",
+							UserTwoUID:       "",
+							ConnectionStatus: "",
+						}, err1
+					}
+					replayStatus = "BLOCKED"
+					return &dto.ConnectionResponse{
+						UserOneUID:       con.UserOneUID,
+						UserTwoUID:       con.UserTwoUID,
+						ConnectionStatus: "BLOCKED",
+					}, nil
+				}
+			}
+
+		} else {
+			return &dto.ConnectionResponse{
+				UserOneUID:       "",
+				UserTwoUID:       "",
+				ConnectionStatus: "",
+			}, errors.New("user does not exist")
+
+		}
+		return &dto.ConnectionResponse{
+			UserOneUID:       con.UserOneUID,
+			UserTwoUID:       con.UserTwoUID,
+			ConnectionStatus: replayStatus,
+		}, nil
+
+	})
+
+	if resultErr != nil {
+		return &dto.ConnectionResponse{
+			UserOneUID:       "",
+			UserTwoUID:       "",
+			ConnectionStatus: "",
+		}, resultErr
+	}
+
+	return result.(*dto.ConnectionResponse), resultErr
 }
