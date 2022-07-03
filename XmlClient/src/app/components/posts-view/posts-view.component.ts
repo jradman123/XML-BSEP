@@ -17,6 +17,7 @@ export class PostsViewComponent implements OnInit {
   @Input()
   username! : string;
   Posts: IPosts;
+  showButton = false;
 
   
   constructor(
@@ -30,6 +31,8 @@ export class PostsViewComponent implements OnInit {
 
   ngOnInit(): void {
     
+    this.showButton = this.username === localStorage.getItem('username')
+
    this.getPosts();
   }
 

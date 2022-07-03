@@ -19,7 +19,7 @@ export class PublicProfileComponent implements OnInit {
   username! : string;
   isLoggedIn = localStorage.getItem('token') !== null;
   buttonText = ""
-
+  status = ""
 
   constructor(private userService : UserService, private _router : Router, private _connectionService : ConnectionService) {
     this.username = this._router.url.substring(16) ?? '';
@@ -30,6 +30,9 @@ export class PublicProfileComponent implements OnInit {
   ngOnInit(): void {
     this._connectionService.connectionStatus(localStorage.getItem('username')!, this.username).subscribe(
       res => {
+
+        this.status = res.connectionStatus
+
         if (res.connectionStatus === "BLOCKED"){
           this._router.navigate(['/404']);
         }

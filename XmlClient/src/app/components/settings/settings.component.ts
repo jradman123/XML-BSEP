@@ -38,6 +38,8 @@ export class SettingsComponent implements OnInit {
   }
 
   changeStatus() {
+    console.log(this.privateChecked);
+    
     this.privateChecked = !this.privateChecked
     this.service.changePrivacyStatus(this.user.username, this.privateChecked ? "PRIVATE" : "PUBLIC").subscribe(
       res => {
