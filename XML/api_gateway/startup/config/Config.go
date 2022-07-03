@@ -3,25 +3,30 @@ package config
 import "os"
 
 type Config struct {
-	Port       string
-	UserHost   string
-	UserPort   string
-	PostsHost  string
-	PostsPort  string
-	UserDBHost string
-	UserDBPort string
-	UserDBName string
-	UserDBUser string
-	UserDBPass string
+	Port        string
+	UserHost    string
+	UserPort    string
+	PostsHost   string
+	PostsPort   string
+	UserDBHost  string
+	UserDBPort  string
+	UserDBName  string
+	UserDBUser  string
+	UserDBPass  string
+	MessageHost string
+	MessagePort string
 }
 
 func NewConfig() *Config {
 	return &Config{
-		Port:       os.Getenv("GATEWAY_PORT"),
-		UserHost:   os.Getenv("USER_SERVICE_HOST"),
-		UserPort:   os.Getenv("USER_SERVICE_PORT"),
-		PostsHost:  os.Getenv("POST_SERVICE_HOST"),
-		PostsPort:  os.Getenv("POST_SERVICE_PORT"),
+		Port:        os.Getenv("GATEWAY_PORT"),
+		UserHost:    os.Getenv("USER_SERVICE_HOST"),
+		UserPort:    os.Getenv("USER_SERVICE_PORT"),
+		PostsHost:   os.Getenv("POST_SERVICE_HOST"),
+		PostsPort:   os.Getenv("POST_SERVICE_PORT"),
+		MessageHost: os.Getenv("MESSAGE_SERVICE_HOST"),
+		MessagePort: os.Getenv("MESSAGE_SERVICE_PORT"),
+
 		UserDBHost: os.Getenv("USER_DB_HOST"),
 		UserDBPort: os.Getenv("USER_DB_PORT"),
 		UserDBName: os.Getenv("USER_DB_NAME"),

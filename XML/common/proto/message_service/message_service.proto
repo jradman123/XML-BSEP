@@ -26,6 +26,16 @@ service MessageService{
       body: "Message"
     };
   }
+  rpc GetAll(Empty) returns(GetAllResponse) {
+    option (google.api.http) = {
+      get: "/messages"
+    };
+  }
+
+}
+
+message GetAllResponse {
+  repeated Message messages = 1;
 }
 message GetRequest {
   string Username = 1;
