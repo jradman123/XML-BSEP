@@ -81,6 +81,12 @@ service UserService{
       body: "userDetails"
     };
   }
+  rpc ChangeProfileStatus(ChangeStatusRequest) returns(ChangeStatus) {
+    option (google.api.http) = {
+      post: "/users/user/changeStatus"
+      body: "changeStatus"
+    };
+  }
 }
 
 message GetUserDetailsRequest{
@@ -104,6 +110,7 @@ message UserDetails{
   repeated Interest interests = 10;
   repeated Education educations = 11;
   repeated Experience experiences = 12;
+  string profileStatus = 13;
 }
 
 message Skill{
@@ -251,4 +258,13 @@ message RegisterUser {
   string dateOfBirth = 8;
   string recoveryEmail = 9;
   string profileStatus = 10;
+}
+
+message ChangeStatusRequest{
+  ChangeStatus changeStatus = 1;
+}
+
+message ChangeStatus {
+  string username = 1;
+  string newStatus = 2;
 }

@@ -264,18 +264,19 @@ func MapUserToUserDetails(user *model.User) *pb.UserDetails {
 	}
 
 	userDetails := &pb.UserDetails{
-		Username:    user.Username,
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Gender:      mapGenderToString(user.Gender),
-		DateOfBirth: user.DateOfBirth.String(),
-		Biography:   user.Biography,
-		Skills:      skills,
-		Interests:   interests,
-		Experiences: experiences,
-		Educations:  educations,
+		Username:      user.Username,
+		Email:         user.Email,
+		PhoneNumber:   user.PhoneNumber,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Gender:        mapGenderToString(user.Gender),
+		DateOfBirth:   user.DateOfBirth.String(),
+		Biography:     user.Biography,
+		Skills:        skills,
+		Interests:     interests,
+		Experiences:   experiences,
+		Educations:    educations,
+		ProfileStatus: string(user.ProfileStatus),
 	}
 	return userDetails
 }

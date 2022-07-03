@@ -44,7 +44,7 @@ func (server *Server) Start() {
 	connectionRepo := server.InitConnectionRepository(neoClient, logInfo, logError)
 	connectionService := server.InitConnectionService(connectionRepo, logInfo, logError)
 
-	userRepo := server.InitUserRepository(neoClient, logInfo, logError)
+	userRepo := server.InitUserRepository(neoClient, logInfo, logError, connectionRepo)
 	userService := server.InitUserService(userRepo, logInfo, logError)
 
 	connectionHandler := server.InitConnectionHandler(connectionService, userService, logInfo, logError)
@@ -110,8 +110,8 @@ func (server *Server) InitUserService(repo repositories.UserRepository, logInfo 
 	return services.NewUserService(repo, logInfo, logError)
 }
 
-func (server *Server) InitUserRepository(client *neo4j.Driver, logInfo *logger.Logger, logError *logger.Logger) repositories.UserRepository {
-	return persistance.NewUserRepositoryImpl(client, logInfo, logError)
+func (server *Server) InitUserRepository(client *neo4j.Driver, logInfo *logger.Logger, logError *logger.Logger, connRepo repositories.ConnectionRepository) repositories.UserRepository {
+	return persistance.NewUserRepositoryImpl(client, logInfo, logError, connRepo)
 }
 
 func (server *Server) InitSubscriber(subject string, queueGroup string) saga.Subscriber {

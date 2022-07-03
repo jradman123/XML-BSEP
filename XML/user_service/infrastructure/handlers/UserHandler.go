@@ -492,3 +492,29 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	}
 	return api.MapUserToUserDetails(editedUser), nil
 }
+
+func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.ChangeStatusRequest) (*pb.ChangeStatus, error) {
+	policy := bluemonday.UGCPolicy()
+	newStatus := strings.TrimSpace(policy.Sanitize(request.ChangeStatus.NewStatus))
+	username := strings.TrimSpace(policy.Sanitize(request.ChangeStatus.Username))
+
+	if newStatus == "" || username == "" {
+		u.logError.Logger.Errorf("ERR:XSS")
+		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
+	} else {
+		u.logInfo.Logger.Infof("INFO:Handling EditUserDetails")
+	}
+
+	err := u.service.UserExists(username)
+	if err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	editedUser, er := u.service.ChangeProfileStatus(username, newStatus)
+	if er != nil {
+		fmt.Println(er)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.ChangeStatus{NewStatus: string(editedUser.ProfileStatus), Username: username}, nil
+}

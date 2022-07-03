@@ -1,6 +1,6 @@
 <div class="displaySection">
     <div class="post-button">
-        <button class="btn btn-outline-primary" (click)="openPostDialog()">Post something</button>
+        <button *ngIf = "showButton" class="btn btn-outline-primary" (click)="openPostDialog()">Post something</button>
     </div>
     <hr>
     <div class="sectionOverflow">

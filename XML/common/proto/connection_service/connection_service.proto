@@ -39,6 +39,13 @@ service ConnectionService{
       body: "connection"
     };
   }
+
+  rpc BlockUser(NewConnection) returns (ConnectionResponse) {
+    option (google.api.http) = {
+      post: "/connection/block"
+      body: "connection"
+    };
+  }
 }
 
 message EmptyRequest{}

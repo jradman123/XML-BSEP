@@ -38,3 +38,8 @@ func (s ConnectionService) GetAllConnectionRequestsForUser(userUid string) (user
 func (s ConnectionService) ConnectionStatusForUsers(senderId string, receiverId string) (*dto.ConnectionResponse, error) {
 	return s.connectionRepo.ConnectionStatusForUsers(senderId, receiverId)
 }
+
+func (s ConnectionService) BlockUser(con *model.Connection) (*dto.ConnectionResponse, error) {
+	response, err := s.connectionRepo.BlockUser(con)
+	return response, err
+}

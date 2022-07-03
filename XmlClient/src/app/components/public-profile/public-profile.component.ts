@@ -18,8 +18,8 @@ export class PublicProfileComponent implements OnInit {
   searchText : string = "";
   username! : string;
   isLoggedIn = localStorage.getItem('token') !== null;
-  buttonText = "Connect"
-
+  buttonText = ""
+  status = ""
 
   constructor(private userService : UserService, private _router : Router, private _connectionService : ConnectionService) {
     this.username = this._router.url.substring(16) ?? '';
@@ -30,7 +30,13 @@ export class PublicProfileComponent implements OnInit {
   ngOnInit(): void {
     this._connectionService.connectionStatus(localStorage.getItem('username')!, this.username).subscribe(
       res => {
-        if (res.connectionStatus === "CONNECTED"){
+
+        this.status = res.connectionStatus
+
+        if (res.connectionStatus === "BLOCKED"){
+          this._router.navigate(['/404']);
+        }
+        else if (res.connectionStatus === "CONNECTED"){
           this.buttonText = "Following";
         }
         else if (res.connectionStatus === "REQUEST_SENT"){
@@ -62,6 +68,16 @@ export class PublicProfileComponent implements OnInit {
         let status = res.connectionStatus;
         status === "CONNECTED" ? this.buttonText = "Following" : this.buttonText = "Pending";
 
+      }
+    )
+  }
+
+  block(username:string){
+    this._connectionService.blockUser(localStorage.getItem('username')!, username).subscribe(
+      res => {
+        if (res.connectionStatus === "BLOCKED"){
+          this._router.navigate(['/network']);
+        }
       }
     )
   }
