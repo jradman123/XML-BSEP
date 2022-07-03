@@ -73,12 +73,13 @@ export class PublicProfileComponent implements OnInit {
   }
 
   block(username:string){
-    // this._connectionService.blockUser(localStorage.getItem('username')!, username).subscribe(
-    //   res => {
-    //     // mat snack we did it
-    //     this._router.navigate(['/feed']);
-    //   }
-    // )
+    this._connectionService.blockUser(localStorage.getItem('username')!, username).subscribe(
+      res => {
+        if (res.connectionStatus === "BLOCKED"){
+          this._router.navigate(['/network']);
+        }
+      }
+    )
   }
 
 }

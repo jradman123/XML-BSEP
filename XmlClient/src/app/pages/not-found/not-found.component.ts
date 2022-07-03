@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NotFoundComponent implements OnInit {
 
+  goTo = localStorage.getItem('token') === null ? '/' : '/network';
   constructor() { }
 
   ngOnInit(): void {
