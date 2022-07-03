@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "common/module/notification_service";
+
+package notification_service;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service NotificationService{
+  rpc getAllSent(GetRequest) returns(Empty) {
+    option (google.api.http) = {
+      get: "/messages/{username}/sent"
+    };
+  }
+
+}
+message GetRequest {
+  string username = 1;
+}
+
+message Empty {}

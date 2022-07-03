@@ -4,11 +4,13 @@ import (
 	"common/module/interceptor"
 	"common/module/logger"
 	messagesProto "common/module/proto/message_service"
+	notificationProto "common/module/proto/notification_service"
 	saga "common/module/saga/messaging"
 	"common/module/saga/messaging/nats"
 	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/pusher/pusher-http-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"log"
@@ -37,9 +39,13 @@ func (server *Server) Start() {
 	logError := logger.InitializeLogger("post-service", context.Background(), "Error")
 
 	mongoClient := server.InitMongoClient()
+	notificationPusher := server.InitNotificationPusher()
 
 	messageRepo := server.InitMessageRepo(mongoClient)
 	messageService := server.InitMessageService(messageRepo, logInfo, logError)
+
+	notificationRepo := server.InitNotificationRepo(mongoClient)
+	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo)
 
 	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
@@ -47,9 +53,10 @@ func (server *Server) Start() {
 	userService := server.InitUserService(userRepo, logInfo, logError)
 
 	messageHandler := server.InitMessageHandler(messageService, userService, logInfo, logError)
+	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService)
 	server.InitCreateUserCommandHandler(userService, messageService, replyPublisher, commandSubscriber)
 
-	server.StartGrpcServer(messageHandler, logError)
+	server.StartGrpcServer(messageHandler, notificationHandler, logError)
 }
 
 func (server *Server) InitMongoClient() *mongo.Client {
@@ -111,7 +118,7 @@ func (server *Server) InitCreateUserCommandHandler(userService *application.User
 	return handler
 }
 
-func (server *Server) StartGrpcServer(messageHandler *handlers.MessageHandler, logError *logger.Logger) {
+func (server *Server) StartGrpcServer(messageHandler *handlers.MessageHandler, notificationHandler *handlers.NotificationHandler, logError *logger.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -121,8 +128,32 @@ func (server *Server) StartGrpcServer(messageHandler *handlers.MessageHandler, l
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(intercept.Unary()))
 	messagesProto.RegisterMessageServiceServer(grpcServer, messageHandler)
+	notificationProto.RegisterNotificationServiceServer(grpcServer, notificationHandler)
 
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
+}
+
+func (server *Server) InitNotificationPusher() pusher.Client {
+	pusherClient := pusher.Client{
+		AppID:   server.config.NotificationAppID,
+		Key:     server.config.NotificationKey,
+		Secret:  server.config.NotificationSecret,
+		Cluster: server.config.NotificationCluster,
+		Secure:  server.config.NotificationSecure,
+	}
+	return pusherClient
+}
+
+func (server *Server) InitNotificationRepo(client *mongo.Client) repositories.NotificationRepository {
+	return persistence.NewNotificationRepositoryImpl(client)
+}
+
+func (server *Server) InitNotificationService(info *logger.Logger, logError *logger.Logger, repo interface{}) *application.NotificationService {
+	return application.NewNotificationService(info, logError, repo)
+}
+
+func (server *Server) InitNotificationHandler(info *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, service *application.NotificationService) *handlers.NotificationHandler {
+	return handlers.NewNotificationHandler(info, logError, notificationPusher, service)
 }
