@@ -80,6 +80,7 @@ import { PublicProfileComponent } from './components/public-profile/public-profi
 import { NonregisteredSearchHeaderComponent } from './components/nonregistered-search-header/nonregistered-search-header.component';
 import { NetworkComponent } from './components/network/network.component';
 import { InvitationComponent } from './components/invitation/invitation.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 
 
@@ -119,6 +120,7 @@ import { InvitationComponent } from './components/invitation/invitation.componen
     NonregisteredSearchHeaderComponent,
     NetworkComponent,
     InvitationComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,

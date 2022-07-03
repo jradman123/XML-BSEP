@@ -1,12 +1,12 @@
-<form>
+<form style="font-size:16px">
     <div class="row mb-3">
       <label for="fullName" class="col-md-3 col-lg-3 col-form-label">Two
         factor
         authentication</label>
-      <div class="col-md-4 col-lg-4">
+      <div class="col-md-4 col-lg-4  mt-1">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="changesMade" (click)="enable2fa($event)" [checked]="isChecked"  name="checked">
-          <label class="form-check-label" for="changesMade">
+          <label class="form-check-label custom-lab" for="changesMade">
             Two factor authentication is {{ isChecked ? 'enabled' : 'disabled'}}
           </label>
         </div>
@@ -30,10 +30,10 @@
     <hr>
     <div class="row mb-3">
       <label for="fullName" class="col-md-3 col-lg-3 col-form-label">API key</label>
-      <div class="col-md-8 col-lg-9">
+      <div class="col-md-8 col-lg-9  mt-1">
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="changesMade" (click)="generate()">
-          <label class="form-check-label" for="changesMade">
+          <label class="form-check-label custom-lab" for="changesMade">
             Generate
           </label>
         </div>
@@ -50,18 +50,10 @@
     <hr/>
     <div class="row mb-3">
       <label for="fullName" class="col-md-3 col-lg-3 col-form-label">Profile privacy</label>
-      <div class="col-md-8 col-lg-9">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="changesMade">
-          <label class="form-check-label" for="changesMade">
-            Private 
-          </label>
-        </div>
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="changesMade" checked>
-          <label class="form-check-label" for="changesMade">
-            Public 
-          </label>
+      <div class="col-md-8 col-lg-9 mt-1">
+        <div class="form-check form-switch">
+          <input class="form-check-input " type="checkbox" (click)="changeStatus()" [checked]="privateChecked">
+          <label class="form-check-label custom-lab " for="flexSwitchCheckChecked">Private profile</label>
         </div>
       </div>
       

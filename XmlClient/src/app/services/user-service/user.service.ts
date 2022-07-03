@@ -73,7 +73,6 @@ export class UserService {
   }
 
   getUserDetails(username: string | null) {
-    console.log('evo me u metodi, username je ovde ' + username)
     return this._http.post<UserDetails>(
       'http://localhost:9090/users/user/details', {
       username
@@ -103,6 +102,12 @@ export class UserService {
   updateUserProfessionalDetails(user : UserProfessionalDetails){
     return this._http.post<UserProfessionalDetails>('http://localhost:9090/users/user/editProfessional',
       user
+      )
+  }
+  changePrivacyStatus(username : string, newStatus : string){
+    return this._http.post<any>(
+      'http://localhost:9090/users/user/changeStatus',
+      {username, newStatus}
     )
   }
 }

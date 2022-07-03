@@ -151,5 +151,9 @@ input:focus {
   .header-signin {
     margin: 0;
     padding-right: 15px;
-    
+  }
+
+  .block-btn {
+    margin-left: 14px;
+    width: 95px;
   }

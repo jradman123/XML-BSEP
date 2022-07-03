@@ -93,6 +93,13 @@ service UserService{
     option (google.api.http) = {
       post: "/users/user/editProfessional"
       body: "userProfessionalDetails"
+      };
+  }
+  
+  rpc ChangeProfileStatus(ChangeStatusRequest) returns(ChangeStatus) {
+    option (google.api.http) = {
+      post: "/users/user/changeStatus"
+      body: "changeStatus"
     };
   }
 }
@@ -118,6 +125,7 @@ message UserDetails{
   repeated Interest interests = 10;
   repeated Education educations = 11;
   repeated Experience experiences = 12;
+  string profileStatus = 13;
 }
 
 message Skill{
@@ -289,5 +297,14 @@ message UserProfessionalDetails{
   repeated Skill skills = 2;
   repeated Interest interests = 3;
   repeated Education educations = 4;
-  repeated Experience experiences = 5;
+  repeated Experience experiences = 5;  
+}
+
+message ChangeStatusRequest{
+  ChangeStatus changeStatus = 1;
+}
+
+message ChangeStatus {
+  string username = 1;
+  string newStatus = 2;
 }

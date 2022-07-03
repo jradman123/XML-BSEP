@@ -21,7 +21,7 @@
               <div class="mt-2">
                 <button class="btn btn-outline-primary" *ngIf="isLoggedIn" (click)="connect(user.username)">{{buttonText}}</button>
                 <button class="btn btn-outline-primary" *ngIf="!isLoggedIn" [routerLink]="['/register']">Join to connect</button>
-
+                <button class="btn btn-outline-danger block-btn" *ngIf="isLoggedIn" (click)="block(user.username)">Block</button>
               </div>
             </div>
           </div>
@@ -42,7 +42,7 @@
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-about">About</button>
                 </li>
 
-                <li   *ngIf="user" class="nav-item">
+                <li   *ngIf="user.profileStatus === 'PUBLIC' || status === 'CONNECTED' " class="nav-item">
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-posts">Posts</button>
                 </li>
   
@@ -58,7 +58,7 @@
                 </div>
 
                 <div class="tab-pane fade pt-3" id="profile-posts">
-                  <app-posts-view [username]="username" ></app-posts-view> 
+                  <app-posts-view *ngIf="user.profileStatus === 'PUBLIC' || status === 'CONNECTED' " [username]="username" ></app-posts-view> 
                 </div>
 
               </div>

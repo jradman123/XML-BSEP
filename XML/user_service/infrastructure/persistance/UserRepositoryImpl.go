@@ -106,3 +106,12 @@ func (r UserRepositoryImpl) ChangePassword(user *model.User, password string) er
 	fmt.Print(result)
 	return result.Error
 }
+
+func (r UserRepositoryImpl) ChangeProfileStatus(user *model.User) (bool, error) {
+	result := r.db.Model(&user).Updates(&user)
+	fmt.Print(result)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}

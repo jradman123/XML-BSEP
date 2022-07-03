@@ -28,6 +28,7 @@ const (
 	CreateUser
 	DeleteUser
 	ActivateUser
+	ChangeProfileStatus
 	RollbackUser
 	UnknownCommand
 )
@@ -40,6 +41,7 @@ const (
 	UserDeleted
 	UserCreated
 	UserActivated
+	ProfileStatusChanged
 	UnknownReply
 )
 

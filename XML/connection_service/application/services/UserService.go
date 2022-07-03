@@ -47,3 +47,13 @@ func (s UserService) GetUserId(username string) (string, error) {
 	}
 	return userId, nil
 }
+
+func (s UserService) ChangeProfileStatus(user model.User) error {
+	fmt.Println("saga : connection service : change profile status : unimplemented")
+	err := s.userRepo.ChangeProfileStatus(&user)
+	if err != nil {
+		return err
+	}
+	return nil
+	return nil
+}

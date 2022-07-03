@@ -33,8 +33,7 @@ type UserServiceClient interface {
 	ShareJobOffer(ctx context.Context, in *ShareJobOfferRequest, opts ...grpc.CallOption) (*EmptyRequest, error)
 	GetUserDetails(ctx context.Context, in *GetUserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error)
 	EditUserDetails(ctx context.Context, in *UserDetailsRequest, opts ...grpc.CallOption) (*UserDetails, error)
-	EditUserPersonalDetails(ctx context.Context, in *UserPersonalDetailsRequest, opts ...grpc.CallOption) (*UserPersonalDetails, error)
-	EditUserProfessionalDetails(ctx context.Context, in *UserProfessionalDetailsRequest, opts ...grpc.CallOption) (*UserProfessionalDetails, error)
+	ChangeProfileStatus(ctx context.Context, in *ChangeStatusRequest, opts ...grpc.CallOption) (*ChangeStatus, error)
 }
 
 type userServiceClient struct {
@@ -144,18 +143,9 @@ func (c *userServiceClient) EditUserDetails(ctx context.Context, in *UserDetails
 	return out, nil
 }
 
-func (c *userServiceClient) EditUserPersonalDetails(ctx context.Context, in *UserPersonalDetailsRequest, opts ...grpc.CallOption) (*UserPersonalDetails, error) {
-	out := new(UserPersonalDetails)
-	err := c.cc.Invoke(ctx, "/user_service.UserService/EditUserPersonalDetails", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) EditUserProfessionalDetails(ctx context.Context, in *UserProfessionalDetailsRequest, opts ...grpc.CallOption) (*UserProfessionalDetails, error) {
-	out := new(UserProfessionalDetails)
-	err := c.cc.Invoke(ctx, "/user_service.UserService/EditUserProfessionalDetails", in, out, opts...)
+func (c *userServiceClient) ChangeProfileStatus(ctx context.Context, in *ChangeStatusRequest, opts ...grpc.CallOption) (*ChangeStatus, error) {
+	out := new(ChangeStatus)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/ChangeProfileStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -177,8 +167,7 @@ type UserServiceServer interface {
 	ShareJobOffer(context.Context, *ShareJobOfferRequest) (*EmptyRequest, error)
 	GetUserDetails(context.Context, *GetUserDetailsRequest) (*UserDetails, error)
 	EditUserDetails(context.Context, *UserDetailsRequest) (*UserDetails, error)
-	EditUserPersonalDetails(context.Context, *UserPersonalDetailsRequest) (*UserPersonalDetails, error)
-	EditUserProfessionalDetails(context.Context, *UserProfessionalDetailsRequest) (*UserProfessionalDetails, error)
+	ChangeProfileStatus(context.Context, *ChangeStatusRequest) (*ChangeStatus, error)
 	MustEmbedUnimplementedUserServiceServer()
 }
 
@@ -219,11 +208,8 @@ func (UnimplementedUserServiceServer) GetUserDetails(context.Context, *GetUserDe
 func (UnimplementedUserServiceServer) EditUserDetails(context.Context, *UserDetailsRequest) (*UserDetails, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditUserDetails not implemented")
 }
-func (UnimplementedUserServiceServer) EditUserPersonalDetails(context.Context, *UserPersonalDetailsRequest) (*UserPersonalDetails, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EditUserPersonalDetails not implemented")
-}
-func (UnimplementedUserServiceServer) EditUserProfessionalDetails(context.Context, *UserProfessionalDetailsRequest) (*UserProfessionalDetails, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EditUserProfessionalDetails not implemented")
+func (UnimplementedUserServiceServer) ChangeProfileStatus(context.Context, *ChangeStatusRequest) (*ChangeStatus, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeProfileStatus not implemented")
 }
 func (UnimplementedUserServiceServer) MustEmbedUnimplementedUserServiceServer() {}
 
@@ -436,38 +422,20 @@ func _UserService_EditUserDetails_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_EditUserPersonalDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserPersonalDetailsRequest)
+func _UserService_ChangeProfileStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).EditUserPersonalDetails(ctx, in)
+		return srv.(UserServiceServer).ChangeProfileStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/user_service.UserService/EditUserPersonalDetails",
+		FullMethod: "/user_service.UserService/ChangeProfileStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).EditUserPersonalDetails(ctx, req.(*UserPersonalDetailsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_EditUserProfessionalDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UserProfessionalDetailsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).EditUserProfessionalDetails(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user_service.UserService/EditUserProfessionalDetails",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).EditUserProfessionalDetails(ctx, req.(*UserProfessionalDetailsRequest))
+		return srv.(UserServiceServer).ChangeProfileStatus(ctx, req.(*ChangeStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -524,12 +492,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_EditUserDetails_Handler,
 		},
 		{
-			MethodName: "EditUserPersonalDetails",
-			Handler:    _UserService_EditUserPersonalDetails_Handler,
-		},
-		{
-			MethodName: "EditUserProfessionalDetails",
-			Handler:    _UserService_EditUserProfessionalDetails_Handler,
+			MethodName: "ChangeProfileStatus",
+			Handler:    _UserService_ChangeProfileStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
