@@ -493,6 +493,53 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	return api.MapUserToUserDetails(editedUser), nil
 }
 
+func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.UserPersonalDetailsRequest) (*pb.UserPersonalDetails, error) {
+
+	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+
+	userPersonalDetails := api.MapPbUserPersonalDetailsToUser(request)
+	if err := u.validator.Struct(userPersonalDetails); err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+
+	err := u.service.UserExists(userPersonalDetails.Username)
+	if err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	editedUser, er := u.service.EditUserPersonalDetails(userPersonalDetails)
+	if er != nil {
+		fmt.Println(er)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return api.MapUserToUserPersonalDetails(editedUser), nil
+}
+
+func (u UserHandler) EditUserProfessionalDetails(ctx context.Context, request *pb.UserProfessionalDetailsRequest) (*pb.UserProfessionalDetails, error) {
+
+	userProfessionalDetails := api.MapPbUserProfessionalDetailsToUser(request)
+	if err := u.validator.Struct(userProfessionalDetails); err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+
+	err := u.service.UserExists(userProfessionalDetails.Username)
+	if err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	editedUser, er := u.service.EditUserProfessionalDetails(userProfessionalDetails)
+	if er != nil {
+		fmt.Println(er)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return api.MapUserToUserProfessionalDetails(editedUser), nil
+}
 func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.ChangeStatusRequest) (*pb.ChangeStatus, error) {
 	policy := bluemonday.UGCPolicy()
 	newStatus := strings.TrimSpace(policy.Sanitize(request.ChangeStatus.NewStatus))

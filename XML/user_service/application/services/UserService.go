@@ -451,3 +451,41 @@ func (u UserService) ChangeProfileStatus(username string, newStatus string) (*mo
 	}
 	return user, nil
 }
+
+func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPersonalDetails) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), userPersonalDetails.Username)
+	if err != nil {
+		return nil, err
+	}
+	user = api.MapUserPersonalDetailsDtoToUser(userPersonalDetails, user)
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user was not edited")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.UserProfessionalDetails) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), userProfessionalDetails.Username)
+	if err != nil {
+		return nil, err
+	}
+	user = api.MapUserProfessionalDetailsDtoToUser(userProfessionalDetails, user)
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user was not edited")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

@@ -2,7 +2,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Education</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let education of user?.educations">
+        <div class="form-check" *ngFor="let education of userProfessionalDetails?.educations">
           <label class="form-check-label" for="changesMade">
             {{education.education}}
           </label>
@@ -18,7 +18,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Experiences</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let experience of user?.experiences">
+        <div class="form-check" *ngFor="let experience of userProfessionalDetails?.experiences">
           <label class="form-check-label" for="changesMade" >
             {{experience.experience}}
           </label>
@@ -34,7 +34,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Skills</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let skill of user?.skills">
+        <div class="form-check" *ngFor="let skill of userProfessionalDetails?.skills">
           <label class="form-check-label" for="changesMade" >
             {{skill.skill}}
           </label>
@@ -50,7 +50,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Interests</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let interest of user?.interests">
+        <div class="form-check" *ngFor="let interest of userProfessionalDetails?.interests">
           <label class="form-check-label" for="changesMade">
             {{interest.interest}}
           </label>

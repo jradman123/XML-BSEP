@@ -5,6 +5,8 @@ import { ActivateAccount } from 'src/app/interfaces/activate-account';
 import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
 import { UserDetails } from 'src/app/interfaces/user-details';
+import { UserPersonalDetails } from 'src/app/interfaces/user-personal-details';
+import { UserProfessionalDetails } from 'src/app/interfaces/user-professional-details';
 
 
 @Injectable({
@@ -91,6 +93,17 @@ export class UserService {
     )
   }
 
+  updateUserPersonalDetails(user : UserPersonalDetails){
+    return this._http.post<UserPersonalDetails>('http://localhost:9090/users/user/editPersonal',
+      user
+    )
+  }
+
+  updateUserProfessionalDetails(user : UserProfessionalDetails){
+    return this._http.post<UserProfessionalDetails>('http://localhost:9090/users/user/editProfessional',
+      user
+      )
+  }
   changePrivacyStatus(username : string, newStatus : string){
     return this._http.post<any>(
       'http://localhost:9090/users/user/changeStatus',
