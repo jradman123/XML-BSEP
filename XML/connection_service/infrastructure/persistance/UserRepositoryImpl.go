@@ -104,15 +104,6 @@ func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User) error {
 
 		fmt.Println("UUID " + userNode.UserUID)
 		if checkIfUserExist(userNode.UserUID, tx) {
-
-			//var status string
-			//if userNode.Status == connectionModel.Private {
-			//	status = "PRIVATE"
-			//} else {
-			//	status = "PUBLIC"
-			//}
-			//fmt.Println("MENJAM U " + status)
-
 			_, err := tx.Run("MATCH (n:UserNode { uid: $uid}) set n.status = $status, n.username = $username, n.firstName = $firstName, n.lastName = $lastName",
 				map[string]interface{}{
 					"uid":       userNode.UserUID,
@@ -127,7 +118,7 @@ func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User) error {
 			}
 			return nil, nil
 		} else {
-			fmt.Println("NEPOSTOJI")
+			fmt.Println("NE POSTOJI")
 			return nil, nil
 		}
 
@@ -175,9 +166,6 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 
 		}
 	}(session)
-	/*
-		MATCH (u1:UserNode)   MATCH (u2:UserNode) WHERE u1.uid = "3" match (u2)-[r2:CONNECTION {status:"REQUEST_SENT"}]->(u1) SET r2.status="CONNECTED" CREATE (u1)-[r1:CONNECTION {status: "CONNECTED"}]->(u2)
-	*/
 
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
@@ -190,7 +178,7 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 			} else if m.Status == connectionModel.Public {
 				status = "PUBLIC"
 			}
-			fmt.Println("MENJAM U " + status)
+			fmt.Println(status)
 
 			results, err := tx.Run("MATCH (n:UserNode { uid: $uid}) set n.status = $status return n.status",
 				map[string]interface{}{
@@ -198,14 +186,11 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 					"status": m.Status,
 				})
 			if err != nil {
-				fmt.Println("imamo eror kod izmjene statusa user noda")
 				fmt.Println(err)
 				return nil, err
 			}
-			fmt.Println("kao nasao je status usera")
 			if results.Next() {
 				if results.Record().Values[0].(string) == "PUBLIC" {
-					fmt.Println("checkpoint 1")
 					dateNow := time.Now().Local().Unix()
 					_, goldErr := tx.Run("MATCH (u1:UserNode)   MATCH (u2:UserNode) WHERE u1.uid =$oldPrivateUser match (u1)-[r2:CONNECTION {status:$oldStatus}]->(u2) SET r2.status=$newStatus CREATE (u2)-[r1:CONNECTION {status:$newStatus, date: $date}]->(u1)",
 						map[string]interface{}{
@@ -214,7 +199,6 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 							"newStatus":      "CONNECTED",
 							"date":           dateNow,
 						})
-					fmt.Println("checkpoint 2")
 					if goldErr != nil {
 						return nil, goldErr
 					}
@@ -222,14 +206,13 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 				}
 			}
 		} else {
-			fmt.Println("NEPOSTOJI")
+			fmt.Println("NE POSTOJI")
 			return nil, nil
 		}
 
 		return true, nil
 	})
 	fmt.Println(result)
-	fmt.Println("checkpoint 4")
 	if err != nil {
 		return err
 	}
