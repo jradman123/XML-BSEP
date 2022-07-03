@@ -3,9 +3,13 @@ package handlers
 import (
 	"common/module/logger"
 	notificationProto "common/module/proto/notification_service"
+	pb "common/module/proto/notification_service"
 	"context"
 	"github.com/pusher/pusher-http-go"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/application"
+	"message/module/domain/model"
+	"time"
 )
 
 type NotificationHandler struct {
@@ -27,4 +31,34 @@ func (n NotificationHandler) MustEmbedUnimplementedNotificationServiceServer() {
 
 func NewNotificationHandler(logInfo *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, notificationService *application.NotificationService) *NotificationHandler {
 	return &NotificationHandler{logInfo, logError, notificationPusher, notificationService}
+}
+
+func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.NewNotificationRequest) (*pb.Empty, error) {
+	// create Notification object and store it in the database
+	// trigger pusher
+	// check if this notification is blocked for that user
+
+	notiType := model.PROFILE
+	if newNotificationReq.NewNotification.NotificationType == "MESSAGE" {
+		notiType = model.MESSAGE
+	} else if newNotificationReq.NewNotification.NotificationType == "POST" {
+		notiType = model.POST
+	}
+
+	noti := &model.Notification{
+		Id:               primitive.NewObjectID(),
+		Timestamp:        time.Now(),
+		Content:          newNotificationReq.NewNotification.Content,
+		NotificationFrom: newNotificationReq.NewNotification.From,
+		NotificationTo:   newNotificationReq.NewNotification.To,
+		Read:             false,
+		RedirectPath:     newNotificationReq.NewNotification.RedirectPath,
+		Type:             model.NotificationType(notiType),
+	}
+
+	notification := n.notificationService.Create(noti)
+
+	n.notificationPusher.Trigger("notifications", "notification", notification)
+
+	return &pb.Empty{}, nil
 }

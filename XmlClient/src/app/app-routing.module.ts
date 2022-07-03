@@ -16,6 +16,7 @@ import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
+import { PusherComponent } from './components/pusher/pusher.component';
 
 const routes: Routes = [
   {
@@ -85,8 +86,10 @@ const routes: Routes = [
     path: 'myProfile',
     component: MyProfileComponent, canActivate: [AuthGuardRegular]
   },
-
-
+  {
+    path: 'pusher',
+    component: PusherComponent
+  }
 ];
 
 @NgModule({

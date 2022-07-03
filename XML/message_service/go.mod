@@ -8,6 +8,7 @@ require (
 	common/module v0.0.0-00010101000000-000000000000
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/google/uuid v1.1.2
+	github.com/pusher/pusher-http-go v4.0.1+incompatible
 	github.com/sirupsen/logrus v1.8.1
 	go.mongodb.org/mongo-driver v1.9.1
 	google.golang.org/grpc v1.47.0
@@ -25,7 +26,6 @@ require (
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pusher/pusher-http-go v4.0.1+incompatible // indirect
 	github.com/snowzach/rotatefilehook v0.0.0-20220211133110-53752135082d // indirect
 	github.com/tamararankovic/microservices_demo/common v0.0.0-20220326142530-97bfd7810e53 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect

@@ -9,15 +9,33 @@ import "google/protobuf/timestamp.proto";
 
 
 service NotificationService{
+
   rpc getAllSent(GetRequest) returns(Empty) {
     option (google.api.http) = {
       get: "/messages/{username}/sent"
     };
   }
 
+  rpc create(NewNotificationRequest) returns(Empty) {
+    option (google.api.http) = {
+      post: "/notifications/create"
+      body: "newNotification"
+    };
+  }
 }
 message GetRequest {
   string username = 1;
+}
+message NewNotificationRequest {
+  NewNotification newNotification = 1;
+}
+
+message NewNotification {
+  string content = 2;
+  string from = 3;
+  string to = 4;
+  string redirectPath = 5;
+  string notificationType = 6;
 }
 
 message Empty {}

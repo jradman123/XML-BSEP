@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationServiceClient interface {
 	GetAllSent(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Empty, error)
+	Create(ctx context.Context, in *NewNotificationRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type notificationServiceClient struct {
@@ -42,11 +43,21 @@ func (c *notificationServiceClient) GetAllSent(ctx context.Context, in *GetReque
 	return out, nil
 }
 
+func (c *notificationServiceClient) Create(ctx context.Context, in *NewNotificationRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/notification_service.NotificationService/create", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NotificationServiceServer is the server API for NotificationService service.
 // All implementations must embed UnimplementedNotificationServiceServer
 // for forward compatibility
 type NotificationServiceServer interface {
 	GetAllSent(context.Context, *GetRequest) (*Empty, error)
+	Create(context.Context, *NewNotificationRequest) (*Empty, error)
 	MustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedNotificationServiceServer struct {
 
 func (UnimplementedNotificationServiceServer) GetAllSent(context.Context, *GetRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllSent not implemented")
+}
+func (UnimplementedNotificationServiceServer) Create(context.Context, *NewNotificationRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedNotificationServiceServer) MustEmbedUnimplementedNotificationServiceServer() {}
 
@@ -88,6 +102,24 @@ func _NotificationService_GetAllSent_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NotificationService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewNotificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification_service.NotificationService/create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).Create(ctx, req.(*NewNotificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "getAllSent",
 			Handler:    _NotificationService_GetAllSent_Handler,
+		},
+		{
+			MethodName: "create",
+			Handler:    _NotificationService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

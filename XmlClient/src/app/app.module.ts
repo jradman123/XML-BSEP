@@ -78,6 +78,7 @@ import { EducationDialogComponent } from './components/dialogs/education-dialog/
 import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
 import { ProfileSearchPipe } from './pipes/profile-search.pipe';
+import { PusherComponent } from './components/pusher/pusher.component';
 
 
 
@@ -115,6 +116,7 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     ProfilePreviewComponent,
     ProfileListComponent,
     ProfileSearchPipe,
+    PusherComponent,
   ],
   imports: [
     BrowserModule,

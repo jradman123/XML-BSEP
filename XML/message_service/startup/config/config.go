@@ -33,9 +33,9 @@ func NewConfig() *Config {
 		NatsHost:            os.Getenv("NATS_HOST"),
 		NatsPass:            os.Getenv("NATS_PASS"),
 		NatsUser:            os.Getenv("NATS_USER"),
-		NotificationAppID:   "1432217",
-		NotificationKey:     "6753c65c92c944af3a85",
-		NotificationSecret:  "b49ce7b031eba94ac0a2",
+		NotificationAppID:   "1203996",
+		NotificationKey:     "dd3ce2a9c4a58e3577a4",
+		NotificationSecret:  "caebb43d64e3f9191e30",
 		NotificationCluster: "eu",
 		NotificationSecure:  true,
 	}
