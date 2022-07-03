@@ -110,6 +110,7 @@ message UserDetails{
   repeated Interest interests = 10;
   repeated Education educations = 11;
   repeated Experience experiences = 12;
+  string profileStatus = 13;
 }
 
 message Skill{

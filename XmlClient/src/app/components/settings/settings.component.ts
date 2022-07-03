@@ -34,10 +34,11 @@ export class SettingsComponent implements OnInit {
     this.service.check2FAStatus(this.username).subscribe((res) =>
     this.isChecked = res
   )
-    this.privateChecked = this.user.status === "PRIVATE"
+    this.privateChecked = this.user.profileStatus === "PRIVATE"
   }
 
   changeStatus() {
+    this.privateChecked = !this.privateChecked
     this.service.changePrivacyStatus(this.user.username, this.privateChecked ? "PRIVATE" : "PUBLIC").subscribe(
       res => {
         this._snackBar.open('Privacy settings updated.', '', {
