@@ -526,14 +526,14 @@ func (u UserHandler) EditUserProfessionalDetails(ctx context.Context, request *p
 		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
-	
+
 	err := u.service.UserExists(userProfessionalDetails.Username)
 	if err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	editedUser, er := u.service.EditUserProfessionallDetails(userPersonalDetails)
+	editedUser, er := u.service.EditUserProfessionalDetails(userProfessionalDetails)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, err.Error())
@@ -558,7 +558,7 @@ func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.Change
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	editedUser, er := u.service.EditUserProfessionalDetails(userProfessionalDetails)
+	editedUser, er := u.service.ChangeProfileStatus(username, newStatus)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, err.Error())
