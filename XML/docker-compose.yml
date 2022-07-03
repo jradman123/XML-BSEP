@@ -48,11 +48,13 @@ services:
       NATS_PASS: ${NATS_PASS}
       USER_COMMAND_SUBJECT: ${USER_COMMAND_SUBJECT}
       USER_REPLY_SUBJECT: ${USER_REPLY_SUBJECT}
-      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
       GATEWAY_PORT: ${GATEWAY_PORT}
       USER_SERVICE_HOST: "user_service"
       POST_SERVICE_HOST: "post_service"
+      MESSAGE_SERVICE_HOST: "message_service"
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
+      MESSAGE_SERVICE_PORT: ${MESSAGE_SERVICE_PORT}
     networks:
       - servers
     depends_on:
@@ -148,7 +150,7 @@ services:
     networks:
       - servers
     ports:
-      - 4222:4222
+      - '4222:4222'
 
 volumes:
   user-data:

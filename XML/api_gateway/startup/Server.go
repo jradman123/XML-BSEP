@@ -2,6 +2,7 @@ package startup
 
 import (
 	"common/module/logger"
+	messageGw "common/module/proto/message_service"
 	postsGw "common/module/proto/posts_service"
 	userGw "common/module/proto/user_service"
 	"context"
@@ -49,12 +50,17 @@ func (server *Server) initHandlers() {
 	}
 	userEndpoint := fmt.Sprintf("%s:%s", server.config.UserHost, server.config.UserPort)
 	postsEndpoint := fmt.Sprintf("%s:%s", server.config.PostsHost, server.config.PostsPort)
+	messageEndpoint := fmt.Sprintf("%s:%s", server.config.MessageHost, server.config.MessagePort)
 
 	err := userGw.RegisterUserServiceHandlerFromEndpoint(context.TODO(), server.mux, userEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}
 	err = postsGw.RegisterPostServiceHandlerFromEndpoint(context.TODO(), server.mux, postsEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+	err = messageGw.RegisterMessageServiceHandlerFromEndpoint(context.TODO(), server.mux, messageEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}

@@ -80,3 +80,16 @@ func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessage
 	//TODO: Vjv treba vratiti tako da bih update listu poslatih
 	return &pb.Empty{}, nil
 }
+
+func (m MessageHandler) GetAll(ctx context.Context, empty *pb.Empty) (*pb.GetAllResponse, error) {
+	current := &pb.Message{
+		SenderUsername:   "Higashi",
+		ReceiverUsername: "Minami",
+		MessageText:      "Kore kara da aaa",
+		TimeSent:         "nebitno je skroz",
+	}
+
+	response := &pb.GetAllResponse{Messages: []*pb.Message{}}
+	response.Messages = append(response.Messages, current)
+	return response, nil
+}
