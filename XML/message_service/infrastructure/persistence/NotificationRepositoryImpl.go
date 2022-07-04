@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"message/module/domain/model"
@@ -31,4 +32,38 @@ func (repo NotificationRepositoryImpl) Create(notification *model.Notification) 
 	notification.Id = result.InsertedID.(primitive.ObjectID)
 
 	return nil
+}
+
+func (repo NotificationRepositoryImpl) GetAllForUser(username string) ([]*model.Notification, error) {
+	filter := bson.M{"notification_to": username}
+	return repo.filter(filter)
+}
+
+func (repo NotificationRepositoryImpl) filter(filter interface{}) ([]*model.Notification, error) {
+	cursor, err := repo.db.Find(context.TODO(), filter)
+	defer func(cursor *mongo.Cursor, ctx context.Context) {
+		err := cursor.Close(ctx)
+		if err != nil {
+
+		}
+	}(cursor, context.TODO())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return decode(cursor)
+}
+
+func decode(cursor *mongo.Cursor) (notifications []*model.Notification, err error) {
+	for cursor.Next(context.TODO()) {
+		var notification model.Notification
+		err = cursor.Decode(&notification)
+		if err != nil {
+			return
+		}
+		notifications = append(notifications, &notification)
+	}
+	err = cursor.Err()
+	return
 }
