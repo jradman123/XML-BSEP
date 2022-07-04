@@ -28,6 +28,19 @@ service NotificationService {
       get: "/notification/user/{username}"
     };
   }
+
+  rpc getSettingsForUser(GetSettingsRequest) returns(GetSettingsResponse) {
+    option (google.api.http) = {
+      get: "/notification/settings/{username}"
+    };
+  }
+
+  rpc changeSettingsForUser(ChangeSettingsRequest) returns(GetSettingsResponse) {
+    option (google.api.http) = {
+      post: "/notification/change-settings"
+      body: "newSettings"
+    };
+  }
 }
 message GetRequest {
   string username = 1;
@@ -50,6 +63,10 @@ message GetAllNotificationRequest{
   string username = 1;
 }
 
+message GetSettingsRequest{
+  string username = 1;
+}
+
 message Notification {
   string id = 1;
   string content = 2;
@@ -60,4 +77,24 @@ message Notification {
 }
 message GetAllNotificationResponse{
   repeated Notification notifications = 1;
+}
+
+message GetSettingsResponse {
+  NotificationSettings settings = 1;
+}
+
+message ChangeSettingsRequest {
+  NewSettings newSettings = 1;
+}
+
+message NewSettings {
+  string username = 1;
+  NotificationSettings settings = 2;
+}
+
+message NotificationSettings {
+  string id = 1;
+  bool posts = 2;
+  bool messages = 3;
+  bool connections = 4;
 }

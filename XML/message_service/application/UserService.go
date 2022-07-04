@@ -35,3 +35,11 @@ func (s UserService) GetByUsername(username string) (user []*model.User, err err
 	user, err = s.repository.GetByUsername(username)
 	return user, err
 }
+
+func (s UserService) GetSettingsForUser(username string) (settings *model.NotificationSettings, err error) {
+	return s.repository.GetSettingsForUser(username)
+}
+
+func (s UserService) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings) (settings *model.NotificationSettings, err error) {
+	return s.repository.ChangeSettingsForUser(username, newSettings)
+}

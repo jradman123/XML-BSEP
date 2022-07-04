@@ -18,6 +18,7 @@ type NotificationHandler struct {
 	logError            *logger.Logger
 	notificationPusher  *pusher.Client
 	notificationService *application.NotificationService
+	userService         *application.UserService
 }
 
 func (n NotificationHandler) GetAllSent(ctx context.Context, request *notificationProto.GetRequest) (*notificationProto.Empty, error) {
@@ -30,8 +31,8 @@ func (n NotificationHandler) MustEmbedUnimplementedNotificationServiceServer() {
 	panic("implement me")
 }
 
-func NewNotificationHandler(logInfo *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, notificationService *application.NotificationService) *NotificationHandler {
-	return &NotificationHandler{logInfo, logError, notificationPusher, notificationService}
+func NewNotificationHandler(logInfo *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, notificationService *application.NotificationService, userService *application.UserService) *NotificationHandler {
+	return &NotificationHandler{logInfo, logError, notificationPusher, notificationService, userService}
 }
 
 func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.NewNotificationRequest) (*pb.Empty, error) {
@@ -73,6 +74,28 @@ func (n NotificationHandler) GetAllForUser(_ context.Context, request *pb.GetAll
 		current := api.MapNotificationResponse(notification)
 		response.Notifications = append(response.Notifications, current)
 	}
+
+	return response, nil
+}
+
+func (n NotificationHandler) GetSettingsForUser(_ context.Context, request *pb.GetSettingsRequest) (*pb.GetSettingsResponse, error) {
+	settings, _ := n.userService.GetSettingsForUser(request.Username)
+	response := &pb.GetSettingsResponse{Settings: &pb.NotificationSettings{}}
+
+	response.Settings = api.MapSettingsResponse(settings)
+
+	return response, nil
+}
+
+func (n NotificationHandler) ChangeSettingsForUser(_ context.Context, request *pb.ChangeSettingsRequest) (*pb.GetSettingsResponse, error) {
+
+	settingsMapped := api.MapChangeSettingsRequest(request)
+	settings, err := n.userService.ChangeSettingsForUser(request.NewSettings.Username, settingsMapped)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetSettingsResponse{Settings: &pb.NotificationSettings{}}
+	response.Settings = api.MapSettingsResponse(settings)
 
 	return response, nil
 }

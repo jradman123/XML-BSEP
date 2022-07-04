@@ -67,6 +67,32 @@ func MapNotificationResponse(notification *model.Notification) *notificationPb.N
 	return notificationPb
 }
 
+func MapSettingsResponse(settings *model.NotificationSettings) *notificationPb.NotificationSettings {
+	id := settings.Id.Hex()
+
+	settingsPb := &notificationPb.NotificationSettings{
+		Id:          id,
+		Posts:       settings.Posts,
+		Messages:    settings.Messages,
+		Connections: settings.Connections,
+	}
+
+	return settingsPb
+}
+
+func MapChangeSettingsRequest(request *notificationPb.ChangeSettingsRequest) *model.NotificationSettings {
+	id, _ := primitive.ObjectIDFromHex(request.NewSettings.Settings.Id)
+	settingsModel := &model.NotificationSettings{
+		Id:          id,
+		Username:    request.NewSettings.Username,
+		Posts:       request.NewSettings.Settings.Posts,
+		Messages:    request.NewSettings.Settings.Messages,
+		Connections: request.NewSettings.Settings.Connections,
+	}
+
+	return settingsModel
+}
+
 func mapNotificationTypeToString(notificationType model.NotificationType) string {
 	if notificationType == model.POST {
 		return "POST"

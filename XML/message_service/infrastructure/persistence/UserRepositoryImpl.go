@@ -61,6 +61,37 @@ func (u UserRepositoryImpl) GetByUsername(username string) (user []*model.User, 
 	return u.filter(filter)
 }
 
+func (repo UserRepositoryImpl) GetSettingsForUser(username string) (*model.NotificationSettings, error) {
+	filter := bson.M{"username": username}
+	var user model.User
+	found := repo.users.FindOne(context.TODO(), filter)
+	found.Decode(&user)
+	return &user.Settings, nil
+}
+
+func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings) (*model.NotificationSettings, error) {
+
+	_, err := u.users.UpdateOne(context.TODO(), bson.M{"username": username}, bson.D{
+		{"$set", bson.D{{"settings", newSettings}}},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return newSettings, nil
+}
+
+/*
+func (u UserRepositoryImpl) UpdateUser(requestUser *model.User) (user *model.User, err error) {
+	_, err = u.users.UpdateOne(context.TODO(), bson.M{"user_id": user.UserId}, bson.D{
+		{"$set", bson.D{{"username", user.Username}}},
+		{"$set", bson.D{{"email", user.Email}}},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+*/
 func (u UserRepositoryImpl) filterOne(filter bson.M) (user *model.User, err error) {
 	result := u.users.FindOne(context.TODO(), filter)
 	err = result.Decode(&user)

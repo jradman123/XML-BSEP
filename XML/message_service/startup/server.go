@@ -53,7 +53,7 @@ func (server *Server) Start() {
 	userService := server.InitUserService(userRepo, logInfo, logError)
 
 	messageHandler := server.InitMessageHandler(messageService, userService, logInfo, logError)
-	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService)
+	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService, userService)
 	//	server.InitCreateUserCommandHandler(userService, messageService, replyPublisher, commandSubscriber)
 
 	server.StartGrpcServer(messageHandler, notificationHandler, logError)
@@ -154,6 +154,6 @@ func (server *Server) InitNotificationService(info *logger.Logger, logError *log
 	return application.NewNotificationService(info, logError, repo)
 }
 
-func (server *Server) InitNotificationHandler(info *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, service *application.NotificationService) *handlers.NotificationHandler {
-	return handlers.NewNotificationHandler(info, logError, notificationPusher, service)
+func (server *Server) InitNotificationHandler(info *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, service *application.NotificationService, userService *application.UserService) *handlers.NotificationHandler {
+	return handlers.NewNotificationHandler(info, logError, notificationPusher, service, userService)
 }

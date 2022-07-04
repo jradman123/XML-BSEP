@@ -25,6 +25,8 @@ type NotificationServiceClient interface {
 	GetAllSent(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Empty, error)
 	Create(ctx context.Context, in *NewNotificationRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetAllForUser(ctx context.Context, in *GetAllNotificationRequest, opts ...grpc.CallOption) (*GetAllNotificationResponse, error)
+	GetSettingsForUser(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error)
+	ChangeSettingsForUser(ctx context.Context, in *ChangeSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error)
 }
 
 type notificationServiceClient struct {
@@ -62,6 +64,24 @@ func (c *notificationServiceClient) GetAllForUser(ctx context.Context, in *GetAl
 	return out, nil
 }
 
+func (c *notificationServiceClient) GetSettingsForUser(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error) {
+	out := new(GetSettingsResponse)
+	err := c.cc.Invoke(ctx, "/notification_service.NotificationService/getSettingsForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *notificationServiceClient) ChangeSettingsForUser(ctx context.Context, in *ChangeSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error) {
+	out := new(GetSettingsResponse)
+	err := c.cc.Invoke(ctx, "/notification_service.NotificationService/changeSettingsForUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NotificationServiceServer is the server API for NotificationService service.
 // All implementations must embed UnimplementedNotificationServiceServer
 // for forward compatibility
@@ -69,6 +89,8 @@ type NotificationServiceServer interface {
 	GetAllSent(context.Context, *GetRequest) (*Empty, error)
 	Create(context.Context, *NewNotificationRequest) (*Empty, error)
 	GetAllForUser(context.Context, *GetAllNotificationRequest) (*GetAllNotificationResponse, error)
+	GetSettingsForUser(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error)
+	ChangeSettingsForUser(context.Context, *ChangeSettingsRequest) (*GetSettingsResponse, error)
 	MustEmbedUnimplementedNotificationServiceServer()
 }
 
@@ -84,6 +106,12 @@ func (UnimplementedNotificationServiceServer) Create(context.Context, *NewNotifi
 }
 func (UnimplementedNotificationServiceServer) GetAllForUser(context.Context, *GetAllNotificationRequest) (*GetAllNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllForUser not implemented")
+}
+func (UnimplementedNotificationServiceServer) GetSettingsForUser(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSettingsForUser not implemented")
+}
+func (UnimplementedNotificationServiceServer) ChangeSettingsForUser(context.Context, *ChangeSettingsRequest) (*GetSettingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeSettingsForUser not implemented")
 }
 func (UnimplementedNotificationServiceServer) MustEmbedUnimplementedNotificationServiceServer() {}
 
@@ -152,6 +180,42 @@ func _NotificationService_GetAllForUser_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NotificationService_GetSettingsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).GetSettingsForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification_service.NotificationService/getSettingsForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).GetSettingsForUser(ctx, req.(*GetSettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _NotificationService_ChangeSettingsForUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeSettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationServiceServer).ChangeSettingsForUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/notification_service.NotificationService/changeSettingsForUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationServiceServer).ChangeSettingsForUser(ctx, req.(*ChangeSettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // NotificationService_ServiceDesc is the grpc.ServiceDesc for NotificationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +234,14 @@ var NotificationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "getAllForUser",
 			Handler:    _NotificationService_GetAllForUser_Handler,
+		},
+		{
+			MethodName: "getSettingsForUser",
+			Handler:    _NotificationService_GetSettingsForUser_Handler,
+		},
+		{
+			MethodName: "changeSettingsForUser",
+			Handler:    _NotificationService_ChangeSettingsForUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
