@@ -40,6 +40,6 @@ export class PusherComponent  implements OnInit {
       "to" : "JEDIGOVNA",
       "redirectPath" : "/notifications",
       "notificationType" : "POST"
-    }).subscribe(() => console.log('sve super jebise'));
+    }).subscribe(() => console.log(this.notifications));
   }
 }

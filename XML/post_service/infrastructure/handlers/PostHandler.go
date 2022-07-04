@@ -4,6 +4,7 @@ import (
 	common "common/module"
 	"common/module/interceptor"
 	"common/module/logger"
+	notificationProto "common/module/proto/notification_service"
 	pb "common/module/proto/posts_service"
 	"context"
 	"fmt"
@@ -18,10 +19,11 @@ import (
 )
 
 type PostHandler struct {
-	postService *application.PostService
-	userService *application.UserService
-	logInfo     *logger.Logger
-	logError    *logger.Logger
+	postService        *application.PostService
+	userService        *application.UserService
+	logInfo            *logger.Logger
+	logError           *logger.Logger
+	notificationClient notificationProto.NotificationServiceClient
 }
 
 func NewPostHandler(service *application.PostService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger) *PostHandler {
@@ -126,6 +128,26 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 	user, _ := p.userService.GetByUsername(request.Post.Username)
 	post := api.MapNewPost(request.Post, user[0])
 	err := p.postService.Create(post)
+
+	//send notification
+
+	newNoti := &notificationProto.NewNotification{
+		Content:          "New post by " + post.Username + "!",
+		From:             post.Username,
+		To:               post.Username,
+		NotificationType: "POST",
+		RedirectPath:     "/public-profile/" + post.Username + "#posts",
+	}
+
+	noti := &notificationProto.NewNotificationRequest{
+
+		NewNotification: newNoti,
+	}
+
+	_, _ = p.notificationClient.Create(ctx, noti)
+
+	//////////////////////////////////////////////////////////////////////////////////////
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,

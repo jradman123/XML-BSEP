@@ -8,7 +8,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 
-service NotificationService{
+service NotificationService {
 
   rpc getAllSent(GetRequest) returns(Empty) {
     option (google.api.http) = {
