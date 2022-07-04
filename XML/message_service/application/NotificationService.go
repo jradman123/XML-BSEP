@@ -17,7 +17,7 @@ func NewNotificationService(logInfo *logger.Logger, logError *logger.Logger, not
 	return &NotificationService{logInfo: logInfo, logError: logError, notificationRepo: notificationRepo}
 }
 
-func (service *NotificationService) Create(notification *model.Notification) error {
+func (service *NotificationService) Create(notification *model.Notification) (*model.Notification, error) {
 	return service.notificationRepo.Create(notification)
 }
 

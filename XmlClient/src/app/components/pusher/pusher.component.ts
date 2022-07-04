@@ -11,9 +11,12 @@ import { INotification } from 'src/app/interfaces/notification';
 export class PusherComponent  implements OnInit {
   username = 'username';
   message : INotification = {} as INotification
-  notifications! : INotification[];
+  notifications : INotification[] = [];
 
   constructor(private http: HttpClient) {
+    this.notifications.forEach(n => {
+      n = {} as INotification
+    })
   }
 
   ngOnInit(): void {
@@ -23,9 +26,10 @@ export class PusherComponent  implements OnInit {
       cluster: 'eu'
     });
 
-    const channel = pusher.subscribe('notification');
-    channel.bind('message', (data: never) => {
-      this.notifications.push(data);
+    const channel = pusher.subscribe('notifications');
+    channel.bind('notification', (data: never) => {
+      //this.notifications.push(data);
+      console.log(data)
     });
   }
 

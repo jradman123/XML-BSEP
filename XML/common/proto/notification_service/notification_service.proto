@@ -16,7 +16,7 @@ service NotificationService {
     };
   }
 
-  rpc create(NewNotificationRequest) returns(Empty) {
+  rpc create(NewNotificationRequest) returns(NewNotificationResponse) {
     option (google.api.http) = {
       post: "/notifications/create"
       body: "newNotification"
@@ -104,4 +104,8 @@ message NotificationSettings {
 
 message MarkAsReadRequest {
   string id = 1;
+}
+
+message NewNotificationResponse {
+  Notification notification = 1;
 }

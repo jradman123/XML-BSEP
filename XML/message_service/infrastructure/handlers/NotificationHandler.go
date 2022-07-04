@@ -36,7 +36,7 @@ func NewNotificationHandler(logInfo *logger.Logger, logError *logger.Logger, not
 	return &NotificationHandler{logInfo, logError, notificationPusher, notificationService, userService}
 }
 
-func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.NewNotificationRequest) (*pb.Empty, error) {
+func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.NewNotificationRequest) (*pb.NewNotificationResponse, error) {
 	// create Notification object and store it in the database
 	// trigger pusher
 	// check if this notification is blocked for that user
@@ -62,12 +62,15 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 			Type:             notiType,
 		}
 
-		notification := n.notificationService.Create(noti)
+		notification, _ := n.notificationService.Create(noti)
 
+		response := &pb.NewNotificationResponse{Notification: &pb.Notification{}}
+		response.Notification = api.MapNotificationResponse(notification)
 		n.notificationPusher.Trigger("notifications", "notification", notification)
-	}
 
-	return &pb.Empty{}, nil
+		return response, nil
+	}
+	return &pb.NewNotificationResponse{}, nil
 }
 
 func (n NotificationHandler) GetAllForUser(_ context.Context, request *pb.GetAllNotificationRequest) (*pb.GetAllNotificationResponse, error) {

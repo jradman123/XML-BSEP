@@ -16,9 +16,9 @@ func MapNewUser(command *events.UserCommand) *model.User {
 		Username: command.User.Username,
 		Email:    command.User.Email,
 		Settings: model.NotificationSettings{
-			Posts:       false,
-			Messages:    false,
-			Connections: false,
+			Posts:       true,
+			Messages:    true,
+			Connections: true,
 		},
 	}
 	return user
@@ -59,7 +59,7 @@ func MapNewMessage(messageText string, receiverId string, senderId string) *mode
 
 func MapNotificationResponse(notification *model.Notification) *notificationPb.Notification {
 	id := notification.Id.Hex()
-
+	
 	notificationPb := &notificationPb.Notification{
 		Id:               id,
 		Content:          notification.Content,

@@ -24,14 +24,16 @@ func NewNotificationRepositoryImpl(client *mongo.Client) repositories.Notificati
 	}
 }
 
-func (repo NotificationRepositoryImpl) Create(notification *model.Notification) error {
+func (repo NotificationRepositoryImpl) Create(notification *model.Notification) (*model.Notification, error) {
 	result, err := repo.db.InsertOne(context.TODO(), notification)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	notification.Id = result.InsertedID.(primitive.ObjectID)
-
-	return nil
+	createdNotification := repo.db.FindOne(context.TODO(), bson.M{"_id": notification.Id})
+	var retVal model.Notification
+	createdNotification.Decode(&retVal)
+	return &retVal, nil
 }
 
 func (repo NotificationRepositoryImpl) GetAllForUser(username string) ([]*model.Notification, error) {
@@ -66,6 +68,16 @@ func decode(cursor *mongo.Cursor) (notifications []*model.Notification, err erro
 	}
 	err = cursor.Err()
 	return
+}
+func decodeNotification(cursor *mongo.Cursor) (notifications *model.Notification, err error) {
+	var notification model.Notification
+	err = cursor.Decode(&notification)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.Err()
+	return &notification, nil
 }
 
 func (repo NotificationRepositoryImpl) MarkAsRead(id primitive.ObjectID) {
