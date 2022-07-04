@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-type NotificationType int
+type NotificationType int8
 
 const (
-	PROFILE = iota
+	PROFILE NotificationType = iota
 	POST
 	MESSAGE
 )

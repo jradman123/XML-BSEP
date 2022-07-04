@@ -48,20 +48,24 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 		notiType = model.POST
 	}
 
-	noti := &model.Notification{
-		Id:               primitive.NewObjectID(),
-		Timestamp:        time.Now(),
-		Content:          newNotificationReq.NewNotification.Content,
-		NotificationFrom: newNotificationReq.NewNotification.From,
-		NotificationTo:   newNotificationReq.NewNotification.To,
-		Read:             false,
-		RedirectPath:     newNotificationReq.NewNotification.RedirectPath,
-		Type:             model.NotificationType(notiType),
+	result, _ := n.userService.AllowedNotificationForUser(newNotificationReq.NewNotification.To, notiType)
+	if result {
+
+		noti := &model.Notification{
+			Id:               primitive.NewObjectID(),
+			Timestamp:        time.Now(),
+			Content:          newNotificationReq.NewNotification.Content,
+			NotificationFrom: newNotificationReq.NewNotification.From,
+			NotificationTo:   newNotificationReq.NewNotification.To,
+			Read:             false,
+			RedirectPath:     newNotificationReq.NewNotification.RedirectPath,
+			Type:             notiType,
+		}
+
+		notification := n.notificationService.Create(noti)
+
+		n.notificationPusher.Trigger("notifications", "notification", notification)
 	}
-
-	notification := n.notificationService.Create(noti)
-
-	n.notificationPusher.Trigger("notifications", "notification", notification)
 
 	return &pb.Empty{}, nil
 }
