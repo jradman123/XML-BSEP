@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/application"
 	"message/module/domain/model"
+	"message/module/infrastructure/api"
 	"time"
 )
 
@@ -61,4 +62,17 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 	n.notificationPusher.Trigger("notifications", "notification", notification)
 
 	return &pb.Empty{}, nil
+}
+
+func (n NotificationHandler) GetAllForUser(_ context.Context, request *pb.GetAllNotificationRequest) (*pb.GetAllNotificationResponse, error) {
+
+	notifications, _ := n.notificationService.GetAllForUser(request.Username)
+	response := &pb.GetAllNotificationResponse{Notifications: []*pb.Notification{}}
+
+	for _, notification := range notifications {
+		current := api.MapNotificationResponse(notification)
+		response.Notifications = append(response.Notifications, current)
+	}
+
+	return response, nil
 }

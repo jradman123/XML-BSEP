@@ -19,3 +19,7 @@ func NewNotificationService(logInfo *logger.Logger, logError *logger.Logger, not
 func (service *NotificationService) Create(notification *model.Notification) error {
 	return service.notificationRepo.Create(notification)
 }
+
+func (service *NotificationService) GetAllForUser(username string) ([]*model.Notification, error) {
+	return service.notificationRepo.GetAllForUser(username)
+}

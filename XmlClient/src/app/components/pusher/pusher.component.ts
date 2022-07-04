@@ -37,7 +37,7 @@ export class PusherComponent  implements OnInit {
     this.http.post('http://localhost:9090/notifications/create', {
       "content" : this.message.content,
       "from" : this.username,
-      "to" : "JEDIGOVNA",
+      "to" : "nekilijevi",
       "redirectPath" : "/notifications",
       "notificationType" : "POST"
     }).subscribe(() => console.log(this.notifications));

@@ -2,6 +2,7 @@ package api
 
 import (
 	pb "common/module/proto/message_service"
+	notificationPb "common/module/proto/notification_service"
 	events "common/module/saga/user_events"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/domain/model"
@@ -49,4 +50,31 @@ func MapNewMessage(messageText string, receiverId string, senderId string) *mode
 		TimeSent:    time.Now(),
 	}
 	return message
+}
+
+func MapNotificationResponse(notification *model.Notification) *notificationPb.Notification {
+	id := notification.Id.Hex()
+
+	notificationPb := &notificationPb.Notification{
+		Id:               id,
+		Content:          notification.Content,
+		From:             notification.NotificationFrom,
+		To:               notification.NotificationTo,
+		RedirectPath:     notification.RedirectPath,
+		NotificationType: mapNotificationTypeToString(notification.Type),
+	}
+
+	return notificationPb
+}
+
+func mapNotificationTypeToString(notificationType model.NotificationType) string {
+	if notificationType == model.POST {
+		return "POST"
+	}
+	if notificationType == model.MESSAGE {
+		return "MESSAGE"
+	} else {
+		return "PROFILE"
+	}
+
 }
