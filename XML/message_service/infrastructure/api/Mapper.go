@@ -4,10 +4,8 @@ import (
 	pb "common/module/proto/message_service"
 	notificationPb "common/module/proto/notification_service"
 	events "common/module/saga/user_events"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/domain/model"
-	"strconv"
 	"time"
 )
 
@@ -77,9 +75,9 @@ func MapNotificationResponse(notification *model.Notification) *notificationPb.N
 func MapSettingsResponse(settings *model.NotificationSettings) *notificationPb.NotificationSettings {
 
 	settingsPb := &notificationPb.NotificationSettings{
-		Posts:       strconv.FormatBool(settings.Posts),
-		Messages:    strconv.FormatBool(settings.Messages),
-		Connections: strconv.FormatBool(settings.Connections),
+		Posts:       settings.Posts,
+		Messages:    settings.Messages,
+		Connections: settings.Connections,
 	}
 
 	return settingsPb
@@ -87,16 +85,10 @@ func MapSettingsResponse(settings *model.NotificationSettings) *notificationPb.N
 
 func MapChangeSettingsRequest(request *notificationPb.ChangeSettingsRequest) *model.NotificationSettings {
 
-	fmt.Println("usao u mapiranje ")
-
-	postsBool, _ := strconv.ParseBool(request.Settings.Posts)
-	messagesBool, _ := strconv.ParseBool(request.Settings.Messages)
-	connectionsBool, _ := strconv.ParseBool(request.Settings.Connections)
-
 	settingsModel := &model.NotificationSettings{
-		Posts:       postsBool,
-		Messages:    messagesBool,
-		Connections: connectionsBool,
+		Posts:       request.Settings.Posts,
+		Messages:    request.Settings.Messages,
+		Connections: request.Settings.Connections,
 	}
 
 	return settingsModel

@@ -97,7 +97,6 @@ func (n NotificationHandler) ChangeSettingsForUser(_ context.Context, request *p
 	settingsMapped := api.MapChangeSettingsRequest(request)
 	settings, err := n.userService.ChangeSettingsForUser(request.Username, settingsMapped)
 	if err != nil {
-		fmt.Println("greska iz servisa")
 		fmt.Println(err)
 		return &pb.GetSettingsResponse{}, err
 	}

@@ -90,7 +90,7 @@ message ChangeSettingsRequest {
 
 
 message NotificationSettings {
-  string posts = 1;
-  string messages = 2;
-  string connections = 3;
+  bool posts = 1;
+  bool messages = 2;
+  bool connections = 3;
 }
