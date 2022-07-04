@@ -67,3 +67,9 @@ func decode(cursor *mongo.Cursor) (notifications []*model.Notification, err erro
 	err = cursor.Err()
 	return
 }
+
+func (repo NotificationRepositoryImpl) MarkAsRead(id primitive.ObjectID) {
+	repo.db.UpdateOne(context.TODO(), bson.M{"_id": id}, bson.D{
+		{"$set", bson.D{{"read", true}}},
+	})
+}

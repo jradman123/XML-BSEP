@@ -41,6 +41,13 @@ service NotificationService {
       body: "settings"
     };
   }
+
+  rpc markAsRead(MarkAsReadRequest) returns(Empty) {
+    option (google.api.http) = {
+      post: "/notification/read"
+      body : "id"
+    };
+  }
 }
 message GetRequest {
   string username = 1;
@@ -93,4 +100,8 @@ message NotificationSettings {
   bool posts = 1;
   bool messages = 2;
   bool connections = 3;
+}
+
+message MarkAsReadRequest {
+  string id = 1;
 }

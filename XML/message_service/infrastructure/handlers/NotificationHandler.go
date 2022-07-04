@@ -109,3 +109,9 @@ func (n NotificationHandler) ChangeSettingsForUser(_ context.Context, request *p
 
 	return response, nil
 }
+
+func (n NotificationHandler) MarkAsRead(ctx context.Context, request *pb.MarkAsReadRequest) (*pb.Empty, error) {
+	objectId, _ := primitive.ObjectIDFromHex(request.Id)
+	n.notificationService.MarkAsRead(objectId)
+	return &pb.Empty{}, nil
+}
