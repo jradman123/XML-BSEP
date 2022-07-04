@@ -37,8 +37,8 @@ service NotificationService {
 
   rpc changeSettingsForUser(ChangeSettingsRequest) returns(GetSettingsResponse) {
     option (google.api.http) = {
-      post: "/notification/change-settings"
-      body: "newSettings"
+      post: "/notification/change-settings/{username}"
+      body: "settings"
     };
   }
 }
@@ -84,17 +84,13 @@ message GetSettingsResponse {
 }
 
 message ChangeSettingsRequest {
-  NewSettings newSettings = 1;
-}
-
-message NewSettings {
   string username = 1;
   NotificationSettings settings = 2;
 }
 
+
 message NotificationSettings {
-  string id = 1;
-  bool posts = 2;
-  bool messages = 3;
-  bool connections = 4;
+  string posts = 1;
+  string messages = 2;
+  string connections = 3;
 }

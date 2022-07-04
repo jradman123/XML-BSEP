@@ -5,6 +5,7 @@ import (
 	notificationProto "common/module/proto/notification_service"
 	pb "common/module/proto/notification_service"
 	"context"
+	"fmt"
 	"github.com/pusher/pusher-http-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/application"
@@ -89,10 +90,16 @@ func (n NotificationHandler) GetSettingsForUser(_ context.Context, request *pb.G
 
 func (n NotificationHandler) ChangeSettingsForUser(_ context.Context, request *pb.ChangeSettingsRequest) (*pb.GetSettingsResponse, error) {
 
+	fmt.Println("usao u change settings")
+
+	fmt.Println(*request.Settings)
+
 	settingsMapped := api.MapChangeSettingsRequest(request)
-	settings, err := n.userService.ChangeSettingsForUser(request.NewSettings.Username, settingsMapped)
+	settings, err := n.userService.ChangeSettingsForUser(request.Username, settingsMapped)
 	if err != nil {
-		return nil, err
+		fmt.Println("greska iz servisa")
+		fmt.Println(err)
+		return &pb.GetSettingsResponse{}, err
 	}
 	response := &pb.GetSettingsResponse{Settings: &pb.NotificationSettings{}}
 	response.Settings = api.MapSettingsResponse(settings)

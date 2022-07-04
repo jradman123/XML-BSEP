@@ -26,6 +26,8 @@ func NewUserOrchestrator(publisher saga.Publisher, subscriber saga.Subscriber) (
 
 func (o *UserOrchestrator) CreateUser(user *model.User) error {
 
+	fmt.Println("evo me u orchestratoru u create user ")
+
 	events := &events.UserCommand{
 		Type: events.CreateUser,
 		User: events.User{

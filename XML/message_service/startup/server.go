@@ -47,14 +47,14 @@ func (server *Server) Start() {
 	notificationRepo := server.InitNotificationRepo(mongoClient)
 	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo)
 
-	//commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
-	//replyPublisher := server.InitPublisher(server.config.UserReplySubject)
+	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
+	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	userRepo := server.InitUserRepo(mongoClient)
 	userService := server.InitUserService(userRepo, logInfo, logError)
 
 	messageHandler := server.InitMessageHandler(messageService, userService, logInfo, logError)
 	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService, userService)
-	//	server.InitCreateUserCommandHandler(userService, messageService, replyPublisher, commandSubscriber)
+	server.InitCreateUserCommandHandler(userService, messageService, replyPublisher, commandSubscriber)
 
 	server.StartGrpcServer(messageHandler, notificationHandler, logError)
 }

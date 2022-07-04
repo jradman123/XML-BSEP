@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -75,23 +76,13 @@ func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *
 		{"$set", bson.D{{"settings", newSettings}}},
 	})
 	if err != nil {
+		fmt.Println("hehe u repou ne moze update onako")
+		fmt.Println(err)
 		return nil, err
 	}
 	return newSettings, nil
 }
 
-/*
-func (u UserRepositoryImpl) UpdateUser(requestUser *model.User) (user *model.User, err error) {
-	_, err = u.users.UpdateOne(context.TODO(), bson.M{"user_id": user.UserId}, bson.D{
-		{"$set", bson.D{{"username", user.Username}}},
-		{"$set", bson.D{{"email", user.Email}}},
-	})
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-*/
 func (u UserRepositoryImpl) filterOne(filter bson.M) (user *model.User, err error) {
 	result := u.users.FindOne(context.TODO(), filter)
 	err = result.Decode(&user)

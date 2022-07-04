@@ -4,8 +4,10 @@ import (
 	pb "common/module/proto/message_service"
 	notificationPb "common/module/proto/notification_service"
 	events "common/module/saga/user_events"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/domain/model"
+	"strconv"
 	"time"
 )
 
@@ -15,6 +17,11 @@ func MapNewUser(command *events.UserCommand) *model.User {
 		UserId:   command.User.UserId,
 		Username: command.User.Username,
 		Email:    command.User.Email,
+		Settings: model.NotificationSettings{
+			Posts:       false,
+			Messages:    false,
+			Connections: false,
+		},
 	}
 	return user
 }
@@ -68,26 +75,28 @@ func MapNotificationResponse(notification *model.Notification) *notificationPb.N
 }
 
 func MapSettingsResponse(settings *model.NotificationSettings) *notificationPb.NotificationSettings {
-	id := settings.Id.Hex()
 
 	settingsPb := &notificationPb.NotificationSettings{
-		Id:          id,
-		Posts:       settings.Posts,
-		Messages:    settings.Messages,
-		Connections: settings.Connections,
+		Posts:       strconv.FormatBool(settings.Posts),
+		Messages:    strconv.FormatBool(settings.Messages),
+		Connections: strconv.FormatBool(settings.Connections),
 	}
 
 	return settingsPb
 }
 
 func MapChangeSettingsRequest(request *notificationPb.ChangeSettingsRequest) *model.NotificationSettings {
-	id, _ := primitive.ObjectIDFromHex(request.NewSettings.Settings.Id)
+
+	fmt.Println("usao u mapiranje ")
+
+	postsBool, _ := strconv.ParseBool(request.Settings.Posts)
+	messagesBool, _ := strconv.ParseBool(request.Settings.Messages)
+	connectionsBool, _ := strconv.ParseBool(request.Settings.Connections)
+
 	settingsModel := &model.NotificationSettings{
-		Id:          id,
-		Username:    request.NewSettings.Username,
-		Posts:       request.NewSettings.Settings.Posts,
-		Messages:    request.NewSettings.Settings.Messages,
-		Connections: request.NewSettings.Settings.Connections,
+		Posts:       postsBool,
+		Messages:    messagesBool,
+		Connections: connectionsBool,
 	}
 
 	return settingsModel
