@@ -478,6 +478,10 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 		return nil, err
 	}
 	user = api.MapUserProfessionalDetailsDtoToUser(userProfessionalDetails, user)
+	err = u.orchestrator.EditConnectionUserProfessionalDetails(user)
+	if err != nil {
+		return nil, err
+	}
 	edited, e := u.userRepository.EditUserDetails(user)
 	if e != nil {
 		return nil, e

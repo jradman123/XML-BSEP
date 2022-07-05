@@ -74,6 +74,11 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand)
 		}
 		reply.Type = events.ProfileStatusChanged
 	case events.UpdateUserProfessionalDetails:
+		err := handler.service.UpdateUserProfessionalDetails(user)
+		if err != nil {
+			reply.Type = events.UserRolledBack
+		}
+		reply.Type = events.ProfileStatusChanged
 		fmt.Println("events.UpdateUserProfessionalDetails")
 	default:
 		reply.Type = events.UnknownReply

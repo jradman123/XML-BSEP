@@ -218,3 +218,8 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 	}
 	return nil
 }
+
+func (u UserRepositoryImpl) UpdateUserProfessionalDetails(m *connectionModel.User) error {
+	//TODO implement me
+	panic("implement me")
+}
