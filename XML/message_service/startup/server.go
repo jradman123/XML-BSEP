@@ -31,8 +31,9 @@ func NewServer(config *config.Config) *Server {
 }
 
 const (
-	QueueGroupUser = "message_service_user"
-	QueueGroupPost = "message_service_post"
+	QueueGroupUser       = "message_service_user"
+	QueueGroupPost       = "message_service_post"
+	QueueGroupConnection = "message_service_connection"
 )
 
 func (server *Server) Start() {
@@ -61,6 +62,11 @@ func (server *Server) Start() {
 	postCommandSubscriber := server.InitSubscriber(server.config.PostNotificationCommandSubject, QueueGroupPost)
 
 	server.InitPostNotificationCommandHandler(notificationService, postReplyPublisher, postCommandSubscriber)
+
+	connectionReplyPublisher := server.InitPublisher(server.config.ConnectionNotificationReplySubject)
+	connectionCommandSubscriber := server.InitSubscriber(server.config.ConnectionNotificationCommandSubject, QueueGroupConnection)
+
+	server.InitConnectionNotificationCommandHandler(notificationService, connectionReplyPublisher, connectionCommandSubscriber)
 
 	server.StartGrpcServer(messageHandler, notificationHandler, logError)
 }
@@ -127,6 +133,15 @@ func (server *Server) InitCreateUserCommandHandler(userService *application.User
 func (server *Server) InitPostNotificationCommandHandler(service *application.NotificationService, publisher saga.Publisher,
 	subscriber saga.Subscriber) *handlers.NotificationCommandHandler {
 	handler, err := handlers.NewNotificationCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
+
+func (server *Server) InitConnectionNotificationCommandHandler(service *application.NotificationService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.ConnectionNotificationCommandHandler {
+	handler, err := handlers.NewConnectionNotificationCommandHandler(service, publisher, subscriber)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

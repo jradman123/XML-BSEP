@@ -9,6 +9,7 @@ import (
 	"connection/module/application/services"
 	"connection/module/domain/repositories"
 	"connection/module/infrastructure/handlers"
+	"connection/module/infrastructure/orchestrators"
 	"connection/module/infrastructure/persistance"
 	"connection/module/startup/config"
 	"context"
@@ -31,7 +32,7 @@ func NewServer(config *config.Config) *Server {
 }
 
 const (
-	QueueGroup = "connection_service"
+	QueueGroupConnection = "connection_service_connection"
 )
 
 func (server *Server) Start() {
@@ -41,15 +42,20 @@ func (server *Server) Start() {
 	fmt.Println("starting connection service server")
 	neoClient := server.SetupDatabase()
 
+	commandPublisher := server.InitPublisher(server.config.ConnectionNotificationCommandSubject)
+	replySubscriber := server.InitSubscriber(server.config.ConnectionNotificationReplySubject, QueueGroupConnection)
+
+	orchestrator := server.InitOrchestrator(commandPublisher, replySubscriber)
+
 	connectionRepo := server.InitConnectionRepository(neoClient, logInfo, logError)
-	connectionService := server.InitConnectionService(connectionRepo, logInfo, logError)
+	connectionService := server.InitConnectionService(connectionRepo, logInfo, logError, orchestrator)
 
 	userRepo := server.InitUserRepository(neoClient, logInfo, logError, connectionRepo)
 	userService := server.InitUserService(userRepo, logInfo, logError)
 
 	connectionHandler := server.InitConnectionHandler(connectionService, userService, logInfo, logError)
 
-	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
+	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroupConnection)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
 
@@ -100,8 +106,8 @@ func GetClient(uri, username, password string) (*neo4j.Driver, error) {
 func (server *Server) InitConnectionHandler(conSer *services.ConnectionService, userSer *services.UserService, logInfo *logger.Logger, logError *logger.Logger) *handlers.ConnectionHandler {
 	return handlers.NewConnectionHandler(conSer, userSer, logInfo, logError)
 }
-func (server *Server) InitConnectionService(repo repositories.ConnectionRepository, logInfo *logger.Logger, logError *logger.Logger) *services.ConnectionService {
-	return services.NewConnectionService(repo, logInfo, logError)
+func (server *Server) InitConnectionService(repo repositories.ConnectionRepository, logInfo *logger.Logger, logError *logger.Logger, orchestrator *orchestrators.ConnectionOrchestrator) *services.ConnectionService {
+	return services.NewConnectionService(repo, logInfo, logError, orchestrator)
 }
 
 func (server *Server) InitConnectionRepository(client *neo4j.Driver, logInfo *logger.Logger, logError *logger.Logger) repositories.ConnectionRepository {
@@ -143,4 +149,12 @@ func (server *Server) InitCreateUserCommandHandler(service *services.UserService
 		log.Fatalf("failed to listen: %v", err)
 	}
 	return handler
+}
+
+func (server *Server) InitOrchestrator(publisher saga.Publisher, subscriber saga.Subscriber) *orchestrators.ConnectionOrchestrator {
+	orchestrator, err := orchestrators.NewConnectionOrchestrator(publisher, subscriber)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return orchestrator
 }
