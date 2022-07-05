@@ -74,11 +74,10 @@ func (server *Server) StartGrpcServer(handler *handlers.ConnectionHandler, logEr
 	if err != nil {
 		log.Fatalf("failed to parse public key: %v", err)
 	}
-	//interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
 	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
-	connectionProto.RegisterConnectionServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
+	connectionProto.RegisterConnectionServiceServer(grpcServer, handler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
@@ -86,14 +85,13 @@ func (server *Server) StartGrpcServer(handler *handlers.ConnectionHandler, logEr
 
 func GetClient(uri, username, password string) (*neo4j.Driver, error) {
 
-	auth := neo4j.BasicAuth("neo4j", "ylKdorKc9bvWSuy5lICTfAfT5G9suZevX5UuSkWchlY", "")
-	driver, err := neo4j.NewDriver("neo4j+s://525ffd8e.databases.neo4j.io", auth)
+	auth := neo4j.BasicAuth(username, password, "")
+	driver, err := neo4j.NewDriver(uri, auth)
 	if err != nil {
 		fmt.Println("nije se naprvaio neo4j klijent")
 		fmt.Println(err)
 		return nil, err
 	}
-
 	return &driver, nil //TODO: ref driver ?
 }
 
