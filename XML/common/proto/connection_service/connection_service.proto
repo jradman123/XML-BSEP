@@ -19,6 +19,12 @@ service ConnectionService{
     };
   }
 
+  rpc GetRecommendedNewConnections(GetRequest) returns(Users) {
+    option (google.api.http) = {
+      get: "/connection/recommended/{username}"
+    };
+  }
+
   rpc CreateConnection(NewConnection) returns (ConnectionResponse) {
     option (google.api.http) = {
       post: "/connection/new"

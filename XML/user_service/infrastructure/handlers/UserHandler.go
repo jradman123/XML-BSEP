@@ -495,8 +495,6 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 
 func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.UserPersonalDetailsRequest) (*pb.UserPersonalDetails, error) {
 
-	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-
 	userPersonalDetails := api.MapPbUserPersonalDetailsToUser(request)
 	if err := u.validator.Struct(userPersonalDetails); err != nil {
 		fmt.Println(err)

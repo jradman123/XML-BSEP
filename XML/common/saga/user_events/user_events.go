@@ -29,6 +29,7 @@ const (
 	DeleteUser
 	ActivateUser
 	ChangeProfileStatus
+	UpdateUserProfessionalDetails
 	RollbackUser
 	UnknownCommand
 )
@@ -80,6 +81,10 @@ type ConnectionUser struct {
 	FirstName     string
 	LastName      string
 	ProfileStatus string
+	Interests     []string
+	Skills        []string
+	Educations    []string
+	Experiences   []string
 }
 
 type ConnectionUserCommand struct {

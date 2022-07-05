@@ -20,6 +20,12 @@ export class ConnectionService {
     );
   }
 
+  getUsersRecommendation(username: string) {
+    return this._http.get<any>(
+      'http://localhost:9090/connection/recommended/' + username
+    );
+  }
+
   connectUsers(senderUsername: string, recieverUsername: string){
     return this._http.post<any>(
       'http://localhost:9090/connection/new', {

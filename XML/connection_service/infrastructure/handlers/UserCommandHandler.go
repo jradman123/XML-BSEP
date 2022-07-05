@@ -54,6 +54,7 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand)
 
 		// TODO:Cannot update users' username
 	case events.UpdateUser:
+		fmt.Println("events.UpdateUser")
 		err := handler.service.UpdateUser(user)
 		if err != nil {
 			reply.Type = events.UserRolledBack
@@ -72,6 +73,8 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand)
 			reply.Type = events.UserRolledBack
 		}
 		reply.Type = events.ProfileStatusChanged
+	case events.UpdateUserProfessionalDetails:
+		fmt.Println("events.UpdateUserProfessionalDetails")
 	default:
 		reply.Type = events.UnknownReply
 	}

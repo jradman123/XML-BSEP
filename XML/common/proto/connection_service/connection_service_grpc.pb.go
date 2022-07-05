@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ConnectionServiceClient interface {
 	GetConnections(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Users, error)
 	GetConnectionRequests(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Users, error)
+	GetRecommendedNewConnections(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Users, error)
 	CreateConnection(ctx context.Context, in *NewConnection, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	AcceptConnection(ctx context.Context, in *NewConnection, opts ...grpc.CallOption) (*ConnectionResponse, error)
 	ConnectionStatusForUsers(ctx context.Context, in *NewConnection, opts ...grpc.CallOption) (*ConnectionResponse, error)
@@ -50,6 +51,15 @@ func (c *connectionServiceClient) GetConnections(ctx context.Context, in *GetReq
 func (c *connectionServiceClient) GetConnectionRequests(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Users, error) {
 	out := new(Users)
 	err := c.cc.Invoke(ctx, "/connection_service.ConnectionService/GetConnectionRequests", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *connectionServiceClient) GetRecommendedNewConnections(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*Users, error) {
+	out := new(Users)
+	err := c.cc.Invoke(ctx, "/connection_service.ConnectionService/GetRecommendedNewConnections", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +108,7 @@ func (c *connectionServiceClient) BlockUser(ctx context.Context, in *NewConnecti
 type ConnectionServiceServer interface {
 	GetConnections(context.Context, *GetRequest) (*Users, error)
 	GetConnectionRequests(context.Context, *GetRequest) (*Users, error)
+	GetRecommendedNewConnections(context.Context, *GetRequest) (*Users, error)
 	CreateConnection(context.Context, *NewConnection) (*ConnectionResponse, error)
 	AcceptConnection(context.Context, *NewConnection) (*ConnectionResponse, error)
 	ConnectionStatusForUsers(context.Context, *NewConnection) (*ConnectionResponse, error)
@@ -114,6 +125,9 @@ func (UnimplementedConnectionServiceServer) GetConnections(context.Context, *Get
 }
 func (UnimplementedConnectionServiceServer) GetConnectionRequests(context.Context, *GetRequest) (*Users, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetConnectionRequests not implemented")
+}
+func (UnimplementedConnectionServiceServer) GetRecommendedNewConnections(context.Context, *GetRequest) (*Users, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRecommendedNewConnections not implemented")
 }
 func (UnimplementedConnectionServiceServer) CreateConnection(context.Context, *NewConnection) (*ConnectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConnection not implemented")
@@ -172,6 +186,24 @@ func _ConnectionService_GetConnectionRequests_Handler(srv interface{}, ctx conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConnectionServiceServer).GetConnectionRequests(ctx, req.(*GetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConnectionService_GetRecommendedNewConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConnectionServiceServer).GetRecommendedNewConnections(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/connection_service.ConnectionService/GetRecommendedNewConnections",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConnectionServiceServer).GetRecommendedNewConnections(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -262,6 +294,10 @@ var ConnectionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetConnectionRequests",
 			Handler:    _ConnectionService_GetConnectionRequests_Handler,
+		},
+		{
+			MethodName: "GetRecommendedNewConnections",
+			Handler:    _ConnectionService_GetRecommendedNewConnections_Handler,
 		},
 		{
 			MethodName: "CreateConnection",

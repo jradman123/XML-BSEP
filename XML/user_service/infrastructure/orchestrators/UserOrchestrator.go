@@ -5,6 +5,7 @@ import (
 	events "common/module/saga/user_events"
 	"fmt"
 	"user/module/domain/model"
+	"user/module/infrastructure/api"
 )
 
 type UserOrchestrator struct {
@@ -104,6 +105,10 @@ func (o *UserOrchestrator) CreateConnectionUser(user *model.User) error {
 			FirstName:     user.FirstName,
 			LastName:      user.LastName,
 			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
 		},
 	}
 
@@ -126,6 +131,26 @@ func (o *UserOrchestrator) EditConnectionUser(user *model.User) error {
 	return o.commandPublisher.Publish(events)
 }
 
+func (o *UserOrchestrator) EditConnectionUserProfessionalDetails(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.UpdateUserProfessionalDetails,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
 func (o *UserOrchestrator) DeleteConnectionUser(user *model.User) error {
 
 	events := &events.ConnectionUserCommand{
@@ -136,6 +161,10 @@ func (o *UserOrchestrator) DeleteConnectionUser(user *model.User) error {
 			FirstName:     user.FirstName,
 			LastName:      user.LastName,
 			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
 		},
 	}
 
@@ -152,6 +181,10 @@ func (o *UserOrchestrator) ChangeProfileStatus(user *model.User) error {
 			FirstName:     user.FirstName,
 			LastName:      user.LastName,
 			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
 		},
 	}
 

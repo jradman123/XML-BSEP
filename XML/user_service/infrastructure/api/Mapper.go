@@ -453,3 +453,43 @@ func MapUserToUserProfessionalDetails(user *model.User) *pb.UserProfessionalDeta
 	}
 	return userProfessionalDetails
 }
+
+func MapToStringArrayInterests(interests []model.Interest) []string {
+	var strings []string
+	if len(interests) > 0 {
+		for _, s := range interests {
+			strings = append(strings, s.Interest)
+		}
+	}
+	return strings
+}
+
+func MapToStringArraySkills(skills []model.Skill) []string {
+	var strings []string
+	if len(skills) > 0 {
+		for _, s := range skills {
+			strings = append(strings, s.Skill)
+		}
+	}
+	return strings
+}
+
+func MapToStringArrayEducations(educations []model.Education) []string {
+	var strings []string
+	if len(educations) > 0 {
+		for _, s := range educations {
+			strings = append(strings, s.Education)
+		}
+	}
+	return strings
+}
+
+func MapToStringArrayExperiences(experiences []model.Experience) []string {
+	var strings []string
+	if len(experiences) > 0 {
+		for _, s := range experiences {
+			strings = append(strings, s.Experience)
+		}
+	}
+	return strings
+}
