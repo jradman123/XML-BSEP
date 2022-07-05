@@ -3,6 +3,7 @@ package api
 import (
 	pb "common/module/proto/message_service"
 	notificationPb "common/module/proto/notification_service"
+	postEvents "common/module/saga/post_events"
 	events "common/module/saga/user_events"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/domain/model"
@@ -22,6 +23,29 @@ func MapNewUser(command *events.UserCommand) *model.User {
 		},
 	}
 	return user
+}
+
+func MapNewPostNotification(command *postEvents.PostNotificationCommand) *model.Notification {
+
+	notification := &model.Notification{
+		Id:               primitive.NewObjectID(),
+		Timestamp:        time.Now(),
+		Content:          command.Notification.Content,
+		RedirectPath:     command.Notification.RedirectPath,
+		Read:             false,
+		Type:             model.POST,
+		NotificationFrom: command.Notification.NotificationFrom,
+		NotificationTo:   command.Notification.NotificationTo,
+	}
+
+	return notification
+}
+
+func MapPostNotificationReply(replyType postEvents.PostNotificationReplyType) (reply *postEvents.PostNotificationReply) {
+	reply = &postEvents.PostNotificationReply{
+		Type: replyType,
+	}
+	return reply
 }
 
 func MapUserReply(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
@@ -59,7 +83,7 @@ func MapNewMessage(messageText string, receiverId string, senderId string) *mode
 
 func MapNotificationResponse(notification *model.Notification) *notificationPb.Notification {
 	id := notification.Id.Hex()
-	
+
 	notificationPb := &notificationPb.Notification{
 		Id:               id,
 		Content:          notification.Content,

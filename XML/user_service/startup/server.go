@@ -39,7 +39,7 @@ func NewServer(config *config.Config) *Server {
 }
 
 const (
-	QueueGroup = "user_service"
+	QueueGroup = "user_service_user"
 )
 
 func (server *Server) Start() {

@@ -6,16 +6,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
+	"post/module/infrastructure/orchestrators"
 )
 
 type PostService struct {
-	repository repositories.PostRepository
-	logInfo    *logger.Logger
-	logError   *logger.Logger
+	repository   repositories.PostRepository
+	logInfo      *logger.Logger
+	logError     *logger.Logger
+	orchestrator *orchestrators.PostOrchestrator
 }
 
-func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger) *PostService {
-	return &PostService{repository: repository, logInfo: logInfo, logError: logError}
+func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger, orchestrator *orchestrators.PostOrchestrator) *PostService {
+	return &PostService{repository: repository, logInfo: logInfo, logError: logError, orchestrator: orchestrator}
 }
 
 func (service *PostService) Get(id primitive.ObjectID) (*model.Post, error) {
@@ -39,6 +41,7 @@ func (service *PostService) CreateComment(post *model.Post, comment *model.Comme
 }
 
 func (service *PostService) LikePost(post *model.Post, userId uuid.UUID) error {
+	service.orchestrator.LikePost(post.Id, userId.String(), post.Username)
 	return service.repository.LikePost(post, userId)
 }
 

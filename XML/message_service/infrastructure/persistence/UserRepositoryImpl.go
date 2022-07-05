@@ -2,7 +2,6 @@ package persistence
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -76,8 +75,6 @@ func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *
 		{"$set", bson.D{{"settings", newSettings}}},
 	})
 	if err != nil {
-		fmt.Println("hehe u repou ne moze update onako")
-		fmt.Println(err)
 		return nil, err
 	}
 	return newSettings, nil

@@ -31,7 +31,8 @@ func NewServer(config *config.Config) *Server {
 }
 
 const (
-	QueueGroup = "message_service"
+	QueueGroupUser = "message_service_user"
+	QueueGroupPost = "message_service_post"
 )
 
 func (server *Server) Start() {
@@ -45,9 +46,9 @@ func (server *Server) Start() {
 	messageService := server.InitMessageService(messageRepo, logInfo, logError)
 
 	notificationRepo := server.InitNotificationRepo(mongoClient)
-	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo)
+	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo, &notificationPusher)
 
-	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
+	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroupUser)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	userRepo := server.InitUserRepo(mongoClient)
 	userService := server.InitUserService(userRepo, logInfo, logError)
@@ -55,6 +56,11 @@ func (server *Server) Start() {
 	messageHandler := server.InitMessageHandler(messageService, userService, logInfo, logError)
 	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService, userService)
 	server.InitCreateUserCommandHandler(userService, messageService, replyPublisher, commandSubscriber)
+
+	postReplyPublisher := server.InitPublisher(server.config.PostNotificationReplySubject)
+	postCommandSubscriber := server.InitSubscriber(server.config.PostNotificationCommandSubject, QueueGroupPost)
+
+	server.InitPostNotificationCommandHandler(notificationService, postReplyPublisher, postCommandSubscriber)
 
 	server.StartGrpcServer(messageHandler, notificationHandler, logError)
 }
@@ -118,6 +124,15 @@ func (server *Server) InitCreateUserCommandHandler(userService *application.User
 	return handler
 }
 
+func (server *Server) InitPostNotificationCommandHandler(service *application.NotificationService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.NotificationCommandHandler {
+	handler, err := handlers.NewNotificationCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
+
 func (server *Server) StartGrpcServer(messageHandler *handlers.MessageHandler, notificationHandler *handlers.NotificationHandler, logError *logger.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {
@@ -150,8 +165,8 @@ func (server *Server) InitNotificationRepo(client *mongo.Client) repositories.No
 	return persistence.NewNotificationRepositoryImpl(client)
 }
 
-func (server *Server) InitNotificationService(info *logger.Logger, logError *logger.Logger, repo repositories.NotificationRepository) *application.NotificationService {
-	return application.NewNotificationService(info, logError, repo)
+func (server *Server) InitNotificationService(info *logger.Logger, logError *logger.Logger, repo repositories.NotificationRepository, pusher *pusher.Client) *application.NotificationService {
+	return application.NewNotificationService(info, logError, repo, pusher)
 }
 
 func (server *Server) InitNotificationHandler(info *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, service *application.NotificationService, userService *application.UserService) *handlers.NotificationHandler {

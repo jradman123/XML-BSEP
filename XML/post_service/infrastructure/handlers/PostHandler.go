@@ -129,25 +129,6 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 	post := api.MapNewPost(request.Post, user[0])
 	err := p.postService.Create(post)
 
-	//send notification
-
-	newNoti := &notificationProto.NewNotification{
-		Content:          "New post by " + post.Username + "!",
-		From:             post.Username,
-		To:               post.Username,
-		NotificationType: "POST",
-		RedirectPath:     "/public-profile/" + post.Username + "#posts",
-	}
-
-	noti := &notificationProto.NewNotificationRequest{
-
-		NewNotification: newNoti,
-	}
-
-	_, _ = p.notificationClient.Create(ctx, noti)
-
-	//////////////////////////////////////////////////////////////////////////////////////
-
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
@@ -210,7 +191,6 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 		}).Errorf("ERR:LIKE POST")
 		return nil, err
 	}
-
 	return &pb.Empty{}, nil
 }
 
