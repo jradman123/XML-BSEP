@@ -10,13 +10,15 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
-import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
-import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
-import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
 import { PusherComponent } from './components/pusher/pusher.component';
+import { PostsViewComponent } from './components/posts-view/posts-view.component';
+import { PostCreateFileComponent } from './components/post-create-file/post-create-file.component';
+import { PublicProfileComponent } from './components/public-profile/public-profile.component';
+import { NetworkComponent } from './components/network/network.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 const routes: Routes = [
   {
@@ -36,6 +38,18 @@ const routes: Routes = [
         component: NewJobOfferComponent,canActivate: [AuthGuard]
       }
     ],*/
+  },
+  {
+    path : 'public-profile/:username',
+    component: PublicProfileComponent
+  },
+  {
+    path : 'posts',
+    component: PostsViewComponent,
+  },
+  {
+    path : 'post-create',
+    component: PostCreateFileComponent,
   },
   {
     path: 'people',
@@ -67,14 +81,6 @@ const routes: Routes = [
     component: ActivateAccountComponent,
   },
   {
-    path: 'passwordlessReq',
-    component: PassLessReqComponent,
-  },
-  {
-    path: 'passwordlessLogin',
-    component: PassLessLoginComponent,
-  },
-  {
     path: 'jobOffers',
     component: JobOfferComponent,// canActivate: [AuthGuard]
   },
@@ -89,7 +95,17 @@ const routes: Routes = [
   {
     path: 'pusher',
     component: PusherComponent
+  },
+  {
+    path: 'network',
+    component: NetworkComponent, canActivate: [AuthGuardRegular]
+  },
+  {
+    path: '404',
+    component: NotFoundComponent,
   }
+
+
 ];
 
 @NgModule({

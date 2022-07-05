@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
@@ -7,6 +7,7 @@ import { ExperienceDto } from 'src/app/interfaces/experience-dto';
 import { InterestDto } from 'src/app/interfaces/interest-dto';
 import { SkillDto } from 'src/app/interfaces/skill-dto';
 import { UserDetails } from 'src/app/interfaces/user-details';
+import { UserProfessionalDetails } from 'src/app/interfaces/user-professional-details';
 import { UserService } from 'src/app/services/user-service/user.service';
 import { EducationDialogComponent } from '../dialogs/education-dialog/education-dialog.component';
 
@@ -17,8 +18,14 @@ import { EducationDialogComponent } from '../dialogs/education-dialog/education-
 })
 export class ProfileAboutComponent implements OnInit {
 
+    
+  @Input()
+  user! : UserDetails;
   sub!: Subscription;
   userDetails! : UserDetails;
+
+  storageUsername : string | null = '';
+
   id!: number;
   skills! : SkillDto[];
   educations! : EducationDto[];
@@ -33,6 +40,7 @@ export class ProfileAboutComponent implements OnInit {
   education! : string;
   experience! : string;
   initialDetails : any;
+  userProfessionalDetails! : UserProfessionalDetails;
   constructor(private userService : UserService,private matDialog : MatDialog,private _snackBar : MatSnackBar) {
       this.skills = [] as SkillDto[];
       this.educations = [] as EducationDto[];
@@ -46,23 +54,33 @@ export class ProfileAboutComponent implements OnInit {
       this.skill = "";
       this.experience = "";
       this.interest = "";
+      this.userProfessionalDetails = {} as UserProfessionalDetails;
+      this.userDetails = {} as UserDetails;
    }
 
   ngOnInit(): void {
+    this.storageUsername = localStorage.getItem('username');
     this.getUserDetails();
   }
+
   getUserDetails() {
     this.sub = this.userService.getUserDetails(localStorage.getItem('username')).subscribe({
       next: (data: UserDetails) => {
         this.userDetails = data
         this.skills = data.skills;
-        this.interests = data.interests;
-        this.experiences = data.experiences;
+        this.interests=data.interests;
         this.educations = data.educations;
+        this.experiences = data.experiences;
+        this.userProfessionalDetails.username = this.userDetails.username;
+        this.userProfessionalDetails.skills = data.skills;
+        this.userProfessionalDetails.interests = data.interests;
+        this.userProfessionalDetails.experiences = data.experiences;
+        this.userProfessionalDetails.educations = data.educations;
       },
     });
   }
-
+  
+  
     openEducationDialog() {
       const dialogConfig = new MatDialogConfig();
       dialogConfig.disableClose = false;
@@ -130,7 +148,7 @@ export class ProfileAboutComponent implements OnInit {
     save() {
       this.createUserDetails();
       
-      this.userService.updateUser(this.userDetails).subscribe({
+      this.userService.updateUserProfessionalDetails(this.userProfessionalDetails).subscribe({
         next: () => {
           this.skills = [] as SkillDto[];
         this.educations = [] as EducationDto[];
@@ -144,39 +162,41 @@ export class ProfileAboutComponent implements OnInit {
         this.skill = "";
         this.experience = "";
         this.interest = "";
-          this.getUserDetails();
+        this.getUserDetails();
+
         }});
   
     }
   
     createUserDetails(): void {
+      this.userProfessionalDetails.username = this.user.username;
       this.newSkill.skill = this.skill
       if(this.skill == ""){
-        this.userDetails.skills = this.skills;
+        this.userProfessionalDetails.skills = this.skills;
       }else{
         this.skills.push(this.newSkill);
-        this.userDetails.skills = this.skills;
+        this.userProfessionalDetails.skills = this.skills;
       }
       this.newEducation.education = this.education
       if(this.newEducation.education == ""){
-        this.userDetails.educations =this.educations;
+        this.userProfessionalDetails.educations =this.educations;
       }else{
         this.educations.push(this.newEducation);
-        this.userDetails.educations =this.educations;
+        this.userProfessionalDetails.educations =this.educations;
       }
       this.newExperience.experience = this.experience
       if(this.newExperience.experience == ""){
-        this.userDetails.experiences = this.experiences;
+        this.userProfessionalDetails.experiences = this.experiences;
       }else{
         this.experiences.push(this.newExperience);
-        this.userDetails.experiences = this.experiences;
+        this.userProfessionalDetails.experiences = this.experiences;
       }
       this.newInterest.interest = this.interest
       if(this.newInterest.interest == ""){
-        this.userDetails.interests = this.interests;
+        this.userProfessionalDetails.interests = this.interests;
       }else{
         this.interests.push(this.newInterest);
-        this.userDetails.interests = this.interests;
+        this.userProfessionalDetails.interests = this.interests;
       }
     }
   }

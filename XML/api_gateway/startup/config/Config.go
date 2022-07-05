@@ -15,6 +15,8 @@ type Config struct {
 	UserDBPass  string
 	MessageHost string
 	MessagePort string
+	ConnectionsHost string
+	ConnectionsPort string
 }
 
 func NewConfig() *Config {
@@ -32,5 +34,7 @@ func NewConfig() *Config {
 		UserDBName: os.Getenv("USER_DB_NAME"),
 		UserDBUser: os.Getenv("USER_DB_USER"),
 		UserDBPass: os.Getenv("USER_DB_PASS"),
+		ConnectionsPort: "8084",
+		ConnectionsHost: "connection_service",
 	}
 }

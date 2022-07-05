@@ -2,7 +2,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Education</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let education of userDetails?.educations">
+        <div class="form-check" *ngFor="let education of userProfessionalDetails?.educations">
           <label class="form-check-label" for="changesMade">
             {{education.education}}
           </label>
@@ -10,7 +10,7 @@
       </div>
       <div class="col-md-4 col-lg-4">
         <div class="form-check">
-          <button class="btn" (click)="openEducationDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
+          <button *ngIf="storageUsername === user.username" class="btn" (click)="openEducationDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
         </div>
       </div>
     </div>
@@ -18,7 +18,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Experiences</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let experience of userDetails?.experiences">
+        <div class="form-check" *ngFor="let experience of userProfessionalDetails?.experiences">
           <label class="form-check-label" for="changesMade" >
             {{experience.experience}}
           </label>
@@ -26,7 +26,7 @@
       </div>
       <div class="col-md-4 col-lg-4">
         <div class="form-check">
-          <button class="btn" (click)="openExperienceDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
+          <button *ngIf="storageUsername === user.username" class="btn" (click)="openExperienceDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Skills</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let skill of userDetails?.skills">
+        <div class="form-check" *ngFor="let skill of userProfessionalDetails?.skills">
           <label class="form-check-label" for="changesMade" >
             {{skill.skill}}
           </label>
@@ -42,7 +42,7 @@
       </div>
       <div class="col-md-4 col-lg-4">
         <div class="form-check">
-          <button class="btn" (click)="openSkillDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
+          <button *ngIf="storageUsername === user.username" class="btn" (click)="openSkillDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
         </div>
       </div>
     </div>
@@ -50,7 +50,7 @@
     <div class="row mb-3">
       <label for="fullName" class="col-md-4 col-lg-4 col-form-label">Interests</label>
       <div class="col-md-4 col-lg-4">
-        <div class="form-check" *ngFor="let interest of userDetails?.interests">
+        <div class="form-check" *ngFor="let interest of userProfessionalDetails?.interests">
           <label class="form-check-label" for="changesMade">
             {{interest.interest}}
           </label>
@@ -58,7 +58,7 @@
       </div>
       <div class="col-md-4 col-lg-4">
         <div class="form-check">
-          <button class="btn" (click)="openInterestDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
+          <button *ngIf="storageUsername === user.username" class="btn" (click)="openInterestDialog()"><i class="bi bi-plus" style="font-size: 25px;"></i></button>
         </div>
       </div>
     </div>

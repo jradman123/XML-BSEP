@@ -5,6 +5,7 @@ import (
 	events "common/module/saga/user_events"
 	"fmt"
 	"user/module/domain/model"
+	"user/module/infrastructure/api"
 )
 
 type UserOrchestrator struct {
@@ -18,6 +19,10 @@ func NewUserOrchestrator(publisher saga.Publisher, subscriber saga.Subscriber) (
 		replySubscriber:  subscriber,
 	}
 	err := o.replySubscriber.Subscribe(o.handle) //slusa odgovore
+	if err != nil {
+		return nil, err
+	}
+	err = o.replySubscriber.Subscribe(o.handleConnection) //slusa odgovore connection servisa nadam se
 	if err != nil {
 		return nil, err
 	}
@@ -80,4 +85,108 @@ func (o *UserOrchestrator) handle(reply *events.UserReply) events.UserReplyType 
 	fmt.Println("BAAAAAAACKS")
 	return events.UnknownReply
 
+}
+
+func (o *UserOrchestrator) handleConnection(reply *events.UserConnectionReply) events.UserReplyType {
+	//TODO:We check what is the next command type
+	//TODO:handle rollback if needed
+	fmt.Println("BAAAAAAACKS connection")
+	return events.UnknownReply
+
+}
+
+func (o *UserOrchestrator) CreateConnectionUser(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.CreateUser,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *UserOrchestrator) EditConnectionUser(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.UpdateUser,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *UserOrchestrator) EditConnectionUserProfessionalDetails(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.UpdateUserProfessionalDetails,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *UserOrchestrator) DeleteConnectionUser(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.DeleteUser,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *UserOrchestrator) ChangeProfileStatus(user *model.User) error {
+
+	events := &events.ConnectionUserCommand{
+		Type: events.ChangeProfileStatus,
+		User: events.ConnectionUser{
+			UserUID:       user.ID.String(),
+			Username:      user.Username,
+			FirstName:     user.FirstName,
+			LastName:      user.LastName,
+			ProfileStatus: string(user.ProfileStatus),
+			Interests:     api.MapToStringArrayInterests(user.Interests),
+			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
+			Educations:    api.MapToStringArrayEducations(user.Educations),
+			Skills:        api.MapToStringArraySkills(user.Skills),
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
 }

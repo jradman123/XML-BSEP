@@ -1,0 +1,51 @@
+.main {
+    margin-top:100px
+}
+
+.sidenav {
+    height: 100%;
+    width: 100%; 
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidenav a:hover {
+    color: grey;
+  }
+
+  .nw-title { 
+    font-family: 'Segoe UI', sans-serif;
+    color: #012970;
+  } 
+  
+  @media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+  }
+
+  .block {
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #abb0dd;
+
+    background-color: #012a70c0;
+    padding: 14px 28px;
+    font-size: 23px;
+    line-height: 28px;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    color: white;
+  }
+
+  .col-xl-9 {
+    width: 73% !important;
+  }
+
+  .card-ride {
+    border: 1px solid #abb0dd;
+    border-radius: 3%;
+    margin-left: 5px;
+
+  }

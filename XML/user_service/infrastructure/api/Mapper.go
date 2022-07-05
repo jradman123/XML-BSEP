@@ -36,6 +36,11 @@ func MapUserToPbResponseUser(user *model.User) *pb.RegisteredUser {
 	return usersPb
 }
 func MapDtoToUser(userPb *dto.NewUser) *model.User {
+	status := model.Public
+	if userPb.ProfileStatus == "PRIVATE" {
+		status = model.Private
+	}
+
 	userD := &model.User{
 		ID:            uuid.New(),
 		FirstName:     userPb.FirstName,
@@ -49,6 +54,7 @@ func MapDtoToUser(userPb *dto.NewUser) *model.User {
 		Role:          model.Regular,
 		IsConfirmed:   false,
 		RecoveryEmail: userPb.RecoveryEmail,
+		ProfileStatus: status,
 	}
 	return userD
 }
@@ -189,6 +195,7 @@ func MapPbUserToNewUserDto(userPb *pb.RegisterUserRequest) *dto.NewUser {
 		DateOfBirth:   userPb.UserRequest.DateOfBirth,
 		Password:      userPb.UserRequest.Password,
 		RecoveryEmail: userPb.UserRequest.RecoveryEmail,
+		ProfileStatus: userPb.UserRequest.ProfileStatus,
 	}
 	return userD
 }
@@ -257,18 +264,19 @@ func MapUserToUserDetails(user *model.User) *pb.UserDetails {
 	}
 
 	userDetails := &pb.UserDetails{
-		Username:    user.Username,
-		Email:       user.Email,
-		PhoneNumber: user.PhoneNumber,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Gender:      mapGenderToString(user.Gender),
-		DateOfBirth: user.DateOfBirth.String(),
-		Biography:   user.Biography,
-		Skills:      skills,
-		Interests:   interests,
-		Experiences: experiences,
-		Educations:  educations,
+		Username:      user.Username,
+		Email:         user.Email,
+		PhoneNumber:   user.PhoneNumber,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		Gender:        mapGenderToString(user.Gender),
+		DateOfBirth:   user.DateOfBirth.String(),
+		Biography:     user.Biography,
+		Skills:        skills,
+		Interests:     interests,
+		Experiences:   experiences,
+		Educations:    educations,
+		ProfileStatus: string(user.ProfileStatus),
 	}
 	return userDetails
 }
@@ -307,4 +315,181 @@ func mapExperienceToExperiencePb(e *model.Experience) *pb.Experience {
 		Experience: e.Experience,
 	}
 	return experience
+}
+
+func MapUserPersonalDetailsDtoToUser(dto *dto.UserPersonalDetails, user *model.User) *model.User {
+	user.Biography = dto.Biography
+	user.FirstName = dto.FirstName
+	user.LastName = dto.LastName
+	user.Gender = mapGenderToModel(dto.Gender)
+	user.PhoneNumber = dto.PhoneNumber
+	user.DateOfBirth = mapToDate(dto.DateOfBirth)
+	return user
+}
+
+func MapUserProfessionalDetailsDtoToUser(dto *dto.UserProfessionalDetails, user *model.User) *model.User {
+	var skills []model.Skill
+	var interests []model.Interest
+	var educations []model.Education
+	var experiences []model.Experience
+	for i, s := range dto.Educations {
+		fmt.Println(i, s)
+		ed := mapEducationDtoToEducation(&s)
+		educations = append(educations, *ed)
+	}
+	for i, s := range dto.Interests {
+		fmt.Println(i, s)
+		ed := mapInterestDtoToInterest(&s)
+		interests = append(interests, *ed)
+	}
+	for i, s := range dto.Skills {
+		fmt.Println(i, s)
+		ed := mapSkillDtoToSkill(&s)
+		skills = append(skills, *ed)
+	}
+	for i, s := range dto.Experiences {
+		fmt.Println(i, s)
+		ed := mapExperienceDtoToExperience(&s)
+
+		experiences = append(experiences, *ed)
+	}
+	user.Skills = skills
+	user.Educations = educations
+	user.Experiences = experiences
+	user.Interests = interests
+	return user
+}
+
+func MapPbUserPersonalDetailsToUser(userPersonalDetailsPb *pb.UserPersonalDetailsRequest) *dto.UserPersonalDetails {
+
+	userD := &dto.UserPersonalDetails{
+		FirstName:   userPersonalDetailsPb.UserPersonalDetails.FirstName,
+		LastName:    userPersonalDetailsPb.UserPersonalDetails.LastName,
+		Username:    userPersonalDetailsPb.UserPersonalDetails.Username,
+		PhoneNumber: userPersonalDetailsPb.UserPersonalDetails.PhoneNumber,
+		Gender:      userPersonalDetailsPb.UserPersonalDetails.Gender,
+		DateOfBirth: userPersonalDetailsPb.UserPersonalDetails.DateOfBirth,
+		Biography:   userPersonalDetailsPb.UserPersonalDetails.Biography,
+	}
+
+	return userD
+}
+
+func MapUserToUserPersonalDetails(user *model.User) *pb.UserPersonalDetails {
+	userPersonalDetails := &pb.UserPersonalDetails{
+		Username:    user.Username,
+		PhoneNumber: user.PhoneNumber,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Gender:      mapGenderToString(user.Gender),
+		DateOfBirth: user.DateOfBirth.String(),
+		Biography:   user.Biography,
+	}
+	return userPersonalDetails
+}
+
+func MapPbUserProfessionalDetailsToUser(userProfessionalDetailsPb *pb.UserProfessionalDetailsRequest) *dto.UserProfessionalDetails {
+
+	userD := &dto.UserProfessionalDetails{
+		Username: userProfessionalDetailsPb.UserProfessionalDetails.Username,
+	}
+	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Educations {
+		fmt.Println(i, s)
+		ed := mapPbEducationToEducationDto(s)
+		userD.Educations = append(userD.Educations, *ed)
+	}
+	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Interests {
+		fmt.Println(i, s)
+		ed := mapPbEducationToInterestDto(s)
+		userD.Interests = append(userD.Interests, *ed)
+	}
+	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Skills {
+		fmt.Println(i, s)
+		ed := mapPbEducationToSkillDto(s)
+		userD.Skills = append(userD.Skills, *ed)
+	}
+	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Experiences {
+		fmt.Println(i, s)
+		ed := mapPbEducationToExperienceDto(s)
+		userD.Experiences = append(userD.Experiences, *ed)
+	}
+	return userD
+}
+
+func MapUserToUserProfessionalDetails(user *model.User) *pb.UserProfessionalDetails {
+	var skills []*pb.Skill
+	var interests []*pb.Interest
+	var educations []*pb.Education
+	var experiences []*pb.Experience
+
+	for i, s := range user.Educations {
+		fmt.Println(i, s)
+		ed := mapEducationToEducationPb(&s)
+		educations = append(educations, ed)
+	}
+	for i, s := range user.Interests {
+		fmt.Println(i, s)
+		ed := mapInterestToInterestPb(&s)
+		interests = append(interests, ed)
+	}
+	for i, s := range user.Skills {
+		fmt.Println(i, s)
+		ed := mapSkillToSkillPb(&s)
+		skills = append(skills, ed)
+	}
+	for i, s := range user.Experiences {
+		fmt.Println(i, s)
+		ed := mapExperienceToExperiencePb(&s)
+
+		experiences = append(experiences, ed)
+	}
+
+	userProfessionalDetails := &pb.UserProfessionalDetails{
+		Username:    user.Username,
+		Skills:      skills,
+		Interests:   interests,
+		Educations:  educations,
+		Experiences: experiences,
+	}
+	return userProfessionalDetails
+}
+
+func MapToStringArrayInterests(interests []model.Interest) []string {
+	var strings []string
+	if len(interests) > 0 {
+		for _, s := range interests {
+			strings = append(strings, s.Interest)
+		}
+	}
+	return strings
+}
+
+func MapToStringArraySkills(skills []model.Skill) []string {
+	var strings []string
+	if len(skills) > 0 {
+		for _, s := range skills {
+			strings = append(strings, s.Skill)
+		}
+	}
+	return strings
+}
+
+func MapToStringArrayEducations(educations []model.Education) []string {
+	var strings []string
+	if len(educations) > 0 {
+		for _, s := range educations {
+			strings = append(strings, s.Education)
+		}
+	}
+	return strings
+}
+
+func MapToStringArrayExperiences(experiences []model.Experience) []string {
+	var strings []string
+	if len(experiences) > 0 {
+		for _, s := range experiences {
+			strings = append(strings, s.Experience)
+		}
+	}
+	return strings
 }

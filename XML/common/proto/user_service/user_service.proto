@@ -81,6 +81,27 @@ service UserService{
       body: "userDetails"
     };
   }
+
+  rpc EditUserPersonalDetails(UserPersonalDetailsRequest) returns(UserPersonalDetails) {
+    option (google.api.http) = {
+      post: "/users/user/editPersonal"
+      body: "userPersonalDetails"
+    };
+  }
+
+  rpc EditUserProfessionalDetails(UserProfessionalDetailsRequest) returns(UserProfessionalDetails) {
+    option (google.api.http) = {
+      post: "/users/user/editProfessional"
+      body: "userProfessionalDetails"
+      };
+  }
+  
+  rpc ChangeProfileStatus(ChangeStatusRequest) returns(ChangeStatus) {
+    option (google.api.http) = {
+      post: "/users/user/changeStatus"
+      body: "changeStatus"
+    };
+  }
 }
 
 message GetUserDetailsRequest{
@@ -104,6 +125,7 @@ message UserDetails{
   repeated Interest interests = 10;
   repeated Education educations = 11;
   repeated Experience experiences = 12;
+  string profileStatus = 13;
 }
 
 message Skill{
@@ -250,4 +272,39 @@ message RegisterUser {
   string gender = 7;
   string dateOfBirth = 8;
   string recoveryEmail = 9;
+  string profileStatus = 10;
+}
+
+message UserPersonalDetailsRequest{
+  UserPersonalDetails userPersonalDetails = 1;
+}
+message UserPersonalDetails{
+  string username = 1;
+  string phoneNumber = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string gender = 5;
+  string dateOfBirth = 6;
+  string biography = 7;
+
+}
+
+message UserProfessionalDetailsRequest{
+  UserProfessionalDetails userProfessionalDetails = 1;
+}
+message UserProfessionalDetails{
+  string username = 1;
+  repeated Skill skills = 2;
+  repeated Interest interests = 3;
+  repeated Education educations = 4;
+  repeated Experience experiences = 5;  
+}
+
+message ChangeStatusRequest{
+  ChangeStatus changeStatus = 1;
+}
+
+message ChangeStatus {
+  string username = 1;
+  string newStatus = 2;
 }

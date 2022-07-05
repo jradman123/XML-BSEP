@@ -111,6 +111,28 @@ services:
       - message_db
     networks:
       - servers
+    
+  connection_service:
+    image: connection_service
+    container_name: connection_service
+    build:
+      context: .
+      dockerfile: ./connection_service/Dockerfile
+    restart: always
+    ports:
+      - '8084:8084'
+    environment:
+      CONNECTION_SERVICE_PORT: ${CONNECTION_SERVICE_PORT}
+      NATS_HOST: ${NATS_HOST}
+      NATS_PORT: ${NATS_PORT}
+      NATS_USER: ${NATS_USER}
+      NATS_PASS: ${NATS_PASS}
+      USER_COMMAND_SUBJECT: ${USER_COMMAND_SUBJECT}
+      USER_REPLY_SUBJECT: ${USER_REPLY_SUBJECT}
+    depends_on:
+      - neo4j
+    networks:
+      - servers
 
   user_db:
     image: postgres:14.1-alpine
@@ -146,6 +168,18 @@ services:
       - message_data:/data/db
     networks:
       - servers
+      
+  neo4j:
+    image: neo4j:4.3.3-community #4.3.3-community  latest
+    container_name: neo4j
+    ports:
+      - "4002:7687"
+      - "7474:7474"
+    networks:
+      - servers
+    environment:
+      - NEO4J_AUTH=neo4j/ylKdorKc9bvWSuy5lICTfAfT5G9suZevX5UuSkWchlY
+      - NEO4J_dbms_memory_pagecache_size=512M
 
   nats:
     image: nats

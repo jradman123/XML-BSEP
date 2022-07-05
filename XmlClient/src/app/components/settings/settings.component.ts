@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IUsername } from 'src/app/interfaces/username';
 import { UserService } from 'src/app/services/user-service/user.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ApiKeyService } from 'src/app/services/api-key-service/api-key.service';
+import { UserDetails } from 'src/app/interfaces/user-details';
 
 @Component({
   selector: 'app-settings',
@@ -12,6 +13,9 @@ import { ApiKeyService } from 'src/app/services/api-key-service/api-key.service'
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
+
+  @Input()
+  user! : UserDetails;
 
   isChecked = false;
   code = '';
@@ -21,14 +25,29 @@ export class SettingsComponent implements OnInit {
   usernameJson!: IUsername;
   apiKey!: string;
   clicked : boolean = false;
+  privateChecked! : boolean;
 
   constructor(private service: UserService, private dialog: MatDialog,
-    private clipboard: Clipboard, private _snackBar: MatSnackBar,private apiKeyService: ApiKeyService) { }
+    private clipboard: Clipboard, private _snackBar: MatSnackBar, private apiKeyService: ApiKeyService) { }
 
   ngOnInit(): void {
     this.service.check2FAStatus(this.username).subscribe((res) =>
     this.isChecked = res
   )
+    this.privateChecked = this.user.profileStatus === "PRIVATE"
+  }
+
+  changeStatus() {
+    console.log(this.privateChecked);
+    
+    this.privateChecked = !this.privateChecked
+    this.service.changePrivacyStatus(this.user.username, this.privateChecked ? "PRIVATE" : "PUBLIC").subscribe(
+      res => {
+        this._snackBar.open('Privacy settings updated.', '', {
+          duration: 3000
+        });
+      },
+    );
   }
 
   enable2fa(event: any) {
