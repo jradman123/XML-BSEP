@@ -86,8 +86,8 @@ func (server *Server) StartGrpcServer(handler *handlers.ConnectionHandler, logEr
 
 func GetClient(uri, username, password string) (*neo4j.Driver, error) {
 
-	auth := neo4j.BasicAuth("neo4j", "ylKdorKc9bvWSuy5lICTfAfT5G9suZevX5UuSkWchlY", "")
-	driver, err := neo4j.NewDriver("neo4j+s://525ffd8e.databases.neo4j.io", auth)
+	auth := neo4j.BasicAuth(username, password, "")
+	driver, err := neo4j.NewDriver(uri, auth)
 	if err != nil {
 		fmt.Println("nije se naprvaio neo4j klijent")
 		fmt.Println(err)

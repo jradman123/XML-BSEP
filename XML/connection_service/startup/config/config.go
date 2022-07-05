@@ -21,7 +21,7 @@ func NewConfig() *Config {
 		Port:               os.Getenv("CONNECTION_SERVICE_PORT"),
 		Neo4jUsername:      os.Getenv("NEO4J_USERNAME"),
 		Neo4jPassword:      os.Getenv("NEO4J_PASS"),
-		Neo4jUri:           "neo4j+s://525ffd8e.databases.neo4j.io",
+		Neo4jUri:           "bolt://neo4j:7687",
 		UserCommandSubject: os.Getenv("USER_COMMAND_SUBJECT"),
 		UserReplySubject:   os.Getenv("USER_REPLY_SUBJECT"),
 		NatsPort:           os.Getenv("NATS_PORT"),
