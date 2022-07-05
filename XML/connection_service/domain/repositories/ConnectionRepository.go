@@ -12,4 +12,5 @@ type ConnectionRepository interface {
 	GetAllConnectionRequestsForUser(userUid string) (userNodes []*connectionModel.User, error1 error)
 	ConnectionStatusForUsers(senderId string, receiverId string) (*dto.ConnectionResponse, error)
 	BlockUser(con *connectionModel.Connection) (*dto.ConnectionResponse, error)
+	GetRecommendedNewConnections(id string) (userNodes []*connectionModel.User, error1 error)
 }

@@ -43,3 +43,7 @@ func (s ConnectionService) BlockUser(con *model.Connection) (*dto.ConnectionResp
 	response, err := s.connectionRepo.BlockUser(con)
 	return response, err
 }
+
+func (s ConnectionService) GetRecommendedNewConnections(userId string) (userNodes []*model.User, error1 error) {
+	return s.connectionRepo.GetRecommendedNewConnections(userId)
+}

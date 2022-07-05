@@ -29,6 +29,7 @@ const (
 	xssError        = "ERR:XSS"
 	validationError = "ERR:BAD VALIDATION: POSSIBLE INJECTION"
 	getUsersError   = "ERR:GET USERS"
+	emptyUsers      = "NO USERS"
 )
 
 func (c ConnectionHandler) MustEmbedUnimplementedConnectionServiceServer() {
@@ -345,4 +346,57 @@ func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConn
 	}
 	return &pb.ConnectionResponse{UserReceiver: conResult.UserOneUID, UserSender: conResult.UserTwoUID, ConnectionStatus: conResult.ConnectionStatus}, nil
 
+}
+
+func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
+	fmt.Println("GetRecommendedNewConnections handler")
+	policy := bluemonday.UGCPolicy()
+	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
+
+	p1 := common.BadUsername(request.Username)
+	if request.Username == "" {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(xssError)
+	} else if p1 {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(validationError)
+	} else {
+		c.logInfo.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Infof("INFO:Handling GetRecommendedNewConnections for user")
+	}
+
+	userId, err := c.userService.GetUserId(request.Username)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
+	users, err := c.connectionService.GetRecommendedNewConnections(userId)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+	response := &pb.Users{
+		Users: []*pb.UserNode{},
+	}
+	if users == nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(emptyUsers)
+		return response, nil
+	}
+
+	for _, user := range users {
+		current := pb.UserNode{UserUID: user.UserUID, Status: string(user.Status), Username: user.Username, FirstName: user.FirstName, LastName: user.LastName}
+		response.Users = append(response.Users, &current)
+	}
+
+	return response, nil
 }

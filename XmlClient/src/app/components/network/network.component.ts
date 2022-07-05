@@ -18,9 +18,10 @@ export class NetworkComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.userService.getUsers().subscribe(
+    this._connectionService.getUsersRecommendation(localStorage.getItem('username')!).subscribe(
       res => {
-        this.people = res.users.filter( (user: any ) => !(user.username === localStorage.getItem('username')));
+        //this.people = res.users.filter( (user: any ) => !(user.username === localStorage.getItem('username')));
+        this.people = res.users
       }
     )
 

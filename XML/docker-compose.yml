@@ -137,7 +137,7 @@ services:
     networks:
       - servers
     environment:
-      - NEO4J_AUTH=none
+      - NEO4J_AUTH=neo4j/ylKdorKc9bvWSuy5lICTfAfT5G9suZevX5UuSkWchlY
       - NEO4J_dbms_memory_pagecache_size=512M
 
   nats:

@@ -542,3 +542,59 @@ func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection) (*dto.Connect
 
 	return result.(*dto.ConnectionResponse), resultErr
 }
+
+func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string) (userNodes []*model.User, error1 error) {
+	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+			r.logError.Logger.Errorf(neo4jSessionError)
+		}
+	}(session)
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		if !checkIfUserExist(userId, tx) {
+			return &model.User{
+				UserUID: "",
+				Status:  "",
+			}, nil
+		}
+
+		records, err := tx.Run("MATCH (user:UserNode {uid:$userUid})<-[:CONNECTION {status:$status}]->(friend:UserNode)-[:CONNECTION {status:$status}]->(newFriend:UserNode) WHERE user <> newFriend AND NOT (newFriend)<-[:CONNECTION {status:$status}]->(user) RETURN newFriend.uid, newFriend.status, newFriend.username, newFriend.firstName, newFriend.lastName,  count(newFriend) as frequency ORDER BY frequency DESC LIMIT 20", map[string]interface{}{
+			"userUid": userId,
+			"status":  "CONNECTED",
+		})
+
+		for records.Next() {
+			node := model.User{UserUID: records.Record().Values[0].(string), Status: model.ProfileStatus(records.Record().Values[1].(string)), Username: records.Record().Values[2].(string), FirstName: records.Record().Values[3].(string), LastName: records.Record().Values[4].(string)}
+			userNodes = append(userNodes, &node)
+		}
+		if userNodes == nil {
+			fmt.Println("checkpoint 1")
+			recordsFamily, er := tx.Run("match (n:UserNode {uid:$userUid}) match (u:UserNode {lastName:n.lastName}) where n <> u return u.uid, u.status, u.username, u.firstName, u.lastName LIMIT 20", map[string]interface{}{
+				"userUid": userId,
+			})
+			for recordsFamily.Next() {
+				fmt.Println("checkpoint 2")
+				node := model.User{UserUID: recordsFamily.Record().Values[0].(string), Status: model.ProfileStatus(recordsFamily.Record().Values[1].(string)), Username: recordsFamily.Record().Values[2].(string), FirstName: recordsFamily.Record().Values[3].(string), LastName: recordsFamily.Record().Values[4].(string)}
+				userNodes = append(userNodes, &node)
+			}
+			if er != nil {
+				fmt.Println("checkpoint 3")
+				return nil, er
+			}
+			fmt.Println("checkpoint 4")
+			return userNodes, nil
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		return userNodes, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return userNodes, nil
+}

@@ -465,6 +465,7 @@ func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPerson
 	if !edited {
 		return nil, errors.New("user was not edited")
 	}
+	err = u.orchestrator.EditConnectionUser(user)
 	if err != nil {
 		return nil, err
 	}
@@ -484,6 +485,7 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 	if !edited {
 		return nil, errors.New("user was not edited")
 	}
+	err = u.orchestrator.EditConnectionUser(user)
 	if err != nil {
 		return nil, err
 	}
