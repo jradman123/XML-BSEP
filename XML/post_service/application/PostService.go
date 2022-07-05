@@ -37,15 +37,17 @@ func (service *PostService) GetAllByUsername(username string) ([]*model.Post, er
 }
 
 func (service *PostService) CreateComment(post *model.Post, comment *model.Comment) error {
+	service.orchestrator.CommentPost(post.Id, comment.Username, post.Username)
 	return service.repository.CreateComment(post, comment)
 }
 
-func (service *PostService) LikePost(post *model.Post, userId uuid.UUID) error {
-	service.orchestrator.LikePost(post.Id, userId.String(), post.Username)
+func (service *PostService) LikePost(post *model.Post, userId uuid.UUID, likerUsername string) error {
+	service.orchestrator.LikePost(post.Id, likerUsername, post.Username)
 	return service.repository.LikePost(post, userId)
 }
 
-func (service *PostService) DislikePost(post *model.Post, userId uuid.UUID) error {
+func (service *PostService) DislikePost(post *model.Post, userId uuid.UUID, haterUsername string) error {
+	service.orchestrator.DislikePost(post.Id, haterUsername, post.Username)
 	return service.repository.DislikePost(post, userId)
 }
 

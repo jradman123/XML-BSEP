@@ -25,7 +25,6 @@ func NewPostOrchestrator(publisher saga.Publisher, subscriber saga.Subscriber) (
 }
 
 func (o *PostOrchestrator) LikePost(postId primitive.ObjectID, liker string, postOwner string) error {
-	fmt.Println("evo me u orchestratoru u create noty ")
 
 	events := &events.PostNotificationCommand{
 		Type: events.LikePost,
@@ -33,6 +32,36 @@ func (o *PostOrchestrator) LikePost(postId primitive.ObjectID, liker string, pos
 			Content:          liker + " liked your post.",
 			RedirectPath:     "/post/" + postId.Hex(),
 			NotificationFrom: liker,
+			NotificationTo:   postOwner,
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *PostOrchestrator) DislikePost(postId primitive.ObjectID, hater string, postOwner string) error {
+
+	events := &events.PostNotificationCommand{
+		Type: events.DislikePost,
+		Notification: events.Notification{
+			Content:          hater + " disliked your post.",
+			RedirectPath:     "/post/" + postId.Hex(),
+			NotificationFrom: hater,
+			NotificationTo:   postOwner,
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}
+
+func (o *PostOrchestrator) CommentPost(postId primitive.ObjectID, commenter string, postOwner string) error {
+
+	events := &events.PostNotificationCommand{
+		Type: events.CommentPost,
+		Notification: events.Notification{
+			Content:          commenter + " left a comment on your post.",
+			RedirectPath:     "/post/" + postId.Hex(),
+			NotificationFrom: commenter,
 			NotificationTo:   postOwner,
 		},
 	}

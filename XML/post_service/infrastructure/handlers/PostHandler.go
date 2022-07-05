@@ -181,7 +181,7 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	user, err := p.userService.GetByUsername(request.Username)
 	fmt.Println("USER")
 	fmt.Println(user[0])
-	err = p.postService.LikePost(post, user[0].UserId)
+	err = p.postService.LikePost(post, user[0].UserId, request.Username)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -206,7 +206,7 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 		return nil, err
 	}
 	user, err := p.userService.GetByUsername(request.Username)
-	err = p.postService.DislikePost(post, user[0].UserId)
+	err = p.postService.DislikePost(post, user[0].UserId, request.Username)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,

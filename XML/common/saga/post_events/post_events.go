@@ -11,6 +11,8 @@ type PostNotificationCommandType int8
 
 const (
 	LikePost PostNotificationCommandType = iota
+	DislikePost
+	CommentPost
 	UnknownCommand
 )
 

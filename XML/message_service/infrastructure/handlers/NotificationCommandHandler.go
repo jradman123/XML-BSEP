@@ -37,12 +37,25 @@ func (handler *NotificationCommandHandler) handle(command *events.PostNotificati
 			reply = api.MapPostNotificationReply(events.NotificationNotSent)
 		}
 		reply = api.MapPostNotificationReply(events.NotificationSent)
+	case events.DislikePost:
+		_, err := handler.service.Create(notification)
+		if err != nil {
+			reply = api.MapPostNotificationReply(events.NotificationNotSent)
+		}
+		reply = api.MapPostNotificationReply(events.NotificationSent)
+	case events.CommentPost:
+		_, err := handler.service.Create(notification)
+		if err != nil {
+			reply = api.MapPostNotificationReply(events.NotificationNotSent)
+		}
+		reply = api.MapPostNotificationReply(events.NotificationSent)
 	default:
 		reply = api.MapPostNotificationReply(events.UnknownReply)
-	}
 
-	if reply.Type != events.UnknownReply {
-		_ = handler.replyPublisher.Publish(reply)
+		if reply.Type != events.UnknownReply {
+			_ = handler.replyPublisher.Publish(reply)
+		}
+
 	}
 
 }
