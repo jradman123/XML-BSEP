@@ -50,7 +50,7 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 
 	result, _ := n.userService.AllowedNotificationForUser(newNotificationReq.NewNotification.To, notiType)
 	if result {
-
+		fmt.Println("dobija obavjestenja")
 		noti := &model.Notification{
 			Id:               primitive.NewObjectID(),
 			Timestamp:        time.Now(),
@@ -66,8 +66,6 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 
 		response := &pb.NewNotificationResponse{Notification: &pb.Notification{}}
 		response.Notification = api.MapNotificationResponse(notification)
-		n.notificationPusher.Trigger("notifications", "notification", notification)
-
 		return response, nil
 	}
 	return &pb.NewNotificationResponse{}, nil

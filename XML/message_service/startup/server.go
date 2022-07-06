@@ -47,12 +47,11 @@ func (server *Server) Start() {
 	messageService := server.InitMessageService(messageRepo, logInfo, logError)
 
 	notificationRepo := server.InitNotificationRepo(mongoClient)
-	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo, &notificationPusher)
-
 	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroupUser)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	userRepo := server.InitUserRepo(mongoClient)
 	userService := server.InitUserService(userRepo, logInfo, logError)
+	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo, &notificationPusher, userService)
 
 	messageHandler := server.InitMessageHandler(messageService, userService, logInfo, logError)
 	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService, userService)
@@ -180,8 +179,8 @@ func (server *Server) InitNotificationRepo(client *mongo.Client) repositories.No
 	return persistence.NewNotificationRepositoryImpl(client)
 }
 
-func (server *Server) InitNotificationService(info *logger.Logger, logError *logger.Logger, repo repositories.NotificationRepository, pusher *pusher.Client) *application.NotificationService {
-	return application.NewNotificationService(info, logError, repo, pusher)
+func (server *Server) InitNotificationService(info *logger.Logger, logError *logger.Logger, repo repositories.NotificationRepository, pusher *pusher.Client, userService *application.UserService) *application.NotificationService {
+	return application.NewNotificationService(info, logError, repo, pusher, userService)
 }
 
 func (server *Server) InitNotificationHandler(info *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, service *application.NotificationService, userService *application.UserService) *handlers.NotificationHandler {
