@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"strings"
 	"time"
 )
 
@@ -624,16 +625,22 @@ func (r ConnectionRepositoryImpl) GetRecommendedJobOffers(userId string) (jobNod
 			if err != nil {
 				return nil, nil
 			}
-			var lista []string
-			//lista = append(lista, records.Record().Values[6].)
+			var listt []string
+			str := fmt.Sprintf("%v", records.Record().Values[6])
+			listt = strings.Fields(str)
+
+			firstEl := listt[0]
+			listt[0] = firstEl[1:]
+			lastEl := listt[len(listt)-1]
+			listt[len(listt)-1] = lastEl[:len(lastEl)-1]
+
 			node := model.JobOffer{JobId: id, Publisher: records.Record().Values[1].(string),
 				Position: records.Record().Values[2].(string), JobDescription: records.Record().Values[3].(string),
 				DatePosted: records.Record().Values[4].(string), Duration: records.Record().Values[5].(string),
-				Requirements: lista}
+				Requirements: listt}
 			jobNodes = append(jobNodes, &node)
 		}
 		if jobNodes == nil {
-			fmt.Println("checkpoint 1")
 			return nil, nil
 		}
 
