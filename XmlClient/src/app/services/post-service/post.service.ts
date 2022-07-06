@@ -56,5 +56,11 @@ export class PostService {
     );
   }
 
+  GetPost(Id: any) {
+    return this._http.get<any>(
+      'http://localhost:9090/post/' + Id 
+    );
+  }
+
 
 }

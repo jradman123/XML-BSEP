@@ -11,6 +11,7 @@ export class RegisteredHeaderComponent implements OnInit {
 
   @Output() searchInput : EventEmitter<string> = new EventEmitter();
 
+  newNoties = 0;
   username : any;
   visible : boolean = false;
   constructor(private authService : AuthService,private router : Router) { }
@@ -21,6 +22,10 @@ export class RegisteredHeaderComponent implements OnInit {
 
   emitMe( searchText : any){
     this.searchInput.emit(searchText.target.value);
+  }
+
+  onNewNotifications(newNotiNumber : number){
+    this.newNoties = newNotiNumber;
   }
   
   click() {

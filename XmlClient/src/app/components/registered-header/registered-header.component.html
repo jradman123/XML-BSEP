@@ -37,89 +37,27 @@
             </a>
             </li>
   
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" ngbDropdown>
   
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <a class="nav-link nav-icon" id="notiDD" ngbDropdownToggle>
             <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
+            <span *ngIf="newNoties" class="badge bg-primary badge-number"> {{ newNoties }} </span>
           </a>
   
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            <li class="dropdown-header">
-              You have 4 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-  
-            <li class="notification-item">
-              <i class="bi bi-exclamation-circle text-warning"></i>
-              <div>
-                <h4>Lorem Ipsum</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>30 min. ago</p>
-              </div>
-            </li>
-  
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-  
-            <li class="notification-item">
-              <i class="bi bi-x-circle text-danger"></i>
-              <div>
-                <h4>Atque rerum nesciunt</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>1 hr. ago</p>
-              </div>
-            </li>
-  
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-  
-            <li class="notification-item">
-              <i class="bi bi-check-circle text-success"></i>
-              <div>
-                <h4>Sit rerum fuga</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>2 hrs. ago</p>
-              </div>
-            </li>
-  
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-  
-            <li class="notification-item">
-              <i class="bi bi-info-circle text-primary"></i>
-              <div>
-                <h4>Dicta reprehenderit</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>4 hrs. ago</p>
-              </div>
-            </li>
-  
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li class="dropdown-footer">
-              <a href="#">Show all notifications</a>
-            </li>
-  
+          <ul ngbDropdownMenu aria-labelledby="notiDD" c class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+           <app-notification-list (newNotifications)="onNewNotifications($event)"></app-notification-list>
           </ul>
   
         </li>
   
-        <li class="nav-item dropdown">
+        <li ngbDropdown class="nav-item dropdown">
   
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+          <a class="nav-link nav-icon" id="messDD" ngbDropdownToggle>
             <i class="bi bi-chat-left-text"></i>
             <span class="badge bg-success badge-number">3</span>
           </a>
   
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+          <ul ngbDropdownMenu aria-labelledby="messDD" class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
             <li class="dropdown-header">
               You have 3 new messages
               <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
@@ -129,7 +67,7 @@
             </li>
   
             <li class="message-item">
-              <a href="#">
+              <a>
                 <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
                 <div>
                   <h4>Maria Hudson</h4>
@@ -181,7 +119,8 @@
         <li class="nav-item dropdown pe-3">
 
           <div ngbDropdown class="d-inline-block">
-            <a type="button" class="nav-link nav-profile d-flex align-items-center pe-0" id="dropdownBasic1" ngbDropdownToggle><img src="../../../assets/userMale.png" alt="Profile" class="rounded-circle">
+            <a type="button" class="nav-link nav-profile d-flex align-items-center pe-0" id="dropdownBasic1" ngbDropdownToggle>
+              <img src="../../../assets/userMale.png" alt="Profile" class="rounded-circle">
               <span class="d-none d-md-block">{{username}}</span>
             </a>
             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">

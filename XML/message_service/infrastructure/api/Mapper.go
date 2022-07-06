@@ -114,6 +114,8 @@ func MapNotificationResponse(notification *model.Notification) *notificationPb.N
 		To:               notification.NotificationTo,
 		RedirectPath:     notification.RedirectPath,
 		NotificationType: mapNotificationTypeToString(notification.Type),
+		Read:             notification.Read,
+		Time:             notification.Timestamp.String(),
 	}
 
 	return notificationPb

@@ -81,6 +81,8 @@ message Notification {
   string to = 4;
   string redirectPath = 5;
   string notificationType = 6;
+  bool read = 7;
+  string time = 8;
 }
 message GetAllNotificationResponse{
   repeated Notification notifications = 1;

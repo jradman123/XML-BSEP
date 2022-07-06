@@ -3,5 +3,8 @@ export interface INotification {
     content : string,
     from : string,
     to : string,
-    read : boolean
+    read : boolean,
+    redirectPath : string,
+    notificationType : string,
+    time : Date
 }

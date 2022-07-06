@@ -119,8 +119,9 @@
   .header-nav .notifications .notification-item {
     display: flex;
     align-items: center;
-    padding: 15px 10px;
+    padding: 0;
     transition: 0.3s;
+    width: fit-content;
   }
   .header-nav .notifications .notification-item i {
     margin: 0 20px 0 10px;
@@ -194,18 +195,22 @@
 
 
 /* Dropdown menus */
-.dropdown-menu {
+.dropdown-menu { 
+
+  max-height: 80vh; 
+  overflow-y: auto;
+  background-attachment: local, local, scroll, scroll;
+  position: absolute;
+  width: max-content;
     border-radius: 4px;
     padding: 10px 0;
-    -webkit-animation-name: dropdown-animate;
     animation-name: dropdown-animate;
-    -webkit-animation-duration: 0.2s;
     animation-duration: 0.2s;
-    -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
     border: 0;
     box-shadow: 0 5px 30px 0 rgba(82, 63, 105, 0.2);
   }
+
   .dropdown-menu .dropdown-header, .dropdown-menu .dropdown-footer {
     text-align: center;
     font-size: 15px;
@@ -222,19 +227,7 @@
     color: #a5c5fe;
     margin: 0;
   }
-  .dropdown-menu .dropdown-item {
-    font-size: 14px;
-    padding: 10px 15px;
-    transition: 0.3s;
-  }
-  .dropdown-menu .dropdown-item i {
-    margin-right: 10px;
-    font-size: 18px;
-    line-height: 0;
-  }
-  .dropdown-menu .dropdown-item:hover {
-    background-color: #f6f9ff;
-  }
+
   
   @media (min-width: 768px) {
     .dropdown-menu-arrow::before {

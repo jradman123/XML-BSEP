@@ -19,6 +19,9 @@ import { PostCreateFileComponent } from './components/post-create-file/post-crea
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { NetworkComponent } from './components/network/network.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { NotificationComponent } from './components/notification/notification.component';
+import { PostComponent } from './components/post/post.component';
+import { PostViewComponent } from './components/post-view/post-view.component';
 
 const routes: Routes = [
   {
@@ -103,8 +106,15 @@ const routes: Routes = [
   {
     path: '404',
     component: NotFoundComponent,
+  },
+  {
+    path: 'noti',
+    component: NotificationComponent,
+  },
+  {
+    path: 'post/:id',
+    component: PostViewComponent
   }
-
 
 ];
 

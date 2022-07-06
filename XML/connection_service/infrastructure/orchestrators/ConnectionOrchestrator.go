@@ -26,17 +26,20 @@ func NewConnectionOrchestrator(publisher saga.Publisher, subscriber saga.Subscri
 func (o *ConnectionOrchestrator) Connect(userSender string, userReceiver string, status string) error {
 
 	content := ""
+	redirectTo := ""
 	if status == "REQUEST_SENT" {
 		content = userSender + " wants to connect with you."
+		redirectTo = "/network#invitations"
 	} else if status == "CONNECTED" {
 		content = userSender + " connected with you."
+		redirectTo = "/network#connections"
 	}
 
 	events := &events.ConnectionNotificationCommand{
 		Type: events.Connect,
 		Notification: events.Notification{
 			Content:          content,
-			RedirectPath:     "/public-profile/" + userSender,
+			RedirectPath:     redirectTo,
 			NotificationFrom: userSender,
 			NotificationTo:   userReceiver,
 		},
