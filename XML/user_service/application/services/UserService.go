@@ -491,3 +491,64 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 	}
 	return user, nil
 }
+
+func (u UserService) CheckIfEmailExists(id uuid.UUID, email string) bool {
+	users, _ := u.userRepository.GetUsers()
+	for _, element := range users {
+		if element.ID == id {
+			continue
+		}
+		if element.Email == email {
+			return true
+		}
+	}
+	return false
+}
+
+func (u UserService) CheckIfUsernameExists(id uuid.UUID, username string) bool {
+	users, _ := u.userRepository.GetUsers()
+	for _, element := range users {
+		if element.ID == id {
+			continue
+		}
+		if element.Username == username {
+			return true
+		}
+	}
+	return false
+}
+
+func (u UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	user, err := u.userRepository.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+
+}
+
+func (u UserService) UpdateEmail(ctx context.Context, user *model.User) (*model.User, error) {
+	result, err := u.userRepository.UpdateEmail(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	if result {
+		user, _ := u.userRepository.GetById(ctx, user.ID)
+		return user, nil
+	} else {
+		return nil, nil
+	}
+}
+
+func (u UserService) UpdateUsername(ctx context.Context, user *model.User) (*model.User, error) {
+	result, err := u.userRepository.UpdateUsername(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	if result {
+		user, _ := u.userRepository.GetById(ctx, user.ID)
+		return user, nil
+	} else {
+		return nil, nil
+	}
+}

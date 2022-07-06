@@ -36,6 +36,9 @@ type UserServiceClient interface {
 	EditUserPersonalDetails(ctx context.Context, in *UserPersonalDetailsRequest, opts ...grpc.CallOption) (*UserPersonalDetails, error)
 	EditUserProfessionalDetails(ctx context.Context, in *UserProfessionalDetailsRequest, opts ...grpc.CallOption) (*UserProfessionalDetails, error)
 	ChangeProfileStatus(ctx context.Context, in *ChangeStatusRequest, opts ...grpc.CallOption) (*ChangeStatus, error)
+	ChangeEmail(ctx context.Context, in *ChangeEmailRequest, opts ...grpc.CallOption) (*ChangeEmailResponse, error)
+	ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*ChangeUsernameResponse, error)
+	GetEmailUsername(ctx context.Context, in *EmailUsernameRequest, opts ...grpc.CallOption) (*EmailUsernameResponse, error)
 }
 
 type userServiceClient struct {
@@ -172,6 +175,33 @@ func (c *userServiceClient) ChangeProfileStatus(ctx context.Context, in *ChangeS
 	return out, nil
 }
 
+func (c *userServiceClient) ChangeEmail(ctx context.Context, in *ChangeEmailRequest, opts ...grpc.CallOption) (*ChangeEmailResponse, error) {
+	out := new(ChangeEmailResponse)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/ChangeEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ChangeUsername(ctx context.Context, in *ChangeUsernameRequest, opts ...grpc.CallOption) (*ChangeUsernameResponse, error) {
+	out := new(ChangeUsernameResponse)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/ChangeUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetEmailUsername(ctx context.Context, in *EmailUsernameRequest, opts ...grpc.CallOption) (*EmailUsernameResponse, error) {
+	out := new(EmailUsernameResponse)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/GetEmailUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -190,6 +220,9 @@ type UserServiceServer interface {
 	EditUserPersonalDetails(context.Context, *UserPersonalDetailsRequest) (*UserPersonalDetails, error)
 	EditUserProfessionalDetails(context.Context, *UserProfessionalDetailsRequest) (*UserProfessionalDetails, error)
 	ChangeProfileStatus(context.Context, *ChangeStatusRequest) (*ChangeStatus, error)
+	ChangeEmail(context.Context, *ChangeEmailRequest) (*ChangeEmailResponse, error)
+	ChangeUsername(context.Context, *ChangeUsernameRequest) (*ChangeUsernameResponse, error)
+	GetEmailUsername(context.Context, *EmailUsernameRequest) (*EmailUsernameResponse, error)
 	MustEmbedUnimplementedUserServiceServer()
 }
 
@@ -238,6 +271,15 @@ func (UnimplementedUserServiceServer) EditUserProfessionalDetails(context.Contex
 }
 func (UnimplementedUserServiceServer) ChangeProfileStatus(context.Context, *ChangeStatusRequest) (*ChangeStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangeProfileStatus not implemented")
+}
+func (UnimplementedUserServiceServer) ChangeEmail(context.Context, *ChangeEmailRequest) (*ChangeEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeEmail not implemented")
+}
+func (UnimplementedUserServiceServer) ChangeUsername(context.Context, *ChangeUsernameRequest) (*ChangeUsernameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeUsername not implemented")
+}
+func (UnimplementedUserServiceServer) GetEmailUsername(context.Context, *EmailUsernameRequest) (*EmailUsernameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetEmailUsername not implemented")
 }
 func (UnimplementedUserServiceServer) MustEmbedUnimplementedUserServiceServer() {}
 
@@ -504,6 +546,60 @@ func _UserService_ChangeProfileStatus_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ChangeEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangeEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/ChangeEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangeEmail(ctx, req.(*ChangeEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ChangeUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ChangeUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/ChangeUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ChangeUsername(ctx, req.(*ChangeUsernameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetEmailUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmailUsernameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetEmailUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/GetEmailUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetEmailUsername(ctx, req.(*EmailUsernameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -566,6 +662,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangeProfileStatus",
 			Handler:    _UserService_ChangeProfileStatus_Handler,
+		},
+		{
+			MethodName: "ChangeEmail",
+			Handler:    _UserService_ChangeEmail_Handler,
+		},
+		{
+			MethodName: "ChangeUsername",
+			Handler:    _UserService_ChangeUsername_Handler,
+		},
+		{
+			MethodName: "GetEmailUsername",
+			Handler:    _UserService_GetEmailUsername_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

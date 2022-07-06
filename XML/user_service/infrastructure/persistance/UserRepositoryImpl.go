@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
@@ -110,6 +111,31 @@ func (r UserRepositoryImpl) ChangePassword(user *model.User, password string) er
 func (r UserRepositoryImpl) ChangeProfileStatus(user *model.User) (bool, error) {
 	result := r.db.Model(&user).Updates(&user)
 	fmt.Print(result)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}
+
+func (r UserRepositoryImpl) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	user := &model.User{}
+	if r.db.Preload("Skills").Preload("Interests").Preload("Educations").Preload("Experiences").First(&user, "id = ?", id).RowsAffected == 0 {
+		return nil, errors.New("user not found")
+
+	}
+	return user, nil
+}
+
+func (r UserRepositoryImpl) UpdateEmail(ctx context.Context, user *model.User) (bool, error) {
+	result := r.db.Model(&user).Update("email", user.Email)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return true, nil
+}
+
+func (r UserRepositoryImpl) UpdateUsername(ctx context.Context, user *model.User) (bool, error) {
+	result := r.db.Model(&user).Update("username", user.Username)
 	if result.Error != nil {
 		return false, result.Error
 	}

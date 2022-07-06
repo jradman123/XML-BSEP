@@ -1,0 +1,26 @@
+<form [formGroup]="usernameForm">
+    <div class="row mb-3">
+      <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Username</label>
+      <div class="col-md-4 col-lg-4">
+        <input name="username" type="text" class="form-control" id="password" formControlName="username">
+      </div>
+
+      <div class="col-md-4 col-lg-4">
+        <button type="submit" class="btn" (click)="changeUsername()"><i class="bi bi-check2-circle" style="size: 15px;"></i></button>
+      </div>
+    </div>
+</form>
+<form [formGroup]="emailForm">
+    <div class="row mb-3">
+      <label for="email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+      <div class="col-md-4 col-lg-4">
+        <input name="email" type="text"  class="form-control" id="email" formControlName="email">
+      </div>
+      <div class="col-md-4 col-lg-4">
+        <button type="submit" class="btn" (click)="changeEmail()" ><i class="bi bi-check2-circle" style="size: 15px;"></i></button>
+      </div>
+    </div>
+
+
+
+  </form>
