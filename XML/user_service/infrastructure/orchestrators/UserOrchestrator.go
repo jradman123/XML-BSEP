@@ -144,6 +144,9 @@ func (o *UserOrchestrator) EditConnectionUserProfessionalDetails(user *model.Use
 		},
 	}
 
+	fmt.Println("event")
+	fmt.Println(events)
+
 	return o.commandPublisher.Publish(events)
 }
 

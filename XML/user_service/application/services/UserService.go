@@ -478,6 +478,8 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 		return nil, err
 	}
 	user = api.MapUserProfessionalDetailsDtoToUser(userProfessionalDetails, user)
+	fmt.Println(user)
+	fmt.Println("edit professional details user_service user service ")
 	err = u.orchestrator.EditConnectionUserProfessionalDetails(user)
 	if err != nil {
 		return nil, err
@@ -489,9 +491,9 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 	if !edited {
 		return nil, errors.New("user was not edited")
 	}
-	err = u.orchestrator.EditConnectionUser(user)
-	if err != nil {
-		return nil, err
-	}
+	//err = u.orchestrator.EditConnectionUser(user)
+	//if err != nil {
+	//	return nil, err
+	//}
 	return user, nil
 }

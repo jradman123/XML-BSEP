@@ -4,6 +4,7 @@ import (
 	"common/module/logger"
 	connectionModel "connection/module/domain/model"
 	"connection/module/domain/repositories"
+	"errors"
 	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"time"
@@ -219,7 +220,334 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 	return nil
 }
 
-func (u UserRepositoryImpl) UpdateUserProfessionalDetails(m *connectionModel.User) error {
-	//TODO implement me
-	panic("implement me")
+func (u UserRepositoryImpl) UpdateUserProfessionalDetails(user *connectionModel.User, details *connectionModel.UserDetails) error {
+
+	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+
+		}
+	}(session)
+
+	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+		fmt.Println("UUID " + user.UserUID)
+		if !checkIfUserExist(user.UserUID, tx) {
+			fmt.Println("NE POSTOJI")
+			return nil, nil
+		}
+		return user.UserUID, nil
+	})
+	if result == nil {
+		return errors.New("user doesn't exist")
+	}
+	err = u.updateSkills(user.UserUID, details.Skills)
+	if err != nil {
+		return err
+	}
+	err = u.updateInterests(user.UserUID, details.Interests)
+	if err != nil {
+		return err
+	}
+	err = u.updateEducations(user.UserUID, details.Educations)
+	if err != nil {
+		return err
+	}
+	err = u.updateExperiences(user.UserUID, details.Experiences)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u UserRepositoryImpl) updateExperiences(uid string, experiences []string) error {
+	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+
+		}
+	}(session)
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		// TODO: UKLONITI VEZE KOJE VISE NE VAZE
+		// brisanje
+		//oldExperiences, oldErr := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (u)-[r:HAS]->(e:ExperienceNode) RETURN e.name",
+		//	map[string]interface{}{
+		//		"uid": uid,
+		//	})
+		//if oldErr != nil {
+		//	fmt.Println(oldErr)
+		//	return nil, oldErr
+		//}
+		//var oldExperiencesStrings []string
+		//for oldExperiences.Next() {
+		//	oldExperiencesStrings := append(oldExperiencesStrings, oldExperiences.Record().Values[0].(string))
+		//	fmt.Println(oldExperiencesStrings)
+		//}
+		//deleted := compareExperiences(oldExperiencesStrings, experiences)
+		//for _, d := range deleted {
+		//	_, err := tx.Run("MATCH (u:UserNode {uid:$uid} MATCH (n:ExperienceNode { name: $name}) MATCH (u)-[r:HAS]->(e) DELETE r",
+		//		map[string]interface{}{
+		//			"name": d,
+		//			"uid":  uid,
+		//		})
+		//	if err != nil {
+		//		fmt.Println(err)
+		//		return nil, err
+		//	}
+		//}
+		// brisanje
+		for _, e := range experiences {
+			fmt.Println("za svaaki skill gledam dal postoji ")
+			results, err := tx.Run("MATCH (n:SkillNode { name: $name}) return n.name",
+				map[string]interface{}{
+					"name": e,
+				})
+			if err != nil {
+				fmt.Println(err)
+				return nil, err
+			}
+			if results.Next() {
+				fmt.Println("ako skill postoji gledal dal vec postoji veza od usera ka tom skilu")
+				connectionExists, errCon := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) MATCH (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCon != nil {
+					return nil, errCon
+				}
+				if !connectionExists.Next() {
+					fmt.Println("ako posoji node i ne postoji konekcija kreiraj konekciju od usera ka nodu")
+					_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+						map[string]interface{}{
+							"uid":  uid,
+							"name": e,
+						})
+					if errCreate != nil {
+						return nil, errCreate
+					}
+				}
+				fmt.Println("ako postoji konekcija ka tom nodu nista ne radi")
+
+			} else {
+				fmt.Println("ako ne postoji node kreiraj node i vezu ka tom nodu ")
+				_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) CREATE (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCreate != nil {
+					return nil, errCreate
+				}
+			}
+
+		}
+		fmt.Println("kraj")
+		return nil, nil
+	})
+	return err
+}
+
+func compareExperiences(oldExperiences []string, experiences []string) []string {
+	var deleted []string
+	// TODO : ODRADITI LOGIKU OVOG
+	return deleted
+}
+
+func (u UserRepositoryImpl) updateEducations(uid string, educations []string) error {
+	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+
+		}
+	}(session)
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		// TODO: UKLONITI VEZE KOJE VISE NE VAZE
+		for _, e := range educations {
+			fmt.Println("za svaaki skill gledam dal postoji ")
+			results, err := tx.Run("MATCH (n:SkillNode { name: $name}) return n.name",
+				map[string]interface{}{
+					"name": e,
+				})
+			if err != nil {
+				fmt.Println(err)
+				return nil, err
+			}
+			if results.Next() {
+				fmt.Println("ako skill postoji gledal dal vec postoji veza od usera ka tom skilu")
+				connectionExists, errCon := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) MATCH (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCon != nil {
+					return nil, errCon
+				}
+				if !connectionExists.Next() {
+					fmt.Println("ako posoji node i ne postoji konekcija kreiraj konekciju od usera ka nodu")
+					_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+						map[string]interface{}{
+							"uid":  uid,
+							"name": e,
+						})
+					if errCreate != nil {
+						return nil, errCreate
+					}
+				}
+				fmt.Println("ako postoji konekcija ka tom nodu nista ne radi")
+
+			} else {
+				fmt.Println("ako ne postoji node kreiraj node i vezu ka tom nodu ")
+				_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) CREATE (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCreate != nil {
+					return nil, errCreate
+				}
+			}
+
+		}
+		fmt.Println("kraj")
+		return nil, nil
+	})
+	return err
+
+}
+
+func (u UserRepositoryImpl) updateInterests(uid string, interests []string) error {
+	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+
+		}
+	}(session)
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		// TODO: UKLONITI VEZE KOJE VISE NE VAZE
+
+		for _, e := range interests {
+			fmt.Println("za svaaki skill gledam dal postoji ")
+			results, err := tx.Run("MATCH (n:SkillNode { name: $name}) return n.name",
+				map[string]interface{}{
+					"name": e,
+				})
+			if err != nil {
+				fmt.Println(err)
+				return nil, err
+			}
+			if results.Next() {
+				fmt.Println("ako skill postoji gledal dal vec postoji veza od usera ka tom skilu")
+				connectionExists, errCon := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) MATCH (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCon != nil {
+					return nil, errCon
+				}
+				if !connectionExists.Next() {
+					fmt.Println("ako posoji node i ne postoji konekcija kreiraj konekciju od usera ka nodu")
+					_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+						map[string]interface{}{
+							"uid":  uid,
+							"name": e,
+						})
+					if errCreate != nil {
+						return nil, errCreate
+					}
+				}
+				fmt.Println("ako postoji konekcija ka tom nodu nista ne radi")
+
+			} else {
+				fmt.Println("ako ne postoji node kreiraj node i vezu ka tom nodu ")
+				_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) CREATE (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCreate != nil {
+					return nil, errCreate
+				}
+			}
+
+		}
+		fmt.Println("kraj")
+		return nil, nil
+	})
+	return err
+}
+
+func (u UserRepositoryImpl) updateSkills(uid string, skills []string) error {
+	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+
+		}
+	}(session)
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		// TODO: UKLONITI VEZE KOJE VISE NE VAZE
+		for _, e := range skills {
+			fmt.Println("za svaaki skill gledam dal postoji ")
+			results, err := tx.Run("MATCH (n:SkillNode { name: $name}) return n.name",
+				map[string]interface{}{
+					"name": e,
+				})
+			if err != nil {
+				fmt.Println(err)
+				return nil, err
+			}
+			if results.Next() {
+				fmt.Println("ako skill postoji gledal dal vec postoji veza od usera ka tom skilu")
+				connectionExists, errCon := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) MATCH (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCon != nil {
+					return nil, errCon
+				}
+				if !connectionExists.Next() {
+					fmt.Println("ako posoji node i ne postoji konekcija kreiraj konekciju od usera ka nodu")
+					_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) MATCH (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+						map[string]interface{}{
+							"uid":  uid,
+							"name": e,
+						})
+					if errCreate != nil {
+						return nil, errCreate
+					}
+				}
+				fmt.Println("ako postoji konekcija ka tom nodu nista ne radi")
+
+			} else {
+				fmt.Println("ako ne postoji node kreiraj node i vezu ka tom nodu ")
+				_, errCreate := tx.Run("MATCH (u:UserNode {uid:$uid}) CREATE (e:SkillNode {name:$name}) CREATE (u)-[r:HAS]->(e) RETURN r",
+					map[string]interface{}{
+						"uid":  uid,
+						"name": e,
+					})
+				if errCreate != nil {
+					return nil, errCreate
+				}
+			}
+
+		}
+		fmt.Println("kraj")
+		return nil, nil
+	})
+	return err
 }

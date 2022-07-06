@@ -25,6 +25,12 @@ service ConnectionService{
     };
   }
 
+  rpc GetRecommendedJobOffers(GetRequest) returns(Offers) {
+    option (google.api.http) = {
+      get: "/jobOffers/recommended/{username}"
+    };
+  }
+
   rpc CreateConnection(NewConnection) returns (ConnectionResponse) {
     option (google.api.http) = {
       post: "/connection/new"
@@ -85,4 +91,18 @@ message ConnectionResponse {
   string userSender = 1;
   string userReceiver = 2;
   string connectionStatus = 3;
+}
+
+message Offers{
+  repeated OfferNode offers = 1;
+}
+
+message OfferNode {
+  string Id = 1;
+  string Publisher = 2;
+  string Position = 3;
+  string JobDescription = 4;
+  repeated string Requirements = 5;
+  string DatePosted = 6;
+  string Duration = 7;
 }

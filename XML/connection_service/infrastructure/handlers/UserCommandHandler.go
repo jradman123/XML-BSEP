@@ -74,7 +74,16 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand)
 		}
 		reply.Type = events.ProfileStatusChanged
 	case events.UpdateUserProfessionalDetails:
-		err := handler.service.UpdateUserProfessionalDetails(user)
+		details := model.UserDetails{
+			Skills:      command.User.Skills,
+			Educations:  command.User.Educations,
+			Interests:   command.User.Interests,
+			Experiences: command.User.Experiences,
+		}
+		fmt.Println("evo me u handleru u connection servisu")
+		fmt.Println(user)
+		fmt.Println(details)
+		err := handler.service.UpdateUserProfessionalDetails(user, details)
 		if err != nil {
 			reply.Type = events.UserRolledBack
 		}

@@ -70,14 +70,17 @@ func (p PostRepositoryImpl) CreateComment(post *model.Post, comment *model.Comme
 	return nil
 }
 
-func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer) error {
+func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer) (*model.JobOffer, error) {
 	result, err := p.jobOffers.InsertOne(context.TODO(), offer)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	offer.Id = result.InsertedID.(primitive.ObjectID)
+	createdJobOffer := p.jobOffers.FindOne(context.TODO(), bson.M{"_id": offer.Id})
+	var retVal model.JobOffer
+	createdJobOffer.Decode(&retVal)
+	return &retVal, nil
 
-	return nil
 }
 
 func (p PostRepositoryImpl) GetAllJobOffers() ([]*model.JobOffer, error) {

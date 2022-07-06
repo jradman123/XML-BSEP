@@ -14,6 +14,8 @@ type Config struct {
 	NatsPort           string
 	NatsPass           string
 	PublicKey          string
+	JobCommandSubject  string
+	JobReplySubject    string
 }
 
 func NewConfig() *Config {
@@ -28,6 +30,8 @@ func NewConfig() *Config {
 		NatsHost:           os.Getenv("NATS_HOST"),
 		NatsPass:           os.Getenv("NATS_PASS"),
 		NatsUser:           os.Getenv("NATS_USER"),
+		JobCommandSubject:  os.Getenv("JOB_COMMAND_SUBJECT"),
+		JobReplySubject:    os.Getenv("JOB_REPLY_SUBJECT"),
 		PublicKey: "-----BEGIN PUBLIC KEY-----\n" +
 			"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0AzWYJTc9jiPn+RMNjMJ\n" +
 			"hscn8hg/Mt0U22efM6IvM83CyQCiFHP1Z8rs2HFqRbid/hQxW23HrXQzKx5hGPdU\n" +

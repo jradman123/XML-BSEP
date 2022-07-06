@@ -31,7 +31,8 @@ func NewServer(config *config.Config) *Server {
 }
 
 const (
-	QueueGroup = "connection_service"
+	QueueGroup    = "connection_service"
+	JobQueueGroup = "connection_service_job"
 )
 
 func (server *Server) Start() {
@@ -52,6 +53,12 @@ func (server *Server) Start() {
 	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
+
+	jobRepo := server.InitJobRepository(neoClient, logInfo, logError, connectionRepo)
+	jobService := server.InitJobService(jobRepo, logInfo, logError)
+	jobCommandSubscriber := server.InitSubscriber(server.config.JobCommandSubject, JobQueueGroup)
+	jobReplyPublisher := server.InitPublisher(server.config.JobReplySubject)
+	server.InitCreateJobOfferCommandHandler(jobService, jobReplyPublisher, jobCommandSubscriber)
 
 	server.StartGrpcServer(connectionHandler, logError)
 
@@ -141,4 +148,21 @@ func (server *Server) InitCreateUserCommandHandler(service *services.UserService
 		log.Fatalf("failed to listen: %v", err)
 	}
 	return handler
+}
+
+func (server *Server) InitCreateJobOfferCommandHandler(service *services.JobOfferService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.JobOfferCommandHandler {
+	handler, err := handlers.NewJobOfferCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
+
+func (server *Server) InitJobRepository(client *neo4j.Driver, info *logger.Logger, logError *logger.Logger, repo repositories.ConnectionRepository) repositories.JobOfferRepository {
+	return persistance.NewJobOfferRepositoryImpl(client, info, logError, repo)
+}
+
+func (server *Server) InitJobService(repo repositories.JobOfferRepository, info *logger.Logger, logError *logger.Logger) *services.JobOfferService {
+	return services.NewJobOfferService(repo, info, logError)
 }

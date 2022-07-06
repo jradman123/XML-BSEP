@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -597,4 +598,52 @@ func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string) (u
 		return nil, err
 	}
 	return userNodes, nil
+}
+
+func (r ConnectionRepositoryImpl) GetRecommendedJobOffers(userId string) (jobNodes []*model.JobOffer, error1 error) {
+	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer func(session neo4j.Session) {
+		err := session.Close()
+		if err != nil {
+			r.logError.Logger.Errorf(neo4jSessionError)
+		}
+	}(session)
+
+	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
+
+		if !checkIfUserExist(userId, tx) {
+			return nil, nil
+		}
+
+		records, err := tx.Run("MATCH (user:UserNode {uid:$userUid})-[:HAS]->(e:SkillNode)<-[:REQUIRES]->(job:JobNode)  RETURN job.jobId, job.publisher, job.position, job.jobDescription, job.datePosted, job.duration, job.requirements, count(job) as frequency ORDER BY frequency DESC LIMIT 20", map[string]interface{}{
+			"userUid": userId,
+		})
+
+		for records.Next() {
+			id, err := primitive.ObjectIDFromHex(records.Record().Values[0].(string))
+			if err != nil {
+				return nil, nil
+			}
+			var lista []string
+			//lista = append(lista, records.Record().Values[6].)
+			node := model.JobOffer{JobId: id, Publisher: records.Record().Values[1].(string),
+				Position: records.Record().Values[2].(string), JobDescription: records.Record().Values[3].(string),
+				DatePosted: records.Record().Values[4].(string), Duration: records.Record().Values[5].(string),
+				Requirements: lista}
+			jobNodes = append(jobNodes, &node)
+		}
+		if jobNodes == nil {
+			fmt.Println("checkpoint 1")
+			return nil, nil
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		return jobNodes, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return jobNodes, nil
 }
