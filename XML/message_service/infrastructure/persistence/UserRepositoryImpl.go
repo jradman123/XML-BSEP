@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -60,7 +61,16 @@ func (u UserRepositoryImpl) GetByUsername(username string) (user []*model.User, 
 	filter := bson.M{"username": username}
 	return u.filter(filter)
 }
-
+func (u UserRepositoryImpl) GetById(userId uuid.UUID) ([]*model.User, error) {
+	filter := bson.M{"user_id": userId}
+	return u.filter(filter)
+}
+func stringToBin(s string) (binString string) {
+	for _, c := range s {
+		binString = fmt.Sprintf("%s%b", binString, c)
+	}
+	return
+}
 func (u UserRepositoryImpl) filterOne(filter bson.M) (user *model.User, err error) {
 	result := u.users.FindOne(context.TODO(), filter)
 	err = result.Decode(&user)

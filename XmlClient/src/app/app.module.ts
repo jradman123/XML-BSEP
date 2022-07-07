@@ -78,6 +78,10 @@ import { EducationDialogComponent } from './components/dialogs/education-dialog/
 import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
 import { ProfileSearchPipe } from './pipes/profile-search.pipe';
+import { MessagesPageComponent } from './pages/messages-page/messages-page/messages-page.component';
+import { MessagePreviewComponent } from './components/message-preview/message-preview/message-preview.component';
+import { MessageCreateComponent } from './components/message-create/message-create/message-create.component';
+import { SentMessagePreviewComponent } from './components/sent-message-preview/sent-message-preview/sent-message-preview.component';
 
 
 
@@ -115,6 +119,10 @@ import { ProfileSearchPipe } from './pipes/profile-search.pipe';
     ProfilePreviewComponent,
     ProfileListComponent,
     ProfileSearchPipe,
+    MessagesPageComponent,
+    MessagePreviewComponent,
+    MessageCreateComponent,
+    SentMessagePreviewComponent
   ],
   imports: [
     BrowserModule,

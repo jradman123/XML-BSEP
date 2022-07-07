@@ -35,3 +35,8 @@ func (s UserService) GetByUsername(username string) (user []*model.User, err err
 	user, err = s.repository.GetByUsername(username)
 	return user, err
 }
+
+func (s UserService) GetById(userId uuid.UUID) (user []*model.User, err error) {
+	user, err = s.repository.GetById(userId)
+	return user, err
+}

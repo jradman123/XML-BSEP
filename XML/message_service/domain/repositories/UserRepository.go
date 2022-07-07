@@ -10,4 +10,5 @@ type UserRepository interface {
 	UpdateUser(requestUser *model.User) (user *model.User, err error)
 	DeleteUser(userId uuid.UUID) (err error)
 	GetByUsername(username string) (user []*model.User, err error)
+	GetById(userId uuid.UUID) ([]*model.User, error)
 }

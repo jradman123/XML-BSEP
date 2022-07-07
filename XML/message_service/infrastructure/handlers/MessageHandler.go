@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"common/module/interceptor"
 	"common/module/logger"
 	pb "common/module/proto/message_service"
 	"context"
@@ -25,7 +24,7 @@ func NewMessageHandler(messageService *application.MessageService, userService *
 func (m MessageHandler) MustEmbedUnimplementedMessageServiceServer() {
 }
 
-func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+func (m MessageHandler) GetAllSent(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
 	sender, err := m.userService.GetByUsername(request.Username)
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
@@ -33,18 +32,22 @@ func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) 
 		}).Errorf("No user in database")
 		return nil, err
 	}
-	messages, err := m.messageService.GetAllSent(sender[0].UserId.String())
+	fmt.Println("sender[0].UserId")
+	fmt.Println(sender[0].UserId)
+	messages, err := m.messageService.GetAllSent(sender[0].UserId)
+
+	fmt.Println(messages)
 	response := &pb.GetMultipleResponse{Messages: []*pb.Message{}}
 	for _, message := range messages {
-		receiver, _ := m.userService.GetByUsername(message.ReceiverId)
-		current := api.MapMessageReply(message, receiver[0].UserId.String(), sender[0].UserId.String())
+		receiver, _ := m.userService.GetById(message.ReceiverId)
+		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username)
 		response.Messages = append(response.Messages, current)
 	}
 
 	return response, nil
 }
 
-func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+func (m MessageHandler) GetAllReceived(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
 	receiver, err := m.userService.GetByUsername(request.Username)
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
@@ -52,44 +55,32 @@ func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetReque
 		}).Errorf("No user in database")
 		return nil, err
 	}
-	messages, err := m.messageService.GetAllReceived(receiver[0].UserId.String())
+	messages, err := m.messageService.GetAllReceived(receiver[0].UserId)
 	response := &pb.GetMultipleResponse{Messages: []*pb.Message{}}
 	for _, message := range messages {
-		sender, _ := m.userService.GetByUsername(message.SenderId)
-		current := api.MapMessageReply(message, receiver[0].UserId.String(), sender[0].UserId.String())
+		sender, _ := m.userService.GetById(message.SenderId)
+		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username)
 		response.Messages = append(response.Messages, current)
 	}
 
 	return response, nil
 }
 
-func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessageRequest) (*pb.Empty, error) {
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+func (m MessageHandler) SendMessage(_ context.Context, request *pb.SendMessageRequest) (*pb.MessageSentResponse, error) {
+
 	userSender, _ := m.userService.GetByUsername(request.Message.SenderUsername)
 	userReceiver, _ := m.userService.GetByUsername(request.Message.ReceiverUsername)
 
-	message := api.MapNewMessage(request.Message.MessageText, userSender[0].UserId.String(), userReceiver[0].UserId.String())
-	err := m.messageService.SendMessage(message)
+	model := api.MapNewMessage(request.Message.MessageText, userReceiver[0].UserId, userSender[0].UserId)
+	message, err := m.messageService.SendMessage(model)
+
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
-			"userId": userNameCtx,
+			"userId": request.Message.SenderUsername,
 		}).Errorf("Can not send message")
 		return nil, err
 	}
 
-	//TODO: Vjv treba vratiti tako da bih update listu poslatih
-	return &pb.Empty{}, nil
-}
-
-func (m MessageHandler) GetAll(ctx context.Context, empty *pb.Empty) (*pb.GetAllResponse, error) {
-	current := &pb.Message{
-		SenderUsername:   "Higashi",
-		ReceiverUsername: "Minami",
-		MessageText:      "Kore kara da aaa",
-		TimeSent:         "nebitno je skroz",
-	}
-
-	response := &pb.GetAllResponse{Messages: []*pb.Message{}}
-	response.Messages = append(response.Messages, current)
-	return response, nil
+	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername)
+	return &pb.MessageSentResponse{Message: response}, nil
 }

@@ -16,6 +16,7 @@ import { AuthGuardRegular } from './AuthGuard/AuthGuardRegular';
 import { MyProfileComponent } from './components/my-profile/my-profile.component';
 import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
+import { MessagesPageComponent } from './pages/messages-page/messages-page/messages-page.component';
 
 const routes: Routes = [
   {
@@ -85,6 +86,11 @@ const routes: Routes = [
     path: 'myProfile',
     component: MyProfileComponent, canActivate: [AuthGuardRegular]
   },
+  {
+    path: 'myMessages',
+    component: MessagesPageComponent,
+
+  }
 
 
 ];
