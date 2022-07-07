@@ -42,6 +42,7 @@ export class EditEmailUsernameComponent implements OnInit {
 
   changeEmail() {
     if(this.emailForm.invalid){
+      this._snackBar.open("Entered value is not email form" + "!", 'Dismiss', { duration: 3000 });
       return;
     }
     const changeEmailObserver = {
@@ -62,6 +63,7 @@ export class EditEmailUsernameComponent implements OnInit {
 
   changeUsername() {
     if(this.usernameForm.invalid){
+      this._snackBar.open("Username should have at least 7 characters" + "!", 'Dismiss', { duration: 3000 });
       return;
     }
     const changeUsernameObserver = {

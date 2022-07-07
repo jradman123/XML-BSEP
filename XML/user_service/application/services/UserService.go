@@ -534,6 +534,10 @@ func (u UserService) UpdateEmail(ctx context.Context, user *model.User) (*model.
 	}
 	if result {
 		user, _ := u.userRepository.GetById(ctx, user.ID)
+		er := u.orchestrator.ChangeEmail(user)
+		if er != nil {
+			return nil, er
+		}
 		return user, nil
 	} else {
 		return nil, nil
@@ -547,6 +551,10 @@ func (u UserService) UpdateUsername(ctx context.Context, user *model.User) (*mod
 	}
 	if result {
 		user, _ := u.userRepository.GetById(ctx, user.ID)
+		er := u.orchestrator.ChangeUsername(user)
+		if er != nil {
+			return nil, er
+		}
 		return user, nil
 	} else {
 		return nil, nil

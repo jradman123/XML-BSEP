@@ -47,6 +47,7 @@ func (server *Server) Start() {
 	userService := server.InitUserService(userRepo, logInfo, logError)
 	postHandler := server.InitPostHandler(postService, userService, logInfo, logError)
 	server.InitCreateUserCommandHandler(userService, postService, replyPublisher, commandSubscriber)
+	server.InitCreateChangeEmailUsernameCommandHandler(userService, postService, replyPublisher, commandSubscriber)
 
 	server.StartGrpcServer(postHandler, logError)
 }
@@ -105,6 +106,15 @@ func (server *Server) InitUserService(repo repositories.UserRepository, logInfo 
 func (server *Server) InitCreateUserCommandHandler(userService *application.UserService, postService *application.PostService, publisher saga.Publisher,
 	subscriber saga.Subscriber) *handlers.UserCommandHandler {
 	handler, err := handlers.NewUserCommandHandler(userService, postService, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
+
+func (server *Server) InitCreateChangeEmailUsernameCommandHandler(userService *application.UserService, postService *application.PostService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.ChangeEmailUsernameCommandHandler {
+	handler, err := handlers.NewChangeEmailUsernameCommandHandler(userService, postService, publisher, subscriber)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

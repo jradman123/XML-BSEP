@@ -64,6 +64,8 @@ func (handler *UserCommandHandler) handle(command *events.UserCommand) {
 			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
 		reply = api.MapUserReply(user, events.UserActivated)
+	case events.ChangeEmail:
+
 	default:
 		reply = api.MapUserReply(user, events.UnknownReply)
 	}
