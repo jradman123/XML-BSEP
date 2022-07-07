@@ -81,6 +81,10 @@ import { NonregisteredSearchHeaderComponent } from './components/nonregistered-s
 import { NetworkComponent } from './components/network/network.component';
 import { InvitationComponent } from './components/invitation/invitation.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { JobOffersComponent } from './components/job-offers/job-offers.component';
+import { JobOfferViewComponent } from './components/job-offer-view/job-offer-view.component';
+import { JobsSearchPipe } from './pipes/jobs-search.pipe';
+import { DateAsAgoPipe } from './pipes/date-as-ago.pipe';
 
 
 
@@ -121,6 +125,10 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
     NetworkComponent,
     InvitationComponent,
     NotFoundComponent,
+    JobOfferViewComponent,
+    JobOffersComponent,
+    JobsSearchPipe,
+    DateAsAgoPipe,
   ],
   imports: [
     BrowserModule,

@@ -19,4 +19,8 @@ export class JobOfferService {
    createJobOffer(newjo : JobOffer) : Observable<any> {
      return this.http.post("http://localhost:9090/job_offer", newjo);
    }
+
+   getSuggestedJobOffers(username : string) : Observable<any> {
+    return this.http.get("http://localhost:9090/jobOffers/recommended/" + username);
+   }
 }
