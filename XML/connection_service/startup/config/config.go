@@ -14,6 +14,8 @@ type Config struct {
 	NatsPort           string
 	NatsPass           string
 	PublicKey          string
+	JobCommandSubject  string
+	JobReplySubject    string
 }
 
 func NewConfig() *Config {
@@ -21,13 +23,15 @@ func NewConfig() *Config {
 		Port:               os.Getenv("CONNECTION_SERVICE_PORT"),
 		Neo4jUsername:      os.Getenv("NEO4J_USERNAME"),
 		Neo4jPassword:      os.Getenv("NEO4J_PASS"),
-		Neo4jUri:           "neo4j+s://525ffd8e.databases.neo4j.io",
+		Neo4jUri:           "bolt://neo4j:7687",
 		UserCommandSubject: os.Getenv("USER_COMMAND_SUBJECT"),
 		UserReplySubject:   os.Getenv("USER_REPLY_SUBJECT"),
 		NatsPort:           os.Getenv("NATS_PORT"),
 		NatsHost:           os.Getenv("NATS_HOST"),
 		NatsPass:           os.Getenv("NATS_PASS"),
 		NatsUser:           os.Getenv("NATS_USER"),
+		JobCommandSubject:  os.Getenv("JOB_COMMAND_SUBJECT"),
+		JobReplySubject:    os.Getenv("JOB_REPLY_SUBJECT"),
 		PublicKey: "-----BEGIN PUBLIC KEY-----\n" +
 			"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0AzWYJTc9jiPn+RMNjMJ\n" +
 			"hscn8hg/Mt0U22efM6IvM83CyQCiFHP1Z8rs2HFqRbid/hQxW23HrXQzKx5hGPdU\n" +

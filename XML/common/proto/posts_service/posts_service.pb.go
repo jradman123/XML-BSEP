@@ -69,6 +69,53 @@ func (x *GetRequest) GetId() string {
 	return ""
 }
 
+type GetMyJobsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+}
+
+func (x *GetMyJobsRequest) Reset() {
+	*x = GetMyJobsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_posts_service_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMyJobsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMyJobsRequest) ProtoMessage() {}
+
+func (x *GetMyJobsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_posts_service_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMyJobsRequest.ProtoReflect.Descriptor instead.
+func (*GetMyJobsRequest) Descriptor() ([]byte, []int) {
+	return file_posts_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetMyJobsRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
 type UserReactionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -81,7 +128,7 @@ type UserReactionRequest struct {
 func (x *UserReactionRequest) Reset() {
 	*x = UserReactionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[1]
+		mi := &file_posts_service_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -94,7 +141,7 @@ func (x *UserReactionRequest) String() string {
 func (*UserReactionRequest) ProtoMessage() {}
 
 func (x *UserReactionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[1]
+	mi := &file_posts_service_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -107,7 +154,7 @@ func (x *UserReactionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserReactionRequest.ProtoReflect.Descriptor instead.
 func (*UserReactionRequest) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{1}
+	return file_posts_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *UserReactionRequest) GetId() string {
@@ -137,7 +184,7 @@ type GetUserReactionResponse struct {
 func (x *GetUserReactionResponse) Reset() {
 	*x = GetUserReactionResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[2]
+		mi := &file_posts_service_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -150,7 +197,7 @@ func (x *GetUserReactionResponse) String() string {
 func (*GetUserReactionResponse) ProtoMessage() {}
 
 func (x *GetUserReactionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[2]
+	mi := &file_posts_service_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -163,7 +210,7 @@ func (x *GetUserReactionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserReactionResponse.ProtoReflect.Descriptor instead.
 func (*GetUserReactionResponse) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{2}
+	return file_posts_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetUserReactionResponse) GetLiked() bool {
@@ -198,7 +245,7 @@ type GetResponse struct {
 func (x *GetResponse) Reset() {
 	*x = GetResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[3]
+		mi := &file_posts_service_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -211,7 +258,7 @@ func (x *GetResponse) String() string {
 func (*GetResponse) ProtoMessage() {}
 
 func (x *GetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[3]
+	mi := &file_posts_service_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -224,7 +271,7 @@ func (x *GetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResponse.ProtoReflect.Descriptor instead.
 func (*GetResponse) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{3}
+	return file_posts_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetResponse) GetPost() *Post {
@@ -245,7 +292,7 @@ type GetMultipleResponse struct {
 func (x *GetMultipleResponse) Reset() {
 	*x = GetMultipleResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[4]
+		mi := &file_posts_service_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -258,7 +305,7 @@ func (x *GetMultipleResponse) String() string {
 func (*GetMultipleResponse) ProtoMessage() {}
 
 func (x *GetMultipleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[4]
+	mi := &file_posts_service_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,7 +318,7 @@ func (x *GetMultipleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMultipleResponse.ProtoReflect.Descriptor instead.
 func (*GetMultipleResponse) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{4}
+	return file_posts_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetMultipleResponse) GetPosts() []*Post {
@@ -292,7 +339,7 @@ type GetAllCommentsResponse struct {
 func (x *GetAllCommentsResponse) Reset() {
 	*x = GetAllCommentsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[5]
+		mi := &file_posts_service_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -305,7 +352,7 @@ func (x *GetAllCommentsResponse) String() string {
 func (*GetAllCommentsResponse) ProtoMessage() {}
 
 func (x *GetAllCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[5]
+	mi := &file_posts_service_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -318,7 +365,7 @@ func (x *GetAllCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllCommentsResponse.ProtoReflect.Descriptor instead.
 func (*GetAllCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{5}
+	return file_posts_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetAllCommentsResponse) GetComments() []*Comment {
@@ -340,7 +387,7 @@ type GetReactionsResponse struct {
 func (x *GetReactionsResponse) Reset() {
 	*x = GetReactionsResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[6]
+		mi := &file_posts_service_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -353,7 +400,7 @@ func (x *GetReactionsResponse) String() string {
 func (*GetReactionsResponse) ProtoMessage() {}
 
 func (x *GetReactionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[6]
+	mi := &file_posts_service_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -366,7 +413,7 @@ func (x *GetReactionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetReactionsResponse.ProtoReflect.Descriptor instead.
 func (*GetReactionsResponse) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{6}
+	return file_posts_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetReactionsResponse) GetLikesNumber() int32 {
@@ -392,7 +439,7 @@ type Empty struct {
 func (x *Empty) Reset() {
 	*x = Empty{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[7]
+		mi := &file_posts_service_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -405,7 +452,7 @@ func (x *Empty) String() string {
 func (*Empty) ProtoMessage() {}
 
 func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[7]
+	mi := &file_posts_service_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -418,7 +465,7 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Empty.ProtoReflect.Descriptor instead.
 func (*Empty) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{7}
+	return file_posts_service_proto_rawDescGZIP(), []int{8}
 }
 
 type CreatePostRequest struct {
@@ -432,7 +479,7 @@ type CreatePostRequest struct {
 func (x *CreatePostRequest) Reset() {
 	*x = CreatePostRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[8]
+		mi := &file_posts_service_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -445,7 +492,7 @@ func (x *CreatePostRequest) String() string {
 func (*CreatePostRequest) ProtoMessage() {}
 
 func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[8]
+	mi := &file_posts_service_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,7 +505,7 @@ func (x *CreatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePostRequest.ProtoReflect.Descriptor instead.
 func (*CreatePostRequest) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{8}
+	return file_posts_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *CreatePostRequest) GetPost() *Post {
@@ -480,7 +527,7 @@ type CreateCommentRequest struct {
 func (x *CreateCommentRequest) Reset() {
 	*x = CreateCommentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[9]
+		mi := &file_posts_service_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -493,7 +540,7 @@ func (x *CreateCommentRequest) String() string {
 func (*CreateCommentRequest) ProtoMessage() {}
 
 func (x *CreateCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[9]
+	mi := &file_posts_service_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,7 +553,7 @@ func (x *CreateCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCommentRequest.ProtoReflect.Descriptor instead.
 func (*CreateCommentRequest) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{9}
+	return file_posts_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateCommentRequest) GetPostId() string {
@@ -534,7 +581,7 @@ type CreateCommentResponse struct {
 func (x *CreateCommentResponse) Reset() {
 	*x = CreateCommentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[10]
+		mi := &file_posts_service_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -547,7 +594,7 @@ func (x *CreateCommentResponse) String() string {
 func (*CreateCommentResponse) ProtoMessage() {}
 
 func (x *CreateCommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[10]
+	mi := &file_posts_service_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -560,7 +607,7 @@ func (x *CreateCommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCommentResponse.ProtoReflect.Descriptor instead.
 func (*CreateCommentResponse) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{10}
+	return file_posts_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CreateCommentResponse) GetComment() *Comment {
@@ -582,7 +629,7 @@ type ReactionRequest struct {
 func (x *ReactionRequest) Reset() {
 	*x = ReactionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[11]
+		mi := &file_posts_service_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -595,7 +642,7 @@ func (x *ReactionRequest) String() string {
 func (*ReactionRequest) ProtoMessage() {}
 
 func (x *ReactionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[11]
+	mi := &file_posts_service_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -608,7 +655,7 @@ func (x *ReactionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReactionRequest.ProtoReflect.Descriptor instead.
 func (*ReactionRequest) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{11}
+	return file_posts_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ReactionRequest) GetPostId() string {
@@ -644,7 +691,7 @@ type Post struct {
 func (x *Post) Reset() {
 	*x = Post{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[12]
+		mi := &file_posts_service_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -657,7 +704,7 @@ func (x *Post) String() string {
 func (*Post) ProtoMessage() {}
 
 func (x *Post) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[12]
+	mi := &file_posts_service_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -670,7 +717,7 @@ func (x *Post) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Post.ProtoReflect.Descriptor instead.
 func (*Post) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{12}
+	return file_posts_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *Post) GetId() string {
@@ -749,7 +796,7 @@ type User struct {
 func (x *User) Reset() {
 	*x = User{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[13]
+		mi := &file_posts_service_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -762,7 +809,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[13]
+	mi := &file_posts_service_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -775,7 +822,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{13}
+	return file_posts_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *User) GetUsername() string {
@@ -813,7 +860,7 @@ type Comment struct {
 func (x *Comment) Reset() {
 	*x = Comment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[14]
+		mi := &file_posts_service_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -826,7 +873,7 @@ func (x *Comment) String() string {
 func (*Comment) ProtoMessage() {}
 
 func (x *Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[14]
+	mi := &file_posts_service_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -839,7 +886,7 @@ func (x *Comment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Comment.ProtoReflect.Descriptor instead.
 func (*Comment) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{14}
+	return file_posts_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *Comment) GetUsername() string {
@@ -884,7 +931,7 @@ type Links struct {
 func (x *Links) Reset() {
 	*x = Links{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[15]
+		mi := &file_posts_service_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -897,7 +944,7 @@ func (x *Links) String() string {
 func (*Links) ProtoMessage() {}
 
 func (x *Links) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[15]
+	mi := &file_posts_service_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -910,7 +957,7 @@ func (x *Links) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Links.ProtoReflect.Descriptor instead.
 func (*Links) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{15}
+	return file_posts_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *Links) GetComment() string {
@@ -958,7 +1005,7 @@ type JobOffer struct {
 func (x *JobOffer) Reset() {
 	*x = JobOffer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[16]
+		mi := &file_posts_service_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -971,7 +1018,7 @@ func (x *JobOffer) String() string {
 func (*JobOffer) ProtoMessage() {}
 
 func (x *JobOffer) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[16]
+	mi := &file_posts_service_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -984,7 +1031,7 @@ func (x *JobOffer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobOffer.ProtoReflect.Descriptor instead.
 func (*JobOffer) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{16}
+	return file_posts_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *JobOffer) GetId() string {
@@ -1047,7 +1094,7 @@ type CreateJobOfferRequest struct {
 func (x *CreateJobOfferRequest) Reset() {
 	*x = CreateJobOfferRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[17]
+		mi := &file_posts_service_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1060,7 +1107,7 @@ func (x *CreateJobOfferRequest) String() string {
 func (*CreateJobOfferRequest) ProtoMessage() {}
 
 func (x *CreateJobOfferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[17]
+	mi := &file_posts_service_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1073,7 +1120,7 @@ func (x *CreateJobOfferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateJobOfferRequest.ProtoReflect.Descriptor instead.
 func (*CreateJobOfferRequest) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{17}
+	return file_posts_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CreateJobOfferRequest) GetJobOffer() *JobOffer {
@@ -1094,7 +1141,7 @@ type GetAllJobOffers struct {
 func (x *GetAllJobOffers) Reset() {
 	*x = GetAllJobOffers{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_posts_service_proto_msgTypes[18]
+		mi := &file_posts_service_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1107,7 +1154,7 @@ func (x *GetAllJobOffers) String() string {
 func (*GetAllJobOffers) ProtoMessage() {}
 
 func (x *GetAllJobOffers) ProtoReflect() protoreflect.Message {
-	mi := &file_posts_service_proto_msgTypes[18]
+	mi := &file_posts_service_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1120,7 +1167,7 @@ func (x *GetAllJobOffers) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllJobOffers.ProtoReflect.Descriptor instead.
 func (*GetAllJobOffers) Descriptor() ([]byte, []int) {
-	return file_posts_service_proto_rawDescGZIP(), []int{18}
+	return file_posts_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GetAllJobOffers) GetJobOffers() []*JobOffer {
@@ -1141,6 +1188,9 @@ var file_posts_service_proto_rawDesc = []byte{
 	0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x22, 0x1c, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x12, 0x0e, 0x0a, 0x02, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x49, 0x64,
+	0x22, 0x2e, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x4d, 0x79, 0x4a, 0x6f, 0x62, 0x73, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65,
 	0x22, 0x41, 0x0a, 0x13, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x49, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x02, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x55, 0x73, 0x65, 0x72, 0x6e,
@@ -1251,7 +1301,7 @@ var file_posts_service_proto_rawDesc = []byte{
 	0x73, 0x12, 0x34, 0x0a, 0x09, 0x4a, 0x6f, 0x62, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x73, 0x18, 0x01,
 	0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76,
 	0x69, 0x63, 0x65, 0x2e, 0x4a, 0x6f, 0x62, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x52, 0x09, 0x4a, 0x6f,
-	0x62, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x73, 0x32, 0xef, 0x09, 0x0a, 0x0b, 0x50, 0x6f, 0x73, 0x74,
+	0x62, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x73, 0x32, 0xe2, 0x0a, 0x0a, 0x0b, 0x50, 0x6f, 0x73, 0x74,
 	0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x68, 0x0a, 0x10, 0x67, 0x65, 0x74, 0x41, 0x6c,
 	0x6c, 0x42, 0x79, 0x55, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18, 0x2e, 0x70, 0x6f,
 	0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65,
@@ -1307,32 +1357,40 @@ var file_posts_service_proto_rawDesc = []byte{
 	0x70, 0x74, 0x79, 0x1a, 0x1d, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x4a, 0x6f, 0x62, 0x4f, 0x66, 0x66, 0x65,
 	0x72, 0x73, 0x22, 0x12, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0c, 0x12, 0x0a, 0x2f, 0x6a, 0x6f, 0x62,
-	0x5f, 0x6f, 0x66, 0x66, 0x65, 0x72, 0x12, 0x74, 0x0a, 0x16, 0x67, 0x65, 0x74, 0x41, 0x6c, 0x6c,
-	0x52, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x46, 0x6f, 0x72, 0x50, 0x6f, 0x73, 0x74,
-	0x12, 0x18, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e,
-	0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x70, 0x6f, 0x73,
-	0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x61,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x2f, 0x7b, 0x49,
-	0x64, 0x7d, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x74, 0x0a, 0x15,
-	0x67, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x46, 0x6f,
-	0x72, 0x50, 0x6f, 0x73, 0x74, 0x12, 0x18, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72,
-	0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x24, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47,
-	0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12, 0x13, 0x2f,
-	0x70, 0x6f, 0x73, 0x74, 0x2f, 0x7b, 0x49, 0x64, 0x7d, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x65, 0x6e,
-	0x74, 0x73, 0x12, 0x84, 0x01, 0x0a, 0x10, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x4c, 0x69, 0x6b, 0x65,
-	0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x21, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x70, 0x6f, 0x73,
-	0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65,
-	0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x70, 0x6f, 0x73, 0x74,
-	0x2f, 0x7b, 0x49, 0x64, 0x7d, 0x2f, 0x7b, 0x55, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x7d,
-	0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x1d, 0x5a, 0x1b, 0x63, 0x6f, 0x6d,
-	0x6d, 0x6f, 0x6e, 0x2f, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x73,
-	0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x5f, 0x6f, 0x66, 0x66, 0x65, 0x72, 0x12, 0x71, 0x0a, 0x11, 0x67, 0x65, 0x74, 0x55, 0x73, 0x65,
+	0x72, 0x73, 0x4a, 0x6f, 0x62, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x73, 0x12, 0x1e, 0x2e, 0x70, 0x6f,
+	0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x79,
+	0x4a, 0x6f, 0x62, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x70, 0x6f,
+	0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x6c,
+	0x6c, 0x4a, 0x6f, 0x62, 0x4f, 0x66, 0x66, 0x65, 0x72, 0x73, 0x22, 0x1d, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x17, 0x12, 0x15, 0x2f, 0x6a, 0x6f, 0x62, 0x5f, 0x6f, 0x66, 0x66, 0x65, 0x72, 0x2f, 0x7b,
+	0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x7d, 0x12, 0x74, 0x0a, 0x16, 0x67, 0x65, 0x74,
+	0x41, 0x6c, 0x6c, 0x52, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x46, 0x6f, 0x72, 0x50,
+	0x6f, 0x73, 0x74, 0x12, 0x18, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69,
+	0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e,
+	0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74,
+	0x52, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f, 0x70, 0x6f, 0x73, 0x74,
+	0x2f, 0x7b, 0x49, 0x64, 0x7d, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12,
+	0x74, 0x0a, 0x15, 0x67, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74,
+	0x73, 0x46, 0x6f, 0x72, 0x50, 0x6f, 0x73, 0x74, 0x12, 0x18, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x24, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15,
+	0x12, 0x13, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x2f, 0x7b, 0x49, 0x64, 0x7d, 0x2f, 0x63, 0x6f, 0x6d,
+	0x6d, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x84, 0x01, 0x0a, 0x10, 0x63, 0x68, 0x65, 0x63, 0x6b, 0x4c,
+	0x69, 0x6b, 0x65, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x21, 0x2e, 0x70, 0x6f, 0x73,
+	0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65,
+	0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e,
+	0x70, 0x6f, 0x73, 0x74, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x47, 0x65, 0x74,
+	0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x70,
+	0x6f, 0x73, 0x74, 0x2f, 0x7b, 0x49, 0x64, 0x7d, 0x2f, 0x7b, 0x55, 0x73, 0x65, 0x72, 0x6e, 0x61,
+	0x6d, 0x65, 0x7d, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x1d, 0x5a, 0x1b,
+	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x6d, 0x6f, 0x64, 0x75, 0x6c, 0x65, 0x2f, 0x70, 0x6f,
+	0x73, 0x74, 0x73, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1347,64 +1405,67 @@ func file_posts_service_proto_rawDescGZIP() []byte {
 	return file_posts_service_proto_rawDescData
 }
 
-var file_posts_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_posts_service_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_posts_service_proto_goTypes = []interface{}{
 	(*GetRequest)(nil),              // 0: post_service.GetRequest
-	(*UserReactionRequest)(nil),     // 1: post_service.UserReactionRequest
-	(*GetUserReactionResponse)(nil), // 2: post_service.GetUserReactionResponse
-	(*GetResponse)(nil),             // 3: post_service.GetResponse
-	(*GetMultipleResponse)(nil),     // 4: post_service.GetMultipleResponse
-	(*GetAllCommentsResponse)(nil),  // 5: post_service.GetAllCommentsResponse
-	(*GetReactionsResponse)(nil),    // 6: post_service.GetReactionsResponse
-	(*Empty)(nil),                   // 7: post_service.Empty
-	(*CreatePostRequest)(nil),       // 8: post_service.CreatePostRequest
-	(*CreateCommentRequest)(nil),    // 9: post_service.CreateCommentRequest
-	(*CreateCommentResponse)(nil),   // 10: post_service.CreateCommentResponse
-	(*ReactionRequest)(nil),         // 11: post_service.ReactionRequest
-	(*Post)(nil),                    // 12: post_service.Post
-	(*User)(nil),                    // 13: post_service.User
-	(*Comment)(nil),                 // 14: post_service.Comment
-	(*Links)(nil),                   // 15: post_service.Links
-	(*JobOffer)(nil),                // 16: post_service.JobOffer
-	(*CreateJobOfferRequest)(nil),   // 17: post_service.CreateJobOfferRequest
-	(*GetAllJobOffers)(nil),         // 18: post_service.GetAllJobOffers
+	(*GetMyJobsRequest)(nil),        // 1: post_service.GetMyJobsRequest
+	(*UserReactionRequest)(nil),     // 2: post_service.UserReactionRequest
+	(*GetUserReactionResponse)(nil), // 3: post_service.GetUserReactionResponse
+	(*GetResponse)(nil),             // 4: post_service.GetResponse
+	(*GetMultipleResponse)(nil),     // 5: post_service.GetMultipleResponse
+	(*GetAllCommentsResponse)(nil),  // 6: post_service.GetAllCommentsResponse
+	(*GetReactionsResponse)(nil),    // 7: post_service.GetReactionsResponse
+	(*Empty)(nil),                   // 8: post_service.Empty
+	(*CreatePostRequest)(nil),       // 9: post_service.CreatePostRequest
+	(*CreateCommentRequest)(nil),    // 10: post_service.CreateCommentRequest
+	(*CreateCommentResponse)(nil),   // 11: post_service.CreateCommentResponse
+	(*ReactionRequest)(nil),         // 12: post_service.ReactionRequest
+	(*Post)(nil),                    // 13: post_service.Post
+	(*User)(nil),                    // 14: post_service.User
+	(*Comment)(nil),                 // 15: post_service.Comment
+	(*Links)(nil),                   // 16: post_service.Links
+	(*JobOffer)(nil),                // 17: post_service.JobOffer
+	(*CreateJobOfferRequest)(nil),   // 18: post_service.CreateJobOfferRequest
+	(*GetAllJobOffers)(nil),         // 19: post_service.GetAllJobOffers
 }
 var file_posts_service_proto_depIdxs = []int32{
-	12, // 0: post_service.GetResponse.Post:type_name -> post_service.Post
-	12, // 1: post_service.GetMultipleResponse.Posts:type_name -> post_service.Post
-	14, // 2: post_service.GetAllCommentsResponse.Comments:type_name -> post_service.Comment
-	12, // 3: post_service.CreatePostRequest.Post:type_name -> post_service.Post
-	14, // 4: post_service.CreateCommentRequest.Comment:type_name -> post_service.Comment
-	14, // 5: post_service.CreateCommentResponse.Comment:type_name -> post_service.Comment
-	15, // 6: post_service.Post.Links:type_name -> post_service.Links
-	16, // 7: post_service.CreateJobOfferRequest.JobOffer:type_name -> post_service.JobOffer
-	16, // 8: post_service.GetAllJobOffers.JobOffers:type_name -> post_service.JobOffer
+	13, // 0: post_service.GetResponse.Post:type_name -> post_service.Post
+	13, // 1: post_service.GetMultipleResponse.Posts:type_name -> post_service.Post
+	15, // 2: post_service.GetAllCommentsResponse.Comments:type_name -> post_service.Comment
+	13, // 3: post_service.CreatePostRequest.Post:type_name -> post_service.Post
+	15, // 4: post_service.CreateCommentRequest.Comment:type_name -> post_service.Comment
+	15, // 5: post_service.CreateCommentResponse.Comment:type_name -> post_service.Comment
+	16, // 6: post_service.Post.Links:type_name -> post_service.Links
+	17, // 7: post_service.CreateJobOfferRequest.JobOffer:type_name -> post_service.JobOffer
+	17, // 8: post_service.GetAllJobOffers.JobOffers:type_name -> post_service.JobOffer
 	0,  // 9: post_service.PostService.getAllByUsername:input_type -> post_service.GetRequest
 	0,  // 10: post_service.PostService.get:input_type -> post_service.GetRequest
-	7,  // 11: post_service.PostService.getAll:input_type -> post_service.Empty
-	8,  // 12: post_service.PostService.create:input_type -> post_service.CreatePostRequest
-	9,  // 13: post_service.PostService.createComment:input_type -> post_service.CreateCommentRequest
-	11, // 14: post_service.PostService.likePost:input_type -> post_service.ReactionRequest
-	11, // 15: post_service.PostService.dislikePost:input_type -> post_service.ReactionRequest
-	17, // 16: post_service.PostService.createJobOffer:input_type -> post_service.CreateJobOfferRequest
-	7,  // 17: post_service.PostService.getAllJobOffers:input_type -> post_service.Empty
-	0,  // 18: post_service.PostService.getAllReactionsForPost:input_type -> post_service.GetRequest
-	0,  // 19: post_service.PostService.getAllCommentsForPost:input_type -> post_service.GetRequest
-	1,  // 20: post_service.PostService.checkLikedStatus:input_type -> post_service.UserReactionRequest
-	4,  // 21: post_service.PostService.getAllByUsername:output_type -> post_service.GetMultipleResponse
-	3,  // 22: post_service.PostService.get:output_type -> post_service.GetResponse
-	4,  // 23: post_service.PostService.getAll:output_type -> post_service.GetMultipleResponse
-	7,  // 24: post_service.PostService.create:output_type -> post_service.Empty
-	10, // 25: post_service.PostService.createComment:output_type -> post_service.CreateCommentResponse
-	7,  // 26: post_service.PostService.likePost:output_type -> post_service.Empty
-	7,  // 27: post_service.PostService.dislikePost:output_type -> post_service.Empty
-	7,  // 28: post_service.PostService.createJobOffer:output_type -> post_service.Empty
-	18, // 29: post_service.PostService.getAllJobOffers:output_type -> post_service.GetAllJobOffers
-	6,  // 30: post_service.PostService.getAllReactionsForPost:output_type -> post_service.GetReactionsResponse
-	5,  // 31: post_service.PostService.getAllCommentsForPost:output_type -> post_service.GetAllCommentsResponse
-	2,  // 32: post_service.PostService.checkLikedStatus:output_type -> post_service.GetUserReactionResponse
-	21, // [21:33] is the sub-list for method output_type
-	9,  // [9:21] is the sub-list for method input_type
+	8,  // 11: post_service.PostService.getAll:input_type -> post_service.Empty
+	9,  // 12: post_service.PostService.create:input_type -> post_service.CreatePostRequest
+	10, // 13: post_service.PostService.createComment:input_type -> post_service.CreateCommentRequest
+	12, // 14: post_service.PostService.likePost:input_type -> post_service.ReactionRequest
+	12, // 15: post_service.PostService.dislikePost:input_type -> post_service.ReactionRequest
+	18, // 16: post_service.PostService.createJobOffer:input_type -> post_service.CreateJobOfferRequest
+	8,  // 17: post_service.PostService.getAllJobOffers:input_type -> post_service.Empty
+	1,  // 18: post_service.PostService.getUsersJobOffers:input_type -> post_service.GetMyJobsRequest
+	0,  // 19: post_service.PostService.getAllReactionsForPost:input_type -> post_service.GetRequest
+	0,  // 20: post_service.PostService.getAllCommentsForPost:input_type -> post_service.GetRequest
+	2,  // 21: post_service.PostService.checkLikedStatus:input_type -> post_service.UserReactionRequest
+	5,  // 22: post_service.PostService.getAllByUsername:output_type -> post_service.GetMultipleResponse
+	4,  // 23: post_service.PostService.get:output_type -> post_service.GetResponse
+	5,  // 24: post_service.PostService.getAll:output_type -> post_service.GetMultipleResponse
+	8,  // 25: post_service.PostService.create:output_type -> post_service.Empty
+	11, // 26: post_service.PostService.createComment:output_type -> post_service.CreateCommentResponse
+	8,  // 27: post_service.PostService.likePost:output_type -> post_service.Empty
+	8,  // 28: post_service.PostService.dislikePost:output_type -> post_service.Empty
+	8,  // 29: post_service.PostService.createJobOffer:output_type -> post_service.Empty
+	19, // 30: post_service.PostService.getAllJobOffers:output_type -> post_service.GetAllJobOffers
+	19, // 31: post_service.PostService.getUsersJobOffers:output_type -> post_service.GetAllJobOffers
+	7,  // 32: post_service.PostService.getAllReactionsForPost:output_type -> post_service.GetReactionsResponse
+	6,  // 33: post_service.PostService.getAllCommentsForPost:output_type -> post_service.GetAllCommentsResponse
+	3,  // 34: post_service.PostService.checkLikedStatus:output_type -> post_service.GetUserReactionResponse
+	22, // [22:35] is the sub-list for method output_type
+	9,  // [9:22] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
@@ -1429,7 +1490,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UserReactionRequest); i {
+			switch v := v.(*GetMyJobsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1441,7 +1502,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetUserReactionResponse); i {
+			switch v := v.(*UserReactionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1453,7 +1514,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetResponse); i {
+			switch v := v.(*GetUserReactionResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1465,7 +1526,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetMultipleResponse); i {
+			switch v := v.(*GetResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1477,7 +1538,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetAllCommentsResponse); i {
+			switch v := v.(*GetMultipleResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1489,7 +1550,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetReactionsResponse); i {
+			switch v := v.(*GetAllCommentsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1501,7 +1562,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Empty); i {
+			switch v := v.(*GetReactionsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1513,7 +1574,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreatePostRequest); i {
+			switch v := v.(*Empty); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1525,7 +1586,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateCommentRequest); i {
+			switch v := v.(*CreatePostRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1537,7 +1598,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateCommentResponse); i {
+			switch v := v.(*CreateCommentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1549,7 +1610,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ReactionRequest); i {
+			switch v := v.(*CreateCommentResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1561,7 +1622,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Post); i {
+			switch v := v.(*ReactionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1573,7 +1634,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*User); i {
+			switch v := v.(*Post); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1585,7 +1646,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Comment); i {
+			switch v := v.(*User); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1597,7 +1658,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Links); i {
+			switch v := v.(*Comment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1609,7 +1670,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JobOffer); i {
+			switch v := v.(*Links); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1621,7 +1682,7 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateJobOfferRequest); i {
+			switch v := v.(*JobOffer); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1633,6 +1694,18 @@ func file_posts_service_proto_init() {
 			}
 		}
 		file_posts_service_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateJobOfferRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_posts_service_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetAllJobOffers); i {
 			case 0:
 				return &v.state
@@ -1651,7 +1724,7 @@ func file_posts_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_posts_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

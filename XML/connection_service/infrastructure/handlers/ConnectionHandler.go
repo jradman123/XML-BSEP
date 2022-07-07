@@ -400,3 +400,56 @@ func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, req
 
 	return response, nil
 }
+
+func (c ConnectionHandler) GetRecommendedJobOffers(ctx context.Context, request *pb.GetRequest) (*pb.Offers, error) {
+	fmt.Println("GetRecommendedJobOffers handler")
+	policy := bluemonday.UGCPolicy()
+	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
+
+	p1 := common.BadUsername(request.Username)
+	if request.Username == "" {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(xssError)
+	} else if p1 {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(validationError)
+	} else {
+		c.logInfo.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Infof("INFO:Handling GetRecommendedJobOffers for user")
+	}
+
+	userId, err := c.userService.GetUserId(request.Username)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
+	offers, err := c.connectionService.GetRecommendedJobOffers(userId)
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+	response := &pb.Offers{
+		Offers: []*pb.OfferNode{},
+	}
+	if offers == nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": request.Username,
+		}).Errorf(emptyUsers)
+		return response, nil
+	}
+
+	for _, offer := range offers {
+		current := pb.OfferNode{Id: offer.JobId.Hex(), JobDescription: offer.JobDescription, Position: offer.Position, Duration: offer.Duration, DatePosted: offer.DatePosted, Publisher: offer.Publisher, Requirements: offer.Requirements}
+		response.Offers = append(response.Offers, &current)
+	}
+
+	return response, nil
+}

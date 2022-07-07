@@ -18,6 +18,7 @@ import { PostCreateFileComponent } from './components/post-create-file/post-crea
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { NetworkComponent } from './components/network/network.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { JobOffersComponent } from './components/job-offers/job-offers.component';
 
 const routes: Routes = [
   {
@@ -98,9 +99,11 @@ const routes: Routes = [
   {
     path: '404',
     component: NotFoundComponent,
-  }
-
-
+  },
+   {
+    path: 'job-offers',
+    component: JobOffersComponent
+   }
 ];
 
 @NgModule({

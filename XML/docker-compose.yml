@@ -77,6 +77,8 @@ services:
       NATS_PASS: ${NATS_PASS}
       USER_COMMAND_SUBJECT: ${USER_COMMAND_SUBJECT}
       USER_REPLY_SUBJECT: ${USER_REPLY_SUBJECT}
+      JOB_COMMAND_SUBJECT: ${JOB_COMMAND_SUBJECT}
+      JOB_REPLY_SUBJECT: ${JOB_REPLY_SUBJECT}
     depends_on:
       - post_db
     networks:
@@ -99,6 +101,8 @@ services:
       NATS_PASS: ${NATS_PASS}
       USER_COMMAND_SUBJECT: ${USER_COMMAND_SUBJECT}
       USER_REPLY_SUBJECT: ${USER_REPLY_SUBJECT}
+      JOB_COMMAND_SUBJECT: ${JOB_COMMAND_SUBJECT} 
+      JOB_REPLY_SUBJECT: ${JOB_REPLY_SUBJECT}
     depends_on:
       - neo4j
     networks:
@@ -137,7 +141,7 @@ services:
     networks:
       - servers
     environment:
-      - NEO4J_AUTH=neo4j/ylKdorKc9bvWSuy5lICTfAfT5G9suZevX5UuSkWchlY
+      - NEO4J_AUTH=none
       - NEO4J_dbms_memory_pagecache_size=512M
 
   nats:

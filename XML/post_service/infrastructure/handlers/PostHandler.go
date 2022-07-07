@@ -245,6 +245,19 @@ func (p PostHandler) GetAllJobOffers(_ context.Context, _ *pb.Empty) (*pb.GetAll
 	return response, nil
 }
 
+func (p PostHandler) GetUsersJobOffers(_ context.Context, req *pb.GetMyJobsRequest) (*pb.GetAllJobOffers, error) {
+	offers, err := p.postService.GetUsersJobOffers(req.Username)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetAllJobOffers{JobOffers: []*pb.JobOffer{}}
+	for _, offer := range offers {
+		current := api.MapJobOfferReply(offer)
+		response.JobOffers = append(response.JobOffers, current)
+	}
+	return response, nil
+}
+
 func (p PostHandler) GetAllReactionsForPost(_ context.Context, request *pb.GetRequest) (*pb.GetReactionsResponse, error) {
 	policy := bluemonday.UGCPolicy()
 	request.Id = strings.TrimSpace(policy.Sanitize(request.Id))

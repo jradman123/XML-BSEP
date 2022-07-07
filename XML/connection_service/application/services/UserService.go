@@ -57,3 +57,11 @@ func (s UserService) ChangeProfileStatus(user model.User) error {
 	return nil
 	return nil
 }
+
+func (s UserService) UpdateUserProfessionalDetails(user model.User, details model.UserDetails) error {
+	err := s.userRepo.UpdateUserProfessionalDetails(&user, &details)
+	if err != nil {
+		return err
+	}
+	return nil
+}
