@@ -87,6 +87,12 @@ func (p PostRepositoryImpl) GetAllJobOffers() ([]*model.JobOffer, error) {
 	filter := bson.D{}
 	return p.filterJobOffers(filter)
 }
+
+func (p PostRepositoryImpl) GetUsersJobOffers(username string) ([]*model.JobOffer, error) {
+	filter := bson.M{"publisher": username}
+	return p.filterJobOffers(filter)
+}
+
 func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
 	//filter := bson.M{"user_id": user.UserId}
 	//posts, err := p.filter(filter)
@@ -206,7 +212,7 @@ func (p PostRepositoryImpl) filter(filter interface{}) ([]*model.Post, error) {
 	return decode(cursor)
 }
 
-func (p PostRepositoryImpl) filterJobOffers(filter bson.D) ([]*model.JobOffer, error) {
+func (p PostRepositoryImpl) filterJobOffers(filter interface{}) ([]*model.JobOffer, error) {
 	cursor, err := p.jobOffers.Find(context.TODO(), filter)
 	defer cursor.Close(context.TODO())
 

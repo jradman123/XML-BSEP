@@ -65,3 +65,7 @@ func (service *PostService) UpdateUserPosts(user *model.User) error {
 func (service *PostService) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID) (model.ReactionType, error) {
 	return service.repository.CheckLikedStatus(id, userId)
 }
+
+func (service *PostService) GetUsersJobOffers(username string) ([]*model.JobOffer, error) {
+	return service.repository.GetUsersJobOffers(username)
+}

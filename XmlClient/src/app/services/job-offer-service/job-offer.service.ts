@@ -23,4 +23,8 @@ export class JobOfferService {
    getSuggestedJobOffers(username : string) : Observable<any> {
     return this.http.get("http://localhost:9090/jobOffers/recommended/" + username);
    }
+
+   getMyJobOffers(username : string) : Observable<any> {
+    return this.http.get("http://localhost:9090/job_offer/" + username);
+   }
 }
