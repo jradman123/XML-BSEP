@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { UserDetails } from 'src/app/interfaces/user-details';
 import { UserService } from 'src/app/services/user-service/user.service';
@@ -11,23 +11,18 @@ import { UserService } from 'src/app/services/user-service/user.service';
 export class OverviewProfileComponent implements OnInit {
 
   sub!: Subscription;
-  userDetails! : UserDetails;
+  @Input()
+  user! : UserDetails;
   initialDetails: any;
   id!: number;
   constructor(private userService : UserService) { }
 
   ngOnInit(): void {
-    this.getUserDetails();
+    this.setUserDetails();
   }
-  getUserDetails() {
-    this.sub = this.userService.getUserDetails(localStorage.getItem('username')).subscribe({
-      next: (data: UserDetails) => {
-        const variable  = data.dateOfBirth.substring(0,10);
-        data.dateOfBirth = variable;
-        this.userDetails = data
-        this.initialDetails = JSON.parse(JSON.stringify(data)); 
-      },
-    });
+  setUserDetails() {
+  
+        this.initialDetails = this.user; 
   }
 
 }

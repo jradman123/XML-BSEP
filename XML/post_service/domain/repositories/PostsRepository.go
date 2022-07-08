@@ -14,8 +14,9 @@ type PostRepository interface {
 	CreateComment(post *model.Post, comment *model.Comment) error
 	LikePost(post *model.Post, userId uuid.UUID) error
 	DislikePost(post *model.Post, userId uuid.UUID) error
-	CreateJobOffer(offer *model.JobOffer) error
+	CreateJobOffer(offer *model.JobOffer) (*model.JobOffer, error)
 	GetAllJobOffers() ([]*model.JobOffer, error)
 	UpdateUserPosts(user *model.User) error
 	CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID) (model.ReactionType, error)
+	GetUsersJobOffers(username string) ([]*model.JobOffer, error)
 }

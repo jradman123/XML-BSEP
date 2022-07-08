@@ -15,4 +15,5 @@ type UserRepository interface {
 	ActivateUserAccount(user *model.User) (bool, error)
 	ChangePassword(user *model.User, password string) error
 	EditUserDetails(user *model.User) (bool, error)
+	ChangeProfileStatus(user *model.User) (bool, error)
 }

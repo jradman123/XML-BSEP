@@ -4,6 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { UserDetails } from 'src/app/interfaces/user-details';
+import { UserPersonalDetails } from 'src/app/interfaces/user-personal-details';
 import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
@@ -22,9 +23,11 @@ export class ProfileEditComponent implements OnInit {
   initialDate : any;
   username! : string;
   email! : string;
+  userPersonalDetails! : UserPersonalDetails;
 
   constructor(private userService : UserService,private _snackBar : MatSnackBar) {
      this.date = "";
+     this.userPersonalDetails = {} as UserPersonalDetails;
    }
 
   ngOnInit(): void {
@@ -68,7 +71,7 @@ export class ProfileEditComponent implements OnInit {
 
   save() {
     this.createUserDetails();
-    console.log(this.userDetails);
+    console.log(this.userPersonalDetails);
     const registerObserver = {
       next: () => {
         this._snackBar.open(
@@ -86,24 +89,23 @@ export class ProfileEditComponent implements OnInit {
       }
 
     }
-    this.userService.updateUser(this.userDetails).subscribe(registerObserver)
+    this.userService.updateUserPersonalDetails(this.userPersonalDetails).subscribe(registerObserver)
 
   }
 
   createUserDetails(): void {
-    this.userDetails.username = this.username;
-    this.userDetails.email = this.email;
-    this.userDetails.phoneNumber = this.userDetailsForm.value.phoneNumber;
-    this.userDetails.firstName = this.userDetailsForm.value.firstName;
-    this.userDetails.lastName = this.userDetailsForm.value.lastName;
-    this.userDetails.gender = this.userDetailsForm.value.gender;
+    this.userPersonalDetails.username = this.username;
+    this.userPersonalDetails.phoneNumber = this.userDetailsForm.value.phoneNumber;
+    this.userPersonalDetails.firstName = this.userDetailsForm.value.firstName;
+    this.userPersonalDetails.lastName = this.userDetailsForm.value.lastName;
+    this.userPersonalDetails.gender = this.userDetailsForm.value.gender;
     if(this.userDetailsForm.value.dateOfBirth == ""){
-      this.userDetails.dateOfBirth = this.date;
+      this.userPersonalDetails.dateOfBirth = this.date;
     }else{
       const d = new Date( this.userDetailsForm.value.dateOfBirth.getTime() -  this.userDetailsForm.value.dateOfBirth.getTimezoneOffset() * 60000)
-      this.userDetails.dateOfBirth = d.toISOString();
+      this.userPersonalDetails.dateOfBirth = d.toISOString();
     }
-    this.userDetails.biography = this.userDetailsForm.value.biography;
+    this.userPersonalDetails.biography = this.userDetailsForm.value.biography;
   }
 
 }

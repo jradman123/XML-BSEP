@@ -16,4 +16,5 @@ export interface UserDetails {
 	skills    :  SkillDto[]  ;    
 	educations : EducationDto[];  
 	experiences : ExperienceDto[]; 
+	profileStatus : string;
 }

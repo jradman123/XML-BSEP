@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IPostRequest } from 'src/app/interfaces/post-request';
 import { PostService } from 'src/app/services/post-service/post.service';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-post-create-file',
@@ -24,8 +25,9 @@ export class PostCreateFileComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     private service: PostService,
-    private _snackBar: MatSnackBar
-  ) {
+    private _snackBar: MatSnackBar,
+    private _dialogRef : MatDialogRef<PostCreateFileComponent>
+    ) {
     this.newPost = {} as IPostRequest
     this.username = localStorage.getItem('username');
     this.createForm = this._formBuilder.group({
@@ -71,6 +73,7 @@ export class PostCreateFileComponent implements OnInit {
     console.log(this.newPost);
     const postObserver = {
       next: () => {
+        this._dialogRef.close({ data: this.newPost })
       },
       error: (err: HttpErrorResponse) => {
         this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });

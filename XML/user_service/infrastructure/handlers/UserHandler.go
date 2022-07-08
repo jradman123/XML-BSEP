@@ -399,31 +399,32 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 }
 
 func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDetailsRequest) (*pb.UserDetails, error) {
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
 	sqlInj := common.BadUsername(username)
 	if username == "" {
-		u.logError.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Errorf("ERR:XSS")
+		//u.logError.Logger.WithFields(logrus.Fields{
+		//	"user": userNameCtx,
+		//}).Errorf("ERR:XSS")
 		return nil, errors.New("fields are empty or xss happened")
 	} else if sqlInj {
-		u.logError.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
+		//u.logError.Logger.WithFields(logrus.Fields{
+		//	"user": userNameCtx,
+		//}).Errorf("ERR:BAD VALIDATION: POSIBLE INJECTION")
 		return nil, errors.New("chance for injection")
-	} else {
-		u.logInfo.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Infof("INFO:Handling GetUserDetails")
 	}
+	// else {
+	//u.logInfo.Logger.WithFields(logrus.Fields{
+	//	"user": userNameCtx,
+	//}).Infof("INFO:Handling GetUserDetails")
+	// }
 	err := u.service.UserExists(username)
 	if err != nil {
 		fmt.Println(err)
-		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		//return nil, err //ne postoji user
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -465,8 +466,8 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 	p7 := common.BadText(userDetails.Biography)*/
 
 	if userDetails.Username == "" || userDetails.FirstName == "" || userDetails.LastName == "" ||
-		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" ||
-		userDetails.Biography == "" {
+		userDetails.Gender == "" || userDetails.DateOfBirth == "" || userDetails.PhoneNumber == "" { /* ||
+		userDetails.Biography == ""*/
 		u.logError.Logger.Errorf("ERR:XSS")
 		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
 		/*} else if p1 || p2 || p3 || p4 || p5 || p6 || p7 {
@@ -490,4 +491,75 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return api.MapUserToUserDetails(editedUser), nil
+}
+
+func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.UserPersonalDetailsRequest) (*pb.UserPersonalDetails, error) {
+
+	userPersonalDetails := api.MapPbUserPersonalDetailsToUser(request)
+	if err := u.validator.Struct(userPersonalDetails); err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+
+	err := u.service.UserExists(userPersonalDetails.Username)
+	if err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	editedUser, er := u.service.EditUserPersonalDetails(userPersonalDetails)
+	if er != nil {
+		fmt.Println(er)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return api.MapUserToUserPersonalDetails(editedUser), nil
+}
+
+func (u UserHandler) EditUserProfessionalDetails(ctx context.Context, request *pb.UserProfessionalDetailsRequest) (*pb.UserProfessionalDetails, error) {
+
+	userProfessionalDetails := api.MapPbUserProfessionalDetailsToUser(request)
+	if err := u.validator.Struct(userProfessionalDetails); err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+
+	err := u.service.UserExists(userProfessionalDetails.Username)
+	if err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	editedUser, er := u.service.EditUserProfessionalDetails(userProfessionalDetails)
+	if er != nil {
+		fmt.Println(er)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return api.MapUserToUserProfessionalDetails(editedUser), nil
+}
+func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.ChangeStatusRequest) (*pb.ChangeStatus, error) {
+	policy := bluemonday.UGCPolicy()
+	newStatus := strings.TrimSpace(policy.Sanitize(request.ChangeStatus.NewStatus))
+	username := strings.TrimSpace(policy.Sanitize(request.ChangeStatus.Username))
+
+	if newStatus == "" || username == "" {
+		u.logError.Logger.Errorf("ERR:XSS")
+		return nil, status.Error(codes.FailedPrecondition, "fields are empty or xss happened")
+	} else {
+		u.logInfo.Logger.Infof("INFO:Handling EditUserDetails")
+	}
+
+	err := u.service.UserExists(username)
+	if err != nil {
+		fmt.Println(err)
+		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	editedUser, er := u.service.ChangeProfileStatus(username, newStatus)
+	if er != nil {
+		fmt.Println(er)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.ChangeStatus{NewStatus: string(editedUser.ProfileStatus), Username: username}, nil
 }

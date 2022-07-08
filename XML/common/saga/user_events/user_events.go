@@ -28,6 +28,8 @@ const (
 	CreateUser
 	DeleteUser
 	ActivateUser
+	ChangeProfileStatus
+	UpdateUserProfessionalDetails
 	RollbackUser
 	UnknownCommand
 )
@@ -40,6 +42,7 @@ const (
 	UserDeleted
 	UserCreated
 	UserActivated
+	ProfileStatusChanged
 	UnknownReply
 )
 
@@ -70,4 +73,25 @@ type ActivateUserCommand struct {
 
 type ActivateUserReply struct {
 	Type UserCommandType
+}
+
+type ConnectionUser struct {
+	UserUID       string
+	Username      string
+	FirstName     string
+	LastName      string
+	ProfileStatus string
+	Interests     []string
+	Skills        []string
+	Educations    []string
+	Experiences   []string
+}
+
+type ConnectionUserCommand struct {
+	User ConnectionUser
+	Type UserCommandType
+}
+
+type UserConnectionReply struct {
+	Type UserReplyType
 }

@@ -31,6 +31,7 @@ type PostServiceClient interface {
 	DislikePost(ctx context.Context, in *ReactionRequest, opts ...grpc.CallOption) (*Empty, error)
 	CreateJobOffer(ctx context.Context, in *CreateJobOfferRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetAllJobOffers(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetAllJobOffers, error)
+	GetUsersJobOffers(ctx context.Context, in *GetMyJobsRequest, opts ...grpc.CallOption) (*GetAllJobOffers, error)
 	GetAllReactionsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error)
 	GetAllCommentsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetAllCommentsResponse, error)
 	CheckLikedStatus(ctx context.Context, in *UserReactionRequest, opts ...grpc.CallOption) (*GetUserReactionResponse, error)
@@ -125,6 +126,15 @@ func (c *postServiceClient) GetAllJobOffers(ctx context.Context, in *Empty, opts
 	return out, nil
 }
 
+func (c *postServiceClient) GetUsersJobOffers(ctx context.Context, in *GetMyJobsRequest, opts ...grpc.CallOption) (*GetAllJobOffers, error) {
+	out := new(GetAllJobOffers)
+	err := c.cc.Invoke(ctx, "/post_service.PostService/getUsersJobOffers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *postServiceClient) GetAllReactionsForPost(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetReactionsResponse, error) {
 	out := new(GetReactionsResponse)
 	err := c.cc.Invoke(ctx, "/post_service.PostService/getAllReactionsForPost", in, out, opts...)
@@ -165,6 +175,7 @@ type PostServiceServer interface {
 	DislikePost(context.Context, *ReactionRequest) (*Empty, error)
 	CreateJobOffer(context.Context, *CreateJobOfferRequest) (*Empty, error)
 	GetAllJobOffers(context.Context, *Empty) (*GetAllJobOffers, error)
+	GetUsersJobOffers(context.Context, *GetMyJobsRequest) (*GetAllJobOffers, error)
 	GetAllReactionsForPost(context.Context, *GetRequest) (*GetReactionsResponse, error)
 	GetAllCommentsForPost(context.Context, *GetRequest) (*GetAllCommentsResponse, error)
 	CheckLikedStatus(context.Context, *UserReactionRequest) (*GetUserReactionResponse, error)
@@ -201,6 +212,9 @@ func (UnimplementedPostServiceServer) CreateJobOffer(context.Context, *CreateJob
 }
 func (UnimplementedPostServiceServer) GetAllJobOffers(context.Context, *Empty) (*GetAllJobOffers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllJobOffers not implemented")
+}
+func (UnimplementedPostServiceServer) GetUsersJobOffers(context.Context, *GetMyJobsRequest) (*GetAllJobOffers, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersJobOffers not implemented")
 }
 func (UnimplementedPostServiceServer) GetAllReactionsForPost(context.Context, *GetRequest) (*GetReactionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllReactionsForPost not implemented")
@@ -386,6 +400,24 @@ func _PostService_GetAllJobOffers_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_GetUsersJobOffers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMyJobsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetUsersJobOffers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/post_service.PostService/getUsersJobOffers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetUsersJobOffers(ctx, req.(*GetMyJobsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PostService_GetAllReactionsForPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRequest)
 	if err := dec(in); err != nil {
@@ -482,6 +514,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "getAllJobOffers",
 			Handler:    _PostService_GetAllJobOffers_Handler,
+		},
+		{
+			MethodName: "getUsersJobOffers",
+			Handler:    _PostService_GetUsersJobOffers_Handler,
 		},
 		{
 			MethodName: "getAllReactionsForPost",

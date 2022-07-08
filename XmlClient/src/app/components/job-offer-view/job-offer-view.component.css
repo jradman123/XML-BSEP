@@ -1,0 +1,59 @@
+.clock-icon {
+  margin-right: 4px;
+}
+
+.strechUs {
+  display: flex;
+  flex-direction: row;
+}
+
+.dateSpc{
+  color: #444444;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.requirement {
+  margin: 1px 8px 10px 0px;
+  max-height: 34px;
+  font-size: 14px;
+}
+
+.req-label {
+  font-size: 17px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  color: #012970;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.description {
+  margin: 7px 0 10px 0;
+  font-style: oblique;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.position {
+  line-height: 30px;
+  font-size: 27px;
+  font-weight: 500;
+  color: #012970;
+  margin: 0;
+  padding: 0;
+
+}
+
+.publisher {
+    color: #444444;
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 1px;
+}
+
+.bdr {
+    border: 1px solid #b7d0db;
+    border-radius: 1%;
+    padding: 10px 0 0 5px
+}

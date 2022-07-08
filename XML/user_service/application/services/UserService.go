@@ -35,6 +35,7 @@ var (
 	ErrorEmailVerification = errors.New("ERROR EMAIL VERIFICATION")
 	ErrorOrchestrator      = errors.New("ORCHESTRATOR")
 	DbError                = errors.New("DB ERROR")
+	ErrorCreatingUser      = errors.New("ERROR CREATING USER:check your email, you cant use the same email for 2 accounts")
 	subject                = "Activation code"
 	body                   = "Welcome to Dislinkt! Here is your activation code:"
 )
@@ -115,29 +116,35 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
-	//emailVerification := model.EmailVerification{
-	//	ID:       uuid.New(),
-	//	Username: user.Username,
-	//	Email:    user.Email,
-	//	VerCode:  rn,
-	//	Time:     time.Now(),
-	//}
-
-	//_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
-	//fmt.Println(e)
-	//if e != nil {
-	//	u.logError.Logger.Println(ErrorEmailVerification)
-	//	return nil, ErrorEmailVerification
-	//}
-
-	sendMailWithCourier(user.Email, strconv.Itoa(rn), subject, body, u.logError)
 
 	regUser, err := u.userRepository.CreateRegisteredUser(user)
 	if err != nil {
 		u.logError.Logger.Println(DbError)
+		return regUser, ErrorCreatingUser
+	}
+	emailVerification := model.EmailVerification{
+		ID:       uuid.New(),
+		Username: user.Username,
+		Email:    user.Email,
+		VerCode:  rn,
+		Time:     time.Now(),
+	}
+
+	_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
+	fmt.Println(e)
+	if e != nil {
+		u.logError.Logger.Println(ErrorEmailVerification)
+		return nil, ErrorEmailVerification
+	}
+	sendMailWithCourier(user.Email, strconv.Itoa(rn), subject, body, u.logError)
+
+	err = u.orchestrator.CreateUser(user)
+	if err != nil {
+		u.logError.Logger.Println(ErrorOrchestrator)
 		return regUser, err
 	}
-	err = u.orchestrator.CreateUser(user)
+
+	err = u.orchestrator.CreateConnectionUser(user)
 	if err != nil {
 		u.logError.Logger.Println(ErrorOrchestrator)
 		return regUser, err
@@ -148,13 +155,19 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 
 func (u UserService) ActivateUserAccount(username string, verCode int) (bool, error) {
 
-	var codeInfoForUsername *model.EmailVerification
+	var allVerForUsername []model.EmailVerification
 	var dbEr error
-	codeInfoForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username)
+	allVerForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username)
 	if dbEr != nil {
 		u.logError.Logger.Errorf("ERR:DB:CODE DOES NOT EXIST FOR USER")
 		return false, dbEr
 	}
+	codeInfoForUsername, err := findMostRecent(allVerForUsername)
+	if err != nil {
+		u.logError.Logger.Errorf("ERR:NO VERIFICATION FOR USER")
+		return false, err
+	}
+
 	if codeInfoForUsername.VerCode == verCode {
 
 		if codeInfoForUsername.Time.Add(time.Hour).After(time.Now()) {
@@ -179,6 +192,7 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 				u.logError.Logger.Errorf("ERR:ACTIVATION FAILED")
 				return false, errors.New("user not activated")
 			}
+			fmt.Println("uspeoo sam da ga aktiviram")
 			return true, nil
 
 		} else {
@@ -189,6 +203,30 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 		u.logError.Logger.Errorf("ERR:WRONG CODE")
 		return false, errors.New("wrong code")
 	}
+}
+
+func findMostRecent(verifications []model.EmailVerification) (*model.EmailVerification, error) {
+
+	if len(verifications) > 1 {
+		latest := verifications[0]
+		latestIdx := 0
+		fmt.Println(latest)
+		fmt.Println(latestIdx)
+		for i, ver := range verifications {
+			if ver.Time.After(latest.Time) {
+				latest = ver
+				latestIdx = i
+			}
+		}
+		return &latest, nil
+	} else {
+		if len(verifications) > 0 {
+			return &verifications[0], nil
+		} else {
+			return nil, errors.New("verifications array empty ")
+		}
+	}
+
 }
 
 func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
@@ -387,5 +425,75 @@ func (u UserService) EditUser(userDetails *dto.UserDetails) (*model.User, error)
 	if err != nil {
 		return nil, err
 	}
+	err = u.orchestrator.EditConnectionUser(user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u UserService) ChangeProfileStatus(username string, newStatus string) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), username)
+	if err != nil {
+		return nil, err
+	}
+	user.ProfileStatus = model.ProfileStatus(newStatus)
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user status was not edited")
+	}
+	err = u.orchestrator.ChangeProfileStatus(user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPersonalDetails) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), userPersonalDetails.Username)
+	if err != nil {
+		return nil, err
+	}
+	user = api.MapUserPersonalDetailsDtoToUser(userPersonalDetails, user)
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user was not edited")
+	}
+	err = u.orchestrator.EditConnectionUser(user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.UserProfessionalDetails) (*model.User, error) {
+	user, err := u.GetByUsername(context.TODO(), userProfessionalDetails.Username)
+	if err != nil {
+		return nil, err
+	}
+	user = api.MapUserProfessionalDetailsDtoToUser(userProfessionalDetails, user)
+	fmt.Println(user)
+	fmt.Println("edit professional details user_service user service ")
+	err = u.orchestrator.EditConnectionUserProfessionalDetails(user)
+	if err != nil {
+		return nil, err
+	}
+	edited, e := u.userRepository.EditUserDetails(user)
+	if e != nil {
+		return nil, e
+	}
+	if !edited {
+		return nil, errors.New("user was not edited")
+	}
+	//err = u.orchestrator.EditConnectionUser(user)
+	//if err != nil {
+	//	return nil, err
+	//}
 	return user, nil
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth-service/auth.service';
 
@@ -9,6 +9,8 @@ import { AuthService } from 'src/app/services/auth-service/auth.service';
 })
 export class RegisteredHeaderComponent implements OnInit {
 
+  @Output() searchInput : EventEmitter<string> = new EventEmitter();
+
   username : any;
   visible : boolean = false;
   constructor(private authService : AuthService,private router : Router) { }
@@ -17,6 +19,10 @@ export class RegisteredHeaderComponent implements OnInit {
     this.username=localStorage.getItem('username');
   }
 
+  emitMe( searchText : any){
+    this.searchInput.emit(searchText.target.value);
+  }
+  
   click() {
     console.log('usao');
     if(this.visible){

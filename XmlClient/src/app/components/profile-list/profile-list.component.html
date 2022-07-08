@@ -1,31 +1,7 @@
 
 <div >
-    <header  class="landing-header fixed-top d-flex align-items-center">
-        <div class="d-flex align-items-center justify-content-between">
-          <a href="/" class="logo d-flex align-items-center">
-            <img src="../../../assets/logo.png" alt="">
-            <span>dislinkt</span>
-          </a>
-
-        </div>
-          <div class="search-bar">
-            <form class="search-form d-flex align-items-center" >
-              <input type="search" name="searchText" [(ngModel)]="searchText" Placeholder="Search by first and last name...">
-              <button ><i class="bi bi-search search-bar-toggle"></i></button>
-            </form>
-          </div>
-     
-    <!-- mobile view - cannot fix it rn        
-          <div class="header-signin ms-auto ">
-            <a (click)="changeMeClass()" class="search-bar-toggle">
-              <i class="bi bi-search"></i>
-            </a>
-          </div>  -->
-
-        <div class="header-signin ms-auto ">
-          <a class="getstarted" href='/login'>Sign in</a>
-        </div>
-      </header>
+    <app-nonregistered-search-header *ngIf ="!isLoggedIn" (searchInput)="handleMe($event)" ></app-nonregistered-search-header>
+    <app-registered-header *ngIf="isLoggedIn" (searchInput)="handleMe($event)"></app-registered-header>
     
 <div class="profiles" style="margin-top:80px">
     <div *ngFor="let profile of profiles | profileSearch : searchText ">

@@ -6,16 +6,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
+	"post/module/infrastructure/orchestrators"
 )
 
 type PostService struct {
-	repository repositories.PostRepository
-	logInfo    *logger.Logger
-	logError   *logger.Logger
+	repository   repositories.PostRepository
+	logInfo      *logger.Logger
+	logError     *logger.Logger
+	orchestrator *orchestrators.JobOrchestrator
 }
 
-func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger) *PostService {
-	return &PostService{repository: repository, logInfo: logInfo, logError: logError}
+func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger, orchestrator *orchestrators.JobOrchestrator) *PostService {
+	return &PostService{repository: repository, logInfo: logInfo, logError: logError, orchestrator: orchestrator}
 }
 
 func (service *PostService) Get(id primitive.ObjectID) (*model.Post, error) {
@@ -47,7 +49,9 @@ func (service *PostService) DislikePost(post *model.Post, userId uuid.UUID) erro
 }
 
 func (service *PostService) CreateJobOffer(offer *model.JobOffer) error {
-	return service.repository.CreateJobOffer(offer)
+	offer, err := service.repository.CreateJobOffer(offer)
+	service.orchestrator.CreateJobOffer(*offer)
+	return err
 }
 
 func (service *PostService) GetAllJobOffers() ([]*model.JobOffer, error) {
@@ -60,4 +64,8 @@ func (service *PostService) UpdateUserPosts(user *model.User) error {
 
 func (service *PostService) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID) (model.ReactionType, error) {
 	return service.repository.CheckLikedStatus(id, userId)
+}
+
+func (service *PostService) GetUsersJobOffers(username string) ([]*model.JobOffer, error) {
+	return service.repository.GetUsersJobOffers(username)
 }

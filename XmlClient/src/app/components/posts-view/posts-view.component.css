@@ -10,3 +10,11 @@
     /* justify-content: flex-start; */
     
 }
+
+.post-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    margin-top: 10px;
+}

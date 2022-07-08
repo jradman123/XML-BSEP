@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PassLessLoginComponent } from './pass-less-login.component';
+import { JobOfferViewComponent } from './job-offer-view.component';
 
-describe('PassLessLoginComponent', () => {
-  let component: PassLessLoginComponent;
-  let fixture: ComponentFixture<PassLessLoginComponent>;
+describe('JobOfferViewComponent', () => {
+  let component: JobOfferViewComponent;
+  let fixture: ComponentFixture<JobOfferViewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PassLessLoginComponent ]
+      declarations: [ JobOfferViewComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PassLessLoginComponent);
+    fixture = TestBed.createComponent(JobOfferViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

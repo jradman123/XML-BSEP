@@ -120,16 +120,14 @@ func (p PostHandler) CheckLikedStatus(_ context.Context, request *pb.UserReactio
 }
 
 func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) (*pb.Empty, error) {
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	//request = p.sanitizePost(request, userNameCtx)
 
 	user, _ := p.userService.GetByUsername(request.Post.Username)
 	post := api.MapNewPost(request.Post, user[0])
 	err := p.postService.Create(post)
 	if err != nil {
-		p.logError.Logger.WithFields(logrus.Fields{
-			"user": userNameCtx,
-		}).Errorf("ERR:CREATE POST")
+		p.logError.Logger.Errorf("ERR:CREATE POST")
 		return nil, err
 	}
 	return &pb.Empty{}, nil
@@ -237,6 +235,19 @@ func (p PostHandler) GetAllJobOffers(_ context.Context, _ *pb.Empty) (*pb.GetAll
 	offers, err := p.postService.GetAllJobOffers()
 	if err != nil {
 		p.logError.Logger.Errorf("ERR:GETTING ALL JOB OFFERS FROM DB")
+		return nil, err
+	}
+	response := &pb.GetAllJobOffers{JobOffers: []*pb.JobOffer{}}
+	for _, offer := range offers {
+		current := api.MapJobOfferReply(offer)
+		response.JobOffers = append(response.JobOffers, current)
+	}
+	return response, nil
+}
+
+func (p PostHandler) GetUsersJobOffers(_ context.Context, req *pb.GetMyJobsRequest) (*pb.GetAllJobOffers, error) {
+	offers, err := p.postService.GetUsersJobOffers(req.Username)
+	if err != nil {
 		return nil, err
 	}
 	response := &pb.GetAllJobOffers{JobOffers: []*pb.JobOffer{}}

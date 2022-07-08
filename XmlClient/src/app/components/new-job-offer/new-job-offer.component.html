@@ -1,14 +1,8 @@
-<div class="container" class="image">
-
-    <app-registered-header></app-registered-header>
-    <router-outlet></router-outlet>
-    <br><br><br><br><br><br><br>
-
 <div class="container" style=" width: 500px; position: relative;top: 20px;">
 
     <div class="col-12 text-center">
-        <h3> Create job offer </h3>
-        <hr />
+        <h1 class="title"> Post a job offer </h1>
+  
     </div>
     <div class="col-12">
         <div [formGroup]="createForm" class="content">
@@ -38,7 +32,8 @@
                 </mat-form-field>
                 <mat-form-field appearance="fill" style="width: 100%">
                     <mat-label>Requirements</mat-label>
-                    <input id="text" matInput required formControlName="Requirements">
+                    <input id="text" matInput required formControlName="Requirements"/>
+                    <button class="btn margr" (click)="addItem()"><i class="bi bi-plus" style="font-size: 30px;"></i></button>
                 </mat-form-field>
 
             </div>
@@ -50,14 +45,11 @@
                 </div>
             </mat-list>
             <div class="buttons">
-                <input type="image" src="./../../../assets/add.png" style="height:32px;width:32px;" class="mr-3"
-                    (click)="addItem()" />
-                <button (click)="submitRequest()" class="btn btn-success text-center">
-                    Create
+                <button (click)="submitRequest()" class="btn btn-primary">
+                    Post
                 </button>
             </div>
         </div>
         <br>
     </div>
-</div>
 </div>

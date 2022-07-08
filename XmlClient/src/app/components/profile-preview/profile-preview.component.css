@@ -12,16 +12,16 @@
 
 .info h1 {
     margin-bottom: 10px;
-    line-height: 50px;
-    font-size: 30px;
-    font-weight: 550;
+    line-height: 30px;
+    font-size: 24px;
+    font-weight: 500;
     color: #012970;
   }
 
   .info h4 {
     color: #444444;
-    font-size: 18px;
-    line-height: 27px;
+    font-size: 15px;
+    line-height: 24px;
     letter-spacing: 1px;
   }
 
@@ -30,8 +30,9 @@
     transform: translateY(30%);
   }
 
+
   .avatar {
     border-radius: 50%; 
-    width:100px;
+    width:70px;
     float: right
   }

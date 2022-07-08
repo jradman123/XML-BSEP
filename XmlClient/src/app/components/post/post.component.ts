@@ -88,7 +88,7 @@ export class PostComponent implements OnInit {
       },
     }
 
-    this.service.GetUserReactionToPost(this.username, this.item.Id).subscribe(reactionObserver)
+    if( this.username ) this.service.GetUserReactionToPost(this.username, this.item.Id).subscribe(reactionObserver)
   }
   likePost() {
 
@@ -187,8 +187,7 @@ export class PostComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.id = 'modal-component';
-    dialogConfig.height = '300px';
-    dialogConfig.width = '500px';
+    dialogConfig.width = '600px';
     dialogConfig.data = this.item.Id
 
     this._matDialog.open(PostsCommentsViewComponent, dialogConfig);

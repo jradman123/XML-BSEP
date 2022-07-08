@@ -6,7 +6,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { MatDialogRef } from '@angular/material/dialog';
 import { JobOffer } from 'src/app/interfaces/job-offer';
 import { JobOfferService } from 'src/app/services/job-offer-service/job-offer.service';
 
@@ -24,7 +24,8 @@ export class NewJobOfferComponent implements OnInit {
     private _formBuilder: FormBuilder,
     private datepipe: DatePipe,
     private jobOfferService: JobOfferService,
-    private router: Router
+    private dialogRef: MatDialogRef<NewJobOfferComponent>,
+
   ) {
     this.newJobOffer = {} as JobOffer;
     this.requirements = [];
@@ -39,15 +40,16 @@ export class NewJobOfferComponent implements OnInit {
   ngOnInit(): void {}
 
   addItem() {
-    this.requirements.push(this.createForm.value.Requirements);
+    if(this.createForm.value.Requirements !== '') 
+      this.requirements.push(this.createForm.value.Requirements);
   }
 
   submitRequest() {
-    //if (this.createForm.invalid) return;
+    if (this.createForm.invalid) return;
     this.createJobOffer();
     this.jobOfferService.createJobOffer(this.newJobOffer).subscribe(res => {
-      
-      this.router.navigate(['jobOffers'])
+      this.dialogRef.close({ data: this.newJobOffer});
+
     });
   }
 
@@ -56,10 +58,9 @@ export class NewJobOfferComponent implements OnInit {
     this.newJobOffer.Requirements = this.requirements;
     this.newJobOffer.Publisher = localStorage.getItem('username')!;
     this.newJobOffer.JobDescription = this.createForm.value.Description;
-    console.log(this.newJobOffer.JobDescription)
     this.newJobOffer.Duration = this.createForm.value.DueDate;
     let ahora = new Date();
-    let stringVal = this.datepipe.transform(ahora, 'yyyy-MM-dd')!;
+    let stringVal = this.datepipe.transform(ahora, 'yyyy-MM-dd HH:mm:ss')!;
     this.newJobOffer.DatePosted = new Date(stringVal);
   }
 }

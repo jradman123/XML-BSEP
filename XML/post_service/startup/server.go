@@ -16,6 +16,7 @@ import (
 	"post/module/application"
 	"post/module/domain/repositories"
 	"post/module/infrastructure/handlers"
+	"post/module/infrastructure/orchestrators"
 	"post/module/infrastructure/persistence"
 	"post/module/startup/config"
 )
@@ -29,7 +30,8 @@ func NewServer(config *config.Config) *Server {
 }
 
 const (
-	QueueGroup = "post_service"
+	QueueGroup    = "post_service"
+	JobQueueGroup = "post_service_job"
 )
 
 func (server *Server) Start() {
@@ -37,12 +39,16 @@ func (server *Server) Start() {
 	logError := logger.InitializeLogger("post-service", context.Background(), "Error")
 
 	mongoClient := server.InitMongoClient()
+	jobCommandPublisher := server.InitPublisher(server.config.JobCommandSubject)
+	jobReplySubscriber := server.InitSubscriber(server.config.JobReplySubject, JobQueueGroup)
+	orchestrator := server.InitJobOrchestrator(jobCommandPublisher, jobReplySubscriber)
 
 	postRepo := server.InitPostsRepo(mongoClient)
-	postService := server.InitPostService(postRepo, logInfo, logError)
+	postService := server.InitPostService(postRepo, logInfo, logError, orchestrator)
 
 	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
+
 	userRepo := server.InitUserRepo(mongoClient)
 	userService := server.InitUserService(userRepo, logInfo, logError)
 	postHandler := server.InitPostHandler(postService, userService, logInfo, logError)
@@ -66,8 +72,8 @@ func (server *Server) InitPostsRepo(client *mongo.Client) repositories.PostRepos
 	return persistence.NewPostRepositoryImpl(client)
 }
 
-func (server *Server) InitPostService(repo repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger) *application.PostService {
-	return application.NewPostService(repo, logInfo, logError)
+func (server *Server) InitPostService(repo repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger, orchestrator *orchestrators.JobOrchestrator) *application.PostService {
+	return application.NewPostService(repo, logInfo, logError, orchestrator)
 }
 
 func (server *Server) InitPostHandler(postService *application.PostService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger) *handlers.PostHandler {
@@ -124,4 +130,12 @@ func (server *Server) StartGrpcServer(postHandler *handlers.PostHandler, logErro
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
+}
+
+func (server *Server) InitJobOrchestrator(publisher saga.Publisher, subscriber saga.Subscriber) *orchestrators.JobOrchestrator {
+	orchestrator, err := orchestrators.NewJobOrchestrator(publisher, subscriber)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return orchestrator
 }

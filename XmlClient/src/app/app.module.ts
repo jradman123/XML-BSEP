@@ -58,8 +58,6 @@ import { NgxCaptchaModule } from 'ngx-captcha';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { QRCodeModule } from 'angular2-qrcode';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
-import { PassLessReqComponent } from './components/pass-less-req/pass-less-req.component';
-import { PassLessLoginComponent } from './components/pass-less-login/pass-less-login.component';
 import { JwtInterceptor } from './JwtInterceptor/JwtInterceptor';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { PostComponent } from './components/post/post.component';
@@ -82,6 +80,15 @@ import { MessagesPageComponent } from './pages/messages-page/messages-page/messa
 import { MessagePreviewComponent } from './components/message-preview/message-preview/message-preview.component';
 import { MessageCreateComponent } from './components/message-create/message-create/message-create.component';
 import { SentMessagePreviewComponent } from './components/sent-message-preview/sent-message-preview/sent-message-preview.component';
+import { PublicProfileComponent } from './components/public-profile/public-profile.component';
+import { NonregisteredSearchHeaderComponent } from './components/nonregistered-search-header/nonregistered-search-header.component';
+import { NetworkComponent } from './components/network/network.component';
+import { InvitationComponent } from './components/invitation/invitation.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { JobOffersComponent } from './components/job-offers/job-offers.component';
+import { JobOfferViewComponent } from './components/job-offer-view/job-offer-view.component';
+import { JobsSearchPipe } from './pipes/jobs-search.pipe';
+import { DateAsAgoPipe } from './pipes/date-as-ago.pipe';
 
 
 
@@ -101,8 +108,6 @@ import { SentMessagePreviewComponent } from './components/sent-message-preview/s
     NewJobOfferComponent,
     ConfirmDialogComponent,
     TwofaPageComponent,
-    PassLessReqComponent,
-    PassLessLoginComponent,
     PostComponent,
     CommentCreateComponent,
     PostCreateFileComponent,
@@ -122,7 +127,16 @@ import { SentMessagePreviewComponent } from './components/sent-message-preview/s
     MessagesPageComponent,
     MessagePreviewComponent,
     MessageCreateComponent,
-    SentMessagePreviewComponent
+    SentMessagePreviewComponent,
+    PublicProfileComponent,
+    NonregisteredSearchHeaderComponent,
+    NetworkComponent,
+    InvitationComponent,
+    NotFoundComponent,
+    JobOfferViewComponent,
+    JobOffersComponent,
+    JobsSearchPipe,
+    DateAsAgoPipe,
   ],
   imports: [
     BrowserModule,
