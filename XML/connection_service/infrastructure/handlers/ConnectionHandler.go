@@ -187,7 +187,7 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.CreateConnection(con)
+	conResult, err := c.connectionService.CreateConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -238,7 +238,7 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.AcceptConnection(con)
+	conResult, err := c.connectionService.AcceptConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,

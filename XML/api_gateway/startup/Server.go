@@ -3,6 +3,7 @@ package startup
 import (
 	"common/module/logger"
 	messageGw "common/module/proto/message_service"
+	notificationGw "common/module/proto/notification_service"
 	connGw "common/module/proto/connection_service"
 	postsGw "common/module/proto/posts_service"
 	userGw "common/module/proto/user_service"
@@ -63,6 +64,10 @@ func (server *Server) initHandlers() {
 		panic(err)
 	}
 	err = messageGw.RegisterMessageServiceHandlerFromEndpoint(context.TODO(), server.mux, messageEndpoint, opts)
+	if err != nil {
+		panic(err)
+	}
+	err = notificationGw.RegisterNotificationServiceHandlerFromEndpoint(context.TODO(), server.mux, messageEndpoint, opts)
 	if err != nil {
 		panic(err)
 	}

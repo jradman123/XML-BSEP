@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IPostRequest } from 'src/app/interfaces/post-request';
 import { PostService } from 'src/app/services/post-service/post.service';
+import Pusher from 'pusher-js'
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -36,6 +37,19 @@ export class PostCreateFileComponent implements OnInit {
     })
   }
   ngOnInit(): void {
+
+    Pusher.logToConsole = true;
+
+    const pusher = new Pusher('dd3ce2a9c4a58e3577a4', {
+      cluster: 'eu'
+    });
+
+    const channel = pusher.subscribe('notification');
+      channel.bind('message', (data: never) => {
+        alert(data)
+        console.log(data)
+    });
+
   }
 
   onFileChange(event: any) {

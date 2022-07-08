@@ -4,6 +4,7 @@ import (
 	common "common/module"
 	"common/module/interceptor"
 	"common/module/logger"
+	notificationProto "common/module/proto/notification_service"
 	pb "common/module/proto/posts_service"
 	"context"
 	"fmt"
@@ -18,10 +19,11 @@ import (
 )
 
 type PostHandler struct {
-	postService *application.PostService
-	userService *application.UserService
-	logInfo     *logger.Logger
-	logError    *logger.Logger
+	postService        *application.PostService
+	userService        *application.UserService
+	logInfo            *logger.Logger
+	logError           *logger.Logger
+	notificationClient notificationProto.NotificationServiceClient
 }
 
 func NewPostHandler(service *application.PostService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger) *PostHandler {
@@ -126,6 +128,7 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 	user, _ := p.userService.GetByUsername(request.Post.Username)
 	post := api.MapNewPost(request.Post, user[0])
 	err := p.postService.Create(post)
+
 	if err != nil {
 		p.logError.Logger.Errorf("ERR:CREATE POST")
 		return nil, err
@@ -178,7 +181,7 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	user, err := p.userService.GetByUsername(request.Username)
 	fmt.Println("USER")
 	fmt.Println(user[0])
-	err = p.postService.LikePost(post, user[0].UserId)
+	err = p.postService.LikePost(post, user[0].UserId, request.Username)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -186,7 +189,6 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 		}).Errorf("ERR:LIKE POST")
 		return nil, err
 	}
-
 	return &pb.Empty{}, nil
 }
 
@@ -204,7 +206,7 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 		return nil, err
 	}
 	user, err := p.userService.GetByUsername(request.Username)
-	err = p.postService.DislikePost(post, user[0].UserId)
+	err = p.postService.DislikePost(post, user[0].UserId, request.Username)
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,

@@ -25,16 +25,21 @@ func (m MessageHandler) MustEmbedUnimplementedMessageServiceServer() {
 }
 
 func (m MessageHandler) GetAllSent(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+	fmt.Println("usao u hendler get all sent")
+	fmt.Println("dobio username " + request.Username)
 	sender, err := m.userService.GetByUsername(request.Username)
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
 		}).Errorf("No user in database")
+		fmt.Println("nemas ovog usera u bAzi")
 		return nil, err
 	}
 	fmt.Println("sender[0].UserId")
 	fmt.Println(sender[0].UserId)
 	messages, err := m.messageService.GetAllSent(sender[0].UserId)
+
+	fmt.Println(messages)
 
 	fmt.Println(messages)
 	response := &pb.GetMultipleResponse{Messages: []*pb.Message{}}
@@ -48,11 +53,15 @@ func (m MessageHandler) GetAllSent(_ context.Context, request *pb.GetRequest) (*
 }
 
 func (m MessageHandler) GetAllReceived(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+	fmt.Println("usao u hendler get all receiver")
+	fmt.Println("dobio username " + request.Username)
+
 	receiver, err := m.userService.GetByUsername(request.Username)
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
 		}).Errorf("No user in database")
+		fmt.Println("nemas ovog usera u bAzi")
 		return nil, err
 	}
 	messages, err := m.messageService.GetAllReceived(receiver[0].UserId)

@@ -61,16 +61,38 @@ func (u UserRepositoryImpl) GetByUsername(username string) (user []*model.User, 
 	filter := bson.M{"username": username}
 	return u.filter(filter)
 }
+
+func (repo UserRepositoryImpl) GetSettingsForUser(username string) (*model.NotificationSettings, error) {
+	filter := bson.M{"username": username}
+	var user model.User
+	found := repo.users.FindOne(context.TODO(), filter)
+	found.Decode(&user)
+	return &user.Settings, nil
+}
+
+func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings) (*model.NotificationSettings, error) {
+
+	_, err := u.users.UpdateOne(context.TODO(), bson.M{"username": username}, bson.D{
+		{"$set", bson.D{{"settings", newSettings}}},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return newSettings, nil
+}
+
 func (u UserRepositoryImpl) GetById(userId uuid.UUID) ([]*model.User, error) {
 	filter := bson.M{"user_id": userId}
 	return u.filter(filter)
 }
+
 func stringToBin(s string) (binString string) {
 	for _, c := range s {
 		binString = fmt.Sprintf("%s%b", binString, c)
 	}
 	return
 }
+
 func (u UserRepositoryImpl) filterOne(filter bson.M) (user *model.User, err error) {
 	result := u.users.FindOne(context.TODO(), filter)
 	err = result.Decode(&user)

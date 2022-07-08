@@ -14,6 +14,7 @@ export class JobOfferComponent implements OnInit {
   jobOffers! : JobOffer[];
   searchText = '';
   username : any;
+  newNoties = 0;
 
   constructor(
     private jobOfferService : JobOfferService, private router : Router, private authService : AuthService
@@ -40,6 +41,10 @@ export class JobOfferComponent implements OnInit {
 
   openCreateJobOffer() {
     this.router.navigate(['newJobOffer']);
+  }
+
+  onNewNotifications(newNotiNumber : number){
+    this.newNoties = newNotiNumber;
   }
 
   
