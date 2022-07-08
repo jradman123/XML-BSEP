@@ -469,6 +469,7 @@ func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPerson
 	if err != nil {
 		return nil, err
 	}
+	err = u.orchestrator.UpdateUser(user)
 	return user, nil
 }
 
