@@ -71,6 +71,7 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
+	
 	err = connGw.RegisterConnectionServiceHandlerFromEndpoint(context.TODO(), server.mux, connectionsEndpoint, opts)
 	if err != nil {
 		panic(err)

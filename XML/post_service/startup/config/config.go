@@ -15,6 +15,8 @@ type Config struct {
 	NatsPass                       string
 	PostNotificationCommandSubject string
 	PostNotificationReplySubject   string
+	JobCommandSubject  			   string
+	JobReplySubject    			   string
 }
 
 func NewConfig() *Config {
@@ -32,5 +34,7 @@ func NewConfig() *Config {
 		NatsUser:                       os.Getenv("NATS_USER"),
 		PostNotificationCommandSubject: os.Getenv("POST_NOTIFICATION_COMMAND_SUBJECT"),
 		PostNotificationReplySubject:   os.Getenv("POST_NOTIFICATION_REPLY_SUBJECT"),
+		JobCommandSubject:  			os.Getenv("JOB_COMMAND_SUBJECT"),
+		JobReplySubject:    			os.Getenv("JOB_REPLY_SUBJECT"),
 	}
 }

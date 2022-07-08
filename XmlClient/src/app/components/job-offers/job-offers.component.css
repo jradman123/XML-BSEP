@@ -1,0 +1,35 @@
+.main {
+    margin-top:100px
+}
+
+.nw-title { 
+    font-family: 'Segoe UI', sans-serif;
+    color: #012970;
+  } 
+
+  .block {
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #abb0dd;
+
+    background-color: #0d6efd;
+    padding: 14px 28px;
+    font-size: 23px;
+    line-height: 28px;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    color: white;
+  }
+
+  .col-xl-9 {
+    width: 73% !important;
+  }
+
+  .card-ride {
+    border: 1px solid #abb0dd;
+    border-radius: 3%;
+    margin-left: 5px;
+
+  }

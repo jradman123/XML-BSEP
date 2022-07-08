@@ -38,7 +38,9 @@ export class RegisteredHeaderComponent implements OnInit {
       this.visible=true;
     }
   }
-
+  seeMessages(){
+    this.router.navigate(['myMessages'])
+  }
   logout() {
     this.authService.logout();
     this.router.navigate(['login']);

@@ -6,6 +6,7 @@ import (
 	connectionEvents "common/module/saga/connection_events"
 	postEvents "common/module/saga/post_events"
 	events "common/module/saga/user_events"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/domain/model"
 	"time"
@@ -93,9 +94,9 @@ func MapMessageReply(message *model.Message, receiver string, sender string) (re
 	}
 	return reply
 }
-func MapNewMessage(messageText string, receiverId string, senderId string) *model.Message {
+func MapNewMessage(messageText string, receiverId uuid.UUID, senderId uuid.UUID) *model.Message {
 	message := &model.Message{
-		Id:          primitive.ObjectID{},
+		Id:          primitive.NewObjectID(),
 		SenderId:    senderId,
 		ReceiverId:  receiverId,
 		MessageText: messageText,

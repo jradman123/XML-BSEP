@@ -20,28 +20,23 @@ service MessageService{
       get: "/messages/{Username}/received"
     };
   }
-  rpc sendMessage(SendMessageRequest) returns (Empty) {
+  rpc sendMessage(SendMessageRequest) returns (MessageSentResponse) {
     option (google.api.http) = {
       post: "/messages/send"
       body: "Message"
     };
   }
-  rpc GetAll(Empty) returns(GetAllResponse) {
-    option (google.api.http) = {
-      get: "/messages"
-    };
-  }
-
 }
 
-message GetAllResponse {
-  repeated Message messages = 1;
-}
+
 message GetRequest {
   string Username = 1;
 }
 message GetMultipleResponse {
   repeated Message Messages = 1;
+}
+message MessageSentResponse {
+  Message message = 1;
 }
 message Message {
   string SenderUsername = 1 ;

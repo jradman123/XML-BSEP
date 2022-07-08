@@ -54,10 +54,10 @@ func (repo NotificationRepositoryImpl) filter(filter interface{}) ([]*model.Noti
 		return nil, err
 	}
 
-	return decode(cursor)
+	return decodeNoti(cursor)
 }
 
-func decode(cursor *mongo.Cursor) (notifications []*model.Notification, err error) {
+func decodeNoti(cursor *mongo.Cursor) (notifications []*model.Notification, err error) {
 	for cursor.Next(context.TODO()) {
 		var notification model.Notification
 		err = cursor.Decode(&notification)

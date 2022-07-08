@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"common/module/logger"
-	notificationProto "common/module/proto/notification_service"
 	pb "common/module/proto/notification_service"
 	"context"
 	"fmt"
@@ -22,14 +21,8 @@ type NotificationHandler struct {
 	userService         *application.UserService
 }
 
-func (n NotificationHandler) GetAllSent(ctx context.Context, request *notificationProto.GetRequest) (*notificationProto.Empty, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (n NotificationHandler) MustEmbedUnimplementedNotificationServiceServer() {
-	//TODO implement me
-	panic("implement me")
+	fmt.Println("ovaj mljacka ubicu se gadjacu ga casom")
 }
 
 func NewNotificationHandler(logInfo *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, notificationService *application.NotificationService, userService *application.UserService) *NotificationHandler {

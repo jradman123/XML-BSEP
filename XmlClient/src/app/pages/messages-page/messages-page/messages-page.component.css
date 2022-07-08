@@ -1,0 +1,42 @@
+
+.container {
+    width: 100%;
+    height: 100%;
+}
+
+.matCard {
+    display: flex;
+    margin-top: 50px;
+    width: 100%;
+    height: 100%;
+}
+.bi-arrow-counterclockwise::before {
+    content: "\f117";
+    font-weight: bold;
+    color: black;
+}
+.fa-plus:before {
+    content: "\f067";
+    color: black
+}
+.link .mat-tab-label-content text  {
+
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+
+}
+.mailbox {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.composeLabel a {
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+}
+.actions {
+    display: flex;
+    align-items: baseline;
+}

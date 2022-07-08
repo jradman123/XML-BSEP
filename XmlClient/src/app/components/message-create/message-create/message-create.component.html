@@ -1,0 +1,38 @@
+<div class="container">
+
+    <div class="text-center">
+        <mat-icon style="transform: scale(2);color: cornflowerblue;"> chat</mat-icon>
+        <div class="userInfo">
+            <div class="group">
+                <mat-icon class="icon-display" aria-hidden="false" style="margin-right: 10px;"> account_circle
+                </mat-icon>
+                <h2 style="margin-right: 10px;margin-bottom: 0px;">From: </h2>
+                <h2 style="margin-right: 10px;margin-bottom: 0px"> {{username}}</h2>
+            </div>
+            <div class="group">
+                <mat-icon class="icon-display" aria-hidden="false" style="margin-right: 10px;"> account_circle
+                </mat-icon>
+                <h2 style="margin-right: 10px;margin-bottom: 0px">To: </h2>
+                <h2 style="margin-right: 10px;margin-bottom: 0px"> {{receiver}}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div [formGroup]="createForm" class="content">
+            <div>
+                <mat-form-field appearance="fill" style="width: 100%">
+                    <mat-label>Message</mat-label>
+                    <textarea class="messageInput" id="text" matInput required formControlName="message"></textarea>
+                </mat-form-field>
+
+            </div>
+
+            <div class="buttons">
+                <button id="submitRequest" (click)="submitRequest()" class="btn btn-success text-center">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <br>
+    </div>
+</div>

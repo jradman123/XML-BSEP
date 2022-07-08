@@ -22,6 +22,7 @@
                 <button class="btn btn-outline-primary" *ngIf="isLoggedIn" (click)="connect(user.username)">{{buttonText}}</button>
                 <button class="btn btn-outline-primary" *ngIf="!isLoggedIn" [routerLink]="['/register']">Join to connect</button>
                 <button class="btn btn-outline-danger block-btn" *ngIf="isLoggedIn" (click)="block(user.username)">Block</button>
+                <button class="btn btn-outline-danger block-btn" *ngIf="isLoggedIn" (click)="message(user.username)">Message</button>
               </div>
             </div>
           </div>

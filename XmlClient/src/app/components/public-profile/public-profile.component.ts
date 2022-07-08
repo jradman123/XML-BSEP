@@ -28,6 +28,11 @@ export class PublicProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    if(this.username === localStorage.getItem('username')){
+      this._router.navigate(['/myProfile']);
+    }
+
     this._connectionService.connectionStatus(localStorage.getItem('username')!, this.username).subscribe(
       res => {
 
@@ -80,6 +85,10 @@ export class PublicProfileComponent implements OnInit {
         }
       }
     )
+  }
+
+  message(username:string){
+    this._router.navigate(['/send-message/' + username]);
   }
 
 }

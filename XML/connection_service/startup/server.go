@@ -33,6 +33,8 @@ func NewServer(config *config.Config) *Server {
 
 const (
 	QueueGroupConnection = "connection_service_connection"
+	QueueGroup    = "connection_service"
+	JobQueueGroup = "connection_service_job"
 )
 
 func (server *Server) Start() {
@@ -59,6 +61,12 @@ func (server *Server) Start() {
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
 
+	jobRepo := server.InitJobRepository(neoClient, logInfo, logError, connectionRepo)
+	jobService := server.InitJobService(jobRepo, logInfo, logError)
+	jobCommandSubscriber := server.InitSubscriber(server.config.JobCommandSubject, JobQueueGroup)
+	jobReplyPublisher := server.InitPublisher(server.config.JobReplySubject)
+	server.InitCreateJobOfferCommandHandler(jobService, jobReplyPublisher, jobCommandSubscriber)
+
 	server.StartGrpcServer(connectionHandler, logError)
 
 }
@@ -80,11 +88,10 @@ func (server *Server) StartGrpcServer(handler *handlers.ConnectionHandler, logEr
 	if err != nil {
 		log.Fatalf("failed to parse public key: %v", err)
 	}
-	//interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
 	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
-	connectionProto.RegisterConnectionServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
+	connectionProto.RegisterConnectionServiceServer(grpcServer, handler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
@@ -99,7 +106,6 @@ func GetClient(uri, username, password string) (*neo4j.Driver, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-
 	return &driver, nil //TODO: ref driver ?
 }
 
@@ -157,4 +163,21 @@ func (server *Server) InitOrchestrator(publisher saga.Publisher, subscriber saga
 		log.Fatal(err)
 	}
 	return orchestrator
+}
+
+func (server *Server) InitCreateJobOfferCommandHandler(service *services.JobOfferService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.JobOfferCommandHandler {
+	handler, err := handlers.NewJobOfferCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
+
+func (server *Server) InitJobRepository(client *neo4j.Driver, info *logger.Logger, logError *logger.Logger, repo repositories.ConnectionRepository) repositories.JobOfferRepository {
+	return persistance.NewJobOfferRepositoryImpl(client, info, logError, repo)
+}
+
+func (server *Server) InitJobService(repo repositories.JobOfferRepository, info *logger.Logger, logError *logger.Logger) *services.JobOfferService {
+	return services.NewJobOfferService(repo, info, logError)
 }

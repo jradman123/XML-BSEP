@@ -13,4 +13,5 @@ type ConnectionRepository interface {
 	ConnectionStatusForUsers(senderId string, receiverId string) (*dto.ConnectionResponse, error)
 	BlockUser(con *connectionModel.Connection) (*dto.ConnectionResponse, error)
 	GetRecommendedNewConnections(id string) (userNodes []*connectionModel.User, error1 error)
+	GetRecommendedJobOffers(id string) (jobNodes []*connectionModel.JobOffer, error1 error)
 }

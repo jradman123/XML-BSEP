@@ -58,3 +58,7 @@ func (s UserService) AllowedNotificationForUser(username string, notificationTyp
 
 	}
 }
+func (s UserService) GetById(userId uuid.UUID) (user []*model.User, err error) {
+	user, err = s.repository.GetById(userId)
+	return user, err
+}

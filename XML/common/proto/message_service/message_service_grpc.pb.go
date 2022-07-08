@@ -24,8 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type MessageServiceClient interface {
 	GetAllSent(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetMultipleResponse, error)
 	GetAllReceived(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetMultipleResponse, error)
-	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*Empty, error)
-	GetAll(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetAllResponse, error)
+	SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*MessageSentResponse, error)
 }
 
 type messageServiceClient struct {
@@ -54,18 +53,9 @@ func (c *messageServiceClient) GetAllReceived(ctx context.Context, in *GetReques
 	return out, nil
 }
 
-func (c *messageServiceClient) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *messageServiceClient) SendMessage(ctx context.Context, in *SendMessageRequest, opts ...grpc.CallOption) (*MessageSentResponse, error) {
+	out := new(MessageSentResponse)
 	err := c.cc.Invoke(ctx, "/message_service.MessageService/sendMessage", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *messageServiceClient) GetAll(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetAllResponse, error) {
-	out := new(GetAllResponse)
-	err := c.cc.Invoke(ctx, "/message_service.MessageService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +68,7 @@ func (c *messageServiceClient) GetAll(ctx context.Context, in *Empty, opts ...gr
 type MessageServiceServer interface {
 	GetAllSent(context.Context, *GetRequest) (*GetMultipleResponse, error)
 	GetAllReceived(context.Context, *GetRequest) (*GetMultipleResponse, error)
-	SendMessage(context.Context, *SendMessageRequest) (*Empty, error)
-	GetAll(context.Context, *Empty) (*GetAllResponse, error)
+	SendMessage(context.Context, *SendMessageRequest) (*MessageSentResponse, error)
 	MustEmbedUnimplementedMessageServiceServer()
 }
 
@@ -93,11 +82,8 @@ func (UnimplementedMessageServiceServer) GetAllSent(context.Context, *GetRequest
 func (UnimplementedMessageServiceServer) GetAllReceived(context.Context, *GetRequest) (*GetMultipleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllReceived not implemented")
 }
-func (UnimplementedMessageServiceServer) SendMessage(context.Context, *SendMessageRequest) (*Empty, error) {
+func (UnimplementedMessageServiceServer) SendMessage(context.Context, *SendMessageRequest) (*MessageSentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendMessage not implemented")
-}
-func (UnimplementedMessageServiceServer) GetAll(context.Context, *Empty) (*GetAllResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
 func (UnimplementedMessageServiceServer) MustEmbedUnimplementedMessageServiceServer() {}
 
@@ -166,24 +152,6 @@ func _MessageService_SendMessage_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MessageService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MessageServiceServer).GetAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/message_service.MessageService/GetAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MessageServiceServer).GetAll(ctx, req.(*Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // MessageService_ServiceDesc is the grpc.ServiceDesc for MessageService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,10 +170,6 @@ var MessageService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "sendMessage",
 			Handler:    _MessageService_SendMessage_Handler,
-		},
-		{
-			MethodName: "GetAll",
-			Handler:    _MessageService_GetAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

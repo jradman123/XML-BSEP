@@ -9,13 +9,7 @@ import "google/protobuf/timestamp.proto";
 
 
 service NotificationService {
-
-  rpc getAllSent(GetRequest) returns(Empty) {
-    option (google.api.http) = {
-      get: "/messages/{username}/sent"
-    };
-  }
-
+  
   rpc create(NewNotificationRequest) returns(NewNotificationResponse) {
     option (google.api.http) = {
       post: "/notifications/create"

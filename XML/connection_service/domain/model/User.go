@@ -8,6 +8,13 @@ type User struct {
 	Status    ProfileStatus
 }
 
+type UserDetails struct {
+	Interests   []string
+	Skills      []string
+	Educations  []string
+	Experiences []string
+}
+
 type ProfileStatus string
 
 const (

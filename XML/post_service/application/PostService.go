@@ -10,14 +10,15 @@ import (
 )
 
 type PostService struct {
-	repository   repositories.PostRepository
-	logInfo      *logger.Logger
-	logError     *logger.Logger
-	orchestrator *orchestrators.PostOrchestrator
+	repository       repositories.PostRepository
+	logInfo          *logger.Logger
+	logError         *logger.Logger
+	postOrchestrator *orchestrators.PostOrchestrator
+	jobOrchestrator  *orchestrators.JobOrchestrator
 }
 
-func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger, orchestrator *orchestrators.PostOrchestrator) *PostService {
-	return &PostService{repository: repository, logInfo: logInfo, logError: logError, orchestrator: orchestrator}
+func NewPostService(repository repositories.PostRepository, logInfo *logger.Logger, logError *logger.Logger, porchestrator *orchestrators.PostOrchestrator, jorchestrator *orchestrators.JobOrchestrator) *PostService {
+	return &PostService{repository: repository, logInfo: logInfo, logError: logError, postOrchestrator: porchestrator, jobOrchestrator: jorchestrator}
 }
 
 func (service *PostService) Get(id primitive.ObjectID) (*model.Post, error) {
@@ -37,22 +38,24 @@ func (service *PostService) GetAllByUsername(username string) ([]*model.Post, er
 }
 
 func (service *PostService) CreateComment(post *model.Post, comment *model.Comment) error {
-	service.orchestrator.CommentPost(post.Id, comment.Username, post.Username)
+	service.postOrchestrator.CommentPost(post.Id, comment.Username, post.Username)
 	return service.repository.CreateComment(post, comment)
 }
 
 func (service *PostService) LikePost(post *model.Post, userId uuid.UUID, likerUsername string) error {
-	service.orchestrator.LikePost(post.Id, likerUsername, post.Username)
+	service.postOrchestrator.LikePost(post.Id, likerUsername, post.Username)
 	return service.repository.LikePost(post, userId)
 }
 
 func (service *PostService) DislikePost(post *model.Post, userId uuid.UUID, haterUsername string) error {
-	service.orchestrator.DislikePost(post.Id, haterUsername, post.Username)
+	service.postOrchestrator.DislikePost(post.Id, haterUsername, post.Username)
 	return service.repository.DislikePost(post, userId)
 }
 
 func (service *PostService) CreateJobOffer(offer *model.JobOffer) error {
-	return service.repository.CreateJobOffer(offer)
+	offer, err := service.repository.CreateJobOffer(offer)
+	service.jobOrchestrator.CreateJobOffer(*offer)
+	return err
 }
 
 func (service *PostService) GetAllJobOffers() ([]*model.JobOffer, error) {
@@ -65,4 +68,8 @@ func (service *PostService) UpdateUserPosts(user *model.User) error {
 
 func (service *PostService) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID) (model.ReactionType, error) {
 	return service.repository.CheckLikedStatus(id, userId)
+}
+
+func (service *PostService) GetUsersJobOffers(username string) ([]*model.JobOffer, error) {
+	return service.repository.GetUsersJobOffers(username)
 }

@@ -22,6 +22,9 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { PostComponent } from './components/post/post.component';
 import { PostViewComponent } from './components/post-view/post-view.component';
+import { MessagesPageComponent } from './pages/messages-page/messages-page/messages-page.component';
+import { JobOffersComponent } from './components/job-offers/job-offers.component';
+import { MessageCreateComponent } from './components/message-create/message-create/message-create.component';
 
 const routes: Routes = [
   {
@@ -100,6 +103,10 @@ const routes: Routes = [
     component: PusherComponent
   },
   {
+    path: 'myMessages',
+    component: MessagesPageComponent,
+  },
+  {
     path: 'network',
     component: NetworkComponent, canActivate: [AuthGuardRegular]
   },
@@ -114,8 +121,16 @@ const routes: Routes = [
   {
     path: 'post/:id',
     component: PostViewComponent
-  }
+  },
 
+   {
+    path: 'job-offers',
+    component: JobOffersComponent
+   }, 
+   {
+    path: 'send-message/:username',
+    component: MessageCreateComponent
+   }
 ];
 
 @NgModule({
