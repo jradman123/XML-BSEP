@@ -9,6 +9,6 @@ import (
 
 func GetClient(host, port string) (*mongo.Client, error) {
 	uri := fmt.Sprintf("mongodb://%s:%s/", host, port)
-	option := options.Client().ApplyURI(uri)
-	return mongo.Connect(context.TODO(), option)
+	options := options.Client().ApplyURI(uri)
+	return mongo.Connect(context.TODO(), options)
 }

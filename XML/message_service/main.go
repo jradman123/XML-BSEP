@@ -2,8 +2,13 @@ package main
 
 import (
 	_ "go.mongodb.org/mongo-driver/mongo"
-	"post/module/startup"
-	cfg "post/module/startup/config"
+	"message/module/startup"
+	cfg "message/module/startup/config"
+)
+
+const (
+	DATABASE   = "message_service"
+	COLLECTION = "messagesData"
 )
 
 func main() {
