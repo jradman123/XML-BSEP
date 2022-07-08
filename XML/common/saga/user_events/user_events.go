@@ -31,7 +31,6 @@ const (
 	ChangeProfileStatus
 	UpdateUserProfessionalDetails
 	ChangeEmail
-	ChangeUsername
 	RollbackUser
 	UnknownCommand
 )
@@ -46,8 +45,6 @@ const (
 	UserActivated
 	ChangedEmail
 	ChangedEmailRolledBack
-	ChangedUsername
-	ChangedUsernameRolledBack
 	ProfileStatusChanged
 	UnknownReply
 )
@@ -100,9 +97,4 @@ type ConnectionUserCommand struct {
 
 type UserConnectionReply struct {
 	Type UserReplyType
-}
-
-type ChangeEmailUsernameCommand struct {
-	User User
-	Type UserCommandType
 }

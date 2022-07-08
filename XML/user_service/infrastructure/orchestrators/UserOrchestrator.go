@@ -192,26 +192,8 @@ func (o *UserOrchestrator) ChangeProfileStatus(user *model.User) error {
 
 func (o *UserOrchestrator) ChangeEmail(user *model.User) error {
 
-	events := &events.ChangeEmailUsernameCommand{
+	events := &events.UserCommand{
 		Type: events.ChangeEmail,
-		User: events.User{
-			UserId:    user.ID,
-			LastName:  user.LastName,
-			FirstName: user.FirstName,
-			Username:  user.Username,
-			Email:     user.Email,
-		},
-	}
-
-	return o.commandPublisher.Publish(events)
-}
-
-func (o *UserOrchestrator) ChangeUsername(user *model.User) error {
-
-	fmt.Println("Usao u orkestrator za izmjenu uzernejma")
-	fmt.Println("Username promijenjen u orkestratoru " + user.Username)
-	events := &events.ChangeEmailUsernameCommand{
-		Type: events.ChangeUsername,
 		User: events.User{
 			UserId:    user.ID,
 			LastName:  user.LastName,

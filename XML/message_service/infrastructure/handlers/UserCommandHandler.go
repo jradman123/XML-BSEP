@@ -49,15 +49,15 @@ func (handler *UserCommandHandler) handle(command *events.UserCommand) {
 		reply = api.MapUserReply(user, events.UserCreated)
 
 	case events.UpdateUser:
-		userr, err := handler.userService.UpdateUser(user)
+		_, err := handler.userService.UpdateUser(user)
 		if err != nil {
-			reply = api.MapUserReply(userr, events.UserRolledBack)
+			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
 		err = handler.messageService.UpdateUserMessages(user)
 		if err != nil {
-			reply = api.MapUserReply(userr, events.UserRolledBack)
+			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
-		reply = api.MapUserReply(userr, events.UserUpdated)
+		reply = api.MapUserReply(user, events.UserUpdated)
 
 	case events.DeleteUser:
 		err := handler.userService.DeleteUser(user.UserId)
@@ -65,6 +65,13 @@ func (handler *UserCommandHandler) handle(command *events.UserCommand) {
 			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
 		reply = api.MapUserReply(user, events.UserDeleted)
+	case events.ChangeEmail:
+		_, err := handler.userService.UpdateUser(user)
+		if err != nil {
+			reply = api.MapUserReply(user, events.ChangedEmailRolledBack)
+		}
+		reply = api.MapUserReply(user, events.ChangedEmail)
+
 	default:
 		reply = api.MapUserReply(user, events.UnknownReply)
 	}

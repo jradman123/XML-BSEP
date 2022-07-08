@@ -27,14 +27,13 @@ export class EditEmailUsernameComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.getEmailUsername();
+    this.getEmail();
   }
 
-  getEmailUsername() {
+  getEmail() {
     this.userService.getEmailUsername(localStorage.getItem('username')).subscribe({
       next: (data: EmailUsernameResponse) => {
         this.emailForm.controls['email'].setValue(data.emailUsername.email)
-        this.usernameForm.controls['username'].setValue(data.emailUsername.username)
         localStorage.setItem('userId',data.userId)
       },
     });
@@ -49,7 +48,7 @@ export class EditEmailUsernameComponent implements OnInit {
       next: () => {
         this._snackBar.open("Success" + "!", 'Dismiss', { duration: 3000 });
         localStorage.setItem('email' ,this.emailForm.value.email )
-        this.getEmailUsername()
+        this.getEmail()
       },
       error: (err: HttpErrorResponse) => {
         this._snackBar.open("Email already exists" + "!", 'Dismiss', { duration: 3000 });
@@ -61,36 +60,11 @@ export class EditEmailUsernameComponent implements OnInit {
 
   }
 
-  changeUsername() {
-    if(this.usernameForm.invalid){
-      this._snackBar.open("Username should have at least 7 characters" + "!", 'Dismiss', { duration: 3000 });
-      return;
-    }
-    const changeUsernameObserver = {
-      next: () => {
-        this._snackBar.open("Success" + "!", 'Dismiss', { duration: 3000 });
-        localStorage.setItem('username' ,this.usernameForm.value.username )
-        this.getEmailUsername()
-      },
-      error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Username already exists" + "!", 'Dismiss', { duration: 3000 });
-      },
-    }
-    this.changeUsernameRequest.userId = localStorage.getItem('userId')
-    this.changeUsernameRequest.username.username = this.usernameForm.value.username
-    this.userService.changeUsername(this.changeUsernameRequest).subscribe(changeUsernameObserver);
-
-  }
-
+  
   emailForm = new FormGroup({
     email: new FormControl(null, [Validators.required, Validators.email]),
   })
 
-  usernameForm = new FormGroup({
-    username: new FormControl('', [
-      Validators.required,
-      Validators.pattern('^[A-Za-z][A-Za-z0-9_]{7,29}$'),
-    ]),
-  })
+
 
 }

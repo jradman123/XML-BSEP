@@ -198,15 +198,3 @@ func MapUserCommentsForPost(user *model.User, commentText string) *pb.Comment {
 
 	return commentPb
 }
-
-func MapFromChangeEmailCommandToUser(command *events.ChangeEmailUsernameCommand) *model.User {
-	user := &model.User{
-		Id:        primitive.NewObjectID(),
-		UserId:    command.User.UserId,
-		Username:  command.User.Username,
-		FirstName: command.User.FirstName,
-		LastName:  command.User.LastName,
-		Email:     command.User.Email,
-	}
-	return user
-}

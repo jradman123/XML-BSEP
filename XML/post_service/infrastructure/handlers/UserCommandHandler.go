@@ -41,7 +41,7 @@ func (handler *UserCommandHandler) handle(command *events.UserCommand) {
 		reply = api.MapUserReply(user, events.UserCreated)
 
 	case events.UpdateUser:
-		user, err := handler.userService.UpdateUser(user)
+		_, err := handler.userService.UpdateUser(user)
 		if err != nil {
 			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
@@ -65,6 +65,11 @@ func (handler *UserCommandHandler) handle(command *events.UserCommand) {
 		}
 		reply = api.MapUserReply(user, events.UserActivated)
 	case events.ChangeEmail:
+		_, err := handler.userService.UpdateUser(user)
+		if err != nil {
+			reply = api.MapUserReply(user, events.ChangedEmailRolledBack)
+		}
+		reply = api.MapUserReply(user, events.ChangedEmail)
 
 	default:
 		reply = api.MapUserReply(user, events.UnknownReply)
