@@ -1,0 +1,11 @@
+<mat-card class="messagePreview">
+    <div>
+        
+        <i class="bi bi-messenger" style="height: 20px;margin-right:15px"></i>
+        <label>Sent to : </label>
+        <label style="margin-left: 20px;"> {{item.ReceiverUsername}}</label>
+    </div>
+    <label class="col-6">{{item.MessageText}}</label>
+    <label> {{item.TimeSent | date:'short'}}</label>
+</mat-card>
+

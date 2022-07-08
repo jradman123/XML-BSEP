@@ -58,5 +58,38 @@
       </div>
       
     </div>
+    <hr/>
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-3 col-lg-3 col-form-label">Posts notifications</label>
+      <div class="col-md-8 col-lg-9 mt-1">
+        <div class="form-check form-switch">
+          <input class="form-check-input " type="checkbox" (click)="changePostNotifications()" [checked]="postsNotificationChecked">
+          <label class="form-check-label custom-lab " for="flexSwitchCheckChecked">On</label>
+        </div>
+      </div>
+      
+    </div>
+    <hr/>
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-3 col-lg-3 col-form-label">Connections notifications</label>
+      <div class="col-md-8 col-lg-9 mt-1">
+        <div class="form-check form-switch">
+          <input class="form-check-input " type="checkbox" (click)="changeConnectionNotifications()" [checked]="connectionsNotificationChecked">
+          <label class="form-check-label custom-lab " for="flexSwitchCheckChecked">On</label>
+        </div>
+      </div>
+      
+    </div>
+    <hr/>
+    <div class="row mb-3">
+      <label for="fullName" class="col-md-3 col-lg-3 col-form-label">Messages notifications</label>
+      <div class="col-md-8 col-lg-9 mt-1">
+        <div class="form-check form-switch">
+          <input class="form-check-input " type="checkbox" (click)="changeMessageNotifications()" [checked]="messagesNotificationChecked">
+          <label class="form-check-label custom-lab " for="flexSwitchCheckChecked">On</label>
+        </div>
+      </div>
+      
+    </div>
 
   </form>

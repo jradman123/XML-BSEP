@@ -1,0 +1,18 @@
+<div>
+    <li class="dropdown-header">
+       {{noOfNotReadNot ? ('You have ' + noOfNotReadNot  + ' new notifications') : 'No new notifications' }} 
+        <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+      </li>
+      <li>
+        <hr class="dropdown-divider">
+      </li>
+
+      <div *ngFor = "let noti of notifications" >
+        <li class="notification-item">
+          <app-notification [noti]="noti" (notiRead)="markNotiAsRead($event)"></app-notification>
+        </li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+      </div>
+</div>

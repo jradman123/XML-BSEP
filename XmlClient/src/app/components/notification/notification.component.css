@@ -1,0 +1,51 @@
+.info {
+    justify-content: flex-start;
+}
+
+.row {
+  margin : 0 !important;
+}
+
+mat-card {
+    margin: 0 !important;
+    border-bottom: rgba(204, 206, 207, 0.555) 0.5px solid !important;
+}
+
+.card {
+  max-width: 900px;
+  margin-bottom: 30px;
+  border: none;
+  border-radius: 5px;
+  box-shadow:  14px 20px 30px rgba(1, 41, 112, 0.1);
+}
+
+.info h1 {
+    margin-bottom: 10px;
+    line-height: 22px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #012970;
+  }
+
+  .info h4 {
+    color: #444444;
+    font-size: 12px;
+    line-height: 18px;
+    padding : 0px;
+    margin-bottom: 2px;
+  }
+
+  .connect-button {
+    margin: 0;
+    transform: translateY(30%);
+  }
+
+  .avatar {
+    border-radius: 50%; 
+    width:50px;
+    float: right
+  }
+
+  .notRead {
+    background-color: #73b5e846 !important
+  }

@@ -70,20 +70,29 @@ func (p PostRepositoryImpl) CreateComment(post *model.Post, comment *model.Comme
 	return nil
 }
 
-func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer) error {
+func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer) (*model.JobOffer, error) {
 	result, err := p.jobOffers.InsertOne(context.TODO(), offer)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	offer.Id = result.InsertedID.(primitive.ObjectID)
+	createdJobOffer := p.jobOffers.FindOne(context.TODO(), bson.M{"_id": offer.Id})
+	var retVal model.JobOffer
+	createdJobOffer.Decode(&retVal)
+	return &retVal, nil
 
-	return nil
 }
 
 func (p PostRepositoryImpl) GetAllJobOffers() ([]*model.JobOffer, error) {
 	filter := bson.D{}
 	return p.filterJobOffers(filter)
 }
+
+func (p PostRepositoryImpl) GetUsersJobOffers(username string) ([]*model.JobOffer, error) {
+	filter := bson.M{"publisher": username}
+	return p.filterJobOffers(filter)
+}
+
 func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
 	//filter := bson.M{"user_id": user.UserId}
 	//posts, err := p.filter(filter)
@@ -203,7 +212,7 @@ func (p PostRepositoryImpl) filter(filter interface{}) ([]*model.Post, error) {
 	return decode(cursor)
 }
 
-func (p PostRepositoryImpl) filterJobOffers(filter bson.D) ([]*model.JobOffer, error) {
+func (p PostRepositoryImpl) filterJobOffers(filter interface{}) ([]*model.JobOffer, error) {
 	cursor, err := p.jobOffers.Find(context.TODO(), filter)
 	defer cursor.Close(context.TODO())
 

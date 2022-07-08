@@ -1,0 +1,23 @@
+.dropdown-header {
+    text-align: center;
+    font-size: 15px;
+    padding: 0;
+    margin-bottom: 10px;
+
+}
+
+.dropdown-divider {
+    color: #a5c5fe;
+    margin: 0;
+  }
+
+  .dropdown-header h6 {
+    font-size: 18px;
+    margin-bottom: 0;
+    font-weight: 600;
+    color: #444444;
+  }
+
+  .dropdown-header span {
+    font-size: 14px;
+  }

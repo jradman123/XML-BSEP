@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+option go_package = "common/module/message_service";
+
+package message_service;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service MessageService{
+
+  rpc getAllSent(GetRequest) returns(GetMultipleResponse) {
+    option (google.api.http) = {
+      get: "/messages/{Username}/sent"
+    };
+  }
+  rpc getAllReceived(GetRequest) returns(GetMultipleResponse) {
+    option (google.api.http) = {
+      get: "/messages/{Username}/received"
+    };
+  }
+  rpc sendMessage(SendMessageRequest) returns (MessageSentResponse) {
+    option (google.api.http) = {
+      post: "/messages/send"
+      body: "Message"
+    };
+  }
+}
+
+
+message GetRequest {
+  string Username = 1;
+}
+message GetMultipleResponse {
+  repeated Message Messages = 1;
+}
+message MessageSentResponse {
+  Message message = 1;
+}
+message Message {
+  string SenderUsername = 1 ;
+  string ReceiverUsername = 2;
+  string MessageText = 3;
+  string TimeSent = 4;
+}
+message SendMessageRequest {
+  Message Message = 1;
+}
+message Empty {}

@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+option go_package = "common/module/notification_service";
+
+package notification_service;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service NotificationService {
+  
+  rpc create(NewNotificationRequest) returns(NewNotificationResponse) {
+    option (google.api.http) = {
+      post: "/notifications/create"
+      body: "newNotification"
+    };
+  }
+
+  rpc getAllForUser(GetAllNotificationRequest) returns(GetAllNotificationResponse) {
+    option (google.api.http) = {
+      get: "/notification/user/{username}"
+    };
+  }
+
+  rpc getSettingsForUser(GetSettingsRequest) returns(GetSettingsResponse) {
+    option (google.api.http) = {
+      get: "/notification/settings/{username}"
+    };
+  }
+
+  rpc changeSettingsForUser(ChangeSettingsRequest) returns(GetSettingsResponse) {
+    option (google.api.http) = {
+      post: "/notification/change-settings/{username}"
+      body: "settings"
+    };
+  }
+
+  rpc markAsRead(MarkAsReadRequest) returns(Empty) {
+    option (google.api.http) = {
+      post: "/notification/read"
+      body : "id"
+    };
+  }
+}
+message GetRequest {
+  string username = 1;
+}
+message NewNotificationRequest {
+  NewNotification newNotification = 1;
+}
+
+message NewNotification {
+  string content = 2;
+  string from = 3;
+  string to = 4;
+  string redirectPath = 5;
+  string notificationType = 6;
+}
+
+message Empty {}
+
+message GetAllNotificationRequest{
+  string username = 1;
+}
+
+message GetSettingsRequest{
+  string username = 1;
+}
+
+message Notification {
+  string id = 1;
+  string content = 2;
+  string from = 3;
+  string to = 4;
+  string redirectPath = 5;
+  string notificationType = 6;
+  bool read = 7;
+  string time = 8;
+}
+message GetAllNotificationResponse{
+  repeated Notification notifications = 1;
+}
+
+message GetSettingsResponse {
+  NotificationSettings settings = 1;
+}
+
+message ChangeSettingsRequest {
+  string username = 1;
+  NotificationSettings settings = 2;
+}
+
+
+message NotificationSettings {
+  bool posts = 1;
+  bool messages = 2;
+  bool connections = 3;
+}
+
+message MarkAsReadRequest {
+  string id = 1;
+}
+
+message NewNotificationResponse {
+  Notification notification = 1;
+}

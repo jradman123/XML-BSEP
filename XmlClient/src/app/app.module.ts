@@ -76,12 +76,25 @@ import { EducationDialogComponent } from './components/dialogs/education-dialog/
 import { ProfilePreviewComponent } from './components/profile-preview/profile-preview.component';
 import { ProfileListComponent } from './components/profile-list/profile-list.component';
 import { ProfileSearchPipe } from './pipes/profile-search.pipe';
+import { PusherComponent } from './components/pusher/pusher.component';
+import { MessagesPageComponent } from './pages/messages-page/messages-page/messages-page.component';
+import { MessagePreviewComponent } from './components/message-preview/message-preview/message-preview.component';
+import { MessageCreateComponent } from './components/message-create/message-create/message-create.component';
+import { SentMessagePreviewComponent } from './components/sent-message-preview/sent-message-preview/sent-message-preview.component';
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { NonregisteredSearchHeaderComponent } from './components/nonregistered-search-header/nonregistered-search-header.component';
 import { NetworkComponent } from './components/network/network.component';
 import { InvitationComponent } from './components/invitation/invitation.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { EditEmailUsernameComponent } from './components/edit-email-username/edit-email-username.component';
+import { NotificationComponent } from './components/notification/notification.component';
+import { DateAsAgoPipe } from './pipes/date-as-ago.pipe';
+import { SortByDatePipe } from './pipes/sort-by-date.pipe';
+import { NotificationListComponent } from './components/notification-list/notification-list.component';
+import { PostViewComponent } from './components/post-view/post-view.component';
+import { JobOffersComponent } from './components/job-offers/job-offers.component';
+import { JobOfferViewComponent } from './components/job-offer-view/job-offer-view.component';
+import { JobsSearchPipe } from './pipes/jobs-search.pipe';
 
 
 
@@ -117,12 +130,25 @@ import { EditEmailUsernameComponent } from './components/edit-email-username/edi
     ProfilePreviewComponent,
     ProfileListComponent,
     ProfileSearchPipe,
+    PusherComponent,
+    MessagesPageComponent,
+    MessagePreviewComponent,
+    MessageCreateComponent,
+    SentMessagePreviewComponent,
     PublicProfileComponent,
     NonregisteredSearchHeaderComponent,
     NetworkComponent,
     InvitationComponent,
     NotFoundComponent,
     EditEmailUsernameComponent,
+    NotificationComponent,
+    SortByDatePipe,
+    NotificationListComponent,
+    PostViewComponent,
+    JobOfferViewComponent,
+    JobOffersComponent,
+    JobsSearchPipe,
+    DateAsAgoPipe,
   ],
   imports: [
     BrowserModule,

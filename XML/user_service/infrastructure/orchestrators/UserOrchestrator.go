@@ -105,10 +105,6 @@ func (o *UserOrchestrator) CreateConnectionUser(user *model.User) error {
 			FirstName:     user.FirstName,
 			LastName:      user.LastName,
 			ProfileStatus: string(user.ProfileStatus),
-			Interests:     api.MapToStringArrayInterests(user.Interests),
-			Experiences:   api.MapToStringArrayExperiences(user.Experiences),
-			Educations:    api.MapToStringArrayEducations(user.Educations),
-			Skills:        api.MapToStringArraySkills(user.Skills),
 		},
 	}
 
@@ -147,6 +143,9 @@ func (o *UserOrchestrator) EditConnectionUserProfessionalDetails(user *model.Use
 			Skills:        api.MapToStringArraySkills(user.Skills),
 		},
 	}
+
+	fmt.Println("event")
+	fmt.Println(events)
 
 	return o.commandPublisher.Publish(events)
 }

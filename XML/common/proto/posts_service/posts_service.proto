@@ -60,6 +60,13 @@ service PostService{
       get: "/job_offer"
     };
   }
+
+  rpc getUsersJobOffers(GetMyJobsRequest) returns(GetAllJobOffers) {
+    option (google.api.http) = {
+      get: "/job_offer/{username}"
+    };
+  }
+
   rpc getAllReactionsForPost(GetRequest) returns(GetReactionsResponse) {
     option (google.api.http) = {
       get: "/post/{Id}/reactions"
@@ -80,6 +87,11 @@ service PostService{
 message GetRequest {
   string Id = 1;
 }
+
+message GetMyJobsRequest {
+  string username = 1;
+}
+
 message UserReactionRequest {
   string Id = 1;
   string Username = 2;

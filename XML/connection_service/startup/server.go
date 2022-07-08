@@ -9,6 +9,7 @@ import (
 	"connection/module/application/services"
 	"connection/module/domain/repositories"
 	"connection/module/infrastructure/handlers"
+	"connection/module/infrastructure/orchestrators"
 	"connection/module/infrastructure/persistance"
 	"connection/module/startup/config"
 	"context"
@@ -31,7 +32,9 @@ func NewServer(config *config.Config) *Server {
 }
 
 const (
-	QueueGroup = "connection_service"
+	QueueGroupConnection = "connection_service_connection"
+	QueueGroup    = "connection_service"
+	JobQueueGroup = "connection_service_job"
 )
 
 func (server *Server) Start() {
@@ -41,17 +44,28 @@ func (server *Server) Start() {
 	fmt.Println("starting connection service server")
 	neoClient := server.SetupDatabase()
 
+	commandPublisher := server.InitPublisher(server.config.ConnectionNotificationCommandSubject)
+	replySubscriber := server.InitSubscriber(server.config.ConnectionNotificationReplySubject, QueueGroupConnection)
+
+	orchestrator := server.InitOrchestrator(commandPublisher, replySubscriber)
+
 	connectionRepo := server.InitConnectionRepository(neoClient, logInfo, logError)
-	connectionService := server.InitConnectionService(connectionRepo, logInfo, logError)
+	connectionService := server.InitConnectionService(connectionRepo, logInfo, logError, orchestrator)
 
 	userRepo := server.InitUserRepository(neoClient, logInfo, logError, connectionRepo)
 	userService := server.InitUserService(userRepo, logInfo, logError)
 
 	connectionHandler := server.InitConnectionHandler(connectionService, userService, logInfo, logError)
 
-	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroup)
+	commandSubscriber := server.InitSubscriber(server.config.UserCommandSubject, QueueGroupConnection)
 	replyPublisher := server.InitPublisher(server.config.UserReplySubject)
 	server.InitCreateUserCommandHandler(userService, replyPublisher, commandSubscriber)
+
+	jobRepo := server.InitJobRepository(neoClient, logInfo, logError, connectionRepo)
+	jobService := server.InitJobService(jobRepo, logInfo, logError)
+	jobCommandSubscriber := server.InitSubscriber(server.config.JobCommandSubject, JobQueueGroup)
+	jobReplyPublisher := server.InitPublisher(server.config.JobReplySubject)
+	server.InitCreateJobOfferCommandHandler(jobService, jobReplyPublisher, jobCommandSubscriber)
 
 	server.StartGrpcServer(connectionHandler, logError)
 
@@ -74,11 +88,10 @@ func (server *Server) StartGrpcServer(handler *handlers.ConnectionHandler, logEr
 	if err != nil {
 		log.Fatalf("failed to parse public key: %v", err)
 	}
-	//interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey)
 	interceptor := interceptor.NewAuthInterceptor(config.AccessibleRoles(), publicKey, logError)
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(interceptor.Unary()))
-	connectionProto.RegisterConnectionServiceServer(grpcServer, handler) //handler implementira metode koje smo definisali
+	connectionProto.RegisterConnectionServiceServer(grpcServer, handler)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %s", err)
 	}
@@ -86,22 +99,21 @@ func (server *Server) StartGrpcServer(handler *handlers.ConnectionHandler, logEr
 
 func GetClient(uri, username, password string) (*neo4j.Driver, error) {
 
-	auth := neo4j.BasicAuth("neo4j", "ylKdorKc9bvWSuy5lICTfAfT5G9suZevX5UuSkWchlY", "")
-	driver, err := neo4j.NewDriver("neo4j+s://525ffd8e.databases.neo4j.io", auth)
+	auth := neo4j.BasicAuth(username, password, "")
+	driver, err := neo4j.NewDriver(uri, auth)
 	if err != nil {
 		fmt.Println("nije se naprvaio neo4j klijent")
 		fmt.Println(err)
 		return nil, err
 	}
-
 	return &driver, nil //TODO: ref driver ?
 }
 
 func (server *Server) InitConnectionHandler(conSer *services.ConnectionService, userSer *services.UserService, logInfo *logger.Logger, logError *logger.Logger) *handlers.ConnectionHandler {
 	return handlers.NewConnectionHandler(conSer, userSer, logInfo, logError)
 }
-func (server *Server) InitConnectionService(repo repositories.ConnectionRepository, logInfo *logger.Logger, logError *logger.Logger) *services.ConnectionService {
-	return services.NewConnectionService(repo, logInfo, logError)
+func (server *Server) InitConnectionService(repo repositories.ConnectionRepository, logInfo *logger.Logger, logError *logger.Logger, orchestrator *orchestrators.ConnectionOrchestrator) *services.ConnectionService {
+	return services.NewConnectionService(repo, logInfo, logError, orchestrator)
 }
 
 func (server *Server) InitConnectionRepository(client *neo4j.Driver, logInfo *logger.Logger, logError *logger.Logger) repositories.ConnectionRepository {
@@ -143,4 +155,29 @@ func (server *Server) InitCreateUserCommandHandler(service *services.UserService
 		log.Fatalf("failed to listen: %v", err)
 	}
 	return handler
+}
+
+func (server *Server) InitOrchestrator(publisher saga.Publisher, subscriber saga.Subscriber) *orchestrators.ConnectionOrchestrator {
+	orchestrator, err := orchestrators.NewConnectionOrchestrator(publisher, subscriber)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return orchestrator
+}
+
+func (server *Server) InitCreateJobOfferCommandHandler(service *services.JobOfferService, publisher saga.Publisher,
+	subscriber saga.Subscriber) *handlers.JobOfferCommandHandler {
+	handler, err := handlers.NewJobOfferCommandHandler(service, publisher, subscriber)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	return handler
+}
+
+func (server *Server) InitJobRepository(client *neo4j.Driver, info *logger.Logger, logError *logger.Logger, repo repositories.ConnectionRepository) repositories.JobOfferRepository {
+	return persistance.NewJobOfferRepositoryImpl(client, info, logError, repo)
+}
+
+func (server *Server) InitJobService(repo repositories.JobOfferRepository, info *logger.Logger, logError *logger.Logger) *services.JobOfferService {
+	return services.NewJobOfferService(repo, info, logError)
 }

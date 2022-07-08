@@ -1,0 +1,40 @@
+//syntax = "proto3";
+//
+//import "google/api/annotations.proto";
+//import "google/protobuf/timestamp.proto";
+//
+//service NotificationService {
+//
+//  rpc sendNotification(NewNotificationRequest) returns(Empty) {
+//    option (google.api.http) = {
+//      post: "/notifications/create"
+//      body: "newNotification"
+//    };
+//  }
+//
+//  // niz
+//  rpc sendMultipleNotifications(MultipleNotificationsRequest) returns(Empty) {
+//    option (google.api.http) = {
+//      post: "/notifications/createMultiple"
+//      body: "newNotification"
+//    };
+//  }
+//}
+//
+//message NewNotificationRequest {
+//  NewNotification newNotification = 1;
+//}
+//
+//message NewNotification {
+//  string content = 2;
+//  string from = 3;
+//  string to = 4;
+//  string redirectPath = 5;
+//  string notificationType = 6;
+//}
+//
+//message MultipleNotificationsRequest {
+//  repeated NewNotification newNotification = 1;
+//}
+//
+//message Empty {}

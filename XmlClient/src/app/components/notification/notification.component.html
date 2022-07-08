@@ -1,0 +1,13 @@
+<a href="{{noti.redirectPath}}" >
+    <mat-card  (click)="readMe()" [ngClass]="noti.read ? 'card m-3': 'card m-3 notRead'">
+        <div class="row">
+            <div class="col-md-2">
+                <img src="../../../assets/userFemale.png" alt="avatar" class="avatar">
+            </div>
+            <div class="col-md-10 d-flex flex-column info ml-5">
+                <h1>{{ noti.content }} </h1>
+                <h4> <i  class="bi bi-clock-history"></i>  {{ noti.time | dateAsAgo }} </h4>
+            </div> 
+        </div>
+    </mat-card>
+</a> 

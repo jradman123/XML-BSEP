@@ -1,0 +1,22 @@
+.group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.group h2{
+    display: flex;
+    align-items: center;
+   
+}
+
+.container {
+    height: 400px;
+    width: 700px;
+    border-width: 1px;
+}
+.userInfo{
+    margin-bottom: 15px;
+}
+.messageInput {
+    height: 200px;
+}

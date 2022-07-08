@@ -1,0 +1,42 @@
+<app-registered-header></app-registered-header>
+
+<mat-card md-12 class="matCard">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" />
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="mailbox card-body bg-primary text-white mailbox-widget pb-0">
+                        <h2 class="text-white pb-3">Your Messagebox</h2>
+
+                        <div class="actions">
+                            <button class="btn btn-circle btn-light text-white" style="margin-right: 10px;"  (click)="refresh()">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                            <button class="btn btn-circle btn-light text-white" (click)="newMessage()">
+                                <i class="fa fa-plus" ></i>
+                            </button>
+                           
+                        </div>
+                    </div>
+                    <div class="tabs">
+                        <mat-tab-group class="nav nav-tabs custom-tab border-bottom-0 mt-4">
+                            <mat-tab class="link" label="Received messages">
+                                <div *ngFor="let item of Received.Messages">
+                                    <app-message-preview [item]="item"></app-message-preview>
+                                </div>
+                            </mat-tab>
+                            <mat-tab class="link " label="Sent messages">
+                                <div *ngFor="let item of Sent.Messages">
+                                    <app-sent-message-preview [item]="item" ></app-sent-message-preview>
+                                </div>
+                            </mat-tab>
+                        </mat-tab-group>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</mat-card>
