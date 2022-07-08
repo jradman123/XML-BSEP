@@ -86,6 +86,7 @@ import { NonregisteredSearchHeaderComponent } from './components/nonregistered-s
 import { NetworkComponent } from './components/network/network.component';
 import { InvitationComponent } from './components/invitation/invitation.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { EditEmailUsernameComponent } from './components/edit-email-username/edit-email-username.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { DateAsAgoPipe } from './pipes/date-as-ago.pipe';
 import { SortByDatePipe } from './pipes/sort-by-date.pipe';
@@ -139,6 +140,7 @@ import { JobsSearchPipe } from './pipes/jobs-search.pipe';
     NetworkComponent,
     InvitationComponent,
     NotFoundComponent,
+    EditEmailUsernameComponent,
     NotificationComponent,
     SortByDatePipe,
     NotificationListComponent,

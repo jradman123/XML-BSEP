@@ -189,3 +189,19 @@ func (o *UserOrchestrator) ChangeProfileStatus(user *model.User) error {
 
 	return o.commandPublisher.Publish(events)
 }
+
+func (o *UserOrchestrator) ChangeEmail(user *model.User) error {
+
+	events := &events.UserCommand{
+		Type: events.ChangeEmail,
+		User: events.User{
+			UserId:    user.ID,
+			LastName:  user.LastName,
+			FirstName: user.FirstName,
+			Username:  user.Username,
+			Email:     user.Email,
+		},
+	}
+
+	return o.commandPublisher.Publish(events)
+}

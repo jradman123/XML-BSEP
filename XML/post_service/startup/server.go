@@ -32,7 +32,7 @@ func NewServer(config *config.Config) *Server {
 const (
 	QueueGroupUser = "post_service_user"
 	QueueGroupPost = "post_service_post"
-	JobQueueGroup = "post_service_job"
+	JobQueueGroup  = "post_service_job"
 )
 
 func (server *Server) Start() {
@@ -130,6 +130,7 @@ func (server *Server) InitCreateUserCommandHandler(userService *application.User
 	}
 	return handler
 }
+
 func (server *Server) StartGrpcServer(postHandler *handlers.PostHandler, logError *logger.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.config.Port))
 	if err != nil {

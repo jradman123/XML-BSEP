@@ -27,6 +27,21 @@ func MapNewUser(command *events.UserCommand) *model.User {
 	return user
 }
 
+func MapUserForUpdate(command *events.UserCommand, userForUpdate *model.User) *model.User {
+	user := &model.User{
+		Id:       primitive.NewObjectID(),
+		UserId:   command.User.UserId,
+		Username: command.User.Username,
+		Email:    command.User.Email,
+		Settings: model.NotificationSettings{
+			Posts:       userForUpdate.Settings.Posts,
+			Messages:    userForUpdate.Settings.Messages,
+			Connections: userForUpdate.Settings.Connections,
+		},
+	}
+	return user
+}
+
 func MapNewPostNotification(command *postEvents.PostNotificationCommand) *model.Notification {
 
 	notification := &model.Notification{

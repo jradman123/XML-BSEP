@@ -38,9 +38,8 @@ func (u UserRepositoryImpl) CreateUser(user *model.User) (*model.User, error) {
 }
 
 func (u UserRepositoryImpl) UpdateUser(requestUser *model.User) (user *model.User, err error) {
-	_, err = u.users.UpdateOne(context.TODO(), bson.M{"user_id": user.UserId}, bson.D{
-		{"$set", bson.D{{"username", user.Username}}},
-		{"$set", bson.D{{"email", user.Email}}},
+	_, err = u.users.UpdateOne(context.TODO(), bson.M{"user_id": requestUser.UserId}, bson.D{
+		{"$set", bson.D{{"email", requestUser.Email}}},
 	})
 	if err != nil {
 		return nil, err

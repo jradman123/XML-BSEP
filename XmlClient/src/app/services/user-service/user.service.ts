@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ActivateAccount } from 'src/app/interfaces/activate-account';
+import { ChangeEmailRequest } from 'src/app/interfaces/change-email-request';
+import { ChangeUsernameRequest } from 'src/app/interfaces/change-username-request';
 import { NewPass } from 'src/app/interfaces/new-pass';
 import { UserData } from 'src/app/interfaces/subject-data';
 import { UserDetails } from 'src/app/interfaces/user-details';
@@ -108,6 +110,26 @@ export class UserService {
     return this._http.post<any>(
       'http://localhost:9090/users/user/changeStatus',
       {username, newStatus}
+    )
+  }
+
+  getEmailUsername(username : string | null){
+    return this._http.get<any>(
+      'http://localhost:9090/users/user/contact/' + username
+    )
+  }
+
+  changeEmail(changeEmailRequest : ChangeEmailRequest){
+    return this._http.post<any>(
+      'http://localhost:9090/users/user/changeEmail/' + changeEmailRequest.userId,
+        changeEmailRequest.email
+    )
+  }
+
+  changeUsername(changeUsernameRequest : ChangeUsernameRequest){
+    return this._http.post<any>(
+      'http://localhost:9090/users/user/changeUsername/' + changeUsernameRequest.userId,
+        changeUsernameRequest.username  
     )
   }
 }
