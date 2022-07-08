@@ -1,0 +1,23 @@
+<div id = "framechat" #scrollframe >
+<div class="content">
+    <div class="header">
+        <i class="bi bi-chat"></i>
+            <p>My chat with {{ receiver }}</p>
+    </div>
+    <div class="messages" >
+        <ul>
+            <li *ngFor = " let msg of messages" [ngClass]="msg.SenderUsername===receiver ? 'sent' : 'replies' " >
+                <img src="../../../assets/userMale.png" alt="" />
+                <p> {{ msg.MessageText }} </p>
+            </li>
+        
+        </ul>
+    </div>
+    <div class="message-input">
+        <div class="wrap">
+        <input type="text" [(ngModel)]="msgText" placeholder="Write your message..." data-emojiable="true" />
+        <button class="submit" (click)="sendMessage()"><i class="bi bi-send"></i></button>
+        </div>
+    </div>
+</div>
+</div>

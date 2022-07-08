@@ -1,0 +1,32 @@
+<app-registered-header (searchInput)="handleMe($event)"></app-registered-header>
+<div id="frame">
+	<div id="sidepanel">
+		<div id="profile">
+			<div class="wrap">
+				<img id="profile-img" src="../../../assets/userFemale.png" class="online" alt="" />
+				<p style="font-size: 20px; letter-spacing:1.5px; font-weight: 550;">{{ sender }} </p>
+			</div>
+		</div>
+		<div id="search">
+			<label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
+			<input type="text" [(ngModel)] = "searchConnection" placeholder="Search connections..." />
+		</div>
+		<div id="contacts">
+			<ul class="contact-list">
+				<li *ngFor="let con of connections | profileSearch : searchConnection" class="contact">
+					<div (click)="openChat(con.username)" class="wrap">
+						<span class="contact-status online"></span>
+						<img src="../../../assets/userMale.png" alt="" />
+						<div class="meta">
+							<p class="name"> {{ con.firstName }} {{ con.lastName }} ({{ con.username }})
+							</p>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="content">
+		<app-chat *ngIf="receiver" [receiver]="receiver"></app-chat>
+	</div>
+</div>

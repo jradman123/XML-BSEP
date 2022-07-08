@@ -94,6 +94,8 @@ import { PostViewComponent } from './components/post-view/post-view.component';
 import { JobOffersComponent } from './components/job-offers/job-offers.component';
 import { JobOfferViewComponent } from './components/job-offer-view/job-offer-view.component';
 import { JobsSearchPipe } from './pipes/jobs-search.pipe';
+import { ChatboxComponent } from './components/chatbox/chatbox.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 
 
@@ -147,6 +149,8 @@ import { JobsSearchPipe } from './pipes/jobs-search.pipe';
     JobOffersComponent,
     JobsSearchPipe,
     DateAsAgoPipe,
+    ChatboxComponent,
+    ChatComponent,
   ],
   imports: [
     BrowserModule,

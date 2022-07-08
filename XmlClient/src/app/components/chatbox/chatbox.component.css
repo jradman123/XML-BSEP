@@ -1,0 +1,473 @@
+/* #framechat {
+    width: 100%;
+    max-width: 1000px;
+    height: 92vh;
+    min-height: 300px;
+    max-height: 720px;
+    background: #E6EAEA;
+    box-shadow: 0px 0px 3px #bbbbbb;
+    border-radius: 5px;
+    overflow: hidden;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+    margin:0 auto;
+}
+@media screen and (max-width: 360px) {
+  #framechat {
+    height: 100vh;
+  }
+}
+
+
+
+#framechat .content {
+  float: right;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+#framechat .content .header {
+  width: 100%;
+  height: 45px;
+  line-height: 45px;
+  background: #f5f5f5;
+  overflow: hidden;
+  box-shadow: -1px 1px 5px #e2e2e2;
+
+}
+
+
+
+#framechat .content .header i {
+  height: 50px;
+  font-size:30px;
+  width:50px;
+  border-radius: 50%;
+  float: left;
+  margin: 1px 1px 0 3px;
+}
+#framechat .content .header p {
+    float: left;
+    font-weight: 400;
+    font-size: 20px;
+    margin-top : 2px;
+    padding: 0;
+    line-height:43px;
+}
+
+#framechat .content .messages {
+    height: auto;
+    min-height: calc(100% - 90px);
+    max-height: calc(100% - 90px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#framechat .content .messages ul {
+  overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+
+#framechat .content .messages::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+#framechat .content .messages::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+#framechat .content .messages ul li {
+  display: inline-block;
+  clear: both;
+  float: left;
+  margin: 15px 15px 5px 15px;
+  width: calc(100% - 25px);
+  font-size: 0.9em;
+}
+#framechat .content .messages ul li:nth-last-child(1) {
+  margin-bottom: 20px;
+}
+#framechat .content .messages ul li.sent img {
+  margin: 6px 8px 0 0;
+}
+#framechat .content .messages ul li.sent p {
+  background: #435f7a;
+  color: #f5f5f5;
+}
+#framechat .content .messages ul li.replies img {
+  float: right;
+  margin: 6px 0 0 8px;
+}
+#framechat .content .messages ul li.replies p {
+  background: #f5f5f5;
+  float: right;
+}
+#framechat .content .messages ul li img {
+  width: 40px;
+  border-radius: 50%;
+  float: left;
+}
+#framechat .content .messages ul li p {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 20px;
+  max-width: 300px;
+  font-size: 18px;
+  line-height: 130%;
+}
+@media screen and (min-width: 735px) {
+  #framechat .content .messages ul li p {
+    max-width: 300px;
+  }
+}
+#framechat .content .message-input {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 99;
+      background: #E6EAEA;
+}
+#framechat .content .message-input .wrap {
+  position: relative;
+}
+
+#framechat .content .message-input .wrap  {
+  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
+  float: left;
+  border: none;
+  width: calc(100% - 0px);
+  padding: 14px;
+  font-size: 20px;
+  color: #32465a;
+  height:45px;
+  outline:none;
+  background:#fff;
+  position: relative;;
+  overflow:hidden;
+}
+
+.message-input input {
+    width : 95%;
+    outline: none;
+    border:none;
+}
+
+#framechat .content .message-input .wrap button {
+  float: right;
+  border: none;
+  width: 45px;
+  top:0;
+  height:45px;
+  line-height:42px;
+  cursor: pointer;
+  background: #32465a;
+  color: #f5f5f5;
+  margin-top: -13px;
+}
+
+#framechat .content .message-input .wrap button:hover {
+  background: #435f7a;
+}
+#framechat .content .message-input .wrap button:focus {
+  outline: none;
+} */
+
+/*********************************************************************************/
+
+
+
+
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #27ae60;
+  font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+  font-size: 1em;
+  letter-spacing: 0.1px;
+  color: #32465a;
+  text-rendering: optimizeLegibility;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+  -webkit-font-smoothing: antialiased;
+
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll; 
+}
+
+body::-webkit-scrollbar {
+  display: none; /* for Chrome, Safari, and Opera */
+}
+
+#frame {
+  overflow: hidden;
+  width: 100%;
+  min-width: 360px;
+  height: calc(100% - 60px);
+  padding-top: 50px;
+  /* max-height: 720px; */
+  background: #E6EAEA;
+}
+@media screen and (max-width: 360px) {
+  #frame {
+    width: 100%;
+    height: 100vh;
+  }
+}
+#frame #sidepanel {
+  float: left;
+  min-width: 120px;
+  max-width: 300px;
+  width: 40%;
+  height: calc(100vh - 50px);
+  background: #2c3e50;
+  color: #f5f5f5;
+  overflow: hidden;
+  position: relative;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel {
+    width: 58px;
+    min-width: 58px;
+  }
+}
+#frame #sidepanel #profile {
+  width: 80%;
+  margin: 25px auto;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #profile {
+    width: 100%;
+    margin: 0 auto;
+    padding: 5px 0 0 0;
+    background: #32465a;
+  }
+}
+
+#frame #sidepanel #profile.expanded .wrap {
+  height: 210px;
+  line-height: initial;
+}
+
+#frame #sidepanel #profile.expanded .wrap p {
+  margin-top: 20px;
+}
+
+#frame #sidepanel #profile .wrap {
+  height: 60px;
+  line-height: 60px;
+  overflow: hidden;
+  transition: 0.3s height ease;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #profile .wrap {
+    height: 55px;
+  }
+}
+#frame #sidepanel #profile .wrap img {
+  width: 50px;
+  border-radius: 50%;
+  padding: 3px;
+  border: 2px solid #e74c3c;
+  height: auto;
+  float: left;
+  cursor: pointer;
+  transition: 0.3s border ease;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #profile .wrap img {
+    width: 40px;
+    margin-left: 4px;
+  }
+}
+#frame #sidepanel #profile .wrap img.online {
+  border: 2px solid #2ecc71;
+}
+#frame #sidepanel #profile .wrap p {
+  float: left;
+  margin-left: 15px;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #profile .wrap p {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #profile .wrap i.expand-button {
+    display: none;
+  }
+}
+
+#frame #sidepanel #search {
+  border-top: 1px solid #32465a;
+  border-bottom: 1px solid #32465a;
+  font-weight: 300;
+  width: 100%;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #search {
+    display: none;
+  }
+}
+#frame #sidepanel #search label {
+  position: absolute;
+  margin: 10px 0 0 20px;
+}
+#frame #sidepanel #search input {
+  font-family: "proxima-nova",  "Source Sans Pro", sans-serif;
+  padding: 10px 0 10px 46px;
+  width: calc(100% - 0px); /* if u add a button u can just substract its width */
+  border: none;
+  background: #32465a;
+  color: #f5f5f5;
+}
+#frame #sidepanel #search input:focus {
+  outline: none;
+  background: #435f7a;
+}
+#frame #sidepanel #search input::-webkit-input-placeholder {
+  color: #f5f5f5;
+}
+#frame #sidepanel #search input::-moz-placeholder {
+  color: #f5f5f5;
+}
+#frame #sidepanel #search input:-ms-input-placeholder {
+  color: #f5f5f5;
+}
+#frame #sidepanel #search input:-moz-placeholder {
+  color: #f5f5f5;
+}
+#frame #sidepanel #contacts {
+  height: calc(100% - 177px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #contacts {
+    height: calc(100% - 149px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  
+  #frame #sidepanel #contacts::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+#frame #sidepanel #contacts::-webkit-scrollbar {
+  width: 8px;
+  background: #2c3e50;
+}
+#frame #sidepanel #contacts::-webkit-scrollbar-thumb {
+  background-color: #243140;
+}
+#frame #sidepanel #contacts ul li.contact {
+  position: relative;
+  padding: 10px 0 15px 0;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #contacts ul li.contact {
+    padding: 6px 0 46px 8px;
+  }
+}
+#frame #sidepanel #contacts ul li.contact:hover {
+  background: #32465a;
+}
+#frame #sidepanel #contacts ul li.contact.active {
+  background: #32465a;
+  border-right: 5px solid #435f7a;
+}
+#frame #sidepanel #contacts ul li.contact.active span.contact-status {
+  border: 2px solid #32465a !important;
+}
+#frame #sidepanel #contacts ul li.contact .wrap {
+  width: 88%;
+  margin: 0 auto;
+  position: relative;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #contacts ul li.contact .wrap {
+    width: 100%;
+  }
+}
+#frame #sidepanel #contacts ul li.contact .wrap span {
+  position: absolute;
+  left: 0;
+  margin: -2px 0 0 -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #2c3e50;
+  background: #95a5a6;
+}
+#frame #sidepanel #contacts ul li.contact .wrap span.online {
+  background: #2ecc71;
+}
+
+
+#frame #sidepanel #contacts ul li.contact .wrap img {
+  width: 40px;
+  border-radius: 50%;
+  float: left;
+  margin-right: 10px;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #contacts ul li.contact .wrap img {
+    margin-right: 0px;
+  }
+}
+#frame #sidepanel #contacts ul li.contact .wrap .meta {
+  padding: 10px 0 0 0;
+}
+@media screen and (max-width: 735px) {
+  #frame #sidepanel #contacts ul li.contact .wrap .meta {
+    display: none;
+  }
+}
+#frame #sidepanel #contacts ul li.contact .wrap .meta .name {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+.username {
+  font-size: 15px;
+  letter-spacing: 1px;
+  font-style: oblique;
+  font-weight: 500;
+  margin-left: 300px;
+}
+
+#frame .content {
+  float: right;
+  width: 60%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+@media screen and (max-width: 735px) {
+  #frame .content {
+    width: calc(100% - 58px);
+    min-width: 300px !important;
+  }
+}
+@media screen and (min-width: 900px) {
+  #frame .content {
+    width: calc(100% - 300px);
+  }
+}
+
+.contact-list {
+  list-style: none;
+  padding: 1px 0 0 5px;
+}

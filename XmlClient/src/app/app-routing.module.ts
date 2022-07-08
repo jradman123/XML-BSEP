@@ -20,11 +20,11 @@ import { PublicProfileComponent } from './components/public-profile/public-profi
 import { NetworkComponent } from './components/network/network.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { NotificationComponent } from './components/notification/notification.component';
-import { PostComponent } from './components/post/post.component';
 import { PostViewComponent } from './components/post-view/post-view.component';
 import { MessagesPageComponent } from './pages/messages-page/messages-page/messages-page.component';
 import { JobOffersComponent } from './components/job-offers/job-offers.component';
 import { MessageCreateComponent } from './components/message-create/message-create/message-create.component';
+import { ChatboxComponent } from './components/chatbox/chatbox.component';
 
 const routes: Routes = [
   {
@@ -130,6 +130,10 @@ const routes: Routes = [
    {
     path: 'send-message/:username',
     component: MessageCreateComponent
+   }, 
+   {
+    path: 'chatbox',
+    component: ChatboxComponent
    }
 ];
 
