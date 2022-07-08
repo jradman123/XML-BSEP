@@ -493,3 +493,31 @@ func MapToStringArrayExperiences(experiences []model.Experience) []string {
 	}
 	return strings
 }
+
+func MapUserToEmailUsernameResponse(user *model.User) *pb.EmailUsernameResponse {
+	emailUsername := &pb.EmailUsername{
+		Email:    user.Email,
+		Username: user.Username,
+	}
+
+	emailUsernameResponse := &pb.EmailUsernameResponse{
+		UserId:        user.ID.String(),
+		EmailUsername: emailUsername,
+	}
+
+	return emailUsernameResponse
+}
+
+func MapUserToChangeEmailResponse(user *model.User) *pb.ChangeEmailResponse {
+	changeEmailResponse := &pb.ChangeEmailResponse{
+		Email: user.Email,
+	}
+	return changeEmailResponse
+}
+
+func MapUserToChangeUsernameResponse(user *model.User) *pb.ChangeUsernameResponse {
+	changeUsernameResponse := &pb.ChangeUsernameResponse{
+		Username: user.Username,
+	}
+	return changeUsernameResponse
+}

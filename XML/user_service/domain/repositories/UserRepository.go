@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"user/module/domain/model"
 )
 
@@ -16,4 +17,7 @@ type UserRepository interface {
 	ChangePassword(user *model.User, password string) error
 	EditUserDetails(user *model.User) (bool, error)
 	ChangeProfileStatus(user *model.User) (bool, error)
+	GetById(ctx context.Context, id uuid.UUID) (*model.User, error)
+	UpdateEmail(ctx context.Context, user *model.User) (bool, error)
+	UpdateUsername(ctx context.Context, user *model.User) (bool, error)
 }

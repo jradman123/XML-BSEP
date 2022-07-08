@@ -131,6 +131,7 @@ export class AuthService {
     localStorage.removeItem('role');
     localStorage.removeItem('email');
     localStorage.removeItem('username');
+    localStorage.removeItem('userId');
   }
 
   public get currentUserValue(): LoggedUser {

@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	hibp "github.com/mattevans/pwned-passwords"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/sirupsen/logrus"
@@ -562,4 +563,53 @@ func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.Change
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &pb.ChangeStatus{NewStatus: string(editedUser.ProfileStatus), Username: username}, nil
+}
+
+func (u UserHandler) GetEmailUsername(ctx context.Context, request *pb.EmailUsernameRequest) (*pb.EmailUsernameResponse, error) {
+	user, err := u.service.GetByUsername(ctx, request.Username)
+	if err != nil {
+		return nil, err
+	}
+	mapped := api.MapUserToEmailUsernameResponse(user)
+	return mapped, nil
+
+}
+
+func (u UserHandler) ChangeEmail(ctx context.Context, request *pb.ChangeEmailRequest) (*pb.ChangeEmailResponse, error) {
+	id, _ := uuid.Parse(request.UserId)
+	exists := u.service.CheckIfEmailExists(id, request.Email.Email)
+	if exists {
+		return nil, status.Error(codes.AlreadyExists, "Email already exists!")
+	}
+
+	user, err := u.service.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	user.Email = request.Email.Email
+	updated, er := u.service.UpdateEmail(ctx, user)
+	if er != nil {
+		return nil, er
+	}
+	mapped := api.MapUserToChangeEmailResponse(updated)
+	return mapped, nil
+}
+
+func (u UserHandler) ChangeUsername(ctx context.Context, request *pb.ChangeUsernameRequest) (*pb.ChangeUsernameResponse, error) {
+	id, _ := uuid.Parse(request.UserId)
+	exists := u.service.CheckIfUsernameExists(id, request.Username.Username)
+	if exists {
+		return nil, status.Error(codes.AlreadyExists, "Username already exists!")
+	}
+	user, err := u.service.GetById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	user.Username = request.Username.Username
+	updated, er := u.service.UpdateUsername(ctx, user)
+	if er != nil {
+		return nil, er
+	}
+	mapped := api.MapUserToChangeUsernameResponse(updated)
+	return mapped, nil
 }

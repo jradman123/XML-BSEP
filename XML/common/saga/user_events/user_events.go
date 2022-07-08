@@ -30,6 +30,7 @@ const (
 	ActivateUser
 	ChangeProfileStatus
 	UpdateUserProfessionalDetails
+	ChangeEmail
 	RollbackUser
 	UnknownCommand
 )
@@ -42,6 +43,8 @@ const (
 	UserDeleted
 	UserCreated
 	UserActivated
+	ChangedEmail
+	ChangedEmailRolledBack
 	ProfileStatusChanged
 	UnknownReply
 )

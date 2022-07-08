@@ -102,6 +102,27 @@ service UserService{
       body: "changeStatus"
     };
   }
+
+  rpc ChangeEmail(ChangeEmailRequest) returns(ChangeEmailResponse) {
+    option (google.api.http) = {
+      post: "/users/user/changeEmail/{userId}"
+      body: "email"
+    };
+  }
+
+  rpc ChangeUsername(ChangeUsernameRequest) returns(ChangeUsernameResponse) {
+    option (google.api.http) = {
+      post: "/users/user/changeUsername/{userId}"
+      body: "username"
+    };
+  }
+
+  rpc GetEmailUsername(EmailUsernameRequest) returns(EmailUsernameResponse) {
+    option (google.api.http) = {
+      get: "/users/user/contact/{username}"
+
+    };
+  }
 }
 
 message GetUserDetailsRequest{
@@ -308,3 +329,44 @@ message ChangeStatus {
   string username = 1;
   string newStatus = 2;
 }
+
+message EmailUsernameRequest{
+  string username = 1;
+  EmailUsername emailUsername = 2;
+}
+
+message EmailUsername{
+  string username = 1;
+  string email = 2;
+}
+
+message EmailUsernameResponse{
+  string userId = 1;
+  EmailUsername emailUsername = 2;
+}
+
+message ChangeEmailRequest{
+  string userId = 1;
+  EmailRequest email = 2;
+}
+message ChangeEmailResponse{
+  string email = 1;
+}
+
+message ChangeUsernameRequest{
+  string userId = 1;
+  UsernameRequest username = 2;
+}
+
+message ChangeUsernameResponse{
+  string username = 1;
+}
+
+message UsernameRequest {
+  string username = 1;
+}
+
+message EmailRequest {
+  string email = 1;
+}
+
