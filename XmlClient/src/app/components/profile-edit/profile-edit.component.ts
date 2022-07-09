@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
@@ -14,7 +14,7 @@ import { UserService } from 'src/app/services/user-service/user.service';
 })
 export class ProfileEditComponent implements OnInit {
 
-
+@Output() newEvent : EventEmitter<UserPersonalDetails> = new EventEmitter()
  sub!: Subscription;
   userDetails! : UserDetails;
   initialDetails: any;
@@ -90,9 +90,14 @@ export class ProfileEditComponent implements OnInit {
 
     }
     this.userService.updateUserPersonalDetails(this.userPersonalDetails).subscribe(registerObserver)
+    this.sendToParent(this.userPersonalDetails)
 
   }
 
+  sendToParent(userPersonalDetails : UserPersonalDetails){
+    console.log("usao u send to parent")
+    this.newEvent.emit(userPersonalDetails)
+  }
   createUserDetails(): void {
     this.userPersonalDetails.username = this.username;
     this.userPersonalDetails.phoneNumber = this.userDetailsForm.value.phoneNumber;

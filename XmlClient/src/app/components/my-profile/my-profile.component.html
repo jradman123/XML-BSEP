@@ -10,7 +10,7 @@
               <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
     
                 <img src="../../../assets/userMale.png" alt="Profile" class="rounded-circle">
-                <h2>{{userDetails?.firstName}} {{userDetails?.lastName}}</h2>
+                <h2>{{initialuserPersonalDetails?.firstName}} {{initialuserPersonalDetails?.lastName}}</h2>
                 <div class="social-links mt-2">
                   <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
                   <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
@@ -43,9 +43,9 @@
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#edit-contact">Edit Contact</button>
                   </li>
   
-                  <li class="nav-item">
+                  <!--<li class="nav-item">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Change Password</button>
-                  </li>
+                  </li>-->
     
                   <li class="nav-item">
                     <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-settings">Settings</button>
@@ -59,19 +59,19 @@
                 <div class="tab-content pt-2">
     
                   <div class="tab-pane fade show active profile-overview" id="profile-overview">
-                      <app-overview-profile [user]="userDetails"></app-overview-profile>
+                      <app-overview-profile [user]="initialuserPersonalDetails" [email]="userDetails.email"></app-overview-profile>
                   </div>
   
                   <div class="tab-pane fade pt-3" id="profile-about">
                     <app-profile-about [user] = "userDetails"></app-profile-about>  
                   </div>
     
-                  <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-                    <app-profile-edit></app-profile-edit>
+                  <div class="tab-pane fade profile-edit pt-3" id="profile-edit" >
+                    <app-profile-edit (newEvent)="refreshPersonalData($event)"></app-profile-edit>
                   </div>
 
                   <div class="tab-pane fade profile-edit pt-3" id="edit-contact">
-                    <app-edit-email-username></app-edit-email-username>
+                    <app-edit-email-username (changeEmailEvent)="refreshEmail($event)" ></app-edit-email-username>
                   </div>
     
                   <div class="tab-pane fade pt-3" id="profile-change-password">
