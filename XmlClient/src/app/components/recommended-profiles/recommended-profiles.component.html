@@ -1,0 +1,12 @@
+ <mat-card class="card m-3" >
+    <div class="row">
+        <div class="col-md-2">
+            <img src="../../../assets/userFemale.png" alt="avatar" class="avatar" (click)="openProfile()">
+        </div>
+        <div class="col-md-8 d-flex flex-column info ml-5">
+            <h1>{{ profile.firstName }} {{ profile.lastName}} </h1>
+            <h4> <i  class="bi bi-person"></i> {{ profile.username}} </h4>
+        </div>
+        
+    </div>
+</mat-card>

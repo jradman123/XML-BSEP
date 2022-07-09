@@ -46,12 +46,12 @@
           <div class="card">
             <div class="card-body profile-card pt-3 d-flex flex-column align-items-center">
 
-              <h3>Add to your feed</h3>
+              <h3 style=" font-weight:550; color : #012970">Add to your feed</h3>
               <div class=" d-flex flex-column align-items-center">
                 <div  *ngFor="let person of suggested ">
-                  <app-profile-preview [profile]="person" ></app-profile-preview>
+                  <app-recommended-profiles [profile]="person" ></app-recommended-profiles>
               </div>
-              <a href="/network#suggestions">See all recommendations <i class="bi bi-arrow-right"></i></a>
+              <a href="/network#suggestions" class="link-all">See all recommendations <i class="bi bi-arrow-right"></i></a>
               </div>
 
             </div>
