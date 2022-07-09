@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
-import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
 import { MaterialModule } from './material/material.module';
-import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
@@ -25,11 +23,13 @@ import { MessagesPageComponent } from './pages/messages-page/messages-page/messa
 import { JobOffersComponent } from './components/job-offers/job-offers.component';
 import { MessageCreateComponent } from './components/message-create/message-create/message-create.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
+import { LandingPageComponent } from './pages/landing-page/landing-page.component';
+import { FeedComponent } from './pages/feed/feed.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: HomePageComponent
+    component: LandingPageComponent,
   },
   {
     path : 'public-profile/:username',
@@ -71,10 +71,6 @@ const routes: Routes = [
   {
     path: 'activate',
     component: ActivateAccountComponent,
-  },
-  {
-    path: 'jobOffers',
-    component: JobOfferComponent,// canActivate: [AuthGuard]
   },
   {
     path: 'newJobOffer',
@@ -119,7 +115,11 @@ const routes: Routes = [
    }, 
    {
     path: 'chatbox',
-    component: ChatboxComponent, canActivate: [AuthGuardRegular]
+    component: ChatboxComponent,canActivate: [AuthGuardRegular]
+   },
+   {
+    path : 'feed',
+    component : FeedComponent,canActivate: [AuthGuardRegular]
    }
 ];
 

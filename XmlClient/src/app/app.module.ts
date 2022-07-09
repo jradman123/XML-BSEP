@@ -44,7 +44,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ActivateAccountComponent } from './components/activate-account/activate-account.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { JobOfferComponent } from './components/job-offer/job-offer.component';
 import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.component';
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
@@ -97,6 +96,8 @@ import { JobOfferViewComponent } from './components/job-offer-view/job-offer-vie
 import { JobsSearchPipe } from './pipes/jobs-search.pipe';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { FeedComponent } from './pages/feed/feed.component';
+import { LandingPageComponent } from './pages/landing-page/landing-page.component';
 
 
 
@@ -111,7 +112,6 @@ import { ChatComponent } from './components/chat/chat.component';
     RecoverPassRequestComponent,
     RecoverPassComponent,
     ActivateAccountComponent,
-    JobOfferComponent,
     FiterPipePipe,
     NewJobOfferComponent,
     ConfirmDialogComponent,
@@ -153,6 +153,8 @@ import { ChatComponent } from './components/chat/chat.component';
     DateAsAgoPipe,
     ChatboxComponent,
     ChatComponent,
+    FeedComponent,
+    LandingPageComponent,
   ],
   imports: [
     BrowserModule,

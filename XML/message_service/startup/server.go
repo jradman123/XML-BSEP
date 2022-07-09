@@ -42,6 +42,7 @@ func (server *Server) Start() {
 
 	mongoClient := server.InitMongoClient()
 	notificationPusher := server.InitNotificationPusher()
+	messagePusher := server.InitMessagePusher()
 
 	messageRepo := server.InitMessageRepo(mongoClient)
 	messageService := server.InitMessageService(messageRepo, logInfo, logError)
@@ -53,7 +54,7 @@ func (server *Server) Start() {
 	userService := server.InitUserService(userRepo, logInfo, logError)
 	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo, &notificationPusher, userService)
 
-	messageHandler := server.InitMessageHandler(messageService, userService, logInfo, logError)
+	messageHandler := server.InitMessageHandler(messageService, userService, notificationService, logInfo, logError, &messagePusher)
 	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService, userService)
 	server.InitCreateUserCommandHandler(userService, messageService, replyPublisher, commandSubscriber)
 
@@ -116,8 +117,8 @@ func (server *Server) InitUserService(repo repositories.UserRepository, logInfo 
 	return application.NewUserService(repo, logInfo, logError)
 }
 
-func (server *Server) InitMessageHandler(messageService *application.MessageService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger) *handlers.MessageHandler {
-	return handlers.NewMessageHandler(messageService, userService, logInfo, logError)
+func (server *Server) InitMessageHandler(messageService *application.MessageService, userService *application.UserService, notificationService *application.NotificationService, logInfo *logger.Logger, logError *logger.Logger, pusher *pusher.Client) *handlers.MessageHandler {
+	return handlers.NewMessageHandler(messageService, userService, notificationService, logInfo, logError, pusher)
 }
 
 func (server *Server) InitCreateUserCommandHandler(userService *application.UserService, postService *application.MessageService, publisher saga.Publisher,
@@ -171,6 +172,17 @@ func (server *Server) InitNotificationPusher() pusher.Client {
 		Secret:  server.config.NotificationSecret,
 		Cluster: server.config.NotificationCluster,
 		Secure:  server.config.NotificationSecure,
+	}
+	return pusherClient
+}
+
+func (server *Server) InitMessagePusher() pusher.Client {
+	pusherClient := pusher.Client{
+		AppID:   server.config.MessageAppID,
+		Key:     server.config.MessageKey,
+		Secret:  server.config.MessageSecret,
+		Cluster: server.config.MessageCluster,
+		Secure:  server.config.MessageSecure,
 	}
 	return pusherClient
 }

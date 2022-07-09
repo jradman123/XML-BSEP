@@ -266,6 +266,7 @@ message User {
   string dateOfBirth = 9;
   string recoveryEmail = 10;
   bool isConfirmed = 11;
+  string profileStatus = 12;
 }
 
 message RegisterUserRequest {

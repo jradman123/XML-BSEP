@@ -63,5 +63,11 @@ export class PostService {
     );
   }
 
+  getUsersFeed(username : string ){
+    return this._http.get<any>(
+      'http://localhost:9090/users/' + username + '/feed'
+    );
+  }
+
 
 }

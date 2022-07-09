@@ -53,18 +53,11 @@
 }
 
 #framechat .content .messages {
-    height: auto;
+    height: 100%;
     min-height: calc(100% - 90px);
     max-height: calc(100% - 90px);
     overflow-y: scroll;
-    overflow-x: hidden;
     width: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-#framechat .content .messages ul {
-  overflow: hidden;
     margin: 0;
     padding: 0;
 }

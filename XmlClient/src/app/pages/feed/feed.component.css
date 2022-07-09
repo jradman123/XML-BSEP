@@ -1,0 +1,172 @@
+@media (max-width: 768px) {
+    .container {
+      padding: 30px;
+      width: 100%;
+    }
+     .container #profile, .container #post {
+      float: none;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .container {
+      padding: 0 0 30px;
+      margin: 0 auto;
+      width: 970px;
+    }
+    .container #profile {
+      width: 32%;
+      float: left;
+    }
+    .container #post {
+      width: 65%;
+      float: right;
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .container {
+      width: 1170px;
+    }
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background-color: #e7ebf0;
+    font-family: 'Roboto', Arial, sans-serif;
+  }
+  
+  p {
+    color: #727988;
+  }
+  
+  a {
+    color: #53a0ef;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: #2486eb;
+  }
+  
+  h2 {
+    text-transform: uppercase;
+    color: #3a3e47;
+    font-size: 18px;
+    font-weight: 700;
+    height: 75px;
+    line-height: 75px;
+  }
+  
+  .name {
+    color: #3a3e47;
+    font-weight: 500;
+  }
+  
+  .name:hover {
+    color: #23252b;
+  }
+  
+  .button {
+    display: inline-block;
+    margin: 7px 30px 30px 30px;
+    color: #727988;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 40px;
+    border-radius: 50px;
+    border: 1px solid #8a8f9b;
+    transition: all .25s;
+    background: #fff;
+    transform: translateX(-40%);
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    color: #fff;
+    background: #32465a;
+  }
+  
+   #profile, #post, ul {
+    overflow: hidden;
+    background-color: #fef;
+    border-radius: 8px;
+    box-shadow: 0 2px 25px rgba(0, 0, 0, 0.25);
+
+  }
+  
+  
+  #post {
+    width: 100%;
+    margin-top: 5px;
+  }
+  
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #post > header {
+    display: block;
+    margin: 30px 30px 0;
+    padding-top: 30px;
+    position: relative;
+  }
+  
+  #post > header img {
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    background-color: #e4e9f5;
+    float: left;
+    margin-right: 20px;
+  }
+  
+  #post > header p {
+    font-size: 16px;
+    font-weight: 400;
+    padding-top: 5px;
+    max-width: 90%;
+  }
+  
+  #post > header p span {
+    display: block;
+    color: #b4b9c8;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 5px;
+  }
+  
+  #post > header a {
+    font-weight: 500;
+  }
+  
+  
+  #post .content {
+    margin: 5px 30px 0 110px;
+  }
+  
+  #post .content p {
+    font-size: 14px;
+    font-weight: 400;
+    padding: 5px 0;
+  }
+  
+  #post .content img {
+    width: 100%;
+  }
+ 
+  
+#post .button-wrapper {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    }  
