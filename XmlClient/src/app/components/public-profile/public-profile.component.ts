@@ -64,6 +64,9 @@ export class PublicProfileComponent implements OnInit {
         this.user = data;
         this.initialDetails = JSON.parse(JSON.stringify(data)); 
       },
+      error: (err: any) => {
+        this._router.navigate(['/404']);
+      }
     });
   }
 

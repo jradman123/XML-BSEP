@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserDetails } from 'src/app/interfaces/user-details';
 import { ConnectionService } from 'src/app/services/connection-service/connection.service';
 
@@ -13,7 +14,7 @@ export class InvitationComponent implements OnInit {
   profile! : UserDetails;
   accepted = false;
 
-  constructor(private _connectionService : ConnectionService) { }
+  constructor(private _connectionService : ConnectionService, private _router : Router) { }
 
   ngOnInit(): void {
   }
@@ -22,6 +23,9 @@ export class InvitationComponent implements OnInit {
     this._connectionService.acceptConnection(localStorage.getItem('username')!, username).subscribe(
       res => {
         this.accepted = true;
+        setTimeout( ()=> {
+          this._router.navigate(['/public-profile/' + username]);
+        },3000);
       }
     );
   }
