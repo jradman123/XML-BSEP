@@ -30,7 +30,14 @@ export class CommentCreateComponent implements OnInit {
   ngOnInit(): void {
   }
   submitRequest(): void {
-
+    if(this.createForm.invalid){
+      this._snackBar.open(
+        'You cannot create a empty comment.',
+        '', {
+        duration: 3000
+      });
+      return;
+    }
     this.newComment.Username = this.username
     this.newComment.CommentText = this.createForm.value.comment
     this.clearForm();
