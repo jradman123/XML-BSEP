@@ -7,13 +7,18 @@
     color: #012970;
   } 
 
+
+  .new-clr {
+    background-color: #012a70c0 !important;
+  }
+
   .block {
     display: block;
     width: 100%;
     border: none;
     border-bottom: 1px solid #abb0dd;
 
-    background-color: #0d6efd;
+    background-color: #012a70c0;
     padding: 14px 28px;
     font-size: 23px;
     line-height: 28px;

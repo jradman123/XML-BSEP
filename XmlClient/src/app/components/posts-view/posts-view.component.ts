@@ -60,6 +60,7 @@ export class PostsViewComponent implements OnInit {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.id = 'modal-component';
+    dialogConfig.maxHeight = '90vh';
     const dialogRef = this._matDialog.open(PostCreateFileComponent, dialogConfig);
     dialogRef.afterClosed().subscribe({
       next: (res) => {
