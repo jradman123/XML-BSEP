@@ -54,7 +54,7 @@ func (server *Server) Start() {
 	userService := server.InitUserService(userRepo, logInfo, logError)
 	notificationService := server.InitNotificationService(logInfo, logError, notificationRepo, &notificationPusher, userService)
 
-	messageHandler := server.InitMessageHandler(messageService, userService, logInfo, logError, &messagePusher)
+	messageHandler := server.InitMessageHandler(messageService, userService, notificationService, logInfo, logError, &messagePusher)
 	notificationHandler := server.InitNotificationHandler(logInfo, logError, &notificationPusher, notificationService, userService)
 	server.InitCreateUserCommandHandler(userService, messageService, replyPublisher, commandSubscriber)
 
@@ -117,8 +117,8 @@ func (server *Server) InitUserService(repo repositories.UserRepository, logInfo 
 	return application.NewUserService(repo, logInfo, logError)
 }
 
-func (server *Server) InitMessageHandler(messageService *application.MessageService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger, pusher *pusher.Client) *handlers.MessageHandler {
-	return handlers.NewMessageHandler(messageService, userService, logInfo, logError, pusher)
+func (server *Server) InitMessageHandler(messageService *application.MessageService, userService *application.UserService, notificationService *application.NotificationService, logInfo *logger.Logger, logError *logger.Logger, pusher *pusher.Client) *handlers.MessageHandler {
+	return handlers.NewMessageHandler(messageService, userService, notificationService, logInfo, logError, pusher)
 }
 
 func (server *Server) InitCreateUserCommandHandler(userService *application.UserService, postService *application.MessageService, publisher saga.Publisher,

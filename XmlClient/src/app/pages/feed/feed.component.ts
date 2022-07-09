@@ -34,6 +34,7 @@ export class FeedComponent implements OnInit {
     this._postService.getUsersFeed(this.username!).subscribe(
       res => {
         this.posts = res.Feed
+        console.log(res)
       }
     )
 

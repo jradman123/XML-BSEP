@@ -7,20 +7,24 @@ import (
 	"fmt"
 	"github.com/pusher/pusher-http-go"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/application"
+	"message/module/domain/model"
 	"message/module/infrastructure/api"
+	"time"
 )
 
 type MessageHandler struct {
-	messageService *application.MessageService
-	userService    *application.UserService
-	logInfo        *logger.Logger
-	logError       *logger.Logger
-	pusher         *pusher.Client
+	messageService      *application.MessageService
+	userService         *application.UserService
+	notificationService *application.NotificationService
+	logInfo             *logger.Logger
+	logError            *logger.Logger
+	pusher              *pusher.Client
 }
 
-func NewMessageHandler(messageService *application.MessageService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger, pusher *pusher.Client) *MessageHandler {
-	return &MessageHandler{messageService: messageService, userService: userService, logInfo: logInfo, logError: logError, pusher: pusher}
+func NewMessageHandler(messageService *application.MessageService, userService *application.UserService, notificationService *application.NotificationService, logInfo *logger.Logger, logError *logger.Logger, pusher *pusher.Client) *MessageHandler {
+	return &MessageHandler{messageService: messageService, userService: userService, notificationService: notificationService, logInfo: logInfo, logError: logError, pusher: pusher}
 }
 
 func (m MessageHandler) MustEmbedUnimplementedMessageServiceServer() {
@@ -82,8 +86,8 @@ func (m MessageHandler) SendMessage(_ context.Context, request *pb.SendMessageRe
 	userSender, _ := m.userService.GetByUsername(request.Message.SenderUsername)
 	userReceiver, _ := m.userService.GetByUsername(request.Message.ReceiverUsername)
 
-	model := api.MapNewMessage(request.Message.MessageText, userReceiver[0].UserId, userSender[0].UserId)
-	message, err := m.messageService.SendMessage(model)
+	modell := api.MapNewMessage(request.Message.MessageText, userReceiver[0].UserId, userSender[0].UserId)
+	message, err := m.messageService.SendMessage(modell)
 
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
@@ -92,6 +96,17 @@ func (m MessageHandler) SendMessage(_ context.Context, request *pb.SendMessageRe
 		return nil, err
 	}
 
+	nnn := &model.Notification{
+		Id:               primitive.NewObjectID(),
+		Timestamp:        time.Now(),
+		Content:          request.Message.SenderUsername + " sent you a message.",
+		NotificationFrom: request.Message.SenderUsername,
+		NotificationTo:   request.Message.ReceiverUsername,
+		Read:             false,
+		RedirectPath:     "/chatbox",
+		Type:             model.MESSAGE,
+	}
+	m.notificationService.Create(nnn)
 	m.pusher.Trigger("messages", "message", request.Message)
 	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername)
 	return &pb.MessageSentResponse{Message: response}, nil

@@ -16,6 +16,7 @@ export class NotificationListComponent implements OnInit {
   sorted : INotification[] = []
   noOfNotReadNot = 0;
 
+
   constructor(private _notificationService: NotificationService) {
     this.notifications.forEach(n => {
       n = {} as INotification
@@ -29,8 +30,11 @@ export class NotificationListComponent implements OnInit {
         console.log(res.notifications)
         
         res.notifications.forEach((not : INotification) => {
-          if(!not.read) this.noOfNotReadNot++;
+          if(!not.read ) this.noOfNotReadNot++; 
         })
+
+        this.newNotifications.emit(this.noOfNotReadNot);
+
 
         this.notifications = res.notifications.sort((a: INotification, b: INotification) => {
           let r = new Date(a.time)

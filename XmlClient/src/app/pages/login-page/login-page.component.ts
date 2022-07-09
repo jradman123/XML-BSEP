@@ -106,7 +106,10 @@ export class LoginPageComponent implements OnInit {
         }
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error, 'Dismiss');
+        this._snackBar.open("Invalid credentials. Please try again.", "",  {
+          duration: 3000,
+          panelClass: ['snack-bar']
+        });
       },
     };
     this.loginReq = {
@@ -125,12 +128,18 @@ export class LoginPageComponent implements OnInit {
         if (res == null) {
           return
         }
-        this._router.navigate(['/myProfile']);
-        this._snackBar.open("Welcome!", "Dismiss");
+        this._router.navigate(['/feed']);
+        this._snackBar.open("Welcome!", "", {
+          duration: 3000,
+          panelClass: ['snack-bar']
+        });
       },
       error: (err: HttpErrorResponse) => {
 
-        this._snackBar.open(err.error, 'Dismiss');
+        this._snackBar.open("Invalid credentials. Please try again.", '', {
+          duration: 3000,
+          panelClass: ['snack-bar']
+        });
       },
     }
 

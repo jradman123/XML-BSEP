@@ -11,6 +11,8 @@
               <a  href="/network#connections" class="block">Connections</a>
               <a href="/network#invitations" class="block">Invitations</a>
               <a href="/network#suggestions" class="block">Suggestions</a>
+              <a href="/network#all" class="block">All users</a>
+
             </div>
           </div>
         </div>
@@ -43,6 +45,17 @@
             <div id="suggestions" class="card-body pt-3">
               <h2 class="nw-title">Suggested users</h2>
               <div  *ngFor="let person of people | profileSearch : searchText ">
+                <app-profile-preview [profile]="person" ></app-profile-preview>
+            </div>
+            </div>
+          </div>
+          <br>
+          <hr>
+          <br>
+          <div class="card  card-ride">
+            <div id="all" class="card-body pt-3">
+              <h2 class="nw-title">All users</h2>
+              <div  *ngFor="let person of all | profileSearch : searchText ">
                 <app-profile-preview [profile]="person" ></app-profile-preview>
             </div>
             </div>
