@@ -98,6 +98,7 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { FeedComponent } from './pages/feed/feed.component';
 import { LandingPageComponent } from './pages/landing-page/landing-page.component';
+import { RecommendedProfilesComponent } from './components/recommended-profiles/recommended-profiles.component';
 
 
 
@@ -155,6 +156,7 @@ import { LandingPageComponent } from './pages/landing-page/landing-page.componen
     ChatComponent,
     FeedComponent,
     LandingPageComponent,
+    RecommendedProfilesComponent,
   ],
   imports: [
     BrowserModule,

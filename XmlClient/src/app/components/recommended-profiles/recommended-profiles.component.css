@@ -3,7 +3,8 @@
 }
 
 .card {
-  max-width: 900px;
+  min-width: 300px;
+  max-width: 300px;
   margin-bottom: 30px;
   border: none;
   border-radius: 5px;
@@ -12,16 +13,16 @@
 
 .info h1 {
     margin-bottom: 10px;
-    line-height: 30px;
-    font-size: 24px;
+    line-height: 23px;
+    font-size: 18px;
     font-weight: 500;
     color: #012970;
   }
 
   .info h4 {
     color: #444444;
-    font-size: 15px;
-    line-height: 24px;
+    font-size: 12px;
+    line-height: 20px;
     letter-spacing: 1px;
   }
 
@@ -33,28 +34,6 @@
 
   .avatar {
     border-radius: 50%; 
-    width:70px;
+    width:45px;
     float: right
-  }
-
-  
-  @media screen and (max-width: 735px) {
-    .avatar {
-      width:40px;
-    }
-    
-    .accepted {
-      line-height: 20px;
-      font-size: 15px;
-    }
-
-    .info h1 {
-        line-height: 23px;
-        font-size: 18px;
-      }
-
-  .info h4 {
-    font-size: 12px;
-    line-height: 20px;
-  }
   }
