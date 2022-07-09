@@ -28,7 +28,7 @@ export class PostsCommentsViewComponent implements OnInit {
        this.comments = res.Comments;
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
     this.service.GetAllCommentsForPost(data).subscribe(reactionsObserver)

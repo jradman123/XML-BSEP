@@ -84,7 +84,7 @@ export class PostComponent implements OnInit {
 
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
 
@@ -110,7 +110,7 @@ export class PostComponent implements OnInit {
       next: () => {
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
 
@@ -139,7 +139,7 @@ export class PostComponent implements OnInit {
       next: () => {
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
 
@@ -161,7 +161,7 @@ export class PostComponent implements OnInit {
           next: () => {
           },
           error: (err: HttpErrorResponse) => {
-            this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+            this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
           },
         }
         this.service.CommentPost(res.data, this.item.Links.Comment).subscribe(commentObserver)
@@ -177,7 +177,7 @@ export class PostComponent implements OnInit {
         this.dislikedConst = res.DislikesNumber
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
 

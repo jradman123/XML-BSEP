@@ -86,9 +86,7 @@ export class SettingsComponent implements OnInit {
     this.privateChecked = !this.privateChecked
     this.service.changePrivacyStatus(this.user.username, this.privateChecked ? "PRIVATE" : "PUBLIC").subscribe(
       res => {
-        this._snackBar.open('Privacy settings updated.', '', {
-          duration: 3000
-        });
+        this._snackBar.open('Privacy settings updated.', '', {duration : 3000,panelClass: ['snack-bar']});
       },
     );
   }
@@ -120,9 +118,7 @@ export class SettingsComponent implements OnInit {
   }
 
   copyMe() {
-    this._snackBar.open('Code copied to clipboard.', '', {
-      duration: 3000
-    });
+    this._snackBar.open('Code copied to clipboard.', '', {duration : 3000,panelClass: ['snack-bar']});
     this.clipboard.copy(this.code);
   }
 
@@ -143,9 +139,7 @@ export class SettingsComponent implements OnInit {
     this.notificationService.changeNotificationSettings(this.changeSettingsRequest).subscribe(
       res => {
         console.log("usao")
-        this._snackBar.open('Connection notifications updated.', '', {
-          duration: 3000
-        });
+        this._snackBar.open('Connection notifications updated.', '', {duration : 3000,panelClass: ['snack-bar']});
       },
     );
     
@@ -165,9 +159,7 @@ export class SettingsComponent implements OnInit {
     this.notificationService.changeNotificationSettings(this.changeSettingsRequest).subscribe(
       res => {
         console.log("usao")
-        this._snackBar.open('Post notifications updated.', '', {
-          duration: 3000
-        });
+        this._snackBar.open('Post notifications updated.', '', {duration : 3000,panelClass: ['snack-bar']});
       },
     );
 
@@ -179,9 +171,7 @@ export class SettingsComponent implements OnInit {
     this.notificationService.changeNotificationSettings(this.changeSettingsRequest).subscribe(
       res => {
         console.log("usao")
-        this._snackBar.open('Message notifications updated.', '', {
-          duration: 3000
-        });
+        this._snackBar.open('Message notifications updated.', '', {duration : 3000,panelClass: ['snack-bar']});
       },
     );
 

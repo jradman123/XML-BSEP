@@ -76,7 +76,15 @@ export class RegisterPageComponent implements OnInit {
   }
 
   onSubmit(): void {
-
+    if(this.createForm.invalid){
+      
+      this._snackBar.open(
+        'Input fields are invalid.',
+        '',
+        {duration : 3000,panelClass: ['snack-bar']}
+      );
+      return;
+    }
     this.createUser();
     console.log(this.newUser);
     const registerObserver = {
@@ -85,13 +93,13 @@ export class RegisterPageComponent implements OnInit {
         
         this.router.navigate(['/activate']);
         this._snackBar.open(
-          'Your registration request has been sumbitted. Please check your email.',
-          'Dismiss',
-          {duration : 3000}
+          'Activation code is sent. Please check your email.',
+          '',
+          {duration : 3000,panelClass: ['snack-bar']}
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', {duration : 3000});
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       }
 
     }

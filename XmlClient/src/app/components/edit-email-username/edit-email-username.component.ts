@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { error } from '@angular/compiler/src/util';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChangeEmailRequest } from 'src/app/interfaces/change-email-request';
@@ -17,6 +17,7 @@ import { UserService } from 'src/app/services/user-service/user.service';
 })
 export class EditEmailUsernameComponent implements OnInit {
 
+  @Output() changeEmailEvent : EventEmitter<string> = new EventEmitter()
   changeUsernameRequest! : ChangeUsernameRequest;
   changeEmailRequest! : ChangeEmailRequest;
   constructor(private userService : UserService,private _snackBar : MatSnackBar) {
@@ -41,25 +42,30 @@ export class EditEmailUsernameComponent implements OnInit {
 
   changeEmail() {
     if(this.emailForm.invalid){
-      this._snackBar.open("Entered value is not email form" + "!", 'Dismiss', { duration: 3000 });
+      this._snackBar.open("Entered value is not email form" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       return;
     }
     const changeEmailObserver = {
       next: () => {
-        this._snackBar.open("Success" + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Success" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
         localStorage.setItem('email' ,this.emailForm.value.email )
         this.getEmail()
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Email already exists" + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Email already exists" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
     this.changeEmailRequest.userId = localStorage.getItem('userId')
     this.changeEmailRequest.email.email = this.emailForm.value.email
     this.userService.changeEmail(this.changeEmailRequest).subscribe(changeEmailObserver);
+    this.newEmailChanged(this.changeEmailRequest.email.email)
 
   }
 
+  newEmailChanged(email : string){
+    this.changeEmailEvent.emit(email)
+
+  }
   
   emailForm = new FormGroup({
     email: new FormControl(null, [Validators.required, Validators.email]),

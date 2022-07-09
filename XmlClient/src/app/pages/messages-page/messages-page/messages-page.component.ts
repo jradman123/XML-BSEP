@@ -42,7 +42,7 @@ export class MessagesPageComponent implements OnInit {
        
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
     const getReceivedMessages = {
@@ -57,7 +57,7 @@ export class MessagesPageComponent implements OnInit {
        
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
     this._service.GetSentMessages().subscribe(getSentMessages)

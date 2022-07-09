@@ -49,7 +49,7 @@ export class PostsViewComponent implements OnInit {
        
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
     console.log(this.username);

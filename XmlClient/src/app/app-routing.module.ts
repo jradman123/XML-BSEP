@@ -5,7 +5,6 @@ import { NewJobOfferComponent } from './components/new-job-offer/new-job-offer.c
 import { RecoverPassRequestComponent } from './components/recover-pass-request/recover-pass-request.component';
 import { RecoverPassComponent } from './components/recover-pass/recover-pass.component';
 import { MaterialModule } from './material/material.module';
-import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { TwofaPageComponent } from './pages/twofa-page/twofa-page.component';
@@ -42,7 +41,7 @@ const routes: Routes = [
   },
   {
     path : 'post-create',
-    component: PostCreateFileComponent,
+    component: PostCreateFileComponent,canActivate: [AuthGuardRegular]
   },
   {
     path: 'people',
@@ -87,7 +86,7 @@ const routes: Routes = [
   },
   {
     path: 'myMessages',
-    component: MessagesPageComponent,
+    component: MessagesPageComponent,canActivate: [AuthGuardRegular]
   },
   {
     path: 'network',
@@ -99,7 +98,7 @@ const routes: Routes = [
   },
   {
     path: 'noti',
-    component: NotificationComponent,
+    component: NotificationComponent,canActivate: [AuthGuardRegular]
   },
   {
     path: 'post/:id',
@@ -112,15 +111,15 @@ const routes: Routes = [
    }, 
    {
     path: 'send-message/:username',
-    component: MessageCreateComponent
+    component: MessageCreateComponent,canActivate: [AuthGuardRegular]
    }, 
    {
     path: 'chatbox',
-    component: ChatboxComponent
+    component: ChatboxComponent,canActivate: [AuthGuardRegular]
    },
    {
     path : 'feed',
-    component : FeedComponent
+    component : FeedComponent,canActivate: [AuthGuardRegular]
    }
 ];
 

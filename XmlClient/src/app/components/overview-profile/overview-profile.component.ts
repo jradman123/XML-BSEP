@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { UserDetails } from 'src/app/interfaces/user-details';
+import { UserPersonalDetails } from 'src/app/interfaces/user-personal-details';
 import { UserService } from 'src/app/services/user-service/user.service';
 
 @Component({
@@ -12,7 +13,9 @@ export class OverviewProfileComponent implements OnInit {
 
   sub!: Subscription;
   @Input()
-  user! : UserDetails;
+  user! : UserPersonalDetails;
+  @Input()
+  email! : string;
   initialDetails: any;
   id!: number;
   constructor(private userService : UserService) { }

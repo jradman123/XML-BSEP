@@ -59,23 +59,23 @@ export class LoginPageComponent implements OnInit {
         this._router.navigate(['myProfile']);
         this._snackBar.open(
           'Welcome!',
-          'Dismiss',
-          { duration: 3000 }
+          '',
+          {duration : 3000,panelClass: ['snack-bar']}
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       }
     }
 
     const sendCodeObserver = {
       next: (x: any) => {
-        this._snackBar.open("Code is sent to your mail!", "Dismiss", { duration: 3000 });
+        this._snackBar.open("Code is sent to your mail!", '', {duration : 3000,panelClass: ['snack-bar']});
         this.showCode = true;
       },
       error: (err: HttpErrorResponse) => {
 
-        this._snackBar.open(err.error + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     };
 
