@@ -51,7 +51,7 @@
               <div class="tab-content pt-2">
   
                 <div *ngIf="user" class="tab-pane fade show active profile-overview" id="profile-overview">
-                    <app-overview-profile [user]="user"></app-overview-profile>
+                    <app-overview-profile [user]="user" [email]="user.email"></app-overview-profile>
                 </div>
 
                 <div  *ngIf="user" class="tab-pane fade pt-3" id="profile-about">
