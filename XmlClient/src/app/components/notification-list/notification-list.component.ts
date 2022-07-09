@@ -50,7 +50,7 @@ export class NotificationListComponent implements OnInit {
 
     Pusher.logToConsole = true;
 
-    const pusher = new Pusher('dd3ce2a9c4a58e3577a4', {
+    const pusher = new Pusher('e92e3e6334c6de83b489', {
       cluster: 'eu'
     });
 

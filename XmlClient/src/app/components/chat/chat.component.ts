@@ -1,7 +1,8 @@
 import { DatePipe } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import Pusher from 'pusher-js';
 import { IMesssage } from 'src/app/interfaces/message';
 import { MessageService } from 'src/app/services/messsage-service/messaage.service';
 
@@ -10,10 +11,8 @@ import { MessageService } from 'src/app/services/messsage-service/messaage.servi
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
-
-  @ViewChild('scrollframe', {static: false}) scrollFrame!: ElementRef;
-  private scrollContainer: any;
+export class ChatComponent implements OnInit, OnChanges  {
+ 
   @Input()
   receiver : string = '';
   sender : string = localStorage.getItem('username') ?? ''; 
@@ -24,12 +23,10 @@ export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
 
   constructor(private _router : Router, private _service : MessageService, private _datepipe: DatePipe,
     private _formBuilder: FormBuilder) { 
+
     this.messages.forEach((m : any) => m = {} as IMesssage)
   }
 
-  ngAfterViewInit() {
-    this.scrollContainer = this.scrollFrame.nativeElement;  
-  }
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('its a change ' + changes)
@@ -44,8 +41,25 @@ export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
     });
     
     this.messages = []
-    this.scrollToBottom();
 
+    Pusher.logToConsole = true;
+
+    const pusher = new Pusher('e49d7a86a937f12da028', {
+      cluster: 'eu'
+    });
+
+    console.log('evo ti ga pushhher ')
+    console.log(pusher)
+
+    const channel = pusher.subscribe('messages');
+    channel.bind('message', (data: never) => {
+    
+
+      let receivedMsg = data as IMesssage
+      if(receivedMsg.ReceiverUsername == this.sender) {
+        this.messages.push(receivedMsg);
+      }
+    });
   }
 
   getData(){
@@ -87,14 +101,9 @@ export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
       }
 
     })
-
-    console.log("nakon sorta")
-    console.log(this.messages)
   }
 
   sendMessage() {
-
-    console.log(this.form.value.msgText)
 
     let newMsg : IMesssage = {
       Id : '', 
@@ -103,19 +112,12 @@ export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
       MessageText : this.form.value.msgText,
       TimeSent :this._datepipe.transform(new Date(), 'yyyy-MM-dd HH:mm:ss')!
     }
+
     this._service.SendMessage(newMsg).subscribe(res => {
       this.messages.push(newMsg);
       this.form.reset()
-      this.scrollToBottom();
     });
 
   }
   
-  private scrollToBottom(): void {
-    this.scrollContainer.scroll({
-      top: this.scrollContainer.scrollHeight,
-      left: 0,
-      behavior: 'smooth'
-    });
-  }
 }

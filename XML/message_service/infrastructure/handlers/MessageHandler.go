@@ -5,6 +5,7 @@ import (
 	pb "common/module/proto/message_service"
 	"context"
 	"fmt"
+	"github.com/pusher/pusher-http-go"
 	"github.com/sirupsen/logrus"
 	"message/module/application"
 	"message/module/infrastructure/api"
@@ -15,10 +16,11 @@ type MessageHandler struct {
 	userService    *application.UserService
 	logInfo        *logger.Logger
 	logError       *logger.Logger
+	pusher         *pusher.Client
 }
 
-func NewMessageHandler(messageService *application.MessageService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger) *MessageHandler {
-	return &MessageHandler{messageService: messageService, userService: userService, logInfo: logInfo, logError: logError}
+func NewMessageHandler(messageService *application.MessageService, userService *application.UserService, logInfo *logger.Logger, logError *logger.Logger, pusher *pusher.Client) *MessageHandler {
+	return &MessageHandler{messageService: messageService, userService: userService, logInfo: logInfo, logError: logError, pusher: pusher}
 }
 
 func (m MessageHandler) MustEmbedUnimplementedMessageServiceServer() {
@@ -90,6 +92,7 @@ func (m MessageHandler) SendMessage(_ context.Context, request *pb.SendMessageRe
 		return nil, err
 	}
 
+	m.pusher.Trigger("messages", "message", request.Message)
 	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername)
 	return &pb.MessageSentResponse{Message: response}, nil
 }

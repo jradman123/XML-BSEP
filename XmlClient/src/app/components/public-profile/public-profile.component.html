@@ -22,7 +22,12 @@
                 <button class="btn btn-outline-primary" *ngIf="isLoggedIn" (click)="connect(user.username)">{{buttonText}}</button>
                 <button class="btn btn-outline-primary" *ngIf="!isLoggedIn" [routerLink]="['/register']">Join to connect</button>
                 <button class="btn btn-outline-danger block-btn" *ngIf="isLoggedIn" (click)="block(user.username)">Block</button>
-                <button class="btn btn-outline-danger block-btn" *ngIf="isLoggedIn" (click)="message(user.username)">Message</button>
+              </div>
+              <div class="mt-2">
+                <br>
+                <button class="btn btn-primary msg-btn" *ngIf="msgVisible" (click)="message(user.username)">
+                  <i class="bi bi-chat"></i> Send a message
+                </button>
               </div>
             </div>
           </div>

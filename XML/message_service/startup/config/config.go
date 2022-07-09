@@ -22,6 +22,11 @@ type Config struct {
 	PostNotificationReplySubject         string
 	ConnectionNotificationCommandSubject string
 	ConnectionNotificationReplySubject   string
+	MessageAppID                         string
+	MessageKey                           string
+	MessageSecret                        string
+	MessageCluster                       string
+	MessageSecure                        bool
 }
 
 func NewConfig() *Config {
@@ -41,10 +46,15 @@ func NewConfig() *Config {
 		PostNotificationReplySubject:         os.Getenv("POST_NOTIFICATION_REPLY_SUBJECT"),
 		ConnectionNotificationCommandSubject: os.Getenv("CONNECTION_NOTIFICATION_COMMAND_SUBJECT"),
 		ConnectionNotificationReplySubject:   os.Getenv("CONNECTION_NOTIFICATION_REPLY_SUBJECT"),
-		NotificationAppID:                    "1203996",
-		NotificationKey:                      "dd3ce2a9c4a58e3577a4",
-		NotificationSecret:                   "caebb43d64e3f9191e30",
+		NotificationAppID:                    "1435187",
+		NotificationKey:                      "e92e3e6334c6de83b489",
+		NotificationSecret:                   "da4e7a87d5c3f8dd99d0",
 		NotificationCluster:                  "eu",
 		NotificationSecure:                   true,
+		MessageAppID:                         "1435191",
+		MessageKey:                           "e49d7a86a937f12da028",
+		MessageSecret:                        "cdd023488f9e1881f4be",
+		MessageCluster:                       "eu",
+		MessageSecure:                        true,
 	}
 }

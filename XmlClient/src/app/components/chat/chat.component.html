@@ -1,14 +1,14 @@
-<div id = "framechat" #scrollframe >
+<div id = "framechat">
 <div class="content">
     <div class="header">
         <i class="bi bi-chat"></i>
             <p>My chat with {{ receiver }}</p>
     </div>
-    <div class="messages" >
-        <ul>
+    <div class="messages" #scrollMe [scrollTop]=" scrollMe.scrollHeight"  >
+        <ul >
             <li *ngFor = " let msg of messages" [ngClass]="msg.SenderUsername===receiver ? 'sent' : 'replies' " >
                 <img src="../../../assets/userMale.png" alt="" />
-                <p> {{ msg.MessageText }} </p>
+                <p autofocus> {{ msg.MessageText }} </p>
             </li>
         
         </ul>
