@@ -22,6 +22,7 @@ func MapProduct(user *model.User) *pb.User {
 		DateOfBirth:   user.DateOfBirth.String(),
 		RecoveryEmail: user.RecoveryEmail,
 		IsConfirmed:   user.IsConfirmed,
+		ProfileStatus: string(user.ProfileStatus),
 	}
 	return usersPb
 }

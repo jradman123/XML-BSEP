@@ -22,7 +22,6 @@ type NotificationHandler struct {
 }
 
 func (n NotificationHandler) MustEmbedUnimplementedNotificationServiceServer() {
-	fmt.Println("ovaj mljacka ubicu se gadjacu ga casom")
 }
 
 func NewNotificationHandler(logInfo *logger.Logger, logError *logger.Logger, notificationPusher *pusher.Client, notificationService *application.NotificationService, userService *application.UserService) *NotificationHandler {

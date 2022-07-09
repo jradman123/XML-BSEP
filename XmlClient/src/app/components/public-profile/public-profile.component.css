@@ -154,6 +154,10 @@ input:focus {
   }
 
   .block-btn {
-    margin-left: 14px;
+    margin-left: 15px;
     width: 95px;
+  }
+
+  .msg-btn {
+    width: 205px;
   }

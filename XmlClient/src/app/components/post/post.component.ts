@@ -88,7 +88,7 @@ export class PostComponent implements OnInit {
       },
     }
 
-    if( this.username ) this.service.GetUserReactionToPost(this.username, this.item.Id).subscribe(reactionObserver)
+    if( this.username && this.item.Id ) this.service.GetUserReactionToPost(this.username, this.item.Id).subscribe(reactionObserver)
   }
   likePost() {
 
@@ -181,7 +181,7 @@ export class PostComponent implements OnInit {
       },
     }
 
-    this.service.GetAllReactionsForPost(this.item.Id).subscribe(reactionsObserver)
+    if(this.item.Id) this.service.GetAllReactionsForPost(this.item.Id).subscribe(reactionsObserver)
   }
   seeComments() {
     const dialogConfig = new MatDialogConfig();

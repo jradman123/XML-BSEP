@@ -4,8 +4,18 @@
     <app-registered-header *ngIf="isLoggedIn" (searchInput)="handleMe($event)"></app-registered-header>
     
 <div class="profiles" style="margin-top:80px">
-    <div *ngFor="let profile of profiles | profileSearch : searchText ">
-        <app-profile-preview [profile]="profile" ></app-profile-preview>
+    
+    <div *ngIf="!isLoggedIn">
+        <div *ngFor="let profile of profiles | profileSearch : searchText ">
+            <app-profile-preview *ngIf="profile.profileStatus == 'PUBLIC'" [profile]="profile" ></app-profile-preview>
+        </div>
     </div>
+    
+    <div  *ngIf="isLoggedIn">
+        <div *ngFor="let profile of profiles | profileSearch : searchText ">
+            <app-profile-preview [profile]="profile" ></app-profile-preview>
+        </div>
+    </div>
+   
 </div>
 </div>

@@ -20,6 +20,7 @@ export class PublicProfileComponent implements OnInit {
   isLoggedIn = localStorage.getItem('token') !== null;
   buttonText = ""
   status = ""
+  msgVisible : boolean = false;
 
   constructor(private userService : UserService, private _router : Router, private _connectionService : ConnectionService) {
     this.username = this._router.url.substring(16) ?? '';
@@ -43,6 +44,7 @@ export class PublicProfileComponent implements OnInit {
         }
         else if (res.connectionStatus === "CONNECTED"){
           this.buttonText = "Following";
+          this.msgVisible = true;
         }
         else if (res.connectionStatus === "REQUEST_SENT"){
           this.buttonText = "Pending"
@@ -64,6 +66,9 @@ export class PublicProfileComponent implements OnInit {
         this.user = data;
         this.initialDetails = JSON.parse(JSON.stringify(data)); 
       },
+      error: (err: any) => {
+        this._router.navigate(['/404']);
+      }
     });
   }
 

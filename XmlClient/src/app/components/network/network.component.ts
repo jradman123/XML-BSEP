@@ -12,6 +12,7 @@ export class NetworkComponent implements OnInit {
   searchText : string = "";
   connections! : UserDetails[];
   invitations! : UserDetails[];
+  all! : UserDetails[];
   people! : UserDetails[];
 
   constructor(private _connectionService : ConnectionService, private userService : UserService) { }
@@ -35,6 +36,15 @@ export class NetworkComponent implements OnInit {
         this.invitations = res.users;
       }
       
+    )
+
+    this.userService.getUsers().subscribe(
+      res =>
+      {
+        this.all = res.users.filter( (user: any ) =>
+        !(user.username === localStorage.getItem('username'))
+      );
+    }
     )
   }
 
