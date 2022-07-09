@@ -25,7 +25,7 @@ export class InvitationComponent implements OnInit {
         this.accepted = true;
         setTimeout( ()=> {
           this._router.navigate(['/public-profile/' + username]);
-        },3000);
+        },2000);
       }
     );
   }

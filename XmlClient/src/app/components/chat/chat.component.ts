@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IMesssage } from 'src/app/interfaces/message';
 import { MessageService } from 'src/app/services/messsage-service/messaage.service';
@@ -18,8 +19,11 @@ export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
   sender : string = localStorage.getItem('username') ?? ''; 
   msgText : string = '';
   messages : IMesssage[] = []
+  form!: FormGroup;
 
-  constructor(private _router : Router, private _service : MessageService, private _datepipe: DatePipe,) { 
+
+  constructor(private _router : Router, private _service : MessageService, private _datepipe: DatePipe,
+    private _formBuilder: FormBuilder) { 
     this.messages.forEach((m : any) => m = {} as IMesssage)
   }
 
@@ -31,10 +35,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
     console.log('its a change ' + changes)
     this.messages = []
     this.getData();
-    
+  
 }
 
   ngOnInit(): void {
+    this.form = this._formBuilder.group({
+      msgText: ['', Validators.required],
+    });
+    
     this.messages = []
     this.scrollToBottom();
 
@@ -85,20 +93,24 @@ export class ChatComponent implements OnInit, AfterViewInit, OnChanges  {
   }
 
   sendMessage() {
+
+    console.log(this.form.value.msgText)
+
     let newMsg : IMesssage = {
       Id : '', 
       SenderUsername: this.sender,
       ReceiverUsername : this.receiver,
-      MessageText : this.msgText,
+      MessageText : this.form.value.msgText,
       TimeSent :this._datepipe.transform(new Date(), 'yyyy-MM-dd HH:mm:ss')!
     }
     this._service.SendMessage(newMsg).subscribe(res => {
       this.messages.push(newMsg);
-      this.msgText = '';
+      this.form.reset()
       this.scrollToBottom();
     });
-  }
 
+  }
+  
   private scrollToBottom(): void {
     this.scrollContainer.scroll({
       top: this.scrollContainer.scrollHeight,

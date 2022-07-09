@@ -15,9 +15,10 @@
     </div>
     <div class="message-input">
         <div class="wrap">
-        <input type="text" [(ngModel)]="msgText" placeholder="Write your message..." data-emojiable="true" />
-        <button class="submit" (click)="sendMessage()"><i class="bi bi-send"></i></button>
+            <form [formGroup]="form" (submit)="sendMessage()" >
+                <input type="text" formControlName="msgText" placeholder="Write your message..."/>
+                <button type="submit"><i class="bi bi-send"></i></button>
+            </form>
         </div>
-    </div>
 </div>
 </div>

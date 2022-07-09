@@ -1,1 +1,64 @@
-<p>feed works!</p>
+<app-registered-header (searchInput)="handleMe($event)"></app-registered-header>
+
+<main id="container" class="main" style="margin-top: 70px;">
+  
+    <section class="section profile" >
+      <div class="row">
+        <div class="col-xl-3">
+  
+          <div class="card">
+            <div class="card-body profile-card pt-3 d-flex flex-column align-items-center">
+  
+              <img src="../../../assets/userMale.png" alt="Profile" class="rounded-circle">
+              <h2> {{ myInfo.firstName }} {{ myInfo.lastName }} </h2>
+              <div class="social-links mt-2">
+                <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+              </div><br>
+              </div>
+          </div>
+  
+        </div>
+  
+        <div class="col-xl-6" style="  padding:0px 10px 10px 10px;">
+                <div id="post">
+                    <header>
+                        <img src="../../../assets/userMale.png" alt="">
+                        <p><a class="name">Something on your mind?</a> 
+                        Share your thoughts with the world
+                    </p>
+                    </header>
+                    <div class="button-wrapper">
+                        <label class="button" (click)="openCreatePost()">Create a post</label>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column align-items-center">
+                  <div *ngFor="let item of posts">
+                    <app-post id="post" [item]="item" class="profile"></app-post>
+                  </div>
+                </div>
+        </div>
+
+        <div class="col-xl-3" style=" padding: 0px 10px 10px 10px; ">
+          <div class="card">
+            <div class="card-body profile-card pt-3 d-flex flex-column align-items-center">
+
+              <h3>Add to your feed</h3>
+              <div class=" d-flex flex-column align-items-center">
+                <div  *ngFor="let person of suggested ">
+                  <app-profile-preview [profile]="person" ></app-profile-preview>
+              </div>
+              <a href="/network#suggestions">See all recommendations <i class="bi bi-arrow-right"></i></a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+  </main>
+
