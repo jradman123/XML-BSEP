@@ -29,21 +29,7 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 const routes: Routes = [
   {
     path: '',
-    component: HomePageComponent,
-    /*children: [
-      {
-        path: 'jobOffers',
-        component: JobOfferComponent,canActivate: [AuthGuard]
-      },
-      {
-        path: 'genApiKey',
-        component: ApiKeyComponent, canActivate: [AuthGuard]
-      },
-      {
-        path: 'newJobOffer',
-        component: NewJobOfferComponent,canActivate: [AuthGuard]
-      }
-    ],*/
+    component: HomePageComponent
   },
   {
     path : 'public-profile/:username',
@@ -55,7 +41,7 @@ const routes: Routes = [
   },
   {
     path : 'post-create',
-    component: PostCreateFileComponent,
+    component: PostCreateFileComponent,canActivate: [AuthGuardRegular]
   },
   {
     path: 'people',
@@ -104,7 +90,7 @@ const routes: Routes = [
   },
   {
     path: 'myMessages',
-    component: MessagesPageComponent,
+    component: MessagesPageComponent,canActivate: [AuthGuardRegular]
   },
   {
     path: 'network',
@@ -116,7 +102,7 @@ const routes: Routes = [
   },
   {
     path: 'noti',
-    component: NotificationComponent,
+    component: NotificationComponent,canActivate: [AuthGuardRegular]
   },
   {
     path: 'post/:id',
@@ -129,11 +115,11 @@ const routes: Routes = [
    }, 
    {
     path: 'send-message/:username',
-    component: MessageCreateComponent
+    component: MessageCreateComponent,canActivate: [AuthGuardRegular]
    }, 
    {
     path: 'chatbox',
-    component: ChatboxComponent
+    component: ChatboxComponent, canActivate: [AuthGuardRegular]
    }
 ];
 
