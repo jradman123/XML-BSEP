@@ -41,7 +41,7 @@ export class ProfileAboutComponent implements OnInit {
   experience! : string;
   initialDetails : any;
   userProfessionalDetails! : UserProfessionalDetails;
-  constructor(private userService : UserService,private matDialog : MatDialog,private _snackBar : MatSnackBar) {
+  constructor(private userService : UserService,private matDialog : MatDialog) {
       this.skills = [] as SkillDto[];
       this.educations = [] as EducationDto[];
       this.experiences = [] as ExperienceDto[];

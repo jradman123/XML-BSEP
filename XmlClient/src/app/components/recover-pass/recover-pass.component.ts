@@ -83,11 +83,11 @@ export class RecoverPassComponent implements OnInit {
           this.router.navigate(['/login']);
           this._snackBar.open(
             'Your password has been changed!',
-            'Dismiss'
+            '',{duration : 3000,panelClass: ['snack-bar']}
           );
         },
         error: (err: HttpErrorResponse) => {
-          this._snackBar.open(err.error.message + "!", 'Dismiss', {duration : 3000});
+          this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
         }
   
       }

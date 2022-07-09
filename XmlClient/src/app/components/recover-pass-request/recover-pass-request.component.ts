@@ -27,11 +27,11 @@ export class RecoverPassRequestComponent implements OnInit {
       next: (x: any) => {
         console.log(x);
         this._router.navigate(['recover']);
-        this._snackBar.open("Your code is sent to recovery mail!", "Dismiss", {duration : 3000});
+        this._snackBar.open("Your code is sent to recovery mail!", "", {duration : 3000,panelClass: ['snack-bar']});
       },
       error: (err: HttpErrorResponse) => {
        
-        this._snackBar.open(err.error.message + "!", 'Dismiss', {duration : 3000});
+        this._snackBar.open("Error happend" + "!", '',{duration : 3000,panelClass: ['snack-bar']});
       },
     };
     this.authService.recoverPassRequest(f.value).subscribe(loginObserver);

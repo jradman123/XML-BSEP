@@ -40,7 +40,10 @@ export class ActivateAccountComponent implements OnInit {
   }
 
   onSubmit(): void {
-
+    if(this.createForm.invalid){
+      this._snackBar.open("Fields cannot be empty" + "!", '',{duration : 3000,panelClass: ['snack-bar']});
+      return;
+    }
     this.createRequest();
     console.log(this.activateAccount);
     const registerObserver = {
@@ -50,13 +53,14 @@ export class ActivateAccountComponent implements OnInit {
         this.router.navigate(['/login']);
         this._snackBar.open(
           'Your account has been activated!',
-          'Dismiss',{
-            duration : 3000
+          '',{
+            duration : 3000,
+            panelClass: ['snack-bar ']
           }
         );
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss',{duration : 3000});
+        this._snackBar.open(err.error.message + "!", '',{duration : 3000,panelClass: ['snack-bar']});
       }
 
     }

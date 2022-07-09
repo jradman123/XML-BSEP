@@ -45,7 +45,8 @@ export class CommentCreateComponent implements OnInit {
     this._snackBar.open(
       'You have created a comment.',
       '', {
-      duration: 3000
+      duration: 3000,
+      panelClass: ['snack-bar']
     });
   }
   

@@ -15,9 +15,10 @@
 --------------------------------------------------------------*/
 
 .snack-bar {
-  background:#2c384e;
+  background: rgb(223, 226, 252);
+  font-weight: 500;
+  color: #012970 !important;
 }
-
 
 :root {
     scroll-behavior: smooth;

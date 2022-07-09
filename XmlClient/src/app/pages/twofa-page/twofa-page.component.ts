@@ -38,14 +38,16 @@ export class TwofaPageComponent implements OnInit {
     const loginObserver = {
       next: (res: any) => {
         if (res == null) {
-          this._snackBar.open("Invalid code!", 'Dismiss');
+          this._snackBar.open("Invalid code!", '',
+            {duration : 3000,panelClass: ['snack-bar']}
+          );
           return
         }
         this._router.navigate(['/myProfile']);
-        this._snackBar.open("Welcome!", "Dismiss");
+        this._snackBar.open("Welcome!", '',{duration : 3000,panelClass: ['snack-bar']});
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error, 'Dismiss');
+        this._snackBar.open("Error happend!", '',{duration : 3000,panelClass: ['snack-bar']});
       },
     };
     this.username = localStorage.getItem('username')!

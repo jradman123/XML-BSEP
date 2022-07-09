@@ -49,7 +49,7 @@ export class MessageCreateComponent implements OnInit {
 
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open(err.error.message + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Message cannot be sent" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
     this._service.SendMessage(this.newMessaage).subscribe(sendMessage)

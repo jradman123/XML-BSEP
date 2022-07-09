@@ -42,17 +42,17 @@ export class EditEmailUsernameComponent implements OnInit {
 
   changeEmail() {
     if(this.emailForm.invalid){
-      this._snackBar.open("Entered value is not email form" + "!", 'Dismiss', { duration: 3000 });
+      this._snackBar.open("Entered value is not email form" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       return;
     }
     const changeEmailObserver = {
       next: () => {
-        this._snackBar.open("Success" + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Success" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
         localStorage.setItem('email' ,this.emailForm.value.email )
         this.getEmail()
       },
       error: (err: HttpErrorResponse) => {
-        this._snackBar.open("Email already exists" + "!", 'Dismiss', { duration: 3000 });
+        this._snackBar.open("Email already exists" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     }
     this.changeEmailRequest.userId = localStorage.getItem('userId')
