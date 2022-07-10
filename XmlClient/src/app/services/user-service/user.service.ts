@@ -28,14 +28,15 @@ export class UserService {
   recoverPass(recoverPass: NewPass) {
     return this._http.post<any>(
       'http://localhost:9090/users/recover/user',
-      recoverPass
+      {"recovery" : recoverPass}
+
     );
   }
 
   recoverPassRequest(recoverPass: any) {
     return this._http.post<any>(
       'http://localhost:9090/users/recoveryRequest/user',
-      recoverPass
+      {"username" : recoverPass}
     );
   }
 

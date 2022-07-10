@@ -75,7 +75,7 @@ export class LoginPageComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
 
-        this._snackBar.open("Error happend" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
+        this._snackBar.open("Error happened" + "!", '', {duration : 3000,panelClass: ['snack-bar']});
       },
     };
 

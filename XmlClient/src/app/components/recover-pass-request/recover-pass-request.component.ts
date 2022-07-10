@@ -34,6 +34,7 @@ export class RecoverPassRequestComponent implements OnInit {
         this._snackBar.open("Error happend" + "!", '',{duration : 3000,panelClass: ['snack-bar']});
       },
     };
+    console.log(f.value)
     this.authService.recoverPassRequest(f.value).subscribe(loginObserver);
   }
 

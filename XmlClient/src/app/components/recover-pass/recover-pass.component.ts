@@ -71,15 +71,14 @@ export class RecoverPassComponent implements OnInit {
     }
     else if(!this.enterNew && this.showCode) {
         // verify code entered
-        if ( this.createForm.value.Code.size() >= 5) this.enterNew = true;
+        if ( this.createForm.value.Code) this.enterNew = true;
     }
     else if(this.enterNew && this.showCode) {
+      console.log('udjem ovde')
       this.createRequest();
-      console.log(this.recoverPass);
+      
       const registerObserver = {
         next: () => {
-         
-          
           this.router.navigate(['/login']);
           this._snackBar.open(
             'Your password has been changed!',
@@ -91,7 +90,8 @@ export class RecoverPassComponent implements OnInit {
         }
   
       }
-      this.authService.recoverPass(this.recoverPass).subscribe(registerObserver)
+
+      this.authService.recoverPass(this.createForm.value.Username).subscribe(registerObserver)
     }
 
    

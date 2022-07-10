@@ -27,7 +27,9 @@ export class NetworkComponent implements OnInit {
 
     this._connectionService.getUsersConnections(localStorage.getItem('username')!).subscribe(
       res => {
-        this.connections = res.users
+        this.connections = res.users.filter( (user: any ) =>
+        !(user.username === localStorage.getItem('username'))
+      );
       }
     );
 

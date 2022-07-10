@@ -93,7 +93,7 @@ export class PublicProfileComponent implements OnInit {
   }
 
   message(username:string){
-    this._router.navigate(['/send-message/' + username]);
+    this._router.navigate(['/chatbox' ]);
   }
 
 }
