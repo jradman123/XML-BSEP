@@ -113,11 +113,11 @@ export class RegisterPageComponent implements OnInit {
     this.newUser.password = this.createForm.value.Password;
     this.newUser.email = this.createForm.value.Email;
     this.newUser.recoveryEmail = this.createForm.value.RecoveryEmail;
-
     this.newUser.phoneNumber = this.createForm.value.PhoneNumber;
     this.newUser.firstName = this.createForm.value.FirstName;
     this.newUser.lastName = this.createForm.value.LastName;
-    this.newUser.dateOfBirth = this.createForm.value.DateOfBirth;
     this.newUser.gender = this.createForm.value.Gender;
-  }
+    this.newUser.dateOfBirth=new Date( this.createForm.value.DateOfBirth.getTime() -  this.createForm.value.DateOfBirth.getTimezoneOffset() * 60000);
+   
+}
 }
