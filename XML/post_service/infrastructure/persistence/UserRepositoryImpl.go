@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	tracer "monitoring/module"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
 )
@@ -33,12 +34,16 @@ func (u UserRepositoryImpl) Get(id primitive.ObjectID) (user *model.User, err er
 
 func (u UserRepositoryImpl) GetByUserId(id uuid.UUID) (user []*model.User, err error) {
 	filter := bson.M{"user_id": id}
-	return u.filter(filter)
+	return u.filter(filter, context.TODO())
 }
 
-func (u UserRepositoryImpl) GetByUsername(username string) (user []*model.User, err error) {
+func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"username": username}
-	return u.filter(filter)
+	return u.filter(filter, ctx)
 }
 
 func (u UserRepositoryImpl) CreateUser(user *model.User) (*model.User, error) {
@@ -91,23 +96,31 @@ func (u UserRepositoryImpl) filterOne(filter bson.M) (user *model.User, err erro
 	return
 }
 
-func (u UserRepositoryImpl) filter(filter interface{}) ([]*model.User, error) {
-	cursor, err := u.users.Find(context.TODO(), filter)
+func (u UserRepositoryImpl) filter(filter interface{}, ctx context.Context) ([]*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "filter")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	cursor, err := u.users.Find(ctx, filter)
 	defer func(cursor *mongo.Cursor, ctx context.Context) {
 		err := cursor.Close(ctx)
 		if err != nil {
 
 		}
-	}(cursor, context.TODO())
+	}(cursor, ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return decodeUser(cursor)
+	return decodeUser(cursor, ctx)
 }
-func decodeUser(cursor *mongo.Cursor) (users []*model.User, err error) {
-	for cursor.Next(context.TODO()) {
+func decodeUser(cursor *mongo.Cursor, ctx context.Context) (users []*model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "decodeUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	for cursor.Next(ctx) {
 		var user model.User
 		err = cursor.Decode(&user)
 		if err != nil {

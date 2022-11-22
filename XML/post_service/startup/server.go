@@ -9,9 +9,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	otgo "github.com/opentracing/opentracing-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
+	"io"
 	"log"
+	traceri "monitoring/module"
 	"net"
 	"post/module/application"
 	"post/module/domain/repositories"
@@ -21,12 +24,22 @@ import (
 	"post/module/startup/config"
 )
 
+const name = "posts"
+
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
 func NewServer(config *config.Config) *Server {
-	return &Server{config: config}
+	tracer, closer := traceri.Init(name)
+	otgo.SetGlobalTracer(tracer)
+	return &Server{
+		config: config,
+		tracer: tracer,
+		closer: closer,
+	}
 }
 
 const (

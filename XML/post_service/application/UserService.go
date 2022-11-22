@@ -2,8 +2,10 @@ package application
 
 import (
 	"common/module/logger"
+	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	tracer "monitoring/module"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
 )
@@ -45,7 +47,11 @@ func (s UserService) GetByUserId(id uuid.UUID) (user []*model.User, err error) {
 	user, err = s.repository.GetByUserId(id)
 	return user, err
 }
-func (s UserService) GetByUsername(username string) (user []*model.User, err error) {
-	user, err = s.repository.GetByUsername(username)
+func (s UserService) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err = s.repository.GetByUsername(username, ctx)
 	return user, err
 }

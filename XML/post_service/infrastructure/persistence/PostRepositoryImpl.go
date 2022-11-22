@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	tracer "monitoring/module"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
 )
@@ -31,18 +32,31 @@ func NewPostRepositoryImpl(client *mongo.Client) repositories.PostRepository {
 	}
 }
 
-func (p PostRepositoryImpl) Get(id primitive.ObjectID) (post *model.Post, err error) {
+func (p PostRepositoryImpl) Get(id primitive.ObjectID, ctx context.Context) (post *model.Post, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"_id": id}
-	return p.filterOne(filter)
+	return p.filterOne(filter, ctx)
 }
 
-func (p PostRepositoryImpl) GetAll() ([]*model.Post, error) {
+func (p PostRepositoryImpl) GetAll(ctx context.Context) ([]*model.Post, error) {
+
+	span := tracer.StartSpanFromContext(ctx, "getAllRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.D{}
-	return p.filter(filter)
+	return p.filter(filter, ctx)
 }
 
-func (p PostRepositoryImpl) Create(post *model.Post) error {
-	result, err := p.posts.InsertOne(context.TODO(), post)
+func (p PostRepositoryImpl) Create(post *model.Post, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "createPostRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	result, err := p.posts.InsertOne(ctx, post)
 	if err != nil {
 		return err
 	}
@@ -51,15 +65,23 @@ func (p PostRepositoryImpl) Create(post *model.Post) error {
 	return nil
 }
 
-func (p PostRepositoryImpl) GetAllByUsername(username string) ([]*model.Post, error) {
+func (p PostRepositoryImpl) GetAllByUsername(username string, ctx context.Context) ([]*model.Post, error) {
+	span := tracer.StartSpanFromContext(ctx, "getAllByUsernameRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"username": username}
-	return p.filter(filter)
+	return p.filter(filter, ctx)
 }
 
-func (p PostRepositoryImpl) CreateComment(post *model.Post, comment *model.Comment) error {
+func (p PostRepositoryImpl) CreateComment(post *model.Post, comment *model.Comment, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "createCommentService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	comments := append(post.Comments, *comment)
 
-	_, err := p.posts.UpdateOne(context.TODO(), bson.M{"_id": post.Id}, bson.D{
+	_, err := p.posts.UpdateOne(ctx, bson.M{"_id": post.Id}, bson.D{
 		{"$set", bson.D{{"comments", comments}}},
 	},
 	)
@@ -70,27 +92,39 @@ func (p PostRepositoryImpl) CreateComment(post *model.Post, comment *model.Comme
 	return nil
 }
 
-func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer) (*model.JobOffer, error) {
-	result, err := p.jobOffers.InsertOne(context.TODO(), offer)
+func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer, ctx context.Context) (*model.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "createJobOfferRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	result, err := p.jobOffers.InsertOne(ctx, offer)
 	if err != nil {
 		return nil, err
 	}
 	offer.Id = result.InsertedID.(primitive.ObjectID)
-	createdJobOffer := p.jobOffers.FindOne(context.TODO(), bson.M{"_id": offer.Id})
+	createdJobOffer := p.jobOffers.FindOne(ctx, bson.M{"_id": offer.Id})
 	var retVal model.JobOffer
 	createdJobOffer.Decode(&retVal)
 	return &retVal, nil
 
 }
 
-func (p PostRepositoryImpl) GetAllJobOffers() ([]*model.JobOffer, error) {
+func (p PostRepositoryImpl) GetAllJobOffers(ctx context.Context) ([]*model.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "getAllJobOffersRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.D{}
-	return p.filterJobOffers(filter)
+	return p.filterJobOffers(filter, ctx)
 }
 
-func (p PostRepositoryImpl) GetUsersJobOffers(username string) ([]*model.JobOffer, error) {
+func (p PostRepositoryImpl) GetUsersJobOffers(username string, ctx context.Context) ([]*model.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUsersJobOffersRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"publisher": username}
-	return p.filterJobOffers(filter)
+	return p.filterJobOffers(filter, ctx)
 }
 
 func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
@@ -109,7 +143,11 @@ func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
 			{"$set", bson.D{{"username", user.Username}}}})
 	return nil
 }
-func (p PostRepositoryImpl) LikePost(post *model.Post, userId uuid.UUID) error {
+func (p PostRepositoryImpl) LikePost(post *model.Post, userId uuid.UUID, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "likePostRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var reactions []model.Reaction
 
 	reactionExists := false
@@ -133,7 +171,7 @@ func (p PostRepositoryImpl) LikePost(post *model.Post, userId uuid.UUID) error {
 		reactions = append(reactions, reaction)
 	}
 
-	_, err := p.posts.UpdateOne(context.TODO(), bson.M{"_id": post.Id}, bson.D{
+	_, err := p.posts.UpdateOne(ctx, bson.M{"_id": post.Id}, bson.D{
 		{"$set", bson.D{{"reactions", reactions}}},
 	},
 	)
@@ -144,7 +182,11 @@ func (p PostRepositoryImpl) LikePost(post *model.Post, userId uuid.UUID) error {
 	return nil
 }
 
-func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID) error {
+func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "dislikePostRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var reactions []model.Reaction
 
 	reactionExists := false
@@ -167,7 +209,7 @@ func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID) erro
 		reactions = append(reactions, reaction)
 	}
 
-	_, err := p.posts.UpdateOne(context.TODO(), bson.M{"_id": post.Id}, bson.D{
+	_, err := p.posts.UpdateOne(ctx, bson.M{"_id": post.Id}, bson.D{
 		{"$set", bson.D{{"reactions", reactions}}},
 	},
 	)
@@ -177,8 +219,12 @@ func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID) erro
 
 	return nil
 }
-func (p PostRepositoryImpl) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID) (model.ReactionType, error) {
-	post, err := p.Get(id)
+func (p PostRepositoryImpl) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID, ctx context.Context) (model.ReactionType, error) {
+	span := tracer.StartSpanFromContext(ctx, "checkLikedStatusRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	post, err := p.Get(id, ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -190,41 +236,57 @@ func (p PostRepositoryImpl) CheckLikedStatus(id primitive.ObjectID, userId uuid.
 	return model.Neutral, nil
 }
 
-func (p PostRepositoryImpl) filterOne(filter interface{}) (post *model.Post, err error) {
-	result := p.posts.FindOne(context.TODO(), filter)
+func (p PostRepositoryImpl) filterOne(filter interface{}, ctx context.Context) (post *model.Post, err error) {
+	span := tracer.StartSpanFromContext(ctx, "filterOne")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	result := p.posts.FindOne(ctx, filter)
 	err = result.Decode(&post)
 	return
 }
 
-func (p PostRepositoryImpl) filter(filter interface{}) ([]*model.Post, error) {
-	cursor, err := p.posts.Find(context.TODO(), filter)
+func (p PostRepositoryImpl) filter(filter interface{}, ctx context.Context) ([]*model.Post, error) {
+	span := tracer.StartSpanFromContext(ctx, "filter")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	cursor, err := p.posts.Find(ctx, filter)
 	defer func(cursor *mongo.Cursor, ctx context.Context) {
 		err := cursor.Close(ctx)
 		if err != nil {
 
 		}
-	}(cursor, context.TODO())
+	}(cursor, ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return decode(cursor)
+	return decode(cursor, ctx)
 }
 
-func (p PostRepositoryImpl) filterJobOffers(filter interface{}) ([]*model.JobOffer, error) {
-	cursor, err := p.jobOffers.Find(context.TODO(), filter)
-	defer cursor.Close(context.TODO())
+func (p PostRepositoryImpl) filterJobOffers(filter interface{}, ctx context.Context) ([]*model.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "filterJobOffers")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	cursor, err := p.jobOffers.Find(ctx, filter)
+	defer cursor.Close(ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return decodeJobOffers(cursor)
+	return decodeJobOffers(cursor, ctx)
 }
 
-func decodeJobOffers(cursor *mongo.Cursor) (offers []*model.JobOffer, err error) {
-	for cursor.Next(context.TODO()) {
+func decodeJobOffers(cursor *mongo.Cursor, ctx context.Context) (offers []*model.JobOffer, err error) {
+	span := tracer.StartSpanFromContext(ctx, "decodeJobOffers")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	for cursor.Next(ctx) {
 		var offer model.JobOffer
 		err = cursor.Decode(&offer)
 		if err != nil {
@@ -236,8 +298,12 @@ func decodeJobOffers(cursor *mongo.Cursor) (offers []*model.JobOffer, err error)
 	return
 }
 
-func decode(cursor *mongo.Cursor) (posts []*model.Post, err error) {
-	for cursor.Next(context.TODO()) {
+func decode(cursor *mongo.Cursor, ctx context.Context) (posts []*model.Post, err error) {
+	span := tracer.StartSpanFromContext(ctx, "decode")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	for cursor.Next(ctx) {
 		var post model.Post
 		err = cursor.Decode(&post)
 		if err != nil {

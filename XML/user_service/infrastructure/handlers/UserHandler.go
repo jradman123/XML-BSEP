@@ -52,13 +52,13 @@ func NewUserHandler(logInfo *logger.Logger, logError *logger.Logger, service *se
 func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateTokenRequest) (*pb.ApiToken, error) {
 	span := tracer.StartSpanFromContextMetadata(ctx, "generateAPIToken")
 	defer span.Finish()
-
+	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
 	sqlInj := common.BadUsername(username)
-	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+
 	if username == "" {
 		u.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
