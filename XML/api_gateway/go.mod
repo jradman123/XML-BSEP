@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.9.0
 	github.com/microcosm-cc/bluemonday v1.0.18
+	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/trycourier/courier-go/v2 v2.5.0
 	go.mongodb.org/mongo-driver v1.9.1

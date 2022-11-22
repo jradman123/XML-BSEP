@@ -2,9 +2,9 @@ package startup
 
 import (
 	"common/module/logger"
+	connGw "common/module/proto/connection_service"
 	messageGw "common/module/proto/message_service"
 	notificationGw "common/module/proto/notification_service"
-	connGw "common/module/proto/connection_service"
 	postsGw "common/module/proto/posts_service"
 	userGw "common/module/proto/user_service"
 	"context"
@@ -18,6 +18,8 @@ import (
 	cfg "gateway/module/startup/config"
 	gorilla_handlers "github.com/gorilla/handlers"
 	runtime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	otgo "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"gopkg.in/go-playground/validator.v9"
@@ -33,6 +35,26 @@ type Server struct {
 	mux    *runtime.ServeMux // Part of grpcGateway library
 }
 
+var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
+
+func tracingWrapper(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parentSpanContext, err := otgo.GlobalTracer().Extract(
+			otgo.HTTPHeaders,
+			otgo.HTTPHeadersCarrier(r.Header))
+		if err == nil || err == otgo.ErrSpanContextNotFound {
+			serverSpan := otgo.GlobalTracer().StartSpan(
+				"ServeHTTP",
+				// this is magical, it attaches the new span to the parent parentSpanContext, and creates an unparented one if empty.
+				ext.RPCServerOption(parentSpanContext),
+				grpcGatewayTag,
+			)
+			r = r.WithContext(otgo.ContextWithSpan(r.Context(), serverSpan))
+			defer serverSpan.Finish()
+		}
+		h.ServeHTTP(w, r)
+	})
+}
 func NewServer(config *cfg.Config) *Server {
 	server := &Server{
 		config: config,
@@ -71,7 +93,7 @@ func (server *Server) initHandlers() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	err = connGw.RegisterConnectionServiceHandlerFromEndpoint(context.TODO(), server.mux, connectionsEndpoint, opts)
 	if err != nil {
 		panic(err)
@@ -110,7 +132,7 @@ func (server *Server) Start() {
 		gorilla_handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "Authorization", "Access-Control-Allow-*", "Access-Control-Allow-Origin", "*"}),
 		gorilla_handlers.AllowCredentials(),
 	)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), cors(muxMiddleware(server))))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), tracingWrapper(cors(muxMiddleware(server)))))
 }
 func muxMiddleware(server *Server) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

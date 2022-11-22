@@ -12,12 +12,17 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	hibp "github.com/mattevans/pwned-passwords"
+	otgo "github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"google.golang.org/grpc"
 	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"io"
 	"log"
+	traceri "monitoring/module"
 	"net"
+	"net/http"
 	"user/module/application/helpers"
 	"user/module/application/services"
 	"user/module/domain/model"
@@ -30,11 +35,19 @@ import (
 
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
+const name = "users"
+
 func NewServer(config *config.Config) *Server {
+	tracer, closer := traceri.Init(name)
+	otgo.SetGlobalTracer(tracer)
 	return &Server{
 		config: config,
+		tracer: tracer,
+		closer: closer,
 	}
 }
 
@@ -42,6 +55,26 @@ const (
 	QueueGroup = "user_service_user"
 )
 
+var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
+
+func tracingWrapper(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		parentSpanContext, err := otgo.GlobalTracer().Extract(
+			otgo.HTTPHeaders,
+			otgo.HTTPHeadersCarrier(r.Header))
+		if err == nil || err == otgo.ErrSpanContextNotFound {
+			serverSpan := otgo.GlobalTracer().StartSpan(
+				"ServeHTTP",
+				// this is magical, it attaches the new span to the parent parentSpanContext, and creates an unparented one if empty.
+				ext.RPCServerOption(parentSpanContext),
+				grpcGatewayTag,
+			)
+			r = r.WithContext(otgo.ContextWithSpan(r.Context(), serverSpan))
+			defer serverSpan.Finish()
+		}
+		h.ServeHTTP(w, r)
+	})
+}
 func (server *Server) Start() {
 	logInfo := logger.InitializeLogger("user-service", context.Background(), "Info")
 	logError := logger.InitializeLogger("user-service", context.Background(), "Error")

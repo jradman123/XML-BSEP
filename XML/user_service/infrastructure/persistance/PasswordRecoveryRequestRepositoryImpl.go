@@ -1,9 +1,11 @@
 package persistance
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	tracer "monitoring/module"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
 )
@@ -13,7 +15,7 @@ type PasswordRecoveryRequestRepositoryImpl struct {
 }
 
 func (p PasswordRecoveryRequestRepositoryImpl) ClearOutRequestsForUsername(username string) error {
-	req, _ := p.GetPasswordRecoveryRequestByUsername(username)
+	req, _ := p.GetPasswordRecoveryRequestByUsername(username, context.TODO())
 	if req != nil {
 		result := p.db.Delete(&model.PasswordRecoveryRequest{}, req.ID)
 		if result.Error != nil {
@@ -34,7 +36,10 @@ func (p PasswordRecoveryRequestRepositoryImpl) CreatePasswordRecoveryRequest(ver
 	return ver, result.Error
 }
 
-func (p PasswordRecoveryRequestRepositoryImpl) GetPasswordRecoveryRequestByUsername(username string) (*model.PasswordRecoveryRequest, error) {
+func (p PasswordRecoveryRequestRepositoryImpl) GetPasswordRecoveryRequestByUsername(username string, ctx context.Context) (*model.PasswordRecoveryRequest, error) {
+	span := tracer.StartSpanFromContext(ctx, "getPasswordRecoveryRequestByUsername")
+	defer span.Finish()
+
 	recovery := &model.PasswordRecoveryRequest{}
 	if p.db.First(&recovery, "username = ?", username).RowsAffected == 0 {
 		return nil, errors.New("user not found")

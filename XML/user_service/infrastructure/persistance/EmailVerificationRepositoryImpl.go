@@ -1,10 +1,12 @@
 package persistance
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
 	"log"
+	tracer "monitoring/module"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
 )
@@ -17,12 +19,18 @@ func NewEmailVerificationRepositoryImpl(db *gorm.DB) repositories.EmailVerificat
 	return &EmailVerificationRepositoryImpl{db: db}
 }
 
-func (e EmailVerificationRepositoryImpl) CreateEmailVerification(ver *model.EmailVerification) (*model.EmailVerification, error) {
+func (e EmailVerificationRepositoryImpl) CreateEmailVerification(ver *model.EmailVerification, ctx context.Context) (*model.EmailVerification, error) {
+	span := tracer.StartSpanFromContext(ctx, "createEmailVerificationRepository")
+	defer span.Finish()
+
 	result := e.db.Create(&ver)
 	fmt.Print(result)
 	return ver, result.Error
 }
-func (e EmailVerificationRepositoryImpl) GetVerificationByUsername(username string) ([]model.EmailVerification, error) {
+func (e EmailVerificationRepositoryImpl) GetVerificationByUsername(username string, ctx context.Context) ([]model.EmailVerification, error) {
+	span := tracer.StartSpanFromContext(ctx, "getVerificationByUsernameRepository")
+	defer span.Finish()
+
 	var verifications []model.EmailVerification
 	records := e.db.Find(&verifications, "username = ?", username)
 	if records.Error != nil {

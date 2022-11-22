@@ -20,6 +20,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"io/ioutil"
 	"log"
+	tracer "monitoring/module"
 	"net/http"
 	"strconv"
 	"strings"
@@ -49,6 +50,10 @@ func NewUserHandler(logInfo *logger.Logger, logError *logger.Logger, service *se
 }
 
 func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateTokenRequest) (*pb.ApiToken, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "generateAPIToken")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
@@ -69,16 +74,16 @@ func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateT
 			"user": userNameCtx,
 		}).Infof("INFO:GenerateAPIToken")
 	}
-	existsErr := u.service.UserExists(username)
+	existsErr := u.service.UserExists(username, ctx)
 	if existsErr != nil {
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST:" + username)
 		return nil, status.Error(codes.Internal, existsErr.Error())
 	}
-	user, er := u.service.GetByUsername(context.TODO(), username)
+	user, er := u.service.GetByUsername(ctx, username)
 	if er != nil {
 		return nil, status.Error(codes.Internal, er.Error())
 	}
-	token, tokenErr := u.tokenService.GenerateApiToken(user)
+	token, tokenErr := u.tokenService.GenerateApiToken(user, ctx)
 	if tokenErr != nil {
 		u.logError.Logger.WithFields(logrus.Fields{
 			"user": userNameCtx,
@@ -89,7 +94,10 @@ func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateT
 }
 
 func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOfferRequest) (*pb.EmptyRequest, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "shareJobOffer")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	policy := bluemonday.UGCPolicy()
 	request.ShareJobOffer.ApiToken = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.ApiToken))
 	request.ShareJobOffer.JobOffer.Publisher = strings.TrimSpace(policy.Sanitize(request.ShareJobOffer.JobOffer.Publisher))
@@ -119,7 +127,7 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 	}
 
 	token := request.ShareJobOffer.ApiToken
-	hasAccess, er := u.tokenService.CheckIfHasAccess(token)
+	hasAccess, er := u.tokenService.CheckIfHasAccess(token, ctx)
 	if er != nil {
 		return &pb.EmptyRequest{}, er
 	}
@@ -155,7 +163,11 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 }
 
 func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error) {
-	requestDto := api.MapPbToUserActivateRequest(request)
+	span := tracer.StartSpanFromContextMetadata(ctx, "activateUserAccount")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	requestDto := api.MapPbToUserActivateRequest(request, ctx)
 	err := u.validator.Struct(requestDto)
 	if err != nil {
 		u.logError.Logger.Errorf("ERR:INVALID REQ FIELDS")
@@ -176,7 +188,7 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 	} else {
 		u.logInfo.Logger.Infof("INFO:Handling ActivateUserAccount")
 	}
-	existsErr := u.service.UserExists(requestDto.Username)
+	existsErr := u.service.UserExists(requestDto.Username, ctx)
 	if existsErr != nil {
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, existsErr
@@ -188,7 +200,7 @@ func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.Activa
 		u.logError.Logger.Errorf("ERR:CONVERT")
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, convertError
 	}
-	activated, e := u.service.ActivateUserAccount(requestDto.Username, code)
+	activated, e := u.service.ActivateUserAccount(requestDto.Username, code, ctx)
 	if e != nil {
 		return &pb.ActivationResponse{Activated: false, Username: requestDto.Username}, e
 	}
@@ -203,7 +215,12 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 	//u.logInfo.Logger.WithFields(logrus.Fields{
 	//	"user": userNameCtx,
 	//}).Infof("INFO:Handling GetAll Users")
-	users, err := u.service.GetUsers()
+
+	span := tracer.StartSpanFromContextMetadata(ctx, "getAll")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	users, err := u.service.GetUsers(ctx)
 	if err != nil {
 		fmt.Sprintln("evo ovde sam puko - handler")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -212,13 +229,16 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 		Users: []*pb.User{},
 	}
 	for _, user := range users {
-		current := api.MapProduct(&user)
+		current := api.MapProduct(&user, ctx)
 		response.Users = append(response.Users, current)
 	}
 	return response, nil
 }
 
 func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "updateUser")
+	defer span.Finish()
+
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	u.logInfo.Logger.WithFields(logrus.Fields{
 		"user": userNameCtx,
@@ -228,7 +248,11 @@ func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) 
 }
 
 func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error) {
-	newUser := api.MapPbUserToNewUserDto(request)
+	span := tracer.StartSpanFromContextMetadata(ctx, "registerUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	newUser := api.MapPbUserToNewUserDto(request, ctx)
 	if err := u.validator.Struct(newUser); err != nil {
 		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
@@ -238,13 +262,13 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 		u.logError.Logger.Errorf(log)
 		return nil, status.Error(codes.FailedPrecondition, log)
 	}
-	err := u.service.UserExists(newUser.Username)
+	err := u.service.UserExists(newUser.Username, ctx)
 	if err == nil {
 		u.logError.Logger.Errorf("USER ALREADY EXISTS")
 		return nil, status.Error(codes.AlreadyExists, "user already exists")
 	}
 	var hashedSaltedPassword = ""
-	validPassword := u.passwordUtil.IsValidPassword(newUser.Password)
+	validPassword := u.passwordUtil.IsValidPassword(newUser.Password, ctx)
 
 	if validPassword {
 		pass, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
@@ -259,16 +283,20 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 		return nil, status.Error(codes.FailedPrecondition, "password format is not valid")
 	}
 	newUser.Password = hashedSaltedPassword
-	registeredUser, er := u.service.CreateRegisteredUser(api.MapDtoToUser(newUser))
+	registeredUser, er := u.service.CreateRegisteredUser(api.MapDtoToUser(newUser, ctx), ctx)
 
 	if er != nil {
 		return nil, status.Error(codes.Internal, er.Error())
 	}
 
-	return &pb.RegisterUserResponse{RegisteredUser: api.MapUserToPbResponseUser(registeredUser)}, nil
+	return &pb.RegisterUserResponse{RegisteredUser: api.MapUserToPbResponseUser(registeredUser, ctx)}, nil
 }
 
 func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request *pb.PasswordRecoveryRequest) (*pb.PasswordRecoveryResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "sendRequestForPasswordRecovery")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var requestUsername = request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	requestUsername = strings.TrimSpace(policy.Sanitize(requestUsername))
@@ -282,13 +310,13 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 	} else {
 		u.logInfo.Logger.Println("INFO:Handling PASSWORD RECOVERY ")
 	}
-	existsErr := u.service.UserExists(requestUsername)
+	existsErr := u.service.UserExists(requestUsername, ctx)
 	if existsErr != nil {
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, existsErr
 	}
 
-	codeSent, codeErr := u.service.SendCodeToRecoveryMail(requestUsername)
+	codeSent, codeErr := u.service.SendCodeToRecoveryMail(requestUsername, ctx)
 	if codeErr != nil {
 		//u.logError.Logger.Errorf(codeErr.Error())
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, codeErr
@@ -302,7 +330,11 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 }
 
 func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswordRequest) (*pb.NewPasswordResponse, error) {
-	requestDto := api.MapPbToNewPasswordRequestDto(request)
+	span := tracer.StartSpanFromContextMetadata(ctx, "recoverPassword")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	requestDto := api.MapPbToNewPasswordRequestDto(request, ctx)
 
 	err := u.validator.Struct(requestDto)
 	if err != nil {
@@ -328,14 +360,14 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 		u.logInfo.Logger.Println("INFO:Handling RecoverPassword")
 	}
 
-	existsErr := u.service.UserExists(requestDto.Username)
+	existsErr := u.service.UserExists(requestDto.Username, ctx)
 	if existsErr != nil {
 		u.logError.Logger.Errorf("USER DOES NOT EXIST")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, existsErr
 	}
 	///////////////////
 	var hashedSaltedPassword = ""
-	validPassword := u.passwordUtil.IsValidPassword(requestDto.NewPassword)
+	validPassword := u.passwordUtil.IsValidPassword(requestDto.NewPassword, ctx)
 
 	if validPassword {
 		pass, err := bcrypt.GenerateFromPassword([]byte(requestDto.NewPassword), bcrypt.DefaultCost)
@@ -352,7 +384,7 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 		u.logError.Logger.Errorf("ERR:PASSWORD FORMAT NOT VALID")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("password format is not valid")
 	}
-	passChanged, err := u.service.CreateNewPassword(requestDto.Username, hashedSaltedPassword, requestDto.Code)
+	passChanged, err := u.service.CreateNewPassword(requestDto.Username, hashedSaltedPassword, requestDto.Code, ctx)
 	if err != nil {
 		//http.Error(rw, err.Error(), http.StatusConflict) //409
 		return &pb.NewPasswordResponse{PasswordChanged: false}, err
@@ -366,6 +398,9 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 }
 
 func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest) (*pb.PwnedResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "pwnedPassword")
+	defer span.Finish()
+
 	pwnedPassword := request.Password.Password
 	policy := bluemonday.UGCPolicy()
 	//sanitize everything
@@ -401,7 +436,10 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 
 func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDetailsRequest) (*pb.UserDetails, error) {
 	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	span := tracer.StartSpanFromContextMetadata(ctx, "getUserDetails")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	username := request.Username.Username
 	policy := bluemonday.UGCPolicy()
 	username = strings.TrimSpace(policy.Sanitize(username))
@@ -422,28 +460,31 @@ func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDeta
 	//	"user": userNameCtx,
 	//}).Infof("INFO:Handling GetUserDetails")
 	// }
-	err := u.service.UserExists(username)
+	err := u.service.UserExists(username, ctx)
 	if err != nil {
 		fmt.Println(err)
 		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		//return nil, err //ne postoji user
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	user, er := u.service.GetByUsername(context.TODO(), username)
+	user, er := u.service.GetByUsername(ctx, username)
 	fmt.Println(user.Skills)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, er.Error())
 	}
-	return api.MapUserToUserDetails(user), nil
+	return api.MapUserToUserDetails(user, ctx), nil
 	//return nil, nil
 }
 
 func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetailsRequest) (*pb.UserDetails, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "editUserDetails")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 
-	userDetails := api.MapPbUserDetailsToUser(request)
+	userDetails := api.MapPbUserDetailsToUser(request, ctx)
 	if err := u.validator.Struct(userDetails); err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
@@ -480,66 +521,76 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 		}).Infof("INFO:Handling EditUserDetails")
 	}
 
-	err := u.service.UserExists(userDetails.Username)
+	err := u.service.UserExists(userDetails.Username, ctx)
 	if err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	editedUser, er := u.service.EditUser(userDetails)
+	editedUser, er := u.service.EditUser(userDetails, ctx)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return api.MapUserToUserDetails(editedUser), nil
+	return api.MapUserToUserDetails(editedUser, ctx), nil
 }
 
 func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.UserPersonalDetailsRequest) (*pb.UserPersonalDetails, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "editUserPersonalDetails")
+	defer span.Finish()
 
-	userPersonalDetails := api.MapPbUserPersonalDetailsToUser(request)
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	userPersonalDetails := api.MapPbUserPersonalDetailsToUser(request, ctx)
 	if err := u.validator.Struct(userPersonalDetails); err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
-	err := u.service.UserExists(userPersonalDetails.Username)
+	err := u.service.UserExists(userPersonalDetails.Username, ctx)
 	if err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	editedUser, er := u.service.EditUserPersonalDetails(userPersonalDetails)
+	editedUser, er := u.service.EditUserPersonalDetails(userPersonalDetails, ctx)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return api.MapUserToUserPersonalDetails(editedUser), nil
+	return api.MapUserToUserPersonalDetails(editedUser, ctx), nil
 }
 
 func (u UserHandler) EditUserProfessionalDetails(ctx context.Context, request *pb.UserProfessionalDetailsRequest) (*pb.UserProfessionalDetails, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "editUserProfessionalDetails")
+	defer span.Finish()
 
-	userProfessionalDetails := api.MapPbUserProfessionalDetailsToUser(request)
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	userProfessionalDetails := api.MapPbUserProfessionalDetailsToUser(request, ctx)
 	if err := u.validator.Struct(userProfessionalDetails); err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:INVALID REQ FILEDS")
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
-	err := u.service.UserExists(userProfessionalDetails.Username)
+	err := u.service.UserExists(userProfessionalDetails.Username, ctx)
 	if err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	editedUser, er := u.service.EditUserProfessionalDetails(userProfessionalDetails)
+	editedUser, er := u.service.EditUserProfessionalDetails(userProfessionalDetails, ctx)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return api.MapUserToUserProfessionalDetails(editedUser), nil
+	return api.MapUserToUserProfessionalDetails(editedUser, ctx), nil
 }
 func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.ChangeStatusRequest) (*pb.ChangeStatus, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "changeProfileStatus")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	policy := bluemonday.UGCPolicy()
 	newStatus := strings.TrimSpace(policy.Sanitize(request.ChangeStatus.NewStatus))
 	username := strings.TrimSpace(policy.Sanitize(request.ChangeStatus.Username))
@@ -551,13 +602,13 @@ func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.Change
 		u.logInfo.Logger.Infof("INFO:Handling EditUserDetails")
 	}
 
-	err := u.service.UserExists(username)
+	err := u.service.UserExists(username, ctx)
 	if err != nil {
 		fmt.Println(err)
 		u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST")
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	editedUser, er := u.service.ChangeProfileStatus(username, newStatus)
+	editedUser, er := u.service.ChangeProfileStatus(username, newStatus, ctx)
 	if er != nil {
 		fmt.Println(er)
 		return nil, status.Error(codes.Internal, err.Error())
@@ -566,18 +617,26 @@ func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.Change
 }
 
 func (u UserHandler) GetEmailUsername(ctx context.Context, request *pb.EmailUsernameRequest) (*pb.EmailUsernameResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "getEmailUsername")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	user, err := u.service.GetByUsername(ctx, request.Username)
 	if err != nil {
 		return nil, err
 	}
-	mapped := api.MapUserToEmailUsernameResponse(user)
+	mapped := api.MapUserToEmailUsernameResponse(user, ctx)
 	return mapped, nil
 
 }
 
 func (u UserHandler) ChangeEmail(ctx context.Context, request *pb.ChangeEmailRequest) (*pb.ChangeEmailResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "changeEmail")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	id, _ := uuid.Parse(request.UserId)
-	exists := u.service.CheckIfEmailExists(id, request.Email.Email)
+	exists := u.service.CheckIfEmailExists(id, request.Email.Email, ctx)
 	if exists {
 		return nil, status.Error(codes.AlreadyExists, "Email already exists!")
 	}
@@ -591,13 +650,17 @@ func (u UserHandler) ChangeEmail(ctx context.Context, request *pb.ChangeEmailReq
 	if er != nil {
 		return nil, er
 	}
-	mapped := api.MapUserToChangeEmailResponse(updated)
+	mapped := api.MapUserToChangeEmailResponse(updated, ctx)
 	return mapped, nil
 }
 
 func (u UserHandler) ChangeUsername(ctx context.Context, request *pb.ChangeUsernameRequest) (*pb.ChangeUsernameResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "changeUsername")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	id, _ := uuid.Parse(request.UserId)
-	exists := u.service.CheckIfUsernameExists(id, request.Username.Username)
+	exists := u.service.CheckIfUsernameExists(id, request.Username.Username, ctx)
 	if exists {
 		return nil, status.Error(codes.AlreadyExists, "Username already exists!")
 	}
@@ -610,6 +673,6 @@ func (u UserHandler) ChangeUsername(ctx context.Context, request *pb.ChangeUsern
 	if er != nil {
 		return nil, er
 	}
-	mapped := api.MapUserToChangeUsernameResponse(updated)
+	mapped := api.MapUserToChangeUsernameResponse(updated, ctx)
 	return mapped, nil
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	tracer "monitoring/module"
 	"user/module/domain/model"
 	"user/module/domain/repositories"
 )
@@ -14,7 +15,10 @@ type UserRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func (r UserRepositoryImpl) ActivateUserAccount(user *model.User) (bool, error) {
+func (r UserRepositoryImpl) ActivateUserAccount(user *model.User, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "activateUserAccountRepo")
+	defer span.Finish()
+
 	result := r.db.Model(&user).Update("is_confirmed", true)
 	fmt.Print(result)
 	if result.Error != nil {
@@ -23,7 +27,10 @@ func (r UserRepositoryImpl) ActivateUserAccount(user *model.User) (bool, error) 
 	return true, nil
 }
 
-func (r UserRepositoryImpl) EditUserDetails(user *model.User) (bool, error) {
+func (r UserRepositoryImpl) EditUserDetails(user *model.User, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "editUserDetailsRepository")
+	defer span.Finish()
+
 	result := r.db.Model(&user).Updates(&user)
 	r.db.Model(&user).Association("Skills").Replace(user.Skills)
 	r.db.Model(&user).Association("Interests").Replace(user.Interests)
@@ -44,13 +51,19 @@ func NewUserRepositoryImpl(db *gorm.DB) repositories.UserRepository {
 	return &UserRepositoryImpl{db: db}
 }
 
-func (r UserRepositoryImpl) GetUsers() ([]model.User, error) {
+func (r UserRepositoryImpl) GetUsers(ctx context.Context) ([]model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUsersRepository")
+	defer span.Finish()
+
 	var users []model.User
 	r.db.Select("*").Find(&users)
 	return users, nil
 }
 
 func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameRepository")
+	defer span.Finish()
+
 	user := &model.User{}
 	if r.db.Preload("Skills").Preload("Interests").Preload("Educations").Preload("Experiences").First(&user, "username = ?", username).RowsAffected == 0 {
 		return nil, errors.New("user not found")
@@ -59,7 +72,10 @@ func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) 
 	return user, nil
 }
 
-func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (*model.User, error) {
+func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "createRegisteredUserRepository")
+	defer span.Finish()
+
 	result := r.db.Create(&user)
 	fmt.Print(result)
 	regUser := &model.User{}
@@ -67,7 +83,9 @@ func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (*model.User,
 	return regUser, result.Error
 }
 
-func (r UserRepositoryImpl) UserExists(username string) error {
+func (r UserRepositoryImpl) UserExists(username string, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "userExistsRepository")
+	defer span.Finish()
 	if r.db.First(&model.User{}, "username = ?", username).RowsAffected == 0 {
 		return errors.New("user does not exist")
 
@@ -84,7 +102,10 @@ func (r UserRepositoryImpl) GetUserSalt(username string) (string, error) {
 	return result, nil
 }
 
-func (r UserRepositoryImpl) GetUserRole(username string) (string, error) {
+func (r UserRepositoryImpl) GetUserRole(username string, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUserRoleRepository")
+	defer span.Finish()
+
 	var result int
 	r.db.Table("users").Select("role").Where("username = ?", username).Scan(&result)
 
@@ -101,7 +122,9 @@ func (r UserRepositoryImpl) GetUserRole(username string) (string, error) {
 	return "", errors.New("User role not found for username" + username)
 }
 
-func (r UserRepositoryImpl) ChangePassword(user *model.User, password string) error {
+func (r UserRepositoryImpl) ChangePassword(user *model.User, password string, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "changePasswordRepository")
+	defer span.Finish()
 
 	result := r.db.Model(&user).Update("password", password)
 	fmt.Print(result)
@@ -118,6 +141,9 @@ func (r UserRepositoryImpl) ChangeProfileStatus(user *model.User) (bool, error) 
 }
 
 func (r UserRepositoryImpl) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getByIdRepository")
+	defer span.Finish()
+
 	user := &model.User{}
 	if r.db.Preload("Skills").Preload("Interests").Preload("Educations").Preload("Experiences").First(&user, "id = ?", id).RowsAffected == 0 {
 		return nil, errors.New("user not found")
@@ -127,6 +153,9 @@ func (r UserRepositoryImpl) GetById(ctx context.Context, id uuid.UUID) (*model.U
 }
 
 func (r UserRepositoryImpl) UpdateEmail(ctx context.Context, user *model.User) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "updateEmailRepository")
+	defer span.Finish()
+
 	result := r.db.Model(&user).Update("email", user.Email)
 	if result.Error != nil {
 		return false, result.Error
@@ -135,6 +164,8 @@ func (r UserRepositoryImpl) UpdateEmail(ctx context.Context, user *model.User) (
 }
 
 func (r UserRepositoryImpl) UpdateUsername(ctx context.Context, user *model.User) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "updateUsernameRepository")
+	defer span.Finish()
 	result := r.db.Model(&user).Update("username", user.Username)
 	if result.Error != nil {
 		return false, result.Error

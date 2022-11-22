@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/trycourier/courier-go/v2"
 	"math/rand"
+	tracer "monitoring/module"
 	"net"
 	"regexp"
 	"strconv"
@@ -45,9 +46,12 @@ func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository 
 	return &UserService{logInfo, logError, repository, emailRepo, recoveryRepo, orchestrator}
 }
 
-func (u UserService) GetUsers() ([]model.User, error) {
+func (u UserService) GetUsers(ctx context.Context) ([]model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUsersService")
+	defer span.Finish()
 
-	users, err := u.userRepository.GetUsers()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	users, err := u.userRepository.GetUsers(ctx)
 	if err != nil {
 		fmt.Sprintln("evo ovde sam puko - service")
 		u.logError.Logger.Errorf("ERR:CANT GET USERS")
@@ -59,7 +63,10 @@ func (u UserService) GetUsers() ([]model.User, error) {
 }
 
 func (u UserService) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameService")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
@@ -80,9 +87,12 @@ func (u UserService) GetUserSalt(username string) (string, error) {
 	return salt, nil
 }
 
-func (u UserService) UserExists(username string) error {
+func (u UserService) UserExists(username string, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "userExistsService")
+	defer span.Finish()
 
-	err := u.userRepository.UserExists(username)
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	err := u.userRepository.UserExists(username, ctx)
 
 	if err != nil {
 		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST:" + username)
@@ -91,9 +101,12 @@ func (u UserService) UserExists(username string) error {
 	return nil
 }
 
-func (u UserService) GetUserRole(username string) (string, error) {
+func (u UserService) GetUserRole(username string, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUserRoleService")
+	defer span.Finish()
 
-	role, err := u.userRepository.GetUserRole(username)
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	role, err := u.userRepository.GetUserRole(username, ctx)
 
 	if err != nil {
 		return "", err
@@ -101,14 +114,17 @@ func (u UserService) GetUserRole(username string) (string, error) {
 	return role, nil
 }
 
-func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error) {
+func (u UserService) CreateRegisteredUser(user *model.User, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "createRegisteredUserService")
+	defer span.Finish()
 
-	var er = checkEmailValid(user.Email)
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	var er = checkEmailValid(user.Email, ctx)
 	if er != nil {
 		u.logError.Logger.Println(EmailFormatInvalid)
 		return nil, EmailFormatInvalid
 	}
-	var domEr = checkEmailDomain(user.Email)
+	var domEr = checkEmailDomain(user.Email, ctx)
 	if domEr != nil {
 		u.logError.Logger.Println(EmailDomainInvalid)
 		return nil, EmailDomainInvalid
@@ -117,7 +133,7 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
 
-	regUser, err := u.userRepository.CreateRegisteredUser(user)
+	regUser, err := u.userRepository.CreateRegisteredUser(user, ctx)
 	if err != nil {
 		u.logError.Logger.Println(DbError)
 		return regUser, ErrorCreatingUser
@@ -130,13 +146,13 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 		Time:     time.Now(),
 	}
 
-	_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
+	_, e := u.emailRepo.CreateEmailVerification(&emailVerification, ctx)
 	fmt.Println(e)
 	if e != nil {
 		u.logError.Logger.Println(ErrorEmailVerification)
 		return nil, ErrorEmailVerification
 	}
-	sendMailWithCourier(user.Email, strconv.Itoa(rn), subject, body, u.logError)
+	sendMailWithCourier(user.Email, strconv.Itoa(rn), subject, body, u.logError, ctx)
 
 	err = u.orchestrator.CreateUser(user)
 	if err != nil {
@@ -153,11 +169,14 @@ func (u UserService) CreateRegisteredUser(user *model.User) (*model.User, error)
 	return regUser, nil
 }
 
-func (u UserService) ActivateUserAccount(username string, verCode int) (bool, error) {
+func (u UserService) ActivateUserAccount(username string, verCode int, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "activateUserAccountService")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var allVerForUsername []model.EmailVerification
 	var dbEr error
-	allVerForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username)
+	allVerForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username, ctx)
 	if dbEr != nil {
 		u.logError.Logger.Errorf("ERR:DB:CODE DOES NOT EXIST FOR USER")
 		return false, dbEr
@@ -171,14 +190,14 @@ func (u UserService) ActivateUserAccount(username string, verCode int) (bool, er
 	if codeInfoForUsername.VerCode == verCode {
 
 		if codeInfoForUsername.Time.Add(time.Hour).After(time.Now()) {
-			user, err := u.userRepository.GetByUsername(context.TODO(), username)
+			user, err := u.userRepository.GetByUsername(ctx, username)
 			if err != nil {
 				fmt.Println(err)
 				u.logError.Logger.Errorf("ERR:DB")
 				return false, err
 			}
 			user.IsConfirmed = true
-			activated, actErr := u.userRepository.ActivateUserAccount(user)
+			activated, actErr := u.userRepository.ActivateUserAccount(user, ctx)
 			err = u.orchestrator.ActivateUserAccount(user)
 			if err != nil {
 				return false, err
@@ -229,9 +248,11 @@ func findMostRecent(verifications []model.EmailVerification) (*model.EmailVerifi
 
 }
 
-func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
+func (u UserService) SendCodeToRecoveryMail(username string, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "sendCodeToRecoveryMail")
+	defer span.Finish()
 
-	user, err := u.userRepository.GetByUsername(context.TODO(), username)
+	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
 		u.logError.Logger.Println("ERR:USER DOES NOT EXIST")
@@ -268,15 +289,18 @@ func (u UserService) SendCodeToRecoveryMail(username string) (bool, error) {
 	}
 
 	//mzd staviti da ovo vraca bool i da ima parametar poruku i zaglavlje
-	sendMailWithCourier(user.RecoveryEmail, strconv.Itoa(rn), "Password recovery code", "Here is your code:", u.logInfo)
+	sendMailWithCourier(user.RecoveryEmail, strconv.Itoa(rn), "Password recovery code", "Here is your code:", u.logInfo, context.TODO())
 	return true, nil
 }
 
-func (u UserService) CreateNewPassword(username string, newHashedPassword string, code string) (bool, error) {
+func (u UserService) CreateNewPassword(username string, newHashedPassword string, code string, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "createNewPassword")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var passwordRecoveryRequest *model.PasswordRecoveryRequest
 	var dbEr error
-	passwordRecoveryRequest, dbEr = u.recoveryRepo.GetPasswordRecoveryRequestByUsername(username)
+	passwordRecoveryRequest, dbEr = u.recoveryRepo.GetPasswordRecoveryRequestByUsername(username, ctx)
 
 	if dbEr != nil {
 		u.logError.Logger.Errorf("ERR:THERE IS NOT A PASS RECOVERY REQUEST IN DATABASE FOR USER:" + username)
@@ -298,7 +322,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 			if !passwordRecoveryRequest.IsUsed {
 				fmt.Println("vreme se uklapa")
 				//ako je kod ok i ako je u okviru vremena trajanja mjenjamo mu status
-				user, err := u.userRepository.GetByUsername(context.TODO(), username)
+				user, err := u.userRepository.GetByUsername(ctx, username)
 				if err != nil {
 					fmt.Println(err)
 					u.logError.Logger.Errorf("ERR:NO USER")
@@ -309,7 +333,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				fmt.Println(user.Username)
 
 				//sacuvati izmjene korisnika,tj izmjenjen password
-				changePassErr := u.userRepository.ChangePassword(user, newHashedPassword)
+				changePassErr := u.userRepository.ChangePassword(user, newHashedPassword, ctx)
 				if changePassErr != nil {
 					fmt.Println("error pri cuvanju novog pass")
 					u.logError.Logger.Errorf("ERR:SAVING NEW PASSWORD")
@@ -318,7 +342,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				//staviti iskoristen kod na true
 
 				//service.Repo.ActivateUserAccount(user)
-				_, er := u.userRepository.GetByUsername(context.TODO(), username)
+				_, er := u.userRepository.GetByUsername(ctx, username)
 				if er != nil {
 					fmt.Println(er)
 
@@ -346,9 +370,12 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 	}
 }
 
-func checkEmailValid(email string) error {
+func checkEmailValid(email string, ctx context.Context) error {
 	// check email syntax is valid
 	//func MustCompile(str string) *Regexp
+	span := tracer.StartSpanFromContext(ctx, "checkEmailValid")
+	defer span.Finish()
+
 	emailRegex, err := regexp.Compile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	if err != nil {
 		fmt.Println(err)
@@ -368,7 +395,10 @@ func checkEmailValid(email string) error {
 	return nil
 }
 
-func checkEmailDomain(email string) error {
+func checkEmailDomain(email string, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "checkEmailDomain")
+	defer span.Finish()
+
 	i := strings.Index(email, "@")
 	host := email[i+1:]
 	// func LookupMX(name string) ([]*MX, error)
@@ -380,7 +410,10 @@ func checkEmailDomain(email string) error {
 	return nil
 }
 
-func sendMailWithCourier(email string, code string, subject string, body string, logErr *logger.Logger) {
+func sendMailWithCourier(email string, code string, subject string, body string, logErr *logger.Logger, ctx context.Context) {
+	span := tracer.StartSpanFromContext(ctx, "sendMailWithCourier")
+	defer span.Finish()
+
 	client := courier.CreateClient("pk_prod_0FQXVBPMDHMZ3VJ3WN6CYC12KNMH", nil)
 	fmt.Println(code)
 	requestID, err := client.SendMessage(
@@ -408,13 +441,17 @@ func sendMailWithCourier(email string, code string, subject string, body string,
 	fmt.Println(requestID)
 }
 
-func (u UserService) EditUser(userDetails *dto.UserDetails) (*model.User, error) {
-	user, err := u.GetByUsername(context.TODO(), userDetails.Username)
+func (u UserService) EditUser(userDetails *dto.UserDetails, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "editUserService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err := u.GetByUsername(ctx, userDetails.Username)
 	if err != nil {
 		return nil, err
 	}
-	user = api.MapUserDetailsDtoToUser(userDetails, user)
-	edited, e := u.userRepository.EditUserDetails(user)
+	user = api.MapUserDetailsDtoToUser(userDetails, user, ctx)
+	edited, e := u.userRepository.EditUserDetails(user, ctx)
 	if e != nil {
 		return nil, e
 	}
@@ -432,13 +469,17 @@ func (u UserService) EditUser(userDetails *dto.UserDetails) (*model.User, error)
 	return user, nil
 }
 
-func (u UserService) ChangeProfileStatus(username string, newStatus string) (*model.User, error) {
-	user, err := u.GetByUsername(context.TODO(), username)
+func (u UserService) ChangeProfileStatus(username string, newStatus string, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "changeProfileStatusService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err := u.GetByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}
 	user.ProfileStatus = model.ProfileStatus(newStatus)
-	edited, e := u.userRepository.EditUserDetails(user)
+	edited, e := u.userRepository.EditUserDetails(user, ctx)
 	if e != nil {
 		return nil, e
 	}
@@ -452,13 +493,17 @@ func (u UserService) ChangeProfileStatus(username string, newStatus string) (*mo
 	return user, nil
 }
 
-func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPersonalDetails) (*model.User, error) {
-	user, err := u.GetByUsername(context.TODO(), userPersonalDetails.Username)
+func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPersonalDetails, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "editUserPersonalDetailsService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err := u.GetByUsername(ctx, userPersonalDetails.Username)
 	if err != nil {
 		return nil, err
 	}
-	user = api.MapUserPersonalDetailsDtoToUser(userPersonalDetails, user)
-	edited, e := u.userRepository.EditUserDetails(user)
+	user = api.MapUserPersonalDetailsDtoToUser(userPersonalDetails, user, ctx)
+	edited, e := u.userRepository.EditUserDetails(user, ctx)
 	if e != nil {
 		return nil, e
 	}
@@ -473,19 +518,23 @@ func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPerson
 	return user, nil
 }
 
-func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.UserProfessionalDetails) (*model.User, error) {
-	user, err := u.GetByUsername(context.TODO(), userProfessionalDetails.Username)
+func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.UserProfessionalDetails, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "editUserProfessionalDetailsService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err := u.GetByUsername(ctx, userProfessionalDetails.Username)
 	if err != nil {
 		return nil, err
 	}
-	user = api.MapUserProfessionalDetailsDtoToUser(userProfessionalDetails, user)
+	user = api.MapUserProfessionalDetailsDtoToUser(userProfessionalDetails, user, ctx)
 	fmt.Println(user)
 	fmt.Println("edit professional details user_service user service ")
 	err = u.orchestrator.EditConnectionUserProfessionalDetails(user)
 	if err != nil {
 		return nil, err
 	}
-	edited, e := u.userRepository.EditUserDetails(user)
+	edited, e := u.userRepository.EditUserDetails(user, ctx)
 	if e != nil {
 		return nil, e
 	}
@@ -499,8 +548,12 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 	return user, nil
 }
 
-func (u UserService) CheckIfEmailExists(id uuid.UUID, email string) bool {
-	users, _ := u.userRepository.GetUsers()
+func (u UserService) CheckIfEmailExists(id uuid.UUID, email string, ctx context.Context) bool {
+	span := tracer.StartSpanFromContext(ctx, "checkIfEmailExists")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	users, _ := u.userRepository.GetUsers(ctx)
 	for _, element := range users {
 		if element.ID == id {
 			continue
@@ -512,8 +565,12 @@ func (u UserService) CheckIfEmailExists(id uuid.UUID, email string) bool {
 	return false
 }
 
-func (u UserService) CheckIfUsernameExists(id uuid.UUID, username string) bool {
-	users, _ := u.userRepository.GetUsers()
+func (u UserService) CheckIfUsernameExists(id uuid.UUID, username string, ctx context.Context) bool {
+	span := tracer.StartSpanFromContext(ctx, "checkIfUsernameExists")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	users, _ := u.userRepository.GetUsers(ctx)
 	for _, element := range users {
 		if element.ID == id {
 			continue
@@ -526,6 +583,10 @@ func (u UserService) CheckIfUsernameExists(id uuid.UUID, username string) bool {
 }
 
 func (u UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getByIdService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	user, err := u.userRepository.GetById(ctx, id)
 	if err != nil {
 		return nil, err
@@ -535,6 +596,10 @@ func (u UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, er
 }
 
 func (u UserService) UpdateEmail(ctx context.Context, user *model.User) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "updateEmailService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, err := u.userRepository.UpdateEmail(ctx, user)
 	if err != nil {
 		return nil, err

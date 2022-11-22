@@ -20,8 +20,13 @@ services:
       USER_COMMAND_SUBJECT: ${USER_COMMAND_SUBJECT}
       USER_REPLY_SUBJECT: ${USER_REPLY_SUBJECT}
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      JAEGER_AGENT_HOST: ${JAEGER_AGENT_HOST}
+      JAEGER_AGENT_PORT: ${JAEGER_AGENT_PORT}
+      JAEGER_SAMPLER_TYPE: ${JAEGER_SAMPLER_TYPE}
+      JAEGER_SAMPLER_PARAM: ${JAEGER_SAMPLER_PARAM}
     networks:
       - servers
+      - monitoring
     ports:
       - '8082:8082'
     depends_on:
@@ -55,8 +60,13 @@ services:
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
       POST_SERVICE_PORT: ${POST_SERVICE_PORT}
       MESSAGE_SERVICE_PORT: ${MESSAGE_SERVICE_PORT}
+      JAEGER_AGENT_HOST: ${JAEGER_AGENT_HOST}
+      JAEGER_AGENT_PORT: ${JAEGER_AGENT_PORT}
+      JAEGER_SAMPLER_TYPE: ${JAEGER_SAMPLER_TYPE}
+      JAEGER_SAMPLER_PARAM: ${JAEGER_SAMPLER_PARAM}
     networks:
       - servers
+      - monitoring
     depends_on:
       - user_db
 
@@ -87,6 +97,7 @@ services:
       - post_db
     networks:
       - servers
+      - monitoring
 
   message_service:
     image: message_service
@@ -115,6 +126,7 @@ services:
       - message_db
     networks:
       - servers
+      - monitoring
     
   connection_service:
     image: connection_service
@@ -141,12 +153,14 @@ services:
       - neo4j
     networks:
       - servers
+      - monitoring
 
   user_db:
     image: postgres:14.1-alpine
     restart: always
     networks:
       - servers
+      - monitoring
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -165,6 +179,7 @@ services:
       - posts-data:/data/db
     networks:
       - servers
+      - monitoring
 
   message_db:
     image: mongo
@@ -176,6 +191,7 @@ services:
       - message_data:/data/db
     networks:
       - servers
+      - monitoring
       
   neo4j:
     image: neo4j:4.3.3-community #4.3.3-community  latest
@@ -185,6 +201,7 @@ services:
       - "7474:7474"
     networks:
       - servers
+      - monitoring
     environment:
       - NEO4J_AUTH=none
       - NEO4J_dbms_memory_pagecache_size=512M
@@ -195,8 +212,10 @@ services:
     restart: on-failure
     networks:
       - servers
+      - monitoring
     ports:
       - '4222:4222'
+
 
 volumes:
   user-data:
@@ -210,3 +229,5 @@ networks:
   servers:
     name: servers
     driver: bridge
+  monitoring:
+    external: true

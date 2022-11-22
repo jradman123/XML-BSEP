@@ -1,8 +1,10 @@
 package helpers
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	tracer "monitoring/module"
 	"regexp"
 	"strings"
 
@@ -13,7 +15,10 @@ import (
 type PasswordUtil struct {
 }
 
-func (util *PasswordUtil) IsValidPassword(userInput string) bool {
+func (util *PasswordUtil) IsValidPassword(userInput string, ctx context.Context) bool {
+	span := tracer.StartSpanFromContext(ctx, "isValidPassword")
+	defer span.Finish()
+
 	uppercase := `[A-Z]{1}`
 	lowercase := `[a-z]{1}`
 	number := `[0-9]{1}`

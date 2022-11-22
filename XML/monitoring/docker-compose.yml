@@ -1,0 +1,38 @@
+services:
+
+  grafana:
+    image: grafana/grafana:8.5.3
+    ports:
+      - "3000:3000"
+    environment:
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+      GF_LOG_FILTERS: rendering:debug
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - monitoring
+
+  renderer:
+    image: grafana/grafana-image-renderer:3.4.2
+    environment:
+      ENABLE_METRICS: "true"
+    networks:
+      - monitoring
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.34
+    ports:
+      - "16686:16686"
+    networks:
+      - monitoring
+
+volumes:
+  grafana:
+    name: grafana
+
+networks:
+  monitoring:
+    name: monitoring
