@@ -16,25 +16,36 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	otgo "github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
+	"io"
 	"log"
+	traceri "monitoring/module"
 	"net"
 )
 
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
+const name = "connections"
+
 func NewServer(config *config.Config) *Server {
+	tracer, closer := traceri.Init(name)
+	otgo.SetGlobalTracer(tracer)
 	return &Server{
 		config: config,
+		tracer: tracer,
+		closer: closer,
 	}
 }
 
 const (
 	QueueGroupConnection = "connection_service_connection"
-	QueueGroup    = "connection_service"
-	JobQueueGroup = "connection_service_job"
+	QueueGroup           = "connection_service"
+	JobQueueGroup        = "connection_service_job"
 )
 
 func (server *Server) Start() {

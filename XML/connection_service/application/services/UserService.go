@@ -4,7 +4,9 @@ import (
 	"common/module/logger"
 	"connection/module/domain/model"
 	"connection/module/domain/repositories"
+	"context"
 	"fmt"
+	tracer "monitoring/module"
 )
 
 type UserService struct {
@@ -39,8 +41,12 @@ func (s UserService) DeleteUser(user model.User) error {
 	return nil
 }
 
-func (s UserService) GetUserId(username string) (string, error) {
-	userId, err := s.userRepo.GetUserId(username)
+func (s UserService) GetUserId(username string, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUserIdService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	userId, err := s.userRepo.GetUserId(username, ctx)
 	fmt.Println("dobila sam ovaj user id za username " + userId)
 	if err != nil {
 		return "", err

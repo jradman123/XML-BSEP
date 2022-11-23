@@ -5,10 +5,12 @@ import (
 	"connection/module/domain/dto"
 	"connection/module/domain/model"
 	"connection/module/domain/repositories"
+	"context"
 	"errors"
 	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	tracer "monitoring/module"
 	"strings"
 	"time"
 )
@@ -28,7 +30,11 @@ func NewConnectionRepositoryImpl(client *neo4j.Driver, logInfo *logger.Logger, l
 		logError: logError,
 	}
 }
-func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection) (*dto.ConnectionResponse, error) {
+func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection, ctx context.Context) (*dto.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "createConnectionRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -36,7 +42,7 @@ func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection)
 			r.logError.Logger.Errorf(neo4jSessionError)
 		}
 	}(session)
-	exitingConnection, _ := r.ConnectionStatusForUsers(connection.UserOneUID, connection.UserTwoUID)
+	exitingConnection, _ := r.ConnectionStatusForUsers(connection.UserOneUID, connection.UserTwoUID, ctx)
 	if exitingConnection != nil {
 		if exitingConnection.ConnectionStatus == "CONNECTED" || exitingConnection.ConnectionStatus == "REQUEST_SENT" {
 			return &dto.ConnectionResponse{
@@ -48,7 +54,7 @@ func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection)
 	}
 	result, resultErr := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		if checkIfUserExist(connection.UserOneUID, tx) && checkIfUserExist(connection.UserTwoUID, tx) {
+		if checkIfUserExist(connection.UserOneUID, tx, ctx) && checkIfUserExist(connection.UserTwoUID, tx, ctx) {
 
 			records, err := tx.Run("MATCH (n:UserNode { uid: $uid}) RETURN n.status", map[string]interface{}{
 				"uid": connection.UserTwoUID,
@@ -134,7 +140,11 @@ func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection)
 	return result.(*dto.ConnectionResponse), resultErr
 }
 
-func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection) (*dto.ConnectionResponse, error) {
+func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection, ctx context.Context) (*dto.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "acceptConnectionRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -145,7 +155,7 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection)
 
 	result, resultErr := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		if checkIfUserExist(connection.UserOneUID, tx) && checkIfUserExist(connection.UserTwoUID, tx) {
+		if checkIfUserExist(connection.UserOneUID, tx, ctx) && checkIfUserExist(connection.UserTwoUID, tx, ctx) {
 			records, err := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u1)-[r1:CONNECTION]->(u2) return r1.status", map[string]interface{}{
 				"requestSender": connection.UserOneUID,
 				"requestGet":    connection.UserTwoUID,
@@ -218,8 +228,9 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection)
 	return result.(*dto.ConnectionResponse), resultErr
 }
 
-func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string) (userNodes []*model.User, error1 error) {
-
+func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string, ctx context.Context) (userNodes []*model.User, error1 error) {
+	span := tracer.StartSpanFromContext(ctx, "getAllConnectionForUserRepository")
+	defer span.Finish()
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -230,7 +241,7 @@ func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string) (userN
 
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		if !checkIfUserExist(userUid, tx) {
+		if !checkIfUserExist(userUid, tx, ctx) {
 			return &model.User{
 				UserUID:   "",
 				Status:    "",
@@ -265,8 +276,11 @@ func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string) (userN
 	return userNodes, nil
 }
 
-func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string) (userNodes []*model.User, error1 error) {
+func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string, ctx context.Context) (userNodes []*model.User, error1 error) {
+	span := tracer.StartSpanFromContext(ctx, "getAllConnectionRequestsForUserRepository")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -277,7 +291,7 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		if !checkIfUserExist(userUid, tx) {
+		if !checkIfUserExist(userUid, tx, ctx) {
 			return &model.User{
 				UserUID: "",
 				Status:  "",
@@ -306,7 +320,11 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 	return userNodes, nil
 }
 
-func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, receiverId string) (*dto.ConnectionResponse, error) {
+func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, receiverId string, ctx context.Context) (*dto.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "connectionStatusForUsersService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -317,7 +335,7 @@ func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, rece
 
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		if checkIfUserExist(senderId, tx) && checkIfUserExist(receiverId, tx) {
+		if checkIfUserExist(senderId, tx, ctx) && checkIfUserExist(receiverId, tx, ctx) {
 			records, err := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u1)-[r1:CONNECTION]->(u2) return r1.status", map[string]interface{}{
 				"requestSender": senderId,
 				"requestGet":    receiverId,
@@ -378,7 +396,11 @@ func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, rece
 	return result.(*dto.ConnectionResponse), err
 }
 
-func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection) (*dto.ConnectionResponse, error) {
+func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection, ctx context.Context) (*dto.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContext(ctx, "blockUserRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -390,7 +412,7 @@ func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection) (*dto.Connect
 	result, resultErr := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
 		replayStatus := ""
-		if checkIfUserExist(con.UserOneUID, tx) && checkIfUserExist(con.UserTwoUID, tx) {
+		if checkIfUserExist(con.UserOneUID, tx, ctx) && checkIfUserExist(con.UserTwoUID, tx, ctx) {
 
 			records, err := tx.Run("MATCH (u1:UserNode) WHERE u1.uid = $requestSender MATCH (u2:UserNode) WHERE u2.uid = $requestGet  MATCH (u1)-[r1:CONNECTION]->(u2) return r1.status", map[string]interface{}{
 				"requestSender": con.UserOneUID,
@@ -545,7 +567,11 @@ func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection) (*dto.Connect
 	return result.(*dto.ConnectionResponse), resultErr
 }
 
-func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string) (userNodes []*model.User, error1 error) {
+func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string, ctx context.Context) (userNodes []*model.User, error1 error) {
+	span := tracer.StartSpanFromContext(ctx, "getRecommendedNewConnectionsRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -556,7 +582,7 @@ func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string) (u
 
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		if !checkIfUserExist(userId, tx) {
+		if !checkIfUserExist(userId, tx, ctx) {
 			return &model.User{
 				UserUID: "",
 				Status:  "",
@@ -601,7 +627,11 @@ func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string) (u
 	return userNodes, nil
 }
 
-func (r ConnectionRepositoryImpl) GetRecommendedJobOffers(userId string) (jobNodes []*model.JobOffer, error1 error) {
+func (r ConnectionRepositoryImpl) GetRecommendedJobOffers(userId string, ctx context.Context) (jobNodes []*model.JobOffer, error1 error) {
+	span := tracer.StartSpanFromContext(ctx, "getRecommendedJobOffersRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
 		err := session.Close()
@@ -612,7 +642,7 @@ func (r ConnectionRepositoryImpl) GetRecommendedJobOffers(userId string) (jobNod
 
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
-		if !checkIfUserExist(userId, tx) {
+		if !checkIfUserExist(userId, tx, ctx) {
 			return nil, nil
 		}
 

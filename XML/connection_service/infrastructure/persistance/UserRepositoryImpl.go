@@ -4,9 +4,11 @@ import (
 	"common/module/logger"
 	connectionModel "connection/module/domain/model"
 	"connection/module/domain/repositories"
+	"context"
 	"errors"
 	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	tracer "monitoring/module"
 	"time"
 )
 
@@ -41,7 +43,7 @@ func (u UserRepositoryImpl) Register(userNode *connectionModel.User) (*connectio
 	fmt.Println(session)
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		fmt.Println("linija5")
-		if checkIfUserExist(userNode.UserUID, tx) {
+		if checkIfUserExist(userNode.UserUID, tx, context.TODO()) {
 			fmt.Println("linija36")
 			return &connectionModel.User{
 				UserUID:   "",
@@ -82,7 +84,9 @@ func (u UserRepositoryImpl) Register(userNode *connectionModel.User) (*connectio
 
 	return result.(*connectionModel.User), nil
 }
-func checkIfUserExist(uid string, transaction neo4j.Transaction) bool {
+func checkIfUserExist(uid string, transaction neo4j.Transaction, ctx context.Context) bool {
+	span := tracer.StartSpanFromContext(ctx, "checkIfUserExist")
+	defer span.Finish()
 	result, _ := transaction.Run(
 		"MATCH (n:UserNode { uid: $uid }) RETURN n.uid",
 		map[string]interface{}{"uid": uid})
@@ -104,7 +108,7 @@ func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User) error {
 	_, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
 		fmt.Println("UUID " + userNode.UserUID)
-		if checkIfUserExist(userNode.UserUID, tx) {
+		if checkIfUserExist(userNode.UserUID, tx, context.TODO()) {
 			_, err := tx.Run("MATCH (n:UserNode { uid: $uid}) set n.status = $status, n.username = $username, n.firstName = $firstName, n.lastName = $lastName",
 				map[string]interface{}{
 					"uid":       userNode.UserUID,
@@ -130,8 +134,9 @@ func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User) error {
 	return nil
 }
 
-func (u UserRepositoryImpl) GetUserId(username string) (string, error) {
-
+func (u UserRepositoryImpl) GetUserId(username string, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUserIdRepository")
+	defer span.Finish()
 	fmt.Println("[ConnectionDBStore GetUserId]")
 	fmt.Println(username)
 	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
@@ -171,7 +176,7 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User) error {
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 
 		fmt.Println("UUID " + m.UserUID)
-		if checkIfUserExist(m.UserUID, tx) {
+		if checkIfUserExist(m.UserUID, tx, context.TODO()) {
 
 			var status string
 			if m.Status == connectionModel.Private {
@@ -232,7 +237,7 @@ func (u UserRepositoryImpl) UpdateUserProfessionalDetails(user *connectionModel.
 
 	result, err := session.WriteTransaction(func(tx neo4j.Transaction) (interface{}, error) {
 		fmt.Println("UUID " + user.UserUID)
-		if !checkIfUserExist(user.UserUID, tx) {
+		if !checkIfUserExist(user.UserUID, tx, context.TODO()) {
 			fmt.Println("NE POSTOJI")
 			return nil, nil
 		}

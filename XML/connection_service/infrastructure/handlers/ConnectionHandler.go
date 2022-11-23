@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/sirupsen/logrus"
+	tracer "monitoring/module"
 	"strings"
 )
 
@@ -42,6 +43,10 @@ func NewConnectionHandler(connectionService *services.ConnectionService, userSer
 }
 
 func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "getConnections")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("GetConnections handler")
 	policy := bluemonday.UGCPolicy()
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
@@ -61,7 +66,7 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 		}).Infof("INFO:Handling Get connections for user")
 	}
 
-	userId, err := c.userService.GetUserId(request.Username)
+	userId, err := c.userService.GetUserId(request.Username, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -69,7 +74,7 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 		return nil, err
 	}
 
-	users, err := c.connectionService.GetAllConnectionForUser(userId)
+	users, err := c.connectionService.GetAllConnectionForUser(userId, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -95,6 +100,10 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 }
 
 func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "getConnectionRequests")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("GetConnections handler")
 	policy := bluemonday.UGCPolicy()
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
@@ -114,7 +123,7 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 		}).Infof("INFO:Handling Get connections for user")
 	}
 
-	userId, err := c.userService.GetUserId(request.Username)
+	userId, err := c.userService.GetUserId(request.Username, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -122,7 +131,7 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 		return nil, err
 	}
 
-	users, err := c.connectionService.GetAllConnectionRequestsForUser(userId)
+	users, err := c.connectionService.GetAllConnectionRequestsForUser(userId, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -148,6 +157,10 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 }
 
 func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "createConnection")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("Create connection handler")
 	policy := bluemonday.UGCPolicy()
 	connection.Connection.UserSender = strings.TrimSpace(policy.Sanitize(connection.Connection.UserSender))
@@ -168,14 +181,14 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 			"userSenderUsername": connection.Connection.UserSender,
 		}).Infof("INFO:Handling Create connection")
 	}
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -187,7 +200,7 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.CreateConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver)
+	conResult, err := c.connectionService.CreateConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -198,6 +211,10 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 }
 
 func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "acceptConnection")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("Accept connection handler")
 	policy := bluemonday.UGCPolicy()
 	connection.Connection.UserSender = strings.TrimSpace(policy.Sanitize(connection.Connection.UserSender))
@@ -219,14 +236,14 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 		}).Infof("INFO:Handling Create connection")
 	}
 
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -238,7 +255,7 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.AcceptConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver)
+	conResult, err := c.connectionService.AcceptConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -250,6 +267,10 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 }
 
 func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "connectionStatusForUsers")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("ConnectionStatusForUsers handler")
 	policy := bluemonday.UGCPolicy()
 	connection.Connection.UserSender = strings.TrimSpace(policy.Sanitize(connection.Connection.UserSender))
@@ -271,14 +292,14 @@ func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connect
 		}).Infof("INFO:Handling ConnectionStatusForUsers")
 	}
 
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -286,7 +307,7 @@ func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connect
 		return nil, err
 	}
 
-	conResult, err := c.connectionService.ConnectionStatusForUsers(userSenderId, userReceiverId)
+	conResult, err := c.connectionService.ConnectionStatusForUsers(userSenderId, userReceiverId, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -297,6 +318,10 @@ func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connect
 
 }
 func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "blockUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("Block user handler")
 	policy := bluemonday.UGCPolicy()
 	connection.Connection.UserSender = strings.TrimSpace(policy.Sanitize(connection.Connection.UserSender))
@@ -318,14 +343,14 @@ func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConn
 		}).Infof("INFO:Handling Create connection")
 	}
 
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -337,7 +362,7 @@ func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConn
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.BlockUser(con)
+	conResult, err := c.connectionService.BlockUser(con, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -349,6 +374,10 @@ func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConn
 }
 
 func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "getRecommendedNewConnections")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("GetRecommendedNewConnections handler")
 	policy := bluemonday.UGCPolicy()
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
@@ -368,7 +397,7 @@ func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, req
 		}).Infof("INFO:Handling GetRecommendedNewConnections for user")
 	}
 
-	userId, err := c.userService.GetUserId(request.Username)
+	userId, err := c.userService.GetUserId(request.Username, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -376,7 +405,7 @@ func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, req
 		return nil, err
 	}
 
-	users, err := c.connectionService.GetRecommendedNewConnections(userId)
+	users, err := c.connectionService.GetRecommendedNewConnections(userId, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -402,6 +431,10 @@ func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, req
 }
 
 func (c ConnectionHandler) GetRecommendedJobOffers(ctx context.Context, request *pb.GetRequest) (*pb.Offers, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "getRecommendedJobOffers")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("GetRecommendedJobOffers handler")
 	policy := bluemonday.UGCPolicy()
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
@@ -421,7 +454,7 @@ func (c ConnectionHandler) GetRecommendedJobOffers(ctx context.Context, request 
 		}).Infof("INFO:Handling GetRecommendedJobOffers for user")
 	}
 
-	userId, err := c.userService.GetUserId(request.Username)
+	userId, err := c.userService.GetUserId(request.Username, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -429,7 +462,7 @@ func (c ConnectionHandler) GetRecommendedJobOffers(ctx context.Context, request 
 		return nil, err
 	}
 
-	offers, err := c.connectionService.GetRecommendedJobOffers(userId)
+	offers, err := c.connectionService.GetRecommendedJobOffers(userId, ctx)
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
