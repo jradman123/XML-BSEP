@@ -66,17 +66,23 @@ func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) 
 	return u.filter(filter, ctx)
 }
 
-func (repo UserRepositoryImpl) GetSettingsForUser(username string) (*model.NotificationSettings, error) {
+func (repo UserRepositoryImpl) GetSettingsForUser(username string, ctx context.Context) (*model.NotificationSettings, error) {
+	span := tracer.StartSpanFromContext(ctx, "getSettingsForUserRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"username": username}
 	var user model.User
-	found := repo.users.FindOne(context.TODO(), filter)
+	found := repo.users.FindOne(ctx, filter)
 	found.Decode(&user)
 	return &user.Settings, nil
 }
 
-func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings) (*model.NotificationSettings, error) {
+func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings, ctx context.Context) (*model.NotificationSettings, error) {
+	span := tracer.StartSpanFromContext(ctx, "changeSettingsForUserRepository")
+	defer span.Finish()
 
-	_, err := u.users.UpdateOne(context.TODO(), bson.M{"username": username}, bson.D{
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	_, err := u.users.UpdateOne(ctx, bson.M{"username": username}, bson.D{
 		{"$set", bson.D{{"settings", newSettings}}},
 	})
 	if err != nil {

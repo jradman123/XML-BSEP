@@ -128,7 +128,11 @@ func MapNewMessage(messageText string, receiverId uuid.UUID, senderId uuid.UUID,
 	return message
 }
 
-func MapNotificationResponse(notification *model.Notification) *notificationPb.Notification {
+func MapNotificationResponse(notification *model.Notification, ctx context.Context) *notificationPb.Notification {
+	span := tracer.StartSpanFromContext(ctx, "mapNotificationResponse")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	id := notification.Id.Hex()
 
 	notificationPb := &notificationPb.Notification{
@@ -137,7 +141,7 @@ func MapNotificationResponse(notification *model.Notification) *notificationPb.N
 		From:             notification.NotificationFrom,
 		To:               notification.NotificationTo,
 		RedirectPath:     notification.RedirectPath,
-		NotificationType: mapNotificationTypeToString(notification.Type),
+		NotificationType: mapNotificationTypeToString(notification.Type, ctx),
 		Read:             notification.Read,
 		Time:             notification.Timestamp.String(),
 	}
@@ -145,7 +149,9 @@ func MapNotificationResponse(notification *model.Notification) *notificationPb.N
 	return notificationPb
 }
 
-func MapSettingsResponse(settings *model.NotificationSettings) *notificationPb.NotificationSettings {
+func MapSettingsResponse(settings *model.NotificationSettings, ctx context.Context) *notificationPb.NotificationSettings {
+	span := tracer.StartSpanFromContext(ctx, "mapSettingsResponse")
+	defer span.Finish()
 
 	settingsPb := &notificationPb.NotificationSettings{
 		Posts:       settings.Posts,
@@ -156,7 +162,9 @@ func MapSettingsResponse(settings *model.NotificationSettings) *notificationPb.N
 	return settingsPb
 }
 
-func MapChangeSettingsRequest(request *notificationPb.ChangeSettingsRequest) *model.NotificationSettings {
+func MapChangeSettingsRequest(request *notificationPb.ChangeSettingsRequest, ctx context.Context) *model.NotificationSettings {
+	span := tracer.StartSpanFromContext(ctx, "mapChangeSettingsRequest")
+	defer span.Finish()
 
 	settingsModel := &model.NotificationSettings{
 		Posts:       request.Settings.Posts,
@@ -167,7 +175,9 @@ func MapChangeSettingsRequest(request *notificationPb.ChangeSettingsRequest) *mo
 	return settingsModel
 }
 
-func mapNotificationTypeToString(notificationType model.NotificationType) string {
+func mapNotificationTypeToString(notificationType model.NotificationType, ctx context.Context) string {
+	span := tracer.StartSpanFromContext(ctx, "mapNotificationTypeToString")
+	defer span.Finish()
 	if notificationType == model.POST {
 		return "POST"
 	}

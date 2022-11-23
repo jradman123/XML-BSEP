@@ -42,16 +42,26 @@ func (s UserService) GetByUsername(username string, ctx context.Context) (user [
 	return user, err
 }
 
-func (s UserService) GetSettingsForUser(username string) (settings *model.NotificationSettings, err error) {
-	return s.repository.GetSettingsForUser(username)
+func (s UserService) GetSettingsForUser(username string, ctx context.Context) (settings *model.NotificationSettings, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getSettingsForUserService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	return s.repository.GetSettingsForUser(username, ctx)
 }
 
-func (s UserService) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings) (settings *model.NotificationSettings, err error) {
-	return s.repository.ChangeSettingsForUser(username, newSettings)
+func (s UserService) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings, ctx context.Context) (settings *model.NotificationSettings, err error) {
+	span := tracer.StartSpanFromContext(ctx, "changeSettingsForUserService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	return s.repository.ChangeSettingsForUser(username, newSettings, ctx)
 }
 
-func (s UserService) AllowedNotificationForUser(username string, notificationType model.NotificationType) (result bool, err error) {
-	settings, err := s.repository.GetSettingsForUser(username)
+func (s UserService) AllowedNotificationForUser(username string, notificationType model.NotificationType, ctx context.Context) (result bool, err error) {
+	span := tracer.StartSpanFromContext(ctx, "allowedNotificationForUser")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	settings, err := s.repository.GetSettingsForUser(username, ctx)
 	switch notificationType {
 	case model.PROFILE:
 		return settings.Connections, nil

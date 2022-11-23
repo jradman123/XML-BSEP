@@ -117,7 +117,7 @@ func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessage
 		RedirectPath:     "/chatbox",
 		Type:             model.MESSAGE,
 	}
-	m.notificationService.Create(nnn)
+	m.notificationService.Create(nnn, ctx)
 	m.pusher.Trigger("messages", "message", request.Message)
 	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername, ctx)
 	return &pb.MessageSentResponse{Message: response}, nil
