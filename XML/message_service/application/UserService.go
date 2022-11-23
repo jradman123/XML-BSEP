@@ -2,9 +2,11 @@ package application
 
 import (
 	"common/module/logger"
+	"context"
 	"github.com/google/uuid"
 	"message/module/domain/model"
 	"message/module/domain/repositories"
+	tracer "monitoring/module"
 )
 
 type UserService struct {
@@ -31,8 +33,12 @@ func (s UserService) DeleteUser(userId uuid.UUID) (err error) {
 	err = s.repository.DeleteUser(userId)
 	return err
 }
-func (s UserService) GetByUsername(username string) (user []*model.User, err error) {
-	user, err = s.repository.GetByUsername(username)
+func (s UserService) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err = s.repository.GetByUsername(username, ctx)
 	return user, err
 }
 
@@ -58,7 +64,10 @@ func (s UserService) AllowedNotificationForUser(username string, notificationTyp
 
 	}
 }
-func (s UserService) GetById(userId uuid.UUID) (user []*model.User, err error) {
-	user, err = s.repository.GetById(userId)
+func (s UserService) GetById(userId uuid.UUID, ctx context.Context) (user []*model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getByIdService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err = s.repository.GetById(userId, ctx)
 	return user, err
 }

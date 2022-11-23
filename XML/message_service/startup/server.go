@@ -10,24 +10,37 @@ import (
 	"context"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	otgo "github.com/opentracing/opentracing-go"
 	"github.com/pusher/pusher-http-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"message/module/application"
 	"message/module/domain/repositories"
 	"message/module/infrastructure/handlers"
 	"message/module/infrastructure/persistence"
 	"message/module/startup/config"
+	traceri "monitoring/module"
 	"net"
 )
 
+const name = "messages"
+
 type Server struct {
 	config *config.Config
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
 func NewServer(config *config.Config) *Server {
-	return &Server{config: config}
+	tracer, closer := traceri.Init(name)
+	otgo.SetGlobalTracer(tracer)
+	return &Server{
+		config: config,
+		tracer: tracer,
+		closer: closer,
+	}
 }
 
 const (

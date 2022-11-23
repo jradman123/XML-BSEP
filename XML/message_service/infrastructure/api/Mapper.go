@@ -6,9 +6,11 @@ import (
 	connectionEvents "common/module/saga/connection_events"
 	postEvents "common/module/saga/post_events"
 	events "common/module/saga/user_events"
+	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"message/module/domain/model"
+	tracer "monitoring/module"
 	"time"
 )
 
@@ -100,7 +102,10 @@ func MapUserReply(user *model.User, replyType events.UserReplyType) (reply *even
 	return reply
 }
 
-func MapMessageReply(message *model.Message, receiver string, sender string) (reply *pb.Message) {
+func MapMessageReply(message *model.Message, receiver string, sender string, ctx context.Context) (reply *pb.Message) {
+	span := tracer.StartSpanFromContext(ctx, "mapMessageReply")
+	defer span.Finish()
+
 	reply = &pb.Message{
 		SenderUsername:   sender,
 		ReceiverUsername: receiver,
@@ -109,7 +114,10 @@ func MapMessageReply(message *model.Message, receiver string, sender string) (re
 	}
 	return reply
 }
-func MapNewMessage(messageText string, receiverId uuid.UUID, senderId uuid.UUID) *model.Message {
+func MapNewMessage(messageText string, receiverId uuid.UUID, senderId uuid.UUID, ctx context.Context) *model.Message {
+	span := tracer.StartSpanFromContext(ctx, "mapNewMessage")
+	defer span.Finish()
+
 	message := &model.Message{
 		Id:          primitive.NewObjectID(),
 		SenderId:    senderId,

@@ -10,6 +10,7 @@ import (
 	"log"
 	"message/module/domain/model"
 	"message/module/domain/repositories"
+	tracer "monitoring/module"
 )
 
 const (
@@ -56,9 +57,13 @@ func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID) (err error) {
 	return err
 }
 
-func (u UserRepositoryImpl) GetByUsername(username string) (user []*model.User, err error) {
+func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"username": username}
-	return u.filter(filter)
+	return u.filter(filter, ctx)
 }
 
 func (repo UserRepositoryImpl) GetSettingsForUser(username string) (*model.NotificationSettings, error) {
@@ -80,9 +85,12 @@ func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *
 	return newSettings, nil
 }
 
-func (u UserRepositoryImpl) GetById(userId uuid.UUID) ([]*model.User, error) {
+func (u UserRepositoryImpl) GetById(userId uuid.UUID, ctx context.Context) ([]*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getByIdRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"user_id": userId}
-	return u.filter(filter)
+	return u.filter(filter, ctx)
 }
 
 func stringToBin(s string) (binString string) {
@@ -98,24 +106,32 @@ func (u UserRepositoryImpl) filterOne(filter bson.M) (user *model.User, err erro
 	return
 }
 
-func (u UserRepositoryImpl) filter(filter interface{}) ([]*model.User, error) {
-	cursor, err := u.users.Find(context.TODO(), filter)
+func (u UserRepositoryImpl) filter(filter interface{}, ctx context.Context) ([]*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "filterUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	cursor, err := u.users.Find(ctx, filter)
 	defer func(cursor *mongo.Cursor, ctx context.Context) {
 		err := cursor.Close(ctx)
 		if err != nil {
 
 		}
-	}(cursor, context.TODO())
+	}(cursor, ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return decodeUser(cursor)
+	return decodeUser(cursor, ctx)
 }
 
-func decodeUser(cursor *mongo.Cursor) (users []*model.User, err error) {
-	for cursor.Next(context.TODO()) {
+func decodeUser(cursor *mongo.Cursor, ctx context.Context) (users []*model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "decodeUser")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	for cursor.Next(ctx) {
 		var user model.User
 		err = cursor.Decode(&user)
 		if err != nil {

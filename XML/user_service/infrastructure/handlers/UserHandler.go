@@ -480,9 +480,8 @@ func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDeta
 func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetailsRequest) (*pb.UserDetails, error) {
 	span := tracer.StartSpanFromContextMetadata(ctx, "editUserDetails")
 	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 
 	userDetails := api.MapPbUserDetailsToUser(request, ctx)
 	if err := u.validator.Struct(userDetails); err != nil {

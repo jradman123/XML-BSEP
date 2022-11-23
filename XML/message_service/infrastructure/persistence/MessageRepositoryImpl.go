@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"message/module/domain/model"
 	"message/module/domain/repositories"
+	tracer "monitoring/module"
 )
 
 //NewMessageRepositoryImpl
@@ -28,8 +29,11 @@ func NewMessageRepositoryImpl(client *mongo.Client) repositories.MessageReposito
 	}
 }
 
-func (m MessageRepositoryImpl) SendMessage(message *model.Message) (*model.Message, error) {
-	result, err := m.messages.InsertOne(context.TODO(), message)
+func (m MessageRepositoryImpl) SendMessage(message *model.Message, ctx context.Context) (*model.Message, error) {
+	span := tracer.StartSpanFromContext(ctx, "sendMessageRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	result, err := m.messages.InsertOne(ctx, message)
 	if err != nil {
 		return nil, err
 	}
@@ -37,34 +41,47 @@ func (m MessageRepositoryImpl) SendMessage(message *model.Message) (*model.Messa
 
 	return message, nil
 }
-func (m MessageRepositoryImpl) GetAllSent(SenderId uuid.UUID) (messages []*model.Message, err error) {
+func (m MessageRepositoryImpl) GetAllSent(SenderId uuid.UUID, ctx context.Context) (messages []*model.Message, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getAllSentRepository")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"sender_id": SenderId}
-	return m.filter(filter)
+	return m.filter(filter, ctx)
 }
 
-func (m MessageRepositoryImpl) GetAllReceived(ReceiverId uuid.UUID) (messages []*model.Message, err error) {
+func (m MessageRepositoryImpl) GetAllReceived(ReceiverId uuid.UUID, ctx context.Context) (messages []*model.Message, err error) {
+	span := tracer.StartSpanFromContext(ctx, "getAllReceivedRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"receiver_id": ReceiverId}
-	return m.filter(filter)
+	return m.filter(filter, ctx)
 }
 
-func (m MessageRepositoryImpl) filter(filter interface{}) ([]*model.Message, error) {
-	cursor, err := m.messages.Find(context.TODO(), filter)
+func (m MessageRepositoryImpl) filter(filter interface{}, ctx context.Context) ([]*model.Message, error) {
+	span := tracer.StartSpanFromContext(ctx, "filterMessage")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	cursor, err := m.messages.Find(ctx, filter)
 	defer func(cursor *mongo.Cursor, ctx context.Context) {
 		err := cursor.Close(ctx)
 		if err != nil {
 
 		}
-	}(cursor, context.TODO())
+	}(cursor, ctx)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return decode(cursor)
+	return decode(cursor, ctx)
 }
 
-func decode(cursor *mongo.Cursor) (messages []*model.Message, err error) {
-	for cursor.Next(context.TODO()) {
+func decode(cursor *mongo.Cursor, ctx context.Context) (messages []*model.Message, err error) {
+	span := tracer.StartSpanFromContext(ctx, "decode")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	for cursor.Next(ctx) {
 		var message model.Message
 		err = cursor.Decode(&message)
 		if err != nil {

@@ -11,6 +11,7 @@ import (
 	"message/module/application"
 	"message/module/domain/model"
 	"message/module/infrastructure/api"
+	tracer "monitoring/module"
 	"time"
 )
 
@@ -30,10 +31,14 @@ func NewMessageHandler(messageService *application.MessageService, userService *
 func (m MessageHandler) MustEmbedUnimplementedMessageServiceServer() {
 }
 
-func (m MessageHandler) GetAllSent(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "getAllSent")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("usao u hendler get all sent")
 	fmt.Println("dobio username " + request.Username)
-	sender, err := m.userService.GetByUsername(request.Username)
+	sender, err := m.userService.GetByUsername(request.Username, ctx)
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
@@ -43,26 +48,30 @@ func (m MessageHandler) GetAllSent(_ context.Context, request *pb.GetRequest) (*
 	}
 	fmt.Println("sender[0].UserId")
 	fmt.Println(sender[0].UserId)
-	messages, err := m.messageService.GetAllSent(sender[0].UserId)
+	messages, err := m.messageService.GetAllSent(sender[0].UserId, ctx)
 
 	fmt.Println(messages)
 
 	fmt.Println(messages)
 	response := &pb.GetMultipleResponse{Messages: []*pb.Message{}}
 	for _, message := range messages {
-		receiver, _ := m.userService.GetById(message.ReceiverId)
-		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username)
+		receiver, _ := m.userService.GetById(message.ReceiverId, ctx)
+		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username, ctx)
 		response.Messages = append(response.Messages, current)
 	}
 
 	return response, nil
 }
 
-func (m MessageHandler) GetAllReceived(_ context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "getAllReceived")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("usao u hendler get all receiver")
 	fmt.Println("dobio username " + request.Username)
 
-	receiver, err := m.userService.GetByUsername(request.Username)
+	receiver, err := m.userService.GetByUsername(request.Username, ctx)
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
@@ -70,24 +79,26 @@ func (m MessageHandler) GetAllReceived(_ context.Context, request *pb.GetRequest
 		fmt.Println("nemas ovog usera u bAzi")
 		return nil, err
 	}
-	messages, err := m.messageService.GetAllReceived(receiver[0].UserId)
+	messages, err := m.messageService.GetAllReceived(receiver[0].UserId, ctx)
 	response := &pb.GetMultipleResponse{Messages: []*pb.Message{}}
 	for _, message := range messages {
-		sender, _ := m.userService.GetById(message.SenderId)
-		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username)
+		sender, _ := m.userService.GetById(message.SenderId, ctx)
+		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username, ctx)
 		response.Messages = append(response.Messages, current)
 	}
 
 	return response, nil
 }
 
-func (m MessageHandler) SendMessage(_ context.Context, request *pb.SendMessageRequest) (*pb.MessageSentResponse, error) {
+func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessageRequest) (*pb.MessageSentResponse, error) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "sendMessage")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	userSender, _ := m.userService.GetByUsername(request.Message.SenderUsername, ctx)
+	userReceiver, _ := m.userService.GetByUsername(request.Message.ReceiverUsername, ctx)
 
-	userSender, _ := m.userService.GetByUsername(request.Message.SenderUsername)
-	userReceiver, _ := m.userService.GetByUsername(request.Message.ReceiverUsername)
-
-	modell := api.MapNewMessage(request.Message.MessageText, userReceiver[0].UserId, userSender[0].UserId)
-	message, err := m.messageService.SendMessage(modell)
+	modell := api.MapNewMessage(request.Message.MessageText, userReceiver[0].UserId, userSender[0].UserId, ctx)
+	message, err := m.messageService.SendMessage(modell, ctx)
 
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
@@ -108,6 +119,6 @@ func (m MessageHandler) SendMessage(_ context.Context, request *pb.SendMessageRe
 	}
 	m.notificationService.Create(nnn)
 	m.pusher.Trigger("messages", "message", request.Message)
-	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername)
+	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername, ctx)
 	return &pb.MessageSentResponse{Message: response}, nil
 }
