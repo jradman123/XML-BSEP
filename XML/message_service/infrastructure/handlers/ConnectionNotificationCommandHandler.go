@@ -3,6 +3,7 @@ package handlers
 import (
 	events "common/module/saga/connection_events"
 	saga "common/module/saga/messaging"
+	"context"
 	"message/module/application"
 	"message/module/infrastructure/api"
 )
@@ -32,13 +33,13 @@ func (handler *ConnectionNotificationCommandHandler) handle(command *events.Conn
 	var reply = &events.ConnectionNotificationReply{}
 	switch command.Type {
 	case events.Connect:
-		_, err := handler.service.Create(notification)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
 			reply = api.MapConnectionNotificationReply(events.NotificationNotSent)
 		}
 		reply = api.MapConnectionNotificationReply(events.NotificationSent)
 	case events.AcceptRequest:
-		_, err := handler.service.Create(notification)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
 			reply = api.MapConnectionNotificationReply(events.NotificationNotSent)
 		}

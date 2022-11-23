@@ -3,6 +3,7 @@ package handlers
 import (
 	saga "common/module/saga/messaging"
 	events "common/module/saga/post_events"
+	"context"
 	"message/module/application"
 	"message/module/infrastructure/api"
 )
@@ -32,19 +33,19 @@ func (handler *NotificationCommandHandler) handle(command *events.PostNotificati
 	var reply = &events.PostNotificationReply{}
 	switch command.Type {
 	case events.LikePost:
-		_, err := handler.service.Create(notification)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
 			reply = api.MapPostNotificationReply(events.NotificationNotSent)
 		}
 		reply = api.MapPostNotificationReply(events.NotificationSent)
 	case events.DislikePost:
-		_, err := handler.service.Create(notification)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
 			reply = api.MapPostNotificationReply(events.NotificationNotSent)
 		}
 		reply = api.MapPostNotificationReply(events.NotificationSent)
 	case events.CommentPost:
-		_, err := handler.service.Create(notification)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
 			reply = api.MapPostNotificationReply(events.NotificationNotSent)
 		}
