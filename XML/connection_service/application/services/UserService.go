@@ -19,24 +19,29 @@ func NewUserService(userRepo repositories.UserRepository, logInfo *logger.Logger
 	return &UserService{userRepo, logInfo, logError}
 }
 
-func (s UserService) CreateUser(user model.User) error {
-
-	_, err := s.userRepo.Register(&user)
+func (s UserService) CreateUser(user model.User, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "createUserService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	_, err := s.userRepo.Register(&user, ctx)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s UserService) UpdateUser(user model.User) error {
-	err := s.userRepo.UpdateUser(&user)
+func (s UserService) UpdateUser(user model.User, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "updateUserService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	err := s.userRepo.UpdateUser(&user, ctx)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s UserService) DeleteUser(user model.User) error {
+func (s UserService) DeleteUser(user model.User, ctx context.Context) error {
 	fmt.Println("TODO:delete user from database")
 	return nil
 }
@@ -54,9 +59,12 @@ func (s UserService) GetUserId(username string, ctx context.Context) (string, er
 	return userId, nil
 }
 
-func (s UserService) ChangeProfileStatus(user model.User) error {
+func (s UserService) ChangeProfileStatus(user model.User, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "changeProfileStatusService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("saga : connection service : change profile status : unimplemented")
-	err := s.userRepo.ChangeProfileStatus(&user)
+	err := s.userRepo.ChangeProfileStatus(&user, ctx)
 	if err != nil {
 		return err
 	}
@@ -64,8 +72,11 @@ func (s UserService) ChangeProfileStatus(user model.User) error {
 	return nil
 }
 
-func (s UserService) UpdateUserProfessionalDetails(user model.User, details model.UserDetails) error {
-	err := s.userRepo.UpdateUserProfessionalDetails(&user, &details)
+func (s UserService) UpdateUserProfessionalDetails(user model.User, details model.UserDetails, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "updateUserProfessionalDetailsService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	err := s.userRepo.UpdateUserProfessionalDetails(&user, &details, ctx)
 	if err != nil {
 		return err
 	}

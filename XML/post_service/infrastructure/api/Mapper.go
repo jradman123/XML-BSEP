@@ -110,7 +110,10 @@ func MapNewJobOffer(offerPb *pb.JobOffer, ctx context.Context) *model.JobOffer {
 
 	return offer
 }
-func MapNewUser(command *events.UserCommand) *model.User {
+func MapNewUser(command *events.UserCommand, ctx context.Context) *model.User {
+	span := tracer.StartSpanFromContext(ctx, "mapNewUser")
+	defer span.Finish()
+
 	user := &model.User{
 		Id:        primitive.NewObjectID(),
 		UserId:    command.User.UserId,
@@ -122,7 +125,9 @@ func MapNewUser(command *events.UserCommand) *model.User {
 	}
 	return user
 }
-func MapUserReply(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
+func MapUserReply(user *model.User, replyType events.UserReplyType, ctx context.Context) (reply *events.UserReply) {
+	span := tracer.StartSpanFromContext(ctx, "mapUserReply")
+	defer span.Finish()
 	reply = &events.UserReply{
 		Type: replyType,
 		PostUser: events.PostUser{

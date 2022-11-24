@@ -5,7 +5,9 @@ import (
 	saga "common/module/saga/messaging"
 	"connection/module/application/services"
 	"connection/module/domain/model"
+	"context"
 	"fmt"
+	tracer "monitoring/module"
 )
 
 type JobOfferCommandHandler struct {
@@ -27,8 +29,10 @@ func NewJobOfferCommandHandler(service *services.JobOfferService, publisher saga
 	return o, nil
 }
 
-func (handler *JobOfferCommandHandler) handle(command *events.JobOfferCommand) {
-
+func (handler *JobOfferCommandHandler) handle(command *events.JobOfferCommand, ctx context.Context) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "jobOfferCommandHandler")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("usao u user command handler connection servisa")
 
 	job := model.JobOffer{
@@ -45,7 +49,7 @@ func (handler *JobOfferCommandHandler) handle(command *events.JobOfferCommand) {
 	switch command.Type {
 	case events.CreateJobOffer:
 		fmt.Println("events.DeleteJobOffer")
-		err := handler.service.CreateJob(job)
+		err := handler.service.CreateJob(job, ctx)
 		if err != nil {
 			reply.Type = events.JobRolledBack
 		}
@@ -54,7 +58,7 @@ func (handler *JobOfferCommandHandler) handle(command *events.JobOfferCommand) {
 		// TODO:Cannot update users' username
 	case events.DeleteJobOffer:
 		fmt.Println("events.DeleteJobOffer")
-		err := handler.service.DeleteJob(job)
+		err := handler.service.DeleteJob(job, ctx)
 		if err != nil {
 			reply.Type = events.JobRolledBack
 		}

@@ -20,23 +20,35 @@ func NewUserService(repository repositories.UserRepository, logInfo *logger.Logg
 	return &UserService{repository: repository, logInfo: logInfo, logError: logError}
 }
 
-func (s UserService) CreateUser(requestUser *model.User) (user *model.User, err error) {
-	user, err = s.repository.CreateUser(requestUser)
+func (s UserService) CreateUser(requestUser *model.User, ctx context.Context) (user *model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "createUserService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err = s.repository.CreateUser(requestUser, ctx)
 	return user, err
 }
 
-func (s UserService) UpdateUser(requestUser *model.User) (user *model.User, err error) {
-	user, err = s.repository.UpdateUser(requestUser)
+func (s UserService) UpdateUser(requestUser *model.User, ctx context.Context) (user *model.User, err error) {
+	span := tracer.StartSpanFromContext(ctx, "updateUserService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	user, err = s.repository.UpdateUser(requestUser, ctx)
 	return user, err
 }
 
-func (s UserService) DeleteUser(userId uuid.UUID) (err error) {
-	err = s.repository.DeleteUser(userId)
+func (s UserService) DeleteUser(userId uuid.UUID, ctx context.Context) (err error) {
+	span := tracer.StartSpanFromContext(ctx, "deleteUserService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	err = s.repository.DeleteUser(userId, ctx)
 	return err
 }
 
-func (s UserService) ActivateUserAccount(userId uuid.UUID) (err error) {
-	err = s.repository.ActivateUserAccount(userId)
+func (s UserService) ActivateUserAccount(userId uuid.UUID, ctx context.Context) (err error) {
+	span := tracer.StartSpanFromContext(ctx, "activateUserAccountService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	err = s.repository.ActivateUserAccount(userId, ctx)
 	return err
 }
 func (s UserService) Get(id primitive.ObjectID) (user *model.User, err error) {

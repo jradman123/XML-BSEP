@@ -100,8 +100,11 @@ func (service *PostService) GetAllJobOffers(ctx context.Context) ([]*model.JobOf
 	return service.repository.GetAllJobOffers(ctx)
 }
 
-func (service *PostService) UpdateUserPosts(user *model.User) error {
-	return service.repository.UpdateUserPosts(user)
+func (service *PostService) UpdateUserPosts(user *model.User, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "updateUserPostsService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	return service.repository.UpdateUserPosts(user, ctx)
 }
 
 func (service *PostService) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID, ctx context.Context) (model.ReactionType, error) {

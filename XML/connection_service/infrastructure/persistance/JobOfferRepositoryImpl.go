@@ -4,9 +4,11 @@ import (
 	"common/module/logger"
 	connectionModel "connection/module/domain/model"
 	"connection/module/domain/repositories"
+	"context"
 	"errors"
 	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	tracer "monitoring/module"
 )
 
 type JobOfferRepositoryImpl struct {
@@ -24,7 +26,10 @@ func NewJobOfferRepositoryImpl(client *neo4j.Driver, logInfo *logger.Logger, log
 		connectionRepo: connectionRepo,
 	}
 }
-func (u UserRepositoryImpl) Create(job *connectionModel.JobOffer) (connectionModel.JobOffer, error) {
+func (u UserRepositoryImpl) Create(job *connectionModel.JobOffer, ctx context.Context) (connectionModel.JobOffer, error) {
+	span := tracer.StartSpanFromContext(ctx, "createJobRepository")
+	defer span.Finish()
+
 	fmt.Println("[Create job offer connection service]")
 	fmt.Println(job)
 	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})

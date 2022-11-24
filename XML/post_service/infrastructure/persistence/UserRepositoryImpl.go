@@ -46,8 +46,11 @@ func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) 
 	return u.filter(filter, ctx)
 }
 
-func (u UserRepositoryImpl) CreateUser(user *model.User) (*model.User, error) {
-	result, err := u.users.InsertOne(context.TODO(), user)
+func (u UserRepositoryImpl) CreateUser(user *model.User, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "createUserRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	result, err := u.users.InsertOne(ctx, user)
 	if err != nil {
 		return nil, err
 	}
@@ -56,9 +59,11 @@ func (u UserRepositoryImpl) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func (u UserRepositoryImpl) UpdateUser(user *model.User) (*model.User, error) {
-
-	_, err := u.users.UpdateOne(context.TODO(), bson.M{"user_id": user.UserId}, bson.D{
+func (u UserRepositoryImpl) UpdateUser(user *model.User, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "updateUserRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	_, err := u.users.UpdateOne(ctx, bson.M{"user_id": user.UserId}, bson.D{
 		{"$set", bson.D{{"username", user.Username}}},
 		{"$set", bson.D{{"name", user.FirstName}}},
 		{"$set", bson.D{{"last_name", user.LastName}}},
@@ -71,8 +76,11 @@ func (u UserRepositoryImpl) UpdateUser(user *model.User) (*model.User, error) {
 
 }
 
-func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID) (err error) {
-	_, err = u.users.DeleteOne(context.TODO(),
+func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID, ctx context.Context) (err error) {
+	span := tracer.StartSpanFromContext(ctx, "deleteUserRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	_, err = u.users.DeleteOne(ctx,
 		bson.M{"user_id": userId})
 	if err != nil {
 		log.Fatal(err)
@@ -80,8 +88,11 @@ func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID) (err error) {
 	return err
 }
 
-func (u UserRepositoryImpl) ActivateUserAccount(userId uuid.UUID) (err error) {
-	_, err = u.users.UpdateOne(context.TODO(), bson.M{"user_id": userId}, bson.D{
+func (u UserRepositoryImpl) ActivateUserAccount(userId uuid.UUID, ctx context.Context) (err error) {
+	span := tracer.StartSpanFromContext(ctx, "activateUserAccountRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	_, err = u.users.UpdateOne(ctx, bson.M{"user_id": userId}, bson.D{
 		{"$set",
 			bson.D{
 				{"activated", true},

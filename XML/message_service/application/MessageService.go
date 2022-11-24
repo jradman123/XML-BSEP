@@ -39,6 +39,6 @@ func (service *MessageService) SendMessage(message *model.Message, ctx context.C
 	return service.repository.SendMessage(message, ctx)
 }
 
-func (service *MessageService) UpdateUserMessages(user *model.User) error {
+func (service *MessageService) UpdateUserMessages(user *model.User, ctx context.Context) error {
 	return nil
 }

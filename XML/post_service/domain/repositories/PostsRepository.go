@@ -17,7 +17,7 @@ type PostRepository interface {
 	DislikePost(post *model.Post, userId uuid.UUID, ctx context.Context) error
 	CreateJobOffer(offer *model.JobOffer, ctx context.Context) (*model.JobOffer, error)
 	GetAllJobOffers(ctx context.Context) ([]*model.JobOffer, error)
-	UpdateUserPosts(user *model.User) error
+	UpdateUserPosts(user *model.User, ctx context.Context) error
 	CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID, ctx context.Context) (model.ReactionType, error)
 	GetUsersJobOffers(username string, ctx context.Context) ([]*model.JobOffer, error)
 }

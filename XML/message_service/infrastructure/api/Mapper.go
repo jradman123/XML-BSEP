@@ -14,7 +14,9 @@ import (
 	"time"
 )
 
-func MapNewUser(command *events.UserCommand) *model.User {
+func MapNewUser(command *events.UserCommand, ctx context.Context) *model.User {
+	span := tracer.StartSpanFromContext(ctx, "mapNewUser")
+	defer span.Finish()
 	user := &model.User{
 		Id:       primitive.NewObjectID(),
 		UserId:   command.User.UserId,
@@ -44,8 +46,9 @@ func MapUserForUpdate(command *events.UserCommand, userForUpdate *model.User) *m
 	return user
 }
 
-func MapNewPostNotification(command *postEvents.PostNotificationCommand) *model.Notification {
-
+func MapNewPostNotification(command *postEvents.PostNotificationCommand, ctx context.Context) *model.Notification {
+	span := tracer.StartSpanFromContext(ctx, "mapNewPostNotification")
+	defer span.Finish()
 	notification := &model.Notification{
 		Id:               primitive.NewObjectID(),
 		Timestamp:        time.Now(),
@@ -60,8 +63,9 @@ func MapNewPostNotification(command *postEvents.PostNotificationCommand) *model.
 	return notification
 }
 
-func MapNewConnectionNotification(command *connectionEvents.ConnectionNotificationCommand) *model.Notification {
-
+func MapNewConnectionNotification(command *connectionEvents.ConnectionNotificationCommand, ctx context.Context) *model.Notification {
+	span := tracer.StartSpanFromContext(ctx, "mapNewConnectionNotification")
+	defer span.Finish()
 	notification := &model.Notification{
 		Id:               primitive.NewObjectID(),
 		Timestamp:        time.Now(),
@@ -76,20 +80,27 @@ func MapNewConnectionNotification(command *connectionEvents.ConnectionNotificati
 	return notification
 }
 
-func MapPostNotificationReply(replyType postEvents.PostNotificationReplyType) (reply *postEvents.PostNotificationReply) {
+func MapPostNotificationReply(replyType postEvents.PostNotificationReplyType, ctx context.Context) (reply *postEvents.PostNotificationReply) {
+	span := tracer.StartSpanFromContext(ctx, "mapPostNotificationReply")
+	defer span.Finish()
 	reply = &postEvents.PostNotificationReply{
 		Type: replyType,
 	}
 	return reply
 }
-func MapConnectionNotificationReply(replyType connectionEvents.ConnectionNotificationReplyType) (reply *connectionEvents.ConnectionNotificationReply) {
+func MapConnectionNotificationReply(replyType connectionEvents.ConnectionNotificationReplyType, ctx context.Context) (reply *connectionEvents.ConnectionNotificationReply) {
+	span := tracer.StartSpanFromContext(ctx, "mapConnectionNotificationReply")
+	defer span.Finish()
 	reply = &connectionEvents.ConnectionNotificationReply{
 		Type: replyType,
 	}
 	return reply
 }
 
-func MapUserReply(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
+func MapUserReply(user *model.User, replyType events.UserReplyType, ctx context.Context) (reply *events.UserReply) {
+	span := tracer.StartSpanFromContext(ctx, "mapUserReply")
+	defer span.Finish()
+
 	reply = &events.UserReply{
 		Type: replyType,
 		PostUser: events.PostUser{

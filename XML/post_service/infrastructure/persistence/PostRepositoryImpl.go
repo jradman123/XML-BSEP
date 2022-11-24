@@ -127,7 +127,7 @@ func (p PostRepositoryImpl) GetUsersJobOffers(username string, ctx context.Conte
 	return p.filterJobOffers(filter, ctx)
 }
 
-func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
+func (p PostRepositoryImpl) UpdateUserPosts(user *model.User, ctx context.Context) error {
 	//filter := bson.M{"user_id": user.UserId}
 	//posts, err := p.filter(filter)
 	//if err != nil {
@@ -138,7 +138,10 @@ func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
 	//		{"$set", bson.D{{"username", user.Username}}},
 	//	})
 	//}
-	p.posts.UpdateMany(context.TODO(), bson.M{"user_id": user.UserId},
+	span := tracer.StartSpanFromContext(ctx, "updateUserPostsRepository")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	p.posts.UpdateMany(ctx, bson.M{"user_id": user.UserId},
 		bson.D{
 			{"$set", bson.D{{"username", user.Username}}}})
 	return nil

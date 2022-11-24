@@ -6,6 +6,7 @@ import (
 	"context"
 	"message/module/application"
 	"message/module/infrastructure/api"
+	tracer "monitoring/module"
 )
 
 type ConnectionNotificationCommandHandler struct {
@@ -27,25 +28,28 @@ func NewConnectionNotificationCommandHandler(service *application.NotificationSe
 	return o, nil
 }
 
-func (handler *ConnectionNotificationCommandHandler) handle(command *events.ConnectionNotificationCommand) {
+func (handler *ConnectionNotificationCommandHandler) handle(command *events.ConnectionNotificationCommand, ctx context.Context) {
+	span := tracer.StartSpanFromContextMetadata(ctx, "connectionNotificationHandler")
+	defer span.Finish()
 
-	notification := api.MapNewConnectionNotification(command)
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	notification := api.MapNewConnectionNotification(command, ctx)
 	var reply = &events.ConnectionNotificationReply{}
 	switch command.Type {
 	case events.Connect:
-		_, err := handler.service.Create(notification, context.TODO())
+		_, err := handler.service.Create(notification, ctx)
 		if err != nil {
-			reply = api.MapConnectionNotificationReply(events.NotificationNotSent)
+			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, ctx)
 		}
-		reply = api.MapConnectionNotificationReply(events.NotificationSent)
+		reply = api.MapConnectionNotificationReply(events.NotificationSent, ctx)
 	case events.AcceptRequest:
-		_, err := handler.service.Create(notification, context.TODO())
+		_, err := handler.service.Create(notification, ctx)
 		if err != nil {
-			reply = api.MapConnectionNotificationReply(events.NotificationNotSent)
+			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, ctx)
 		}
-		reply = api.MapConnectionNotificationReply(events.NotificationSent)
+		reply = api.MapConnectionNotificationReply(events.NotificationSent, ctx)
 	default:
-		reply = api.MapConnectionNotificationReply(events.UnknownReply)
+		reply = api.MapConnectionNotificationReply(events.UnknownReply, ctx)
 
 		if reply.Type != events.UnknownReply {
 			_ = handler.replyPublisher.Publish(reply)
