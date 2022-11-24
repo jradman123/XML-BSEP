@@ -6,6 +6,7 @@ import (
 	"gateway/module/domain/model"
 	"gateway/module/domain/repositories"
 	"gorm.io/gorm"
+	tracer "monitoring/module"
 )
 
 type UserRepositoryImpl struct {
@@ -23,6 +24,8 @@ func (r UserRepositoryImpl) GetUsers() ([]model.User, error) {
 }
 
 func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameRepository")
+	defer span.Finish()
 	user := &model.User{}
 	if r.db.First(&user, "username = ?", username).RowsAffected == 0 {
 		return nil, errors.New("user not found")
@@ -48,7 +51,10 @@ func (r UserRepositoryImpl) GetUserSalt(username string) (string, error) {
 	return result, nil
 }
 
-func (r UserRepositoryImpl) GetUserRole(username string) (string, error) {
+func (r UserRepositoryImpl) GetUserRole(username string, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUserRoleRepository")
+	defer span.Finish()
+
 	var result int
 	r.db.Table("users").Select("role").Where("username = ?", username).Scan(&result)
 

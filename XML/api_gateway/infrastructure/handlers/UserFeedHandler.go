@@ -12,6 +12,8 @@ import (
 	clients "gateway/module/infrastructure/api"
 	"gateway/module/startup/config"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	otgo "github.com/opentracing/opentracing-go"
+	tracer "monitoring/module"
 	"net/http"
 )
 
@@ -44,6 +46,10 @@ func (u UserFeedHandler) Init(mux *runtime.ServeMux) {
 }
 
 func (u UserFeedHandler) GetFeedPostsForUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
+	span := tracer.StartSpanFromRequest("getFeedPostsForUser", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("GetFeedPostsForUser HANDLER")
 	username := params["username"]
 	if username == "" {
@@ -53,7 +59,7 @@ func (u UserFeedHandler) GetFeedPostsForUser(rw http.ResponseWriter, r *http.Req
 	postsClient := clients.NewPostClient(u.postServiceAddress)
 	connectionClient := clients.NewConnectionClient(u.connectionServiceAddress)
 
-	connections, err := connectionClient.GetConnections(context.TODO(), &connectionPb.GetRequest{Username: username})
+	connections, err := connectionClient.GetConnections(ctx, &connectionPb.GetRequest{Username: username})
 	if err != nil {
 		rw.WriteHeader(http.StatusNotFound)
 		return
@@ -61,7 +67,7 @@ func (u UserFeedHandler) GetFeedPostsForUser(rw http.ResponseWriter, r *http.Req
 
 	var posts []model.Post
 	for _, user := range connections.Users {
-		postsPbs, err := postsClient.GetAllByUsername(context.TODO(), &postPb.GetRequest{Id: user.Username})
+		postsPbs, err := postsClient.GetAllByUsername(ctx, &postPb.GetRequest{Id: user.Username})
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
 			return

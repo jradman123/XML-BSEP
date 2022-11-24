@@ -3,6 +3,7 @@ WORKDIR /app
 
 COPY  ./api_gateway/go.mod ./api_gateway/go.sum ./
 COPY /common ../common
+COPY /monitoring ../monitoring
 RUN go mod download
 COPY ./api_gateway/ .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o api-gateway

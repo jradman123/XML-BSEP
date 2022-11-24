@@ -25,14 +25,20 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"io"
 	"log"
+	traceri "monitoring/module"
 	"net/http"
 	"os"
 )
 
+const name = "api_gateway"
+
 type Server struct {
 	config *cfg.Config
 	mux    *runtime.ServeMux // Part of grpcGateway library
+	tracer otgo.Tracer
+	closer io.Closer
 }
 
 var grpcGatewayTag = otgo.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
@@ -56,9 +62,13 @@ func tracingWrapper(h http.Handler) http.Handler {
 	})
 }
 func NewServer(config *cfg.Config) *Server {
+	tracer, closer := traceri.Init(name)
+	otgo.SetGlobalTracer(tracer)
 	server := &Server{
 		config: config,
 		mux:    runtime.NewServeMux(),
+		tracer: tracer,
+		closer: closer,
 	}
 	server.initHandlers()
 	server.initCustomHandlers()
@@ -188,4 +198,8 @@ func (server *Server) InitPasswordlessService(logInfo *logger.Logger, logError *
 
 func (server *Server) InitLoginVerificationRepo(db *gorm.DB) repositories.LoginVerificationRepository {
 	return persistance.NewLoginVerificationRepositoryImpl(db)
+}
+
+func (server *Server) GetTracer() otgo.Tracer {
+	return server.tracer
 }

@@ -6,6 +6,7 @@ import (
 	"gateway/module/domain/model"
 	"gateway/module/domain/repositories"
 	"log"
+	tracer "monitoring/module"
 )
 
 type UserService struct {
@@ -19,6 +20,10 @@ func NewUserService(l *log.Logger, logInfo *logger.Logger, logError *logger.Logg
 	return &UserService{l, logInfo, logError, repository}
 }
 func (u UserService) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "getByUsernameService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
@@ -37,8 +42,12 @@ func (u UserService) UserExists(username string) error {
 	return nil
 }
 
-func (u UserService) GetUserRole(username string) (string, error) {
-	role, err := u.userRepository.GetUserRole(username)
+func (u UserService) GetUserRole(username string, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUserRoleService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	role, err := u.userRepository.GetUserRole(username, ctx)
 
 	if err != nil {
 		return "", err

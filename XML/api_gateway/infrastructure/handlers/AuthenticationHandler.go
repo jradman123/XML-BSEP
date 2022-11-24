@@ -15,10 +15,12 @@ import (
 	modelGateway "gateway/module/domain/model"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/microcosm-cc/bluemonday"
+	otgo "github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
+	tracer "monitoring/module"
 	"net/http"
 	"strconv"
 	"strings"
@@ -82,6 +84,10 @@ func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
 }
 
 func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("check2FaForUser", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	a.l.Printf("Handling Check2FaForUser Users ")
 	var request dto.UsernameRequest
 
@@ -93,7 +99,7 @@ func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.R
 	policy := bluemonday.UGCPolicy()
 
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
-	res, err := a.tfaService.Check2FaForUser(request.Username)
+	res, err := a.tfaService.Check2FaForUser(request.Username, ctx)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
@@ -110,6 +116,10 @@ func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.R
 }
 
 func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("enable2FaForUser", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	a.l.Printf("Handling Check2FaForUser Users ")
 	var request dto.UsernameRequest
 
@@ -121,7 +131,7 @@ func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.
 	policy := bluemonday.UGCPolicy()
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
 
-	res, uri, _ := a.tfaService.Enable2FaForUser(request.Username)
+	res, uri, _ := a.tfaService.Enable2FaForUser(request.Username, ctx)
 	enable2FaResponse := dto.Enable2FaResponse{
 		Res: res,
 		Uri: uri,
@@ -136,6 +146,10 @@ func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.
 }
 
 func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("disable2FaForUser", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	a.l.Printf("Handling Disable2FaForUser Users ")
 	var request dto.UsernameRequest
 
@@ -147,7 +161,7 @@ func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http
 	policy := bluemonday.UGCPolicy()
 
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
-	res, _ := a.tfaService.Disable2FaForUser(request.Username)
+	res, _ := a.tfaService.Disable2FaForUser(request.Username, ctx)
 
 	response, _ := json.Marshal(res)
 	_, err = rw.Write(response)
@@ -159,6 +173,10 @@ func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http
 }
 
 func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("authenticateUser", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	a.l.Println("Handling AuthenticateUser Users")
 
 	var loginRequest dto.LoginRequest
@@ -179,7 +197,7 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 		"userIP": ip,
 	}).Infof("INFO:Handling LOGIN")
 
-	user, err := a.userService.GetByUsername(context.TODO(), loginRequest.Username)
+	user, err := a.userService.GetByUsername(ctx, loginRequest.Username)
 	if err != nil {
 		http.Error(rw, "Invalid credentials!", http.StatusBadRequest)
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -212,7 +230,7 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 	policy := bluemonday.UGCPolicy()
 
 	loginRequest.Username = strings.TrimSpace(policy.Sanitize(loginRequest.Username))
-	twofa, err := a.tfaService.Check2FaForUser(loginRequest.Username)
+	twofa, err := a.tfaService.Check2FaForUser(loginRequest.Username, ctx)
 	if err != nil {
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
@@ -231,6 +249,10 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 }
 
 func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("authenticate2Fa", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	a.l.Printf("Handling Authenticate2Fa Users ")
 	var request dto.AuthenticateRequest
 
@@ -242,7 +264,7 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	policy := bluemonday.UGCPolicy()
 
 	request.Username = strings.TrimSpace(policy.Sanitize(request.Username))
-	userSecret, err := a.tfaService.GetUserSecret(request.Username)
+	userSecret, err := a.tfaService.GetUserSecret(request.Username, ctx)
 	if err != nil {
 		http.Error(rw, "Error user secret", http.StatusBadRequest)
 		return
@@ -265,7 +287,7 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	var claims = &interceptor.JwtClaims{}
 	claims.Username = request.Username
 
-	userRoles, err := a.userService.GetUserRole(request.Username)
+	userRoles, err := a.userService.GetUserRole(request.Username, ctx)
 	ip := ReadUserIP(r)
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -290,7 +312,7 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 		return
 
 	}
-	user, err := a.userService.GetByUsername(context.TODO(), request.Username)
+	user, err := a.userService.GetByUsername(ctx, request.Username)
 	var roleString string
 
 	if user.Role == modelGateway.Admin {
@@ -319,6 +341,10 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 }
 
 func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("authenticateUserRegular", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	a.l.Println("Handling AuthenticateUserRegular Users")
 
 	var loginRequest dto.UsernameRequest
@@ -334,7 +360,7 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 	var claims = &interceptor.JwtClaims{}
 	claims.Username = loginRequest.Username
 
-	userRoles, err := a.userService.GetUserRole(loginRequest.Username)
+	userRoles, err := a.userService.GetUserRole(loginRequest.Username, ctx)
 	ip := ReadUserIP(r)
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
@@ -358,7 +384,7 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 		return
 
 	}
-	user, err := a.userService.GetByUsername(context.TODO(), loginRequest.Username)
+	user, err := a.userService.GetByUsername(ctx, loginRequest.Username)
 	var roleString string
 
 	if user.Role == modelGateway.Admin {
@@ -387,6 +413,10 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 }
 
 func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("passwordLessLoginReq", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	var loginRequest dto.PasswordLessLoginRequest
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
@@ -419,7 +449,7 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 		}).Infof("INFO:Handling PasswordLessLoginReq")
 	}
 
-	user, err := a.userService.GetByUsername(context.TODO(), loginRequest.Username)
+	user, err := a.userService.GetByUsername(ctx, loginRequest.Username)
 	if err != nil {
 		a.logError.Logger.WithFields(logrus.Fields{
 			"user":   loginRequest.Username,
@@ -437,7 +467,7 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
-	err = a.passwordLessService.SendLink(context.TODO(), "https://localhost:4200", "http://localhost:9090/", user)
+	err = a.passwordLessService.SendLink(ctx, "https://localhost:4200", "http://localhost:9090/", user)
 	if err != nil {
 		return
 	}
@@ -447,6 +477,10 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 }
 
 func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
+	span := tracer.StartSpanFromRequest("passwordLessLogin", otgo.GlobalTracer(), r)
+	defer span.Finish()
+
+	ctx := tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("Handling PasswordlessLogin Request")
 	ip := ReadUserIP(r)
 	var code string
@@ -475,14 +509,14 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 
 	}
 
-	ver, err := a.passwordLessService.GetUsernameByCode(code)
+	ver, err := a.passwordLessService.GetUsernameByCode(code, ctx)
 	username := ver.Username
 	if err != nil {
 		http.Error(rw, "code doesn't exist ot is invalid", http.StatusBadRequest)
 		return
 	}
 
-	user, err := a.userService.GetByUsername(context.TODO(), username)
+	user, err := a.userService.GetByUsername(ctx, username)
 	if err != nil {
 		a.LogError(ip, user.Username, "USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
@@ -493,7 +527,7 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 		http.Error(rw, "User account not activated! ", http.StatusBadRequest)
 		return
 	}
-	validCode, err := a.passwordLessService.PasswordlessLogin(ver)
+	validCode, err := a.passwordLessService.PasswordlessLogin(ver, ctx)
 	if !validCode {
 		a.LogError(ip, user.Username, "CODE INVALID")
 		http.Error(rw, "Code invalid! ", http.StatusBadRequest)
@@ -508,7 +542,7 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	var claims = &interceptor.JwtClaims{}
 	claims.Username = username
 
-	userRoles, err := a.userService.GetUserRole(username)
+	userRoles, err := a.userService.GetUserRole(username, ctx)
 	if err != nil {
 		a.LogError(ip, user.Username, "THIS USER HAS NO ROLE")
 		http.Error(rw, err.Error(), http.StatusBadRequest)

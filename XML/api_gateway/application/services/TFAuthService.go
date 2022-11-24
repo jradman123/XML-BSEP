@@ -1,12 +1,14 @@
 package services
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base32"
 	"errors"
 	"gateway/module/domain/repositories"
 	"github.com/dgryski/dgoogauth"
 	"log"
+	tracer "monitoring/module"
 )
 
 type TFAuthService struct {
@@ -42,8 +44,11 @@ func GenerateNewUserSecret() []byte {
 	return secret
 }
 
-func (u TFAuthService) Check2FaForUser(username string) (bool, error) {
-	res, err := u.repository.Check2FaForUser(username)
+func (u TFAuthService) Check2FaForUser(username string, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "Check2FaForUserService")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	res, err := u.repository.Check2FaForUser(username, ctx)
 
 	if err != nil {
 		return false, err
@@ -51,15 +56,19 @@ func (u TFAuthService) Check2FaForUser(username string) (bool, error) {
 	return res, nil
 }
 
-func (u TFAuthService) Enable2FaForUser(username string) (bool, string, error) {
+func (u TFAuthService) Enable2FaForUser(username string, ctx context.Context) (bool, string, error) {
+	span := tracer.StartSpanFromContext(ctx, "enable2FaForUserService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	secrets := GenerateNewUserSecret()
 	secret := base32.StdEncoding.EncodeToString(secrets)
-	check, _ := u.repository.Check2FaForUser(username)
+	check, _ := u.repository.Check2FaForUser(username, ctx)
 	if check == true {
 		return false, "", TwoFactorEnabled
 	}
 
-	res, err := u.repository.Enable2FaForUser(username, secret)
+	res, err := u.repository.Enable2FaForUser(username, secret, ctx)
 	if err != nil {
 		return false, "", err
 	}
@@ -80,8 +89,12 @@ func (u TFAuthService) Enable2FaForUser(username string) (bool, string, error) {
 
 }
 
-func (u TFAuthService) Disable2FaForUser(username string) (bool, error) {
-	res, err := u.repository.Disable2FaForUser(username)
+func (u TFAuthService) Disable2FaForUser(username string, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "disable2FaForUserService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	res, err := u.repository.Disable2FaForUser(username, ctx)
 
 	if err != nil {
 		return false, err
@@ -90,8 +103,12 @@ func (u TFAuthService) Disable2FaForUser(username string) (bool, error) {
 
 }
 
-func (u TFAuthService) GetUserSecret(username string) (string, error) {
-	res, err := u.repository.GetUserSecret(username)
+func (u TFAuthService) GetUserSecret(username string, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "getUserSecretService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	res, err := u.repository.GetUserSecret(username, ctx)
 
 	if err != nil {
 		return "", err
