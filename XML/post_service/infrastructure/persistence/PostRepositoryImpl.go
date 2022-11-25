@@ -33,7 +33,7 @@ func NewPostRepositoryImpl(client *mongo.Client) repositories.PostRepository {
 }
 
 func (p PostRepositoryImpl) Get(id primitive.ObjectID, ctx context.Context) (post *model.Post, err error) {
-	span := tracer.StartSpanFromContext(ctx, "getRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -43,7 +43,7 @@ func (p PostRepositoryImpl) Get(id primitive.ObjectID, ctx context.Context) (pos
 
 func (p PostRepositoryImpl) GetAll(ctx context.Context) ([]*model.Post, error) {
 
-	span := tracer.StartSpanFromContext(ctx, "getAllRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -52,7 +52,7 @@ func (p PostRepositoryImpl) GetAll(ctx context.Context) ([]*model.Post, error) {
 }
 
 func (p PostRepositoryImpl) Create(post *model.Post, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "createPostRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreatePostRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -66,7 +66,7 @@ func (p PostRepositoryImpl) Create(post *model.Post, ctx context.Context) error 
 }
 
 func (p PostRepositoryImpl) GetAllByUsername(username string, ctx context.Context) ([]*model.Post, error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllByUsernameRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllByUsernameRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -75,7 +75,7 @@ func (p PostRepositoryImpl) GetAllByUsername(username string, ctx context.Contex
 }
 
 func (p PostRepositoryImpl) CreateComment(post *model.Post, comment *model.Comment, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "createCommentService")
+	span := tracer.StartSpanFromContext(ctx, "CreateCommentRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -93,7 +93,7 @@ func (p PostRepositoryImpl) CreateComment(post *model.Post, comment *model.Comme
 }
 
 func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer, ctx context.Context) (*model.JobOffer, error) {
-	span := tracer.StartSpanFromContext(ctx, "createJobOfferRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateJobOfferRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -110,7 +110,7 @@ func (p PostRepositoryImpl) CreateJobOffer(offer *model.JobOffer, ctx context.Co
 }
 
 func (p PostRepositoryImpl) GetAllJobOffers(ctx context.Context) ([]*model.JobOffer, error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllJobOffersRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllJobOffersRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -119,7 +119,7 @@ func (p PostRepositoryImpl) GetAllJobOffers(ctx context.Context) ([]*model.JobOf
 }
 
 func (p PostRepositoryImpl) GetUsersJobOffers(username string, ctx context.Context) ([]*model.JobOffer, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUsersJobOffersRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetUsersJobOffersRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -138,7 +138,7 @@ func (p PostRepositoryImpl) UpdateUserPosts(user *model.User, ctx context.Contex
 	//		{"$set", bson.D{{"username", user.Username}}},
 	//	})
 	//}
-	span := tracer.StartSpanFromContext(ctx, "updateUserPostsRepository")
+	span := tracer.StartSpanFromContext(ctx, "UpdateUserPostsRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	p.posts.UpdateMany(ctx, bson.M{"user_id": user.UserId},
@@ -147,7 +147,7 @@ func (p PostRepositoryImpl) UpdateUserPosts(user *model.User, ctx context.Contex
 	return nil
 }
 func (p PostRepositoryImpl) LikePost(post *model.Post, userId uuid.UUID, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "likePostRepository")
+	span := tracer.StartSpanFromContext(ctx, "LikePostRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -186,7 +186,7 @@ func (p PostRepositoryImpl) LikePost(post *model.Post, userId uuid.UUID, ctx con
 }
 
 func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "dislikePostRepository")
+	span := tracer.StartSpanFromContext(ctx, "DislikePostRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -223,7 +223,7 @@ func (p PostRepositoryImpl) DislikePost(post *model.Post, userId uuid.UUID, ctx 
 	return nil
 }
 func (p PostRepositoryImpl) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID, ctx context.Context) (model.ReactionType, error) {
-	span := tracer.StartSpanFromContext(ctx, "checkLikedStatusRepository")
+	span := tracer.StartSpanFromContext(ctx, "CheckLikedStatusRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

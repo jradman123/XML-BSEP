@@ -6,7 +6,7 @@ import (
 )
 
 type PasswordRecoveryRequestRepository interface {
-	CreatePasswordRecoveryRequest(ver *model.PasswordRecoveryRequest) (*model.PasswordRecoveryRequest, error)
+	CreatePasswordRecoveryRequest(ver *model.PasswordRecoveryRequest, ctx context.Context) (*model.PasswordRecoveryRequest, error)
 	GetPasswordRecoveryRequestByUsername(username string, ctx context.Context) (*model.PasswordRecoveryRequest, error)
-	ClearOutRequestsForUsername(username string) error
+	ClearOutRequestsForUsername(username string, ctx context.Context) error
 }

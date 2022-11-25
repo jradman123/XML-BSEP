@@ -84,7 +84,7 @@ func (a AuthenticationHandler) Init(mux *runtime.ServeMux) {
 }
 
 func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("check2FaForUser", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("Check2FaForUser", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)
@@ -116,7 +116,7 @@ func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.R
 }
 
 func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("enable2FaForUser", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("Enable2FaForUser", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)
@@ -146,7 +146,7 @@ func (a AuthenticationHandler) Enable2FaForUser(rw http.ResponseWriter, r *http.
 }
 
 func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("disable2FaForUser", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("Disable2FaForUser", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)
@@ -173,7 +173,7 @@ func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http
 }
 
 func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("authenticateUser", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("AuthenticateUser", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)
@@ -249,7 +249,7 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 }
 
 func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("authenticate2Fa", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("Authenticate2Fa", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)
@@ -341,7 +341,7 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 }
 
 func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("authenticateUserRegular", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("AuthenticateUserRegular", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)
@@ -413,7 +413,7 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 }
 
 func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("passwordLessLoginReq", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("PasswordLessLoginReq", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)
@@ -477,7 +477,7 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 }
 
 func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http.Request, _ map[string]string) {
-	span := tracer.StartSpanFromRequest("passwordLessLogin", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("PasswordlessLogin", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)

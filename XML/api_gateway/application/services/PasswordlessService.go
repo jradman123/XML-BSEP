@@ -39,7 +39,7 @@ func NewPasswordLessService(logInfo *logger.Logger, logError *logger.Logger, rep
 }
 
 func (s *PasswordLessService) GetUsernameByCode(code string, ctx context.Context) (*modelGateway.LoginVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUsernameByCode")
+	span := tracer.StartSpanFromContext(ctx, "GetUsernameByCode")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -83,7 +83,7 @@ func BadEmail(input string) bool {
 	return !justMail
 }
 func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin string, user *modelGateway.User) error {
-	span := tracer.StartSpanFromContext(ctx, "sendLink")
+	span := tracer.StartSpanFromContext(ctx, "SendLink")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -117,7 +117,7 @@ func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin 
 }
 
 func (s *PasswordLessService) PasswordlessLogin(ver *modelGateway.LoginVerification, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "passwordLessLogin")
+	span := tracer.StartSpanFromContext(ctx, "PasswordlessLogin")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

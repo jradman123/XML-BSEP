@@ -57,7 +57,7 @@ func (u TFAuthService) Check2FaForUser(username string, ctx context.Context) (bo
 }
 
 func (u TFAuthService) Enable2FaForUser(username string, ctx context.Context) (bool, string, error) {
-	span := tracer.StartSpanFromContext(ctx, "enable2FaForUserService")
+	span := tracer.StartSpanFromContext(ctx, "Enable2FaForUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -90,7 +90,7 @@ func (u TFAuthService) Enable2FaForUser(username string, ctx context.Context) (b
 }
 
 func (u TFAuthService) Disable2FaForUser(username string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "disable2FaForUserService")
+	span := tracer.StartSpanFromContext(ctx, "Disable2FaForUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -104,7 +104,7 @@ func (u TFAuthService) Disable2FaForUser(username string, ctx context.Context) (
 }
 
 func (u TFAuthService) GetUserSecret(username string, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUserSecretService")
+	span := tracer.StartSpanFromContext(ctx, "GetUserSecretService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

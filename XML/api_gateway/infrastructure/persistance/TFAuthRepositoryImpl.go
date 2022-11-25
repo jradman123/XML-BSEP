@@ -20,7 +20,7 @@ func NewTFAuthRepositoryImpl(db *gorm.DB) repositories.TFAuthRepository {
 }
 
 func (t TFAuthRepositoryImpl) Check2FaForUser(username string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "check2FaForUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "Check2FaForUserRepository")
 	defer span.Finish()
 	result := t.db.First(&model.QrCode{}, "username = ? AND is_valid = ?", username, true)
 	if result.RowsAffected == 0 {
@@ -46,7 +46,7 @@ func (t TFAuthRepositoryImpl) Enable2FaForUser(username string, secret string, c
 }
 
 func (t TFAuthRepositoryImpl) GetUserSecret(username string, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUserSecretRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetUserSecretRepository")
 	defer span.Finish()
 
 	var result string = ""
@@ -58,7 +58,7 @@ func (t TFAuthRepositoryImpl) GetUserSecret(username string, ctx context.Context
 }
 
 func (t TFAuthRepositoryImpl) GetUserQr(username string, ctx context.Context) (model.QrCode, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUserQr")
+	span := tracer.StartSpanFromContext(ctx, "GetUserQr")
 	defer span.Finish()
 
 	var result model.QrCode
@@ -68,7 +68,7 @@ func (t TFAuthRepositoryImpl) GetUserQr(username string, ctx context.Context) (m
 }
 
 func (t TFAuthRepositoryImpl) Disable2FaForUser(username string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "disable2FaForUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "Disable2FaForUserRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

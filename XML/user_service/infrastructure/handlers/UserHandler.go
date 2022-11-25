@@ -50,7 +50,7 @@ func NewUserHandler(logInfo *logger.Logger, logError *logger.Logger, service *se
 }
 
 func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateTokenRequest) (*pb.ApiToken, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "generateAPIToken")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GenerateAPIToken")
 	defer span.Finish()
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -94,7 +94,7 @@ func (u UserHandler) GenerateAPIToken(ctx context.Context, request *pb.GenerateT
 }
 
 func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOfferRequest) (*pb.EmptyRequest, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "shareJobOffer")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ShareJobOffer")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -163,7 +163,7 @@ func (u UserHandler) ShareJobOffer(ctx context.Context, request *pb.ShareJobOffe
 }
 
 func (u UserHandler) ActivateUserAccount(ctx context.Context, request *pb.ActivationRequest) (*pb.ActivationResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "activateUserAccount")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ActivateUserAccount")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -216,7 +216,7 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 	//	"user": userNameCtx,
 	//}).Infof("INFO:Handling GetAll Users")
 
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAll")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAll")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -236,7 +236,7 @@ func (u UserHandler) GetAll(ctx context.Context, request *pb.EmptyRequest) (*pb.
 }
 
 func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) (*pb.UpdateUserResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "updateUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "UpdateUser")
 	defer span.Finish()
 
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
@@ -248,7 +248,7 @@ func (u UserHandler) UpdateUser(ctx context.Context, request *pb.UpdateRequest) 
 }
 
 func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserRequest) (*pb.RegisterUserResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "registerUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "RegisterUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -293,7 +293,7 @@ func (u UserHandler) RegisterUser(ctx context.Context, request *pb.RegisterUserR
 }
 
 func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request *pb.PasswordRecoveryRequest) (*pb.PasswordRecoveryResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "sendRequestForPasswordRecovery")
+	span := tracer.StartSpanFromContextMetadata(ctx, "SendRequestForPasswordRecovery")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -330,7 +330,7 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 }
 
 func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswordRequest) (*pb.NewPasswordResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "recoverPassword")
+	span := tracer.StartSpanFromContextMetadata(ctx, "RecoverPassword")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -398,7 +398,7 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 }
 
 func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest) (*pb.PwnedResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "pwnedPassword")
+	span := tracer.StartSpanFromContextMetadata(ctx, "PwnedPassword")
 	defer span.Finish()
 
 	pwnedPassword := request.Password.Password
@@ -436,7 +436,7 @@ func (u UserHandler) PwnedPassword(ctx context.Context, request *pb.PwnedRequest
 
 func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDetailsRequest) (*pb.UserDetails, error) {
 	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
-	span := tracer.StartSpanFromContextMetadata(ctx, "getUserDetails")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetUserDetails")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -478,7 +478,7 @@ func (u UserHandler) GetUserDetails(ctx context.Context, request *pb.GetUserDeta
 }
 
 func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetailsRequest) (*pb.UserDetails, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "editUserDetails")
+	span := tracer.StartSpanFromContextMetadata(ctx, "EditUserDetails")
 	defer span.Finish()
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -535,7 +535,7 @@ func (u UserHandler) EditUserDetails(ctx context.Context, request *pb.UserDetail
 }
 
 func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.UserPersonalDetailsRequest) (*pb.UserPersonalDetails, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "editUserPersonalDetails")
+	span := tracer.StartSpanFromContextMetadata(ctx, "EditUserPersonalDetails")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -561,7 +561,7 @@ func (u UserHandler) EditUserPersonalDetails(ctx context.Context, request *pb.Us
 }
 
 func (u UserHandler) EditUserProfessionalDetails(ctx context.Context, request *pb.UserProfessionalDetailsRequest) (*pb.UserProfessionalDetails, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "editUserProfessionalDetails")
+	span := tracer.StartSpanFromContextMetadata(ctx, "EditUserProfessionalDetails")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -586,7 +586,7 @@ func (u UserHandler) EditUserProfessionalDetails(ctx context.Context, request *p
 	return api.MapUserToUserProfessionalDetails(editedUser, ctx), nil
 }
 func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.ChangeStatusRequest) (*pb.ChangeStatus, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "changeProfileStatus")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ChangeProfileStatus")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -616,7 +616,7 @@ func (u UserHandler) ChangeProfileStatus(ctx context.Context, request *pb.Change
 }
 
 func (u UserHandler) GetEmailUsername(ctx context.Context, request *pb.EmailUsernameRequest) (*pb.EmailUsernameResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getEmailUsername")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetEmailUsername")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -630,7 +630,7 @@ func (u UserHandler) GetEmailUsername(ctx context.Context, request *pb.EmailUser
 }
 
 func (u UserHandler) ChangeEmail(ctx context.Context, request *pb.ChangeEmailRequest) (*pb.ChangeEmailResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "changeEmail")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ChangeEmail")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -654,7 +654,7 @@ func (u UserHandler) ChangeEmail(ctx context.Context, request *pb.ChangeEmailReq
 }
 
 func (u UserHandler) ChangeUsername(ctx context.Context, request *pb.ChangeUsernameRequest) (*pb.ChangeUsernameResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "changeUsername")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ChangeUsername")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

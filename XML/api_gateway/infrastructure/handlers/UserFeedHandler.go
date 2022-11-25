@@ -46,7 +46,7 @@ func (u UserFeedHandler) Init(mux *runtime.ServeMux) {
 }
 
 func (u UserFeedHandler) GetFeedPostsForUser(rw http.ResponseWriter, r *http.Request, params map[string]string) {
-	span := tracer.StartSpanFromRequest("getFeedPostsForUser", otgo.GlobalTracer(), r)
+	span := tracer.StartSpanFromRequest("GetFeedPostsForUser", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
 	ctx := tracer.ContextWithSpan(context.Background(), span)

@@ -20,7 +20,7 @@ func NewUserService(l *log.Logger, logInfo *logger.Logger, logError *logger.Logg
 	return &UserService{l, logInfo, logError, repository}
 }
 func (u UserService) GetByUsername(ctx context.Context, username string) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getByUsernameService")
+	span := tracer.StartSpanFromContext(ctx, "GetByUsernameService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -43,7 +43,7 @@ func (u UserService) UserExists(username string) error {
 }
 
 func (u UserService) GetUserRole(username string, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUserRoleService")
+	span := tracer.StartSpanFromContext(ctx, "GetUserRoleService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

@@ -18,7 +18,7 @@ import (
 )
 
 func MapNewPost(postPb *pb.Post, user *model.User, ctx context.Context) *model.Post {
-	span := tracer.StartSpanFromContext(ctx, "mapNewPost")
+	span := tracer.StartSpanFromContext(ctx, "MapNewPost")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	post := &model.Post{
@@ -82,7 +82,7 @@ func convertBase64ToByte(image string, ctx context.Context) []byte {
 
 }
 func MapNewComment(commentPb *pb.Comment, ctx context.Context) *model.Comment {
-	span := tracer.StartSpanFromContext(ctx, "mapNewComment")
+	span := tracer.StartSpanFromContext(ctx, "MapNewComment")
 	defer span.Finish()
 
 	comment := &model.Comment{
@@ -94,7 +94,7 @@ func MapNewComment(commentPb *pb.Comment, ctx context.Context) *model.Comment {
 }
 
 func MapNewJobOffer(offerPb *pb.JobOffer, ctx context.Context) *model.JobOffer {
-	span := tracer.StartSpanFromContext(ctx, "mapNewJobOffer")
+	span := tracer.StartSpanFromContext(ctx, "MapNewJobOffer")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -111,7 +111,7 @@ func MapNewJobOffer(offerPb *pb.JobOffer, ctx context.Context) *model.JobOffer {
 	return offer
 }
 func MapNewUser(command *events.UserCommand, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "mapNewUser")
+	span := tracer.StartSpanFromContext(ctx, "MapNewUser")
 	defer span.Finish()
 
 	user := &model.User{
@@ -126,7 +126,7 @@ func MapNewUser(command *events.UserCommand, ctx context.Context) *model.User {
 	return user
 }
 func MapUserReply(user *model.User, replyType events.UserReplyType, ctx context.Context) (reply *events.UserReply) {
-	span := tracer.StartSpanFromContext(ctx, "mapUserReply")
+	span := tracer.StartSpanFromContext(ctx, "MapUserReply")
 	defer span.Finish()
 	reply = &events.UserReply{
 		Type: replyType,
@@ -152,7 +152,7 @@ func mapToDate(birth string, ctx context.Context) time.Time {
 }
 
 func MapJobOfferReply(offer *model.JobOffer, ctx context.Context) *pb.JobOffer {
-	span := tracer.StartSpanFromContext(ctx, "mapJobOfferReply")
+	span := tracer.StartSpanFromContext(ctx, "MapJobOfferReply")
 	defer span.Finish()
 
 	id := offer.Id.Hex()
@@ -171,7 +171,7 @@ func MapJobOfferReply(offer *model.JobOffer, ctx context.Context) *pb.JobOffer {
 }
 
 func MapPostReply(post *model.Post, ctx context.Context) *pb.Post {
-	span := tracer.StartSpanFromContext(ctx, "mapPostReply")
+	span := tracer.StartSpanFromContext(ctx, "MapPostReply")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	id := post.Id.Hex()
@@ -201,7 +201,7 @@ func MapPostReply(post *model.Post, ctx context.Context) *pb.Post {
 }
 
 func FindNumberOfReactions(post *model.Post, ctx context.Context) (int, int) {
-	span := tracer.StartSpanFromContext(ctx, "findNumberOfReactions")
+	span := tracer.StartSpanFromContext(ctx, "FindNumberOfReactions")
 	defer span.Finish()
 
 	likesNum := 0
@@ -225,7 +225,7 @@ func convertByteToBase64(image []byte, ctx context.Context) string {
 }
 func MapUserCommentsForPost(user *model.User, commentText string, ctx context.Context) *pb.Comment {
 
-	span := tracer.StartSpanFromContext(ctx, "mapUserCommentsForPost")
+	span := tracer.StartSpanFromContext(ctx, "MapUserCommentsForPost")
 	defer span.Finish()
 
 	commentPb := &pb.Comment{

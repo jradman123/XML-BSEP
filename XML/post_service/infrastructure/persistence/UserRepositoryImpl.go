@@ -38,7 +38,7 @@ func (u UserRepositoryImpl) GetByUserId(id uuid.UUID) (user []*model.User, err e
 }
 
 func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "getByUsernameRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetByUsernameRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -47,7 +47,7 @@ func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) 
 }
 
 func (u UserRepositoryImpl) CreateUser(user *model.User, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "createUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, err := u.users.InsertOne(ctx, user)
@@ -60,7 +60,7 @@ func (u UserRepositoryImpl) CreateUser(user *model.User, ctx context.Context) (*
 }
 
 func (u UserRepositoryImpl) UpdateUser(user *model.User, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "updateUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "UpdateUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	_, err := u.users.UpdateOne(ctx, bson.M{"user_id": user.UserId}, bson.D{
@@ -77,7 +77,7 @@ func (u UserRepositoryImpl) UpdateUser(user *model.User, ctx context.Context) (*
 }
 
 func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID, ctx context.Context) (err error) {
-	span := tracer.StartSpanFromContext(ctx, "deleteUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "DeleteUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	_, err = u.users.DeleteOne(ctx,
@@ -89,7 +89,7 @@ func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID, ctx context.Context) (e
 }
 
 func (u UserRepositoryImpl) ActivateUserAccount(userId uuid.UUID, ctx context.Context) (err error) {
-	span := tracer.StartSpanFromContext(ctx, "activateUserAccountRepository")
+	span := tracer.StartSpanFromContext(ctx, "ActivateUserAccountRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	_, err = u.users.UpdateOne(ctx, bson.M{"user_id": userId}, bson.D{

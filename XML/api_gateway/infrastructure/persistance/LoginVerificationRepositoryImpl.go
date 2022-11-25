@@ -15,7 +15,7 @@ type LoginVerificationRepositoryImpl struct {
 }
 
 func (l LoginVerificationRepositoryImpl) UsedCode(ver *modelGateway.LoginVerification, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "usedCode")
+	span := tracer.StartSpanFromContext(ctx, "UsedCode")
 	defer span.Finish()
 
 	result := l.db.Model(&ver).Update("used", true)
@@ -27,7 +27,7 @@ func (l LoginVerificationRepositoryImpl) UsedCode(ver *modelGateway.LoginVerific
 }
 
 func (l LoginVerificationRepositoryImpl) GetVerificationByCode(code string, ctx context.Context) (*modelGateway.LoginVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "getVerificationByCode")
+	span := tracer.StartSpanFromContext(ctx, "GetVerificationByCode")
 	defer span.Finish()
 
 	ver := &modelGateway.LoginVerification{}
@@ -43,7 +43,7 @@ func NewLoginVerificationRepositoryImpl(db *gorm.DB) repositories.LoginVerificat
 }
 
 func (l LoginVerificationRepositoryImpl) CreateEmailVerification(ver *modelGateway.LoginVerification, ctx context.Context) (*modelGateway.LoginVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "createEmailVerification")
+	span := tracer.StartSpanFromContext(ctx, "CreateEmailVerification")
 	defer span.Finish()
 
 	result := l.db.Create(&ver)
@@ -52,7 +52,7 @@ func (l LoginVerificationRepositoryImpl) CreateEmailVerification(ver *modelGatew
 }
 
 func (l LoginVerificationRepositoryImpl) GetVerificationByUsername(username string, ctx context.Context) (*modelGateway.LoginVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "getVerificationByUsername")
+	span := tracer.StartSpanFromContext(ctx, "GetVerificationByUsername")
 	defer span.Finish()
 
 	verification := &modelGateway.LoginVerification{}

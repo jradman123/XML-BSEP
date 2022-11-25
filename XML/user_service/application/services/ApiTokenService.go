@@ -23,7 +23,7 @@ func NewApiTokenService(logInfo *logger.Logger, logError *logger.Logger, userSer
 }
 
 func (s ApiTokenService) GenerateApiToken(user *model.User, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "generateApiTokenService")
+	span := tracer.StartSpanFromContext(ctx, "GenerateApiTokenService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -45,7 +45,7 @@ func (s ApiTokenService) GenerateApiToken(user *model.User, ctx context.Context)
 }
 
 func (s ApiTokenService) CheckIfHasAccess(token string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "checkIfHasAccess")
+	span := tracer.StartSpanFromContext(ctx, "CheckIfHasAccess")
 	defer span.Finish()
 
 	return true, nil

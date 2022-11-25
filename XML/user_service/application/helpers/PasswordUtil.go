@@ -16,7 +16,7 @@ type PasswordUtil struct {
 }
 
 func (util *PasswordUtil) IsValidPassword(userInput string, ctx context.Context) bool {
-	span := tracer.StartSpanFromContext(ctx, "isValidPassword")
+	span := tracer.StartSpanFromContext(ctx, "IsValidPassword")
 	defer span.Finish()
 
 	uppercase := `[A-Z]{1}`

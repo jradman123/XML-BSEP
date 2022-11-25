@@ -20,7 +20,7 @@ func NewEmailVerificationRepositoryImpl(db *gorm.DB) repositories.EmailVerificat
 }
 
 func (e EmailVerificationRepositoryImpl) CreateEmailVerification(ver *model.EmailVerification, ctx context.Context) (*model.EmailVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "createEmailVerificationRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateEmailVerificationRepository")
 	defer span.Finish()
 
 	result := e.db.Create(&ver)
@@ -28,7 +28,7 @@ func (e EmailVerificationRepositoryImpl) CreateEmailVerification(ver *model.Emai
 	return ver, result.Error
 }
 func (e EmailVerificationRepositoryImpl) GetVerificationByUsername(username string, ctx context.Context) ([]model.EmailVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "getVerificationByUsernameRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetVerificationByUsernameRepository")
 	defer span.Finish()
 
 	var verifications []model.EmailVerification

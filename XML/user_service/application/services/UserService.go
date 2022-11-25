@@ -47,7 +47,7 @@ func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository 
 }
 
 func (u UserService) GetUsers(ctx context.Context) ([]model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUsersService")
+	span := tracer.StartSpanFromContext(ctx, "GetUsersService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -63,7 +63,7 @@ func (u UserService) GetUsers(ctx context.Context) ([]model.User, error) {
 }
 
 func (u UserService) GetByUsername(ctx context.Context, username string) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getByUsernameService")
+	span := tracer.StartSpanFromContext(ctx, "GetByUsernameService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -88,7 +88,7 @@ func (u UserService) GetUserSalt(username string) (string, error) {
 }
 
 func (u UserService) UserExists(username string, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "userExistsService")
+	span := tracer.StartSpanFromContext(ctx, "UserExistsService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -102,7 +102,7 @@ func (u UserService) UserExists(username string, ctx context.Context) error {
 }
 
 func (u UserService) GetUserRole(username string, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUserRoleService")
+	span := tracer.StartSpanFromContext(ctx, "GetUserRoleService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -115,7 +115,7 @@ func (u UserService) GetUserRole(username string, ctx context.Context) (string, 
 }
 
 func (u UserService) CreateRegisteredUser(user *model.User, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "createRegisteredUserService")
+	span := tracer.StartSpanFromContext(ctx, "CreateRegisteredUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -170,7 +170,7 @@ func (u UserService) CreateRegisteredUser(user *model.User, ctx context.Context)
 }
 
 func (u UserService) ActivateUserAccount(username string, verCode int, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "activateUserAccountService")
+	span := tracer.StartSpanFromContext(ctx, "ActivateUserAccountService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -249,9 +249,10 @@ func findMostRecent(verifications []model.EmailVerification) (*model.EmailVerifi
 }
 
 func (u UserService) SendCodeToRecoveryMail(username string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "sendCodeToRecoveryMail")
+	span := tracer.StartSpanFromContext(ctx, "SendCodeToRecoveryMail")
 	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	user, err := u.userRepository.GetByUsername(ctx, username)
 
 	if err != nil {
@@ -274,11 +275,11 @@ func (u UserService) SendCodeToRecoveryMail(username string, ctx context.Context
 	fmt.Println(recovery)
 
 	//obrisi prethodni zahtev ako postoji jer eto da uvijek samo poslednji ima u bazi
-	deleteErr := u.recoveryRepo.ClearOutRequestsForUsername(username)
+	deleteErr := u.recoveryRepo.ClearOutRequestsForUsername(username, ctx)
 	if deleteErr != nil {
 		return false, deleteErr
 	}
-	_, e := u.recoveryRepo.CreatePasswordRecoveryRequest(&recovery)
+	_, e := u.recoveryRepo.CreatePasswordRecoveryRequest(&recovery, ctx)
 
 	fmt.Println(e)
 	if e != nil {
@@ -294,7 +295,7 @@ func (u UserService) SendCodeToRecoveryMail(username string, ctx context.Context
 }
 
 func (u UserService) CreateNewPassword(username string, newHashedPassword string, code string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "createNewPassword")
+	span := tracer.StartSpanFromContext(ctx, "CreateNewPassword")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -442,7 +443,7 @@ func sendMailWithCourier(email string, code string, subject string, body string,
 }
 
 func (u UserService) EditUser(userDetails *dto.UserDetails, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "editUserService")
+	span := tracer.StartSpanFromContext(ctx, "EditUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -470,7 +471,7 @@ func (u UserService) EditUser(userDetails *dto.UserDetails, ctx context.Context)
 }
 
 func (u UserService) ChangeProfileStatus(username string, newStatus string, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "changeProfileStatusService")
+	span := tracer.StartSpanFromContext(ctx, "ChangeProfileStatusService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -494,7 +495,7 @@ func (u UserService) ChangeProfileStatus(username string, newStatus string, ctx 
 }
 
 func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPersonalDetails, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "editUserPersonalDetailsService")
+	span := tracer.StartSpanFromContext(ctx, "EditUserPersonalDetailsService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -519,7 +520,7 @@ func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPerson
 }
 
 func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.UserProfessionalDetails, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "editUserProfessionalDetailsService")
+	span := tracer.StartSpanFromContext(ctx, "EditUserProfessionalDetailsService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -549,7 +550,7 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 }
 
 func (u UserService) CheckIfEmailExists(id uuid.UUID, email string, ctx context.Context) bool {
-	span := tracer.StartSpanFromContext(ctx, "checkIfEmailExists")
+	span := tracer.StartSpanFromContext(ctx, "CheckIfEmailExists")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -566,7 +567,7 @@ func (u UserService) CheckIfEmailExists(id uuid.UUID, email string, ctx context.
 }
 
 func (u UserService) CheckIfUsernameExists(id uuid.UUID, username string, ctx context.Context) bool {
-	span := tracer.StartSpanFromContext(ctx, "checkIfUsernameExists")
+	span := tracer.StartSpanFromContext(ctx, "CheckIfUsernameExists")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -583,7 +584,7 @@ func (u UserService) CheckIfUsernameExists(id uuid.UUID, username string, ctx co
 }
 
 func (u UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getByIdService")
+	span := tracer.StartSpanFromContext(ctx, "GetByIdService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -596,7 +597,7 @@ func (u UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, er
 }
 
 func (u UserService) UpdateEmail(ctx context.Context, user *model.User) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "updateEmailService")
+	span := tracer.StartSpanFromContext(ctx, "UpdateEmailService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -617,6 +618,10 @@ func (u UserService) UpdateEmail(ctx context.Context, user *model.User) (*model.
 }
 
 func (u UserService) UpdateUsername(ctx context.Context, user *model.User) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "UpdateUsernameService")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, err := u.userRepository.UpdateUsername(ctx, user)
 	if err != nil {
 		return nil, err

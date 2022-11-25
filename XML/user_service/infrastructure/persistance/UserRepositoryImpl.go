@@ -16,7 +16,7 @@ type UserRepositoryImpl struct {
 }
 
 func (r UserRepositoryImpl) ActivateUserAccount(user *model.User, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "activateUserAccountRepo")
+	span := tracer.StartSpanFromContext(ctx, "ActivateUserAccountRepo")
 	defer span.Finish()
 
 	result := r.db.Model(&user).Update("is_confirmed", true)
@@ -28,7 +28,7 @@ func (r UserRepositoryImpl) ActivateUserAccount(user *model.User, ctx context.Co
 }
 
 func (r UserRepositoryImpl) EditUserDetails(user *model.User, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "editUserDetailsRepository")
+	span := tracer.StartSpanFromContext(ctx, "EditUserDetailsRepository")
 	defer span.Finish()
 
 	result := r.db.Model(&user).Updates(&user)
@@ -52,7 +52,7 @@ func NewUserRepositoryImpl(db *gorm.DB) repositories.UserRepository {
 }
 
 func (r UserRepositoryImpl) GetUsers(ctx context.Context) ([]model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUsersRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetUsersRepository")
 	defer span.Finish()
 
 	var users []model.User
@@ -61,7 +61,7 @@ func (r UserRepositoryImpl) GetUsers(ctx context.Context) ([]model.User, error) 
 }
 
 func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getByUsernameRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetByUsernameRepository")
 	defer span.Finish()
 
 	user := &model.User{}
@@ -73,7 +73,7 @@ func (r UserRepositoryImpl) GetByUsername(ctx context.Context, username string) 
 }
 
 func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "createRegisteredUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateRegisteredUserRepository")
 	defer span.Finish()
 
 	result := r.db.Create(&user)
@@ -84,7 +84,7 @@ func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User, ctx context.C
 }
 
 func (r UserRepositoryImpl) UserExists(username string, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "userExistsRepository")
+	span := tracer.StartSpanFromContext(ctx, "UserExistsRepository")
 	defer span.Finish()
 	if r.db.First(&model.User{}, "username = ?", username).RowsAffected == 0 {
 		return errors.New("user does not exist")
@@ -103,7 +103,7 @@ func (r UserRepositoryImpl) GetUserSalt(username string) (string, error) {
 }
 
 func (r UserRepositoryImpl) GetUserRole(username string, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUserRoleRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetUserRoleRepository")
 	defer span.Finish()
 
 	var result int
@@ -123,7 +123,7 @@ func (r UserRepositoryImpl) GetUserRole(username string, ctx context.Context) (s
 }
 
 func (r UserRepositoryImpl) ChangePassword(user *model.User, password string, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "changePasswordRepository")
+	span := tracer.StartSpanFromContext(ctx, "ChangePasswordRepository")
 	defer span.Finish()
 
 	result := r.db.Model(&user).Update("password", password)
@@ -141,7 +141,7 @@ func (r UserRepositoryImpl) ChangeProfileStatus(user *model.User) (bool, error) 
 }
 
 func (r UserRepositoryImpl) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getByIdRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetByIdRepository")
 	defer span.Finish()
 
 	user := &model.User{}
@@ -153,7 +153,7 @@ func (r UserRepositoryImpl) GetById(ctx context.Context, id uuid.UUID) (*model.U
 }
 
 func (r UserRepositoryImpl) UpdateEmail(ctx context.Context, user *model.User) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "updateEmailRepository")
+	span := tracer.StartSpanFromContext(ctx, "UpdateEmailRepository")
 	defer span.Finish()
 
 	result := r.db.Model(&user).Update("email", user.Email)
@@ -164,7 +164,7 @@ func (r UserRepositoryImpl) UpdateEmail(ctx context.Context, user *model.User) (
 }
 
 func (r UserRepositoryImpl) UpdateUsername(ctx context.Context, user *model.User) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "updateUsernameRepository")
+	span := tracer.StartSpanFromContext(ctx, "UpdateUsernameRepository")
 	defer span.Finish()
 	result := r.db.Model(&user).Update("username", user.Username)
 	if result.Error != nil {

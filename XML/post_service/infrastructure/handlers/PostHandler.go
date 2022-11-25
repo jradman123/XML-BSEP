@@ -36,7 +36,7 @@ func (p PostHandler) MustEmbedUnimplementedPostServiceServer() {
 
 func (p PostHandler) GetAllByUsername(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
 	//request = p.sanitizeGetRequest(request)
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAllByUsername")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllByUsername")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -60,7 +60,7 @@ func (p PostHandler) GetAllByUsername(ctx context.Context, request *pb.GetReques
 func (p PostHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
 
 	//request = p.sanitizeGetRequest(request)
-	span := tracer.StartSpanFromContextMetadata(ctx, "get")
+	span := tracer.StartSpanFromContextMetadata(ctx, "Get")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -84,7 +84,7 @@ func (p PostHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetRe
 }
 
 func (p PostHandler) GetAll(ctx context.Context, _ *pb.Empty) (*pb.GetMultipleResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAll")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAll")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -103,7 +103,7 @@ func (p PostHandler) GetAll(ctx context.Context, _ *pb.Empty) (*pb.GetMultipleRe
 }
 
 func (p PostHandler) CheckLikedStatus(ctx context.Context, request *pb.UserReactionRequest) (*pb.GetUserReactionResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "checkLikedStatus")
+	span := tracer.StartSpanFromContextMetadata(ctx, "CheckLikedStatus")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -139,7 +139,7 @@ func (p PostHandler) CheckLikedStatus(ctx context.Context, request *pb.UserReact
 func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) (*pb.Empty, error) {
 	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	//request = p.sanitizePost(request, userNameCtx)
-	span := tracer.StartSpanFromContextMetadata(ctx, "createPost")
+	span := tracer.StartSpanFromContextMetadata(ctx, "CreatePost")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -155,7 +155,7 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 }
 
 func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommentRequest) (*pb.CreateCommentResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "createComment")
+	span := tracer.StartSpanFromContextMetadata(ctx, "CreateComment")
 	defer span.Finish()
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -185,7 +185,7 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 }
 
 func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) (*pb.Empty, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "likePost")
+	span := tracer.StartSpanFromContextMetadata(ctx, "LikePost")
 	defer span.Finish()
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -218,7 +218,7 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 }
 
 func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionRequest) (*pb.Empty, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "dislikePost")
+	span := tracer.StartSpanFromContextMetadata(ctx, "DislikePost")
 	defer span.Finish()
 	userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -248,7 +248,7 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 }
 
 func (p PostHandler) CreateJobOffer(ctx context.Context, request *pb.CreateJobOfferRequest) (*pb.Empty, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "createJobOffer")
+	span := tracer.StartSpanFromContextMetadata(ctx, "CreateJobOffer")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -266,7 +266,7 @@ func (p PostHandler) CreateJobOffer(ctx context.Context, request *pb.CreateJobOf
 }
 
 func (p PostHandler) GetAllJobOffers(ctx context.Context, _ *pb.Empty) (*pb.GetAllJobOffers, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAllJobOffers")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllJobOffers")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -285,7 +285,7 @@ func (p PostHandler) GetAllJobOffers(ctx context.Context, _ *pb.Empty) (*pb.GetA
 }
 
 func (p PostHandler) GetUsersJobOffers(ctx context.Context, req *pb.GetMyJobsRequest) (*pb.GetAllJobOffers, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getUsersJobOffers")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetUsersJobOffers")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -302,7 +302,7 @@ func (p PostHandler) GetUsersJobOffers(ctx context.Context, req *pb.GetMyJobsReq
 }
 
 func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetReactionsResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAllReactionsForPost")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllReactionsForPost")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -337,7 +337,7 @@ func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.Get
 func (p PostHandler) GetAllCommentsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetAllCommentsResponse, error) {
 	//request = p.sanitizeGetRequest(request)
 
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAllCommentsForPost")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllCommentsForPost")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

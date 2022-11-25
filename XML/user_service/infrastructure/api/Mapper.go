@@ -12,7 +12,7 @@ import (
 )
 
 func MapProduct(user *model.User, ctx context.Context) *pb.User {
-	span := tracer.StartSpanFromContext(ctx, "mapProduct")
+	span := tracer.StartSpanFromContext(ctx, "MapProduct")
 	defer span.Finish()
 
 	usersPb := &pb.User{
@@ -33,7 +33,7 @@ func MapProduct(user *model.User, ctx context.Context) *pb.User {
 }
 
 func MapUserToPbResponseUser(user *model.User, ctx context.Context) *pb.RegisteredUser {
-	span := tracer.StartSpanFromContext(ctx, "mapUserToPbResponseUser")
+	span := tracer.StartSpanFromContext(ctx, "MapUserToPbResponseUser")
 	defer span.Finish()
 
 	usersPb := &pb.RegisteredUser{
@@ -45,7 +45,7 @@ func MapUserToPbResponseUser(user *model.User, ctx context.Context) *pb.Register
 	return usersPb
 }
 func MapDtoToUser(userPb *dto.NewUser, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "mapDtoToUser")
+	span := tracer.StartSpanFromContext(ctx, "MapDtoToUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -73,7 +73,7 @@ func MapDtoToUser(userPb *dto.NewUser, ctx context.Context) *model.User {
 }
 
 func MapPbUserDetailsToUser(userDetailsPb *pb.UserDetailsRequest, ctx context.Context) *dto.UserDetails {
-	span := tracer.StartSpanFromContext(ctx, "mapPbUserDetailsToUser")
+	span := tracer.StartSpanFromContext(ctx, "MapPbUserDetailsToUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -146,7 +146,7 @@ func mapPbEducationToExperienceDto(e *pb.Experience, ctx context.Context) *dto.E
 }
 
 func MapUserDetailsDtoToUser(dto *dto.UserDetails, user *model.User, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "mapUserDetailsDtoToUser")
+	span := tracer.StartSpanFromContext(ctx, "MapUserDetailsDtoToUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -227,7 +227,7 @@ func mapExperienceDtoToExperience(e *dto.ExperienceDto, ctx context.Context) *mo
 }
 
 func MapPbUserToNewUserDto(userPb *pb.RegisterUserRequest, ctx context.Context) *dto.NewUser {
-	span := tracer.StartSpanFromContext(ctx, "mapProduct")
+	span := tracer.StartSpanFromContext(ctx, "MapPbUserToNewUserDto")
 	defer span.Finish()
 	fmt.Printf("Eo ga userPb: %v", userPb)
 	userD := &dto.NewUser{
@@ -270,7 +270,7 @@ func mapGenderToModel(gender string, ctx context.Context) model.Gender {
 }
 
 func MapPbToUserActivateRequest(request *pb.ActivationRequest, ctx context.Context) *dto.UserActivateRequest {
-	span := tracer.StartSpanFromContext(ctx, "mapPbToUserActivateRequest")
+	span := tracer.StartSpanFromContext(ctx, "MapPbToUserActivateRequest")
 	defer span.Finish()
 	requestDTO := &dto.UserActivateRequest{
 		Code:     request.Account.Code,
@@ -280,7 +280,7 @@ func MapPbToUserActivateRequest(request *pb.ActivationRequest, ctx context.Conte
 }
 
 func MapPbToNewPasswordRequestDto(request *pb.NewPasswordRequest, ctx context.Context) *dto.NewRecoveryPasswordRequest {
-	span := tracer.StartSpanFromContext(ctx, "mapPbToNewPasswordRequestDto")
+	span := tracer.StartSpanFromContext(ctx, "MapPbToNewPasswordRequestDto")
 	defer span.Finish()
 
 	requestDto := &dto.NewRecoveryPasswordRequest{
@@ -292,7 +292,7 @@ func MapPbToNewPasswordRequestDto(request *pb.NewPasswordRequest, ctx context.Co
 }
 
 func MapUserToUserDetails(user *model.User, ctx context.Context) *pb.UserDetails {
-	span := tracer.StartSpanFromContext(ctx, "mapUserToUserDetails")
+	span := tracer.StartSpanFromContext(ctx, "MapUserToUserDetails")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -391,7 +391,7 @@ func mapExperienceToExperiencePb(e *model.Experience, ctx context.Context) *pb.E
 }
 
 func MapUserPersonalDetailsDtoToUser(dto *dto.UserPersonalDetails, user *model.User, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "mapUserPersonalDetailsDtoToUser")
+	span := tracer.StartSpanFromContext(ctx, "MapUserPersonalDetailsDtoToUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -405,7 +405,7 @@ func MapUserPersonalDetailsDtoToUser(dto *dto.UserPersonalDetails, user *model.U
 }
 
 func MapUserProfessionalDetailsDtoToUser(dto *dto.UserProfessionalDetails, user *model.User, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "mapUserProfessionalDetailsDtoToUser")
+	span := tracer.StartSpanFromContext(ctx, "MapUserProfessionalDetailsDtoToUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -442,7 +442,7 @@ func MapUserProfessionalDetailsDtoToUser(dto *dto.UserProfessionalDetails, user 
 }
 
 func MapPbUserPersonalDetailsToUser(userPersonalDetailsPb *pb.UserPersonalDetailsRequest, ctx context.Context) *dto.UserPersonalDetails {
-	span := tracer.StartSpanFromContext(ctx, "mapPbUserPersonalDetailsToUser")
+	span := tracer.StartSpanFromContext(ctx, "MapPbUserPersonalDetailsToUser")
 	defer span.Finish()
 
 	userD := &dto.UserPersonalDetails{
@@ -476,7 +476,7 @@ func MapUserToUserPersonalDetails(user *model.User, ctx context.Context) *pb.Use
 }
 
 func MapPbUserProfessionalDetailsToUser(userProfessionalDetailsPb *pb.UserProfessionalDetailsRequest, ctx context.Context) *dto.UserProfessionalDetails {
-	span := tracer.StartSpanFromContext(ctx, "mapPbUserProfessionalDetailsToUser")
+	span := tracer.StartSpanFromContext(ctx, "MapPbUserProfessionalDetailsToUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -507,7 +507,7 @@ func MapPbUserProfessionalDetailsToUser(userProfessionalDetailsPb *pb.UserProfes
 }
 
 func MapUserToUserProfessionalDetails(user *model.User, ctx context.Context) *pb.UserProfessionalDetails {
-	span := tracer.StartSpanFromContext(ctx, "mapUserToUserProfessionalDetails")
+	span := tracer.StartSpanFromContext(ctx, "MapUserToUserProfessionalDetails")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -589,7 +589,7 @@ func MapToStringArrayExperiences(experiences []model.Experience) []string {
 }
 
 func MapUserToEmailUsernameResponse(user *model.User, ctx context.Context) *pb.EmailUsernameResponse {
-	span := tracer.StartSpanFromContext(ctx, "mapUserToEmailUsernameResponse")
+	span := tracer.StartSpanFromContext(ctx, "MapUserToEmailUsernameResponse")
 	defer span.Finish()
 
 	emailUsername := &pb.EmailUsername{
@@ -606,7 +606,7 @@ func MapUserToEmailUsernameResponse(user *model.User, ctx context.Context) *pb.E
 }
 
 func MapUserToChangeEmailResponse(user *model.User, ctx context.Context) *pb.ChangeEmailResponse {
-	span := tracer.StartSpanFromContext(ctx, "mapUserToChangeEmailResponse")
+	span := tracer.StartSpanFromContext(ctx, "MapUserToChangeEmailResponse")
 	defer span.Finish()
 
 	changeEmailResponse := &pb.ChangeEmailResponse{
@@ -616,7 +616,7 @@ func MapUserToChangeEmailResponse(user *model.User, ctx context.Context) *pb.Cha
 }
 
 func MapUserToChangeUsernameResponse(user *model.User, ctx context.Context) *pb.ChangeUsernameResponse {
-	span := tracer.StartSpanFromContext(ctx, "mapUserToChangeUsernameResponse")
+	span := tracer.StartSpanFromContext(ctx, "MapUserToChangeUsernameResponse")
 	defer span.Finish()
 
 	changeUsernameResponse := &pb.ChangeUsernameResponse{
