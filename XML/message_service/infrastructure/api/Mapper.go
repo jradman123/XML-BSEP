@@ -15,7 +15,7 @@ import (
 )
 
 func MapNewUser(command *events.UserCommand, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "mapNewUser")
+	span := tracer.StartSpanFromContext(ctx, "MapNewUser")
 	defer span.Finish()
 	user := &model.User{
 		Id:       primitive.NewObjectID(),
@@ -47,7 +47,7 @@ func MapUserForUpdate(command *events.UserCommand, userForUpdate *model.User) *m
 }
 
 func MapNewPostNotification(command *postEvents.PostNotificationCommand, ctx context.Context) *model.Notification {
-	span := tracer.StartSpanFromContext(ctx, "mapNewPostNotification")
+	span := tracer.StartSpanFromContext(ctx, "MapNewPostNotification")
 	defer span.Finish()
 	notification := &model.Notification{
 		Id:               primitive.NewObjectID(),
@@ -64,7 +64,7 @@ func MapNewPostNotification(command *postEvents.PostNotificationCommand, ctx con
 }
 
 func MapNewConnectionNotification(command *connectionEvents.ConnectionNotificationCommand, ctx context.Context) *model.Notification {
-	span := tracer.StartSpanFromContext(ctx, "mapNewConnectionNotification")
+	span := tracer.StartSpanFromContext(ctx, "MapNewConnectionNotification")
 	defer span.Finish()
 	notification := &model.Notification{
 		Id:               primitive.NewObjectID(),
@@ -81,7 +81,7 @@ func MapNewConnectionNotification(command *connectionEvents.ConnectionNotificati
 }
 
 func MapPostNotificationReply(replyType postEvents.PostNotificationReplyType, ctx context.Context) (reply *postEvents.PostNotificationReply) {
-	span := tracer.StartSpanFromContext(ctx, "mapPostNotificationReply")
+	span := tracer.StartSpanFromContext(ctx, "MapPostNotificationReply")
 	defer span.Finish()
 	reply = &postEvents.PostNotificationReply{
 		Type: replyType,
@@ -89,7 +89,7 @@ func MapPostNotificationReply(replyType postEvents.PostNotificationReplyType, ct
 	return reply
 }
 func MapConnectionNotificationReply(replyType connectionEvents.ConnectionNotificationReplyType, ctx context.Context) (reply *connectionEvents.ConnectionNotificationReply) {
-	span := tracer.StartSpanFromContext(ctx, "mapConnectionNotificationReply")
+	span := tracer.StartSpanFromContext(ctx, "MapConnectionNotificationReply")
 	defer span.Finish()
 	reply = &connectionEvents.ConnectionNotificationReply{
 		Type: replyType,
@@ -98,7 +98,7 @@ func MapConnectionNotificationReply(replyType connectionEvents.ConnectionNotific
 }
 
 func MapUserReply(user *model.User, replyType events.UserReplyType, ctx context.Context) (reply *events.UserReply) {
-	span := tracer.StartSpanFromContext(ctx, "mapUserReply")
+	span := tracer.StartSpanFromContext(ctx, "MapUserReply")
 	defer span.Finish()
 
 	reply = &events.UserReply{
@@ -114,7 +114,7 @@ func MapUserReply(user *model.User, replyType events.UserReplyType, ctx context.
 }
 
 func MapMessageReply(message *model.Message, receiver string, sender string, ctx context.Context) (reply *pb.Message) {
-	span := tracer.StartSpanFromContext(ctx, "mapMessageReply")
+	span := tracer.StartSpanFromContext(ctx, "MapMessageReply")
 	defer span.Finish()
 
 	reply = &pb.Message{
@@ -126,7 +126,7 @@ func MapMessageReply(message *model.Message, receiver string, sender string, ctx
 	return reply
 }
 func MapNewMessage(messageText string, receiverId uuid.UUID, senderId uuid.UUID, ctx context.Context) *model.Message {
-	span := tracer.StartSpanFromContext(ctx, "mapNewMessage")
+	span := tracer.StartSpanFromContext(ctx, "MapNewMessage")
 	defer span.Finish()
 
 	message := &model.Message{
@@ -140,7 +140,7 @@ func MapNewMessage(messageText string, receiverId uuid.UUID, senderId uuid.UUID,
 }
 
 func MapNotificationResponse(notification *model.Notification, ctx context.Context) *notificationPb.Notification {
-	span := tracer.StartSpanFromContext(ctx, "mapNotificationResponse")
+	span := tracer.StartSpanFromContext(ctx, "MapNotificationResponse")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -161,7 +161,7 @@ func MapNotificationResponse(notification *model.Notification, ctx context.Conte
 }
 
 func MapSettingsResponse(settings *model.NotificationSettings, ctx context.Context) *notificationPb.NotificationSettings {
-	span := tracer.StartSpanFromContext(ctx, "mapSettingsResponse")
+	span := tracer.StartSpanFromContext(ctx, "MapSettingsResponse")
 	defer span.Finish()
 
 	settingsPb := &notificationPb.NotificationSettings{
@@ -174,7 +174,7 @@ func MapSettingsResponse(settings *model.NotificationSettings, ctx context.Conte
 }
 
 func MapChangeSettingsRequest(request *notificationPb.ChangeSettingsRequest, ctx context.Context) *model.NotificationSettings {
-	span := tracer.StartSpanFromContext(ctx, "mapChangeSettingsRequest")
+	span := tracer.StartSpanFromContext(ctx, "MapChangeSettingsRequest")
 	defer span.Finish()
 
 	settingsModel := &model.NotificationSettings{

@@ -30,7 +30,7 @@ func NewMessageRepositoryImpl(client *mongo.Client) repositories.MessageReposito
 }
 
 func (m MessageRepositoryImpl) SendMessage(message *model.Message, ctx context.Context) (*model.Message, error) {
-	span := tracer.StartSpanFromContext(ctx, "sendMessageRepository")
+	span := tracer.StartSpanFromContext(ctx, "SendMessageRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, err := m.messages.InsertOne(ctx, message)
@@ -42,7 +42,7 @@ func (m MessageRepositoryImpl) SendMessage(message *model.Message, ctx context.C
 	return message, nil
 }
 func (m MessageRepositoryImpl) GetAllSent(SenderId uuid.UUID, ctx context.Context) (messages []*model.Message, err error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllSentRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllSentRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -51,7 +51,7 @@ func (m MessageRepositoryImpl) GetAllSent(SenderId uuid.UUID, ctx context.Contex
 }
 
 func (m MessageRepositoryImpl) GetAllReceived(ReceiverId uuid.UUID, ctx context.Context) (messages []*model.Message, err error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllReceivedRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllReceivedRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"receiver_id": ReceiverId}

@@ -32,7 +32,7 @@ func (m MessageHandler) MustEmbedUnimplementedMessageServiceServer() {
 }
 
 func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAllSent")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllSent")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -64,7 +64,7 @@ func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) 
 }
 
 func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAllReceived")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllReceived")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -91,7 +91,7 @@ func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetReque
 }
 
 func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessageRequest) (*pb.MessageSentResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "sendMessage")
+	span := tracer.StartSpanFromContextMetadata(ctx, "SendMessage")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	userSender, _ := m.userService.GetByUsername(request.Message.SenderUsername, ctx)

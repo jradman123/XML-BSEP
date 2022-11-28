@@ -27,7 +27,7 @@ func NewJobOfferRepositoryImpl(client *neo4j.Driver, logInfo *logger.Logger, log
 	}
 }
 func (u UserRepositoryImpl) Create(job *connectionModel.JobOffer, ctx context.Context) (connectionModel.JobOffer, error) {
-	span := tracer.StartSpanFromContext(ctx, "createJobRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateJobRepository")
 	defer span.Finish()
 
 	fmt.Println("[Create job offer connection service]")

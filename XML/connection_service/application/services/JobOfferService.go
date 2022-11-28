@@ -24,7 +24,7 @@ func (s JobOfferService) DeleteJob(job model.JobOffer, ctx context.Context) erro
 }
 
 func (s JobOfferService) CreateJob(job model.JobOffer, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "createJobService")
+	span := tracer.StartSpanFromContext(ctx, "CreateJobService")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("create job at job service, connection_service")

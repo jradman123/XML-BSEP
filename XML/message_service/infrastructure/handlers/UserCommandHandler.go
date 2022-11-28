@@ -32,7 +32,7 @@ func NewUserCommandHandler(userService *application.UserService, messageService 
 }
 
 func (handler *UserCommandHandler) handle(command *events.UserCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "userCommandHandler")
+	span := tracer.StartSpanFromContextMetadata(ctx, "UserCommandHandler")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("evo me u command handleru u mess servisu prije caseova")

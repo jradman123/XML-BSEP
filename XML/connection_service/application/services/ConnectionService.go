@@ -22,7 +22,7 @@ func NewConnectionService(connectionRepo repositories.ConnectionRepository, logI
 }
 
 func (s ConnectionService) CreateConnection(connection *model.Connection, sender string, receiver string, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "createConnectionService")
+	span := tracer.StartSpanFromContext(ctx, "CreateConnectionService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -33,7 +33,7 @@ func (s ConnectionService) CreateConnection(connection *model.Connection, sender
 }
 
 func (s ConnectionService) AcceptConnection(connection *model.Connection, sender string, receiver string, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "acceptConnectionService")
+	span := tracer.StartSpanFromContext(ctx, "AcceptConnectionService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -42,7 +42,7 @@ func (s ConnectionService) AcceptConnection(connection *model.Connection, sender
 }
 
 func (s ConnectionService) GetAllConnectionForUser(userUid string, ctx context.Context) (userNodes []*model.User, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllConnectionForUserService")
+	span := tracer.StartSpanFromContext(ctx, "GetAllConnectionForUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -51,7 +51,7 @@ func (s ConnectionService) GetAllConnectionForUser(userUid string, ctx context.C
 }
 
 func (s ConnectionService) GetAllConnectionRequestsForUser(userUid string, ctx context.Context) (userNodes []*model.User, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllConnectionRequestsForUserService")
+	span := tracer.StartSpanFromContext(ctx, "GetAllConnectionRequestsForUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -59,7 +59,7 @@ func (s ConnectionService) GetAllConnectionRequestsForUser(userUid string, ctx c
 }
 
 func (s ConnectionService) ConnectionStatusForUsers(senderId string, receiverId string, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "connectionStatusForUserService")
+	span := tracer.StartSpanFromContext(ctx, "ConnectionStatusForUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -67,7 +67,7 @@ func (s ConnectionService) ConnectionStatusForUsers(senderId string, receiverId 
 }
 
 func (s ConnectionService) BlockUser(con *model.Connection, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "blockUserService")
+	span := tracer.StartSpanFromContext(ctx, "BlockUserService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -76,7 +76,7 @@ func (s ConnectionService) BlockUser(con *model.Connection, ctx context.Context)
 }
 
 func (s ConnectionService) GetRecommendedNewConnections(userId string, ctx context.Context) (userNodes []*model.User, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getRecommendedNewConnectionsService")
+	span := tracer.StartSpanFromContext(ctx, "GetRecommendedNewConnectionsService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -84,7 +84,7 @@ func (s ConnectionService) GetRecommendedNewConnections(userId string, ctx conte
 }
 
 func (s ConnectionService) GetRecommendedJobOffers(userId string, ctx context.Context) (jobNodes []*model.JobOffer, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getRecommendedJobOffersService")
+	span := tracer.StartSpanFromContext(ctx, "GetRecommendedJobOffersService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

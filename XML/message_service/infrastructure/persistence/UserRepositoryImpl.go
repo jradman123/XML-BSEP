@@ -29,7 +29,7 @@ func NewUserRepositoryImpl(client *mongo.Client) repositories.UserRepository {
 }
 
 func (u UserRepositoryImpl) CreateUser(user *model.User, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "createUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, err := u.users.InsertOne(ctx, user)
@@ -42,7 +42,7 @@ func (u UserRepositoryImpl) CreateUser(user *model.User, ctx context.Context) (*
 }
 
 func (u UserRepositoryImpl) UpdateUser(requestUser *model.User, ctx context.Context) (user *model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "updateUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "UpdateUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	_, err = u.users.UpdateOne(ctx, bson.M{"user_id": requestUser.UserId}, bson.D{
@@ -55,7 +55,7 @@ func (u UserRepositoryImpl) UpdateUser(requestUser *model.User, ctx context.Cont
 }
 
 func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID, ctx context.Context) (err error) {
-	span := tracer.StartSpanFromContext(ctx, "deleteUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "DeleteUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	_, err = u.users.DeleteOne(ctx,
@@ -67,7 +67,7 @@ func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID, ctx context.Context) (e
 }
 
 func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "getByUsernameRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetByUsernameRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -76,7 +76,7 @@ func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) 
 }
 
 func (repo UserRepositoryImpl) GetSettingsForUser(username string, ctx context.Context) (*model.NotificationSettings, error) {
-	span := tracer.StartSpanFromContext(ctx, "getSettingsForUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetSettingsForUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"username": username}
@@ -87,7 +87,7 @@ func (repo UserRepositoryImpl) GetSettingsForUser(username string, ctx context.C
 }
 
 func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings, ctx context.Context) (*model.NotificationSettings, error) {
-	span := tracer.StartSpanFromContext(ctx, "changeSettingsForUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "ChangeSettingsForUserRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -101,7 +101,7 @@ func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *
 }
 
 func (u UserRepositoryImpl) GetById(userId uuid.UUID, ctx context.Context) ([]*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "getByIdRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetByIdRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"user_id": userId}

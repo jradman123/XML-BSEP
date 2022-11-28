@@ -29,7 +29,7 @@ func NewConnectionNotificationCommandHandler(service *application.NotificationSe
 }
 
 func (handler *ConnectionNotificationCommandHandler) handle(command *events.ConnectionNotificationCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "connectionNotificationHandler")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ConnectionNotificationHandler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

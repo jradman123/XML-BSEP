@@ -33,7 +33,7 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 	// create Notification object and store it in the database
 	// trigger pusher
 	// check if this notification is blocked for that user
-	span := tracer.StartSpanFromContextMetadata(ctx, "createNotification")
+	span := tracer.StartSpanFromContextMetadata(ctx, "CreateNotification")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	notiType := model.PROFILE
@@ -67,7 +67,7 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 }
 
 func (n NotificationHandler) GetAllForUser(ctx context.Context, request *pb.GetAllNotificationRequest) (*pb.GetAllNotificationResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getAllForUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllForUser")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	notifications, _ := n.notificationService.GetAllForUser(request.Username, ctx)
@@ -82,7 +82,7 @@ func (n NotificationHandler) GetAllForUser(ctx context.Context, request *pb.GetA
 }
 
 func (n NotificationHandler) GetSettingsForUser(ctx context.Context, request *pb.GetSettingsRequest) (*pb.GetSettingsResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getSettingsForUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetSettingsForUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -95,7 +95,7 @@ func (n NotificationHandler) GetSettingsForUser(ctx context.Context, request *pb
 }
 
 func (n NotificationHandler) ChangeSettingsForUser(ctx context.Context, request *pb.ChangeSettingsRequest) (*pb.GetSettingsResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "changeSettingsForUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ChangeSettingsForUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -116,7 +116,7 @@ func (n NotificationHandler) ChangeSettingsForUser(ctx context.Context, request 
 }
 
 func (n NotificationHandler) MarkAsRead(ctx context.Context, request *pb.MarkAsReadRequest) (*pb.Empty, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "markAsRead")
+	span := tracer.StartSpanFromContextMetadata(ctx, "MarkAsRead")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

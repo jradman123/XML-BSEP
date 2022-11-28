@@ -30,7 +30,7 @@ func NewUserCommandHandler(service *services.UserService, publisher saga.Publish
 }
 
 func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "userCommandHandler")
+	span := tracer.StartSpanFromContextMetadata(ctx, "UserCommandHandler")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("usao u user command handler connection servisa")

@@ -30,7 +30,7 @@ func NewJobOfferCommandHandler(service *services.JobOfferService, publisher saga
 }
 
 func (handler *JobOfferCommandHandler) handle(command *events.JobOfferCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "jobOfferCommandHandler")
+	span := tracer.StartSpanFromContextMetadata(ctx, "JobOfferCommandHandler")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("usao u user command handler connection servisa")

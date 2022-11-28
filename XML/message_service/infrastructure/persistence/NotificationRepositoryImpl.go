@@ -26,7 +26,7 @@ func NewNotificationRepositoryImpl(client *mongo.Client) repositories.Notificati
 }
 
 func (repo NotificationRepositoryImpl) Create(notification *model.Notification, ctx context.Context) (*model.Notification, error) {
-	span := tracer.StartSpanFromContext(ctx, "createNotificationRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateNotificationRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, err := repo.db.InsertOne(ctx, notification)
@@ -41,7 +41,7 @@ func (repo NotificationRepositoryImpl) Create(notification *model.Notification, 
 }
 
 func (repo NotificationRepositoryImpl) GetAllForUser(username string, ctx context.Context) ([]*model.Notification, error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllForUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllForUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"notification_to": username}
@@ -94,7 +94,7 @@ func decodeNotification(cursor *mongo.Cursor) (notifications *model.Notification
 }
 
 func (repo NotificationRepositoryImpl) MarkAsRead(id primitive.ObjectID, ctx context.Context) {
-	span := tracer.StartSpanFromContext(ctx, "markAsReadRepository")
+	span := tracer.StartSpanFromContext(ctx, "MarkAsReadRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

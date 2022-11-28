@@ -31,7 +31,7 @@ func NewConnectionRepositoryImpl(client *neo4j.Driver, logInfo *logger.Logger, l
 	}
 }
 func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "createConnectionRepository")
+	span := tracer.StartSpanFromContext(ctx, "CreateConnectionRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -141,7 +141,7 @@ func (r ConnectionRepositoryImpl) CreateConnection(connection *model.Connection,
 }
 
 func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "acceptConnectionRepository")
+	span := tracer.StartSpanFromContext(ctx, "AcceptConnectionRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -229,7 +229,7 @@ func (r ConnectionRepositoryImpl) AcceptConnection(connection *model.Connection,
 }
 
 func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string, ctx context.Context) (userNodes []*model.User, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllConnectionForUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllConnectionForUserRepository")
 	defer span.Finish()
 	session := (*r.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer func(session neo4j.Session) {
@@ -277,7 +277,7 @@ func (r ConnectionRepositoryImpl) GetAllConnectionForUser(userUid string, ctx co
 }
 
 func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string, ctx context.Context) (userNodes []*model.User, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllConnectionRequestsForUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetAllConnectionRequestsForUserRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -321,7 +321,7 @@ func (r ConnectionRepositoryImpl) GetAllConnectionRequestsForUser(userUid string
 }
 
 func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, receiverId string, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "connectionStatusForUsersService")
+	span := tracer.StartSpanFromContext(ctx, "ConnectionStatusForUsersService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -397,7 +397,7 @@ func (r ConnectionRepositoryImpl) ConnectionStatusForUsers(senderId string, rece
 }
 
 func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection, ctx context.Context) (*dto.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContext(ctx, "blockUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "BlockUserRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -568,7 +568,7 @@ func (r ConnectionRepositoryImpl) BlockUser(con *model.Connection, ctx context.C
 }
 
 func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string, ctx context.Context) (userNodes []*model.User, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getRecommendedNewConnectionsRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetRecommendedNewConnectionsRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -628,7 +628,7 @@ func (r ConnectionRepositoryImpl) GetRecommendedNewConnections(userId string, ct
 }
 
 func (r ConnectionRepositoryImpl) GetRecommendedJobOffers(userId string, ctx context.Context) (jobNodes []*model.JobOffer, error1 error) {
-	span := tracer.StartSpanFromContext(ctx, "getRecommendedJobOffersRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetRecommendedJobOffersRepository")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

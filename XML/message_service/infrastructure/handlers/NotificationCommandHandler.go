@@ -29,7 +29,7 @@ func NewNotificationCommandHandler(service *application.NotificationService, pub
 }
 
 func (handler *NotificationCommandHandler) handle(command *events.PostNotificationCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "notificationCommandHandler")
+	span := tracer.StartSpanFromContextMetadata(ctx, "NotificationCommandHandler")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	notification := api.MapNewPostNotification(command, ctx)

@@ -24,7 +24,7 @@ func NewNotificationService(logInfo *logger.Logger, logError *logger.Logger, not
 }
 
 func (service *NotificationService) Create(notification *model.Notification, ctx context.Context) (*model.Notification, error) {
-	span := tracer.StartSpanFromContext(ctx, "createNotificationService")
+	span := tracer.StartSpanFromContext(ctx, "CreateNotificationService")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, _ := service.userService.AllowedNotificationForUser(notification.NotificationTo, notification.Type, ctx)
@@ -38,14 +38,14 @@ func (service *NotificationService) Create(notification *model.Notification, ctx
 }
 
 func (service *NotificationService) GetAllForUser(username string, ctx context.Context) ([]*model.Notification, error) {
-	span := tracer.StartSpanFromContext(ctx, "getAllForUserService")
+	span := tracer.StartSpanFromContext(ctx, "GetAllForUserService")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	return service.notificationRepo.GetAllForUser(username, ctx)
 }
 
 func (service *NotificationService) MarkAsRead(id primitive.ObjectID, ctx context.Context) {
-	span := tracer.StartSpanFromContext(ctx, "markAsReadService")
+	span := tracer.StartSpanFromContext(ctx, "MarkAsReadService")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

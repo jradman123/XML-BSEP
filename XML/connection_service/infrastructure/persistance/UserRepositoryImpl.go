@@ -29,7 +29,7 @@ func NewUserRepositoryImpl(client *neo4j.Driver, logInfo *logger.Logger, logErro
 }
 
 func (u UserRepositoryImpl) Register(userNode *connectionModel.User, ctx context.Context) (*connectionModel.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "registerUser")
+	span := tracer.StartSpanFromContext(ctx, "RegisterUser")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("[ConnectionDBStore Register]")
@@ -100,7 +100,7 @@ func checkIfUserExist(uid string, transaction neo4j.Transaction, ctx context.Con
 	return false
 }
 func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "updateUserRepository")
+	span := tracer.StartSpanFromContext(ctx, "UpdateUserRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
@@ -141,7 +141,7 @@ func (u UserRepositoryImpl) UpdateUser(userNode *connectionModel.User, ctx conte
 }
 
 func (u UserRepositoryImpl) GetUserId(username string, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "getUserIdRepository")
+	span := tracer.StartSpanFromContext(ctx, "GetUserIdRepository")
 	defer span.Finish()
 	fmt.Println("[ConnectionDBStore GetUserId]")
 	fmt.Println(username)
@@ -171,7 +171,7 @@ func (u UserRepositoryImpl) GetUserId(username string, ctx context.Context) (str
 }
 
 func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "changeProfileStatusRepository")
+	span := tracer.StartSpanFromContext(ctx, "ChangeProfileStatusRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
@@ -235,7 +235,7 @@ func (u UserRepositoryImpl) ChangeProfileStatus(m *connectionModel.User, ctx con
 }
 
 func (u UserRepositoryImpl) UpdateUserProfessionalDetails(user *connectionModel.User, details *connectionModel.UserDetails, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "updateUserProfessionalDetailsRepository")
+	span := tracer.StartSpanFromContext(ctx, "UpdateUserProfessionalDetailsRepository")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	session := (*u.db).NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})

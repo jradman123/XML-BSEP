@@ -43,7 +43,7 @@ func NewConnectionHandler(connectionService *services.ConnectionService, userSer
 }
 
 func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getConnections")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetConnections")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -100,7 +100,7 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 }
 
 func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getConnectionRequests")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetConnectionRequests")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -157,7 +157,7 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 }
 
 func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "createConnection")
+	span := tracer.StartSpanFromContextMetadata(ctx, "CreateConnection")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -211,7 +211,7 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 }
 
 func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "acceptConnection")
+	span := tracer.StartSpanFromContextMetadata(ctx, "AcceptConnection")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -267,7 +267,7 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 }
 
 func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "connectionStatusForUsers")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ConnectionStatusForUsers")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -318,7 +318,7 @@ func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connect
 
 }
 func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConnection) (*pb.ConnectionResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "blockUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "BlockUser")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -374,7 +374,7 @@ func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConn
 }
 
 func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, request *pb.GetRequest) (*pb.Users, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getRecommendedNewConnections")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetRecommendedNewConnections")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -431,7 +431,7 @@ func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, req
 }
 
 func (c ConnectionHandler) GetRecommendedJobOffers(ctx context.Context, request *pb.GetRequest) (*pb.Offers, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "getRecommendedJobOffers")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetRecommendedJobOffers")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
