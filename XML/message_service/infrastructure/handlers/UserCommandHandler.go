@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"message/module/application"
 	"message/module/infrastructure/api"
-	tracer "monitoring/module"
 )
 
 type UserCommandHandler struct {
@@ -31,53 +30,50 @@ func NewUserCommandHandler(userService *application.UserService, messageService 
 	return o, nil
 }
 
-func (handler *UserCommandHandler) handle(command *events.UserCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "UserCommandHandler")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func (handler *UserCommandHandler) handle(command *events.UserCommand) {
 	fmt.Println("evo me u command handleru u mess servisu prije caseova")
 
-	user := api.MapNewUser(command, ctx)
+	user := api.MapNewUser(command, context.TODO())
 	fmt.Sprintln(user)
 	var reply = &events.UserReply{}
 	switch command.Type {
 	case events.CreateUser:
 		fmt.Println("evo me u command handleru u mess servisu case CREATE USER")
-		user, err := handler.userService.CreateUser(user, ctx)
+		user, err := handler.userService.CreateUser(user, context.TODO())
 		if err != nil {
 			fmt.Println("rolbekujerm jer error ")
 			fmt.Println(err)
-			reply = api.MapUserReply(user, events.UserRolledBack, ctx)
+			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
 		}
 		fmt.Println("nije rolbekovo")
-		reply = api.MapUserReply(user, events.UserCreated, ctx)
+		reply = api.MapUserReply(user, events.UserCreated, context.TODO())
 
 	case events.UpdateUser:
-		_, err := handler.userService.UpdateUser(user, ctx)
+		_, err := handler.userService.UpdateUser(user, context.TODO())
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, ctx)
+			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
 		}
-		err = handler.messageService.UpdateUserMessages(user, ctx)
+		err = handler.messageService.UpdateUserMessages(user, context.TODO())
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, ctx)
+			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
 		}
-		reply = api.MapUserReply(user, events.UserUpdated, ctx)
+		reply = api.MapUserReply(user, events.UserUpdated, context.TODO())
 
 	case events.DeleteUser:
-		err := handler.userService.DeleteUser(user.UserId, ctx)
+		err := handler.userService.DeleteUser(user.UserId, context.TODO())
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, ctx)
+			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
 		}
-		reply = api.MapUserReply(user, events.UserDeleted, ctx)
+		reply = api.MapUserReply(user, events.UserDeleted, context.TODO())
 	case events.ChangeEmail:
-		_, err := handler.userService.UpdateUser(user, ctx)
+		_, err := handler.userService.UpdateUser(user, context.TODO())
 		if err != nil {
-			reply = api.MapUserReply(user, events.ChangedEmailRolledBack, ctx)
+			reply = api.MapUserReply(user, events.ChangedEmailRolledBack, context.TODO())
 		}
-		reply = api.MapUserReply(user, events.ChangedEmail, ctx)
+		reply = api.MapUserReply(user, events.ChangedEmail, context.TODO())
 
 	default:
-		reply = api.MapUserReply(user, events.UnknownReply, ctx)
+		reply = api.MapUserReply(user, events.UnknownReply, context.TODO())
 	}
 
 	if reply.Type != events.UnknownReply {

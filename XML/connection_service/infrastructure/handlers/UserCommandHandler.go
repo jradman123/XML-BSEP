@@ -7,7 +7,6 @@ import (
 	"connection/module/domain/model"
 	"context"
 	"fmt"
-	tracer "monitoring/module"
 )
 
 type UserCommandHandler struct {
@@ -29,10 +28,8 @@ func NewUserCommandHandler(service *services.UserService, publisher saga.Publish
 	return o, nil
 }
 
-func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "UserCommandHandler")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand) {
+
 	fmt.Println("usao u user command handler connection servisa")
 	status := model.Public
 	if command.User.ProfileStatus == "PRIVATE" {
@@ -50,7 +47,7 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand,
 	var reply = events.UserConnectionReply{}
 	switch command.Type {
 	case events.CreateUser:
-		err := handler.service.CreateUser(user, ctx)
+		err := handler.service.CreateUser(user, context.TODO())
 		if err != nil {
 			reply.Type = events.UserRolledBack
 		}
@@ -59,20 +56,20 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand,
 		// TODO:Cannot update users' username
 	case events.UpdateUser:
 		fmt.Println("events.UpdateUser")
-		err := handler.service.UpdateUser(user, ctx)
+		err := handler.service.UpdateUser(user, context.TODO())
 		if err != nil {
 			reply.Type = events.UserRolledBack
 		}
 		reply.Type = events.UserUpdated
 
 	case events.DeleteUser:
-		err := handler.service.DeleteUser(user, ctx)
+		err := handler.service.DeleteUser(user, context.TODO())
 		if err != nil {
 			reply.Type = events.UserRolledBack
 		}
 		reply.Type = events.UserDeleted
 	case events.ChangeProfileStatus:
-		err := handler.service.ChangeProfileStatus(user, ctx)
+		err := handler.service.ChangeProfileStatus(user, context.TODO())
 		if err != nil {
 			reply.Type = events.UserRolledBack
 		}
@@ -87,7 +84,7 @@ func (handler *UserCommandHandler) handle(command *events.ConnectionUserCommand,
 		fmt.Println("evo me u handleru u connection servisu")
 		fmt.Println(user)
 		fmt.Println(details)
-		err := handler.service.UpdateUserProfessionalDetails(user, details, ctx)
+		err := handler.service.UpdateUserProfessionalDetails(user, details, context.TODO())
 		if err != nil {
 			reply.Type = events.UserRolledBack
 		}

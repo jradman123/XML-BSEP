@@ -6,7 +6,6 @@ import (
 	"context"
 	"message/module/application"
 	"message/module/infrastructure/api"
-	tracer "monitoring/module"
 )
 
 type NotificationCommandHandler struct {
@@ -28,33 +27,31 @@ func NewNotificationCommandHandler(service *application.NotificationService, pub
 	return o, nil
 }
 
-func (handler *NotificationCommandHandler) handle(command *events.PostNotificationCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "NotificationCommandHandler")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	notification := api.MapNewPostNotification(command, ctx)
+func (handler *NotificationCommandHandler) handle(command *events.PostNotificationCommand) {
+
+	notification := api.MapNewPostNotification(command, context.TODO())
 	var reply = &events.PostNotificationReply{}
 	switch command.Type {
 	case events.LikePost:
-		_, err := handler.service.Create(notification, ctx)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapPostNotificationReply(events.NotificationNotSent, ctx)
+			reply = api.MapPostNotificationReply(events.NotificationNotSent, context.TODO())
 		}
-		reply = api.MapPostNotificationReply(events.NotificationSent, ctx)
+		reply = api.MapPostNotificationReply(events.NotificationSent, context.TODO())
 	case events.DislikePost:
-		_, err := handler.service.Create(notification, ctx)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapPostNotificationReply(events.NotificationNotSent, ctx)
+			reply = api.MapPostNotificationReply(events.NotificationNotSent, context.TODO())
 		}
-		reply = api.MapPostNotificationReply(events.NotificationSent, ctx)
+		reply = api.MapPostNotificationReply(events.NotificationSent, context.TODO())
 	case events.CommentPost:
-		_, err := handler.service.Create(notification, ctx)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapPostNotificationReply(events.NotificationNotSent, ctx)
+			reply = api.MapPostNotificationReply(events.NotificationNotSent, context.TODO())
 		}
-		reply = api.MapPostNotificationReply(events.NotificationSent, ctx)
+		reply = api.MapPostNotificationReply(events.NotificationSent, context.TODO())
 	default:
-		reply = api.MapPostNotificationReply(events.UnknownReply, ctx)
+		reply = api.MapPostNotificationReply(events.UnknownReply, context.TODO())
 
 		if reply.Type != events.UnknownReply {
 			_ = handler.replyPublisher.Publish(reply)

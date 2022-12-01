@@ -6,7 +6,6 @@ import (
 	"context"
 	"message/module/application"
 	"message/module/infrastructure/api"
-	tracer "monitoring/module"
 )
 
 type ConnectionNotificationCommandHandler struct {
@@ -28,28 +27,24 @@ func NewConnectionNotificationCommandHandler(service *application.NotificationSe
 	return o, nil
 }
 
-func (handler *ConnectionNotificationCommandHandler) handle(command *events.ConnectionNotificationCommand, ctx context.Context) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "ConnectionNotificationHandler")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	notification := api.MapNewConnectionNotification(command, ctx)
+func (handler *ConnectionNotificationCommandHandler) handle(command *events.ConnectionNotificationCommand) {
+	notification := api.MapNewConnectionNotification(command, context.TODO())
 	var reply = &events.ConnectionNotificationReply{}
 	switch command.Type {
 	case events.Connect:
-		_, err := handler.service.Create(notification, ctx)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, ctx)
+			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, context.TODO())
 		}
-		reply = api.MapConnectionNotificationReply(events.NotificationSent, ctx)
+		reply = api.MapConnectionNotificationReply(events.NotificationSent, context.TODO())
 	case events.AcceptRequest:
-		_, err := handler.service.Create(notification, ctx)
+		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, ctx)
+			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, context.TODO())
 		}
-		reply = api.MapConnectionNotificationReply(events.NotificationSent, ctx)
+		reply = api.MapConnectionNotificationReply(events.NotificationSent, context.TODO())
 	default:
-		reply = api.MapConnectionNotificationReply(events.UnknownReply, ctx)
+		reply = api.MapConnectionNotificationReply(events.UnknownReply, context.TODO())
 
 		if reply.Type != events.UnknownReply {
 			_ = handler.replyPublisher.Publish(reply)
