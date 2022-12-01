@@ -1,4 +1,10 @@
 version: '3.7'
+
+x-logging: &fluent-bit
+  driver: fluentd
+  options:
+    fluentd-address: ${FLUENT_BIT_ADDRESS}:24224
+
 services:
   user_service:
     image: user_service
@@ -31,6 +37,7 @@ services:
       - '8082:8082'
     depends_on:
       - user_db
+    logging: *fluent-bit
 
   api_gateway:
     image: api_gateway
@@ -69,6 +76,7 @@ services:
       - monitoring
     depends_on:
       - user_db
+    logging: *fluent-bit
 
   post_service:
     image: post_service
@@ -102,6 +110,7 @@ services:
     networks:
       - servers
       - monitoring
+    logging: *fluent-bit
 
   message_service:
     image: message_service
@@ -135,7 +144,8 @@ services:
     networks:
       - servers
       - monitoring
-    
+    logging: *fluent-bit
+
   connection_service:
     image: connection_service
     container_name: connection_service
@@ -166,6 +176,7 @@ services:
     networks:
       - servers
       - monitoring
+    logging: *fluent-bit
 
   user_db:
     image: postgres:14.1-alpine
@@ -180,6 +191,7 @@ services:
       - '4000:5432'
     volumes:
       - user-data:/var/lib/postgresql/data
+    logging: *fluent-bit
 
   post_db:
     image: mongo
@@ -192,6 +204,7 @@ services:
     networks:
       - servers
       - monitoring
+    logging: *fluent-bit
 
   message_db:
     image: mongo
@@ -204,6 +217,7 @@ services:
     networks:
       - servers
       - monitoring
+    logging: *fluent-bit
       
   neo4j:
     image: neo4j:4.3.3-community #4.3.3-community  latest
@@ -217,6 +231,7 @@ services:
     environment:
       - NEO4J_AUTH=none
       - NEO4J_dbms_memory_pagecache_size=512M
+    logging: *fluent-bit
 
   nats:
     image: nats
@@ -227,6 +242,7 @@ services:
       - monitoring
     ports:
       - '4222:4222'
+    logging: *fluent-bit
 
 
 volumes:
