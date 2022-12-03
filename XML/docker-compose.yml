@@ -47,7 +47,7 @@ services:
       dockerfile: ./api_gateway/Dockerfile
     restart: always
     ports:
-      - '9090:9090'
+      - '9000:9000'
     environment:
       USER_DB_HOST: "user_db"
       USER_DB_PORT: ${USER_DB_PORT}
