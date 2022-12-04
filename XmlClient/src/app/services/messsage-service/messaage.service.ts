@@ -11,18 +11,18 @@ export class MessageService {
 
   SendMessage(newMessaage: IMesssage) {
     return this._http.post<any>(
-      'http://localhost:9090/messages/send' ,
+      'http://localhost:9000/messages/send' ,
         newMessaage
     );
   }
   GetSentMessages() {
     return this._http.get<any>(
-      'http://localhost:9090/messages/' + localStorage.getItem('username') + "/sent",
+      'http://localhost:9000/messages/' + localStorage.getItem('username') + "/sent",
     );
   }
   GetReceivedMessages() {
     return this._http.get<any>(
-      'http://localhost:9090/messages/' + localStorage.getItem('username') + "/received",
+      'http://localhost:9000/messages/' + localStorage.getItem('username') + "/received",
     );
   }
 

@@ -33,7 +33,7 @@ export class AuthService {
 
   auth(loginReq: ILoginRequest): Observable<any> {
     return this._http
-      .post(`http://localhost:9090/users/auth/user`, loginReq)
+      .post(`http://localhost:9000/users/auth/user`, loginReq)
       .pipe(
         map((response: any) => {
           if (response) {
@@ -48,7 +48,7 @@ export class AuthService {
 
   login(loginRegularRequest: IUsername): Observable<LoggedUser> {
     return this._http
-      .post(`http://localhost:9090/users/auth/user/regular`, loginRegularRequest)
+      .post(`http://localhost:9000/users/auth/user/regular`, loginRegularRequest)
       .pipe(
         map((response: any) => {
           if (response) {
@@ -63,7 +63,7 @@ export class AuthService {
 
   authenticate2FA(request: IAuthenticate): Observable<any> {
     return this._http.post<any>(
-      'http://localhost:9090/2fa/authenticate',
+      'http://localhost:9000/2fa/authenticate',
       request
     ).pipe(
       map((response: any) => {
@@ -76,14 +76,14 @@ export class AuthService {
   }
   passwordlessLoginRequest(username: any) {
     return this._http.post<any>(
-      'http://localhost:9090/users/login/passwordless',
+      'http://localhost:9000/users/login/passwordless',
       { username }
     );
   }
 
   passwordlessLogin(code: any) {
     return this._http.get<any>(
-      'http://localhost:9090/users/login/passwordless/' + code
+      'http://localhost:9000/users/login/passwordless/' + code
     )
       .pipe(
         map((response: any) => {

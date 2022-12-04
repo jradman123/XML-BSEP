@@ -10,25 +10,25 @@ export class ConnectionService {
 
   getUsersConnections(username: string) {
     return this._http.get<any>(
-      'http://localhost:9090/connection/connected/' + username
+      'http://localhost:9000/connection/connected/' + username
     );
   }
 
   getUsersInvitations(username: string) {
     return this._http.get<any>(
-      'http://localhost:9090/connection/requests/' + username
+      'http://localhost:9000/connection/requests/' + username
     );
   }
 
   getUsersRecommendation(username: string) {
     return this._http.get<any>(
-      'http://localhost:9090/connection/recommended/' + username
+      'http://localhost:9000/connection/recommended/' + username
     );
   }
 
   connectUsers(senderUsername: string, recieverUsername: string){
     return this._http.post<any>(
-      'http://localhost:9090/connection/new', {
+      'http://localhost:9000/connection/new', {
           "userSender": senderUsername,
           "userReceiver": recieverUsername,
       }
@@ -37,7 +37,7 @@ export class ConnectionService {
    
   acceptConnection(senderUsername: string, recieverUsername: string){
     return this._http.post<any>(
-      'http://localhost:9090/connection/accepted', {
+      'http://localhost:9000/connection/accepted', {
         "userSender": senderUsername,
         "userReceiver": recieverUsername,
     }
@@ -46,7 +46,7 @@ export class ConnectionService {
 
   connectionStatus(senderUsername: string, recieverUsername: string){
     return this._http.post<any>(
-      'http://localhost:9090/connection/status', {
+      'http://localhost:9000/connection/status', {
           "userSender": senderUsername,
           "userReceiver": recieverUsername,
       }
@@ -55,7 +55,7 @@ export class ConnectionService {
 
   blockUser(senderUsername: string, recieverUsername: string){
       return this._http.post<any>(
-        'http://localhost:9090/connection/block', {
+        'http://localhost:9000/connection/block', {
             "userSender": senderUsername,
             "userReceiver": recieverUsername,
         }

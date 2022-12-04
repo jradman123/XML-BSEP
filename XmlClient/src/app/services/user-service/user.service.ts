@@ -20,14 +20,14 @@ export class UserService {
 
   registerUser(registerRequest: UserData): Observable<any> {
     return this._http.post<any>(
-      'http://localhost:9090/users/register/user',
+      'http://localhost:9000/users/register/user',
       registerRequest
     );
   }
   
   recoverPass(recoverPass: NewPass) {
     return this._http.post<any>(
-      'http://localhost:9090/users/recover/user',
+      'http://localhost:9000/users/recover/user',
       {"recovery" : recoverPass}
 
     );
@@ -35,49 +35,49 @@ export class UserService {
 
   recoverPassRequest(recoverPass: any) {
     return this._http.post<any>(
-      'http://localhost:9090/users/recoveryRequest/user',
+      'http://localhost:9000/users/recoveryRequest/user',
       {"username" : recoverPass}
     );
   }
 
   passIsPwned(pass: any) {
     return this._http.post<any>(
-      'http://localhost:9090/users/pwnedPassword/user',
+      'http://localhost:9000/users/pwnedPassword/user',
       pass
     );
   }
 
   activateAccount(activateData: ActivateAccount) {
     return this._http.post<any>(
-      'http://localhost:9090/users/activate/user',
+      'http://localhost:9000/users/activate/user',
       activateData
     );
   }
   
   enable2FA(username: string): Observable<any> {
     return this._http.post<any>(
-      'http://localhost:9090/2fa/enable',
+      'http://localhost:9000/2fa/enable',
       { username }
     );
   }
   
   disable2FA(username: string) {
     return this._http.post<any>(
-      'http://localhost:9090/2fa/disable',
+      'http://localhost:9000/2fa/disable',
       { username }
     );
   }
 
   check2FAStatus(username: string): Observable<any> {
     return this._http.post<any>(
-      'http://localhost:9090/2fa/check',
+      'http://localhost:9000/2fa/check',
       { username }
     );
   }
 
   getUserDetails(username: string | null) {
     return this._http.post<UserDetails>(
-      'http://localhost:9090/users/user/details', {
+      'http://localhost:9000/users/user/details', {
       username
     }
     );
@@ -86,50 +86,50 @@ export class UserService {
 
   getUsers() {
     return this._http.get<any>(
-      'http://localhost:9090/users'
+      'http://localhost:9000/users'
     );
   }
 
   updateUser(user: UserDetails) {
-    return this._http.post<UserDetails>('http://localhost:9090/users/user/edit',
+    return this._http.post<UserDetails>('http://localhost:9000/users/user/edit',
       user
     )
   }
 
   updateUserPersonalDetails(user : UserPersonalDetails){
-    return this._http.post<UserPersonalDetails>('http://localhost:9090/users/user/editPersonal',
+    return this._http.post<UserPersonalDetails>('http://localhost:9000/users/user/editPersonal',
       user
     )
   }
 
   updateUserProfessionalDetails(user : UserProfessionalDetails){
-    return this._http.post<UserProfessionalDetails>('http://localhost:9090/users/user/editProfessional',
+    return this._http.post<UserProfessionalDetails>('http://localhost:9000/users/user/editProfessional',
       user
       )
   }
   changePrivacyStatus(username : string, newStatus : string){
     return this._http.post<any>(
-      'http://localhost:9090/users/user/changeStatus',
+      'http://localhost:9000/users/user/changeStatus',
       {username, newStatus}
     )
   }
 
   getEmailUsername(username : string | null){
     return this._http.get<any>(
-      'http://localhost:9090/users/user/contact/' + username
+      'http://localhost:9000/users/user/contact/' + username
     )
   }
 
   changeEmail(changeEmailRequest : ChangeEmailRequest){
     return this._http.post<any>(
-      'http://localhost:9090/users/user/changeEmail/' + changeEmailRequest.userId,
+      'http://localhost:9000/users/user/changeEmail/' + changeEmailRequest.userId,
         changeEmailRequest.email
     )
   }
 
   changeUsername(changeUsernameRequest : ChangeUsernameRequest){
     return this._http.post<any>(
-      'http://localhost:9090/users/user/changeUsername/' + changeUsernameRequest.userId,
+      'http://localhost:9000/users/user/changeUsername/' + changeUsernameRequest.userId,
         changeUsernameRequest.username  
     )
   }

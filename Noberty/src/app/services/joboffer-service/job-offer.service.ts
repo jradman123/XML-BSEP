@@ -12,7 +12,7 @@ export class JobOfferService {
   }
 
   publishJobOfferOnDislinkt(jobOffer : IJobOfferPublish) : Observable<any> {
-    return this.http.post('http://localhost:9090/users/share/jobOffer', jobOffer);
+    return this.http.post('http://localhost:9000/users/share/jobOffer', jobOffer);
   }
   
 }

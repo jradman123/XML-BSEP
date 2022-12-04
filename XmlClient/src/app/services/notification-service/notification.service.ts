@@ -11,7 +11,7 @@ export class NotificationService {
 
   getUsersNotifications(username: string) {
     return this._http.get<any>(
-      'http://localhost:9090/notification/user/' + username
+      'http://localhost:9000/notification/user/' + username
     );
   }
 
@@ -19,19 +19,19 @@ export class NotificationService {
     let idAsStr = "\""  + id + "\"" 
     console.log(idAsStr)
     return this._http.post<any>(
-      'http://localhost:9090/notification/read', idAsStr
+      'http://localhost:9000/notification/read', idAsStr
     );
   }
 
   getUsersNotificationsSettings(username: string) {
     return this._http.get<any>(
-      'http://localhost:9090/notification/settings/' + username
+      'http://localhost:9000/notification/settings/' + username
     );
   }
 
   changeNotificationSettings(changeSettingsRequest : ChangeSettingsRequest) {
     return this._http.post<any>(
-      'http://localhost:9090/notification/change-settings/' + changeSettingsRequest.username,
+      'http://localhost:9000/notification/change-settings/' + changeSettingsRequest.username,
       changeSettingsRequest.settings
     );
   }

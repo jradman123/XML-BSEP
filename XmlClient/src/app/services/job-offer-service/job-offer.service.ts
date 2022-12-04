@@ -13,18 +13,18 @@ export class JobOfferService {
    }
 
    getAllJobOffers() : Observable<any> {
-    return this.http.get("http://localhost:9090/job_offer");
+    return this.http.get("http://localhost:9000/job_offer");
    }
 
    createJobOffer(newjo : JobOffer) : Observable<any> {
-     return this.http.post("http://localhost:9090/job_offer", newjo);
+     return this.http.post("http://localhost:9000/job_offer", newjo);
    }
 
    getSuggestedJobOffers(username : string) : Observable<any> {
-    return this.http.get("http://localhost:9090/jobOffers/recommended/" + username);
+    return this.http.get("http://localhost:9000/jobOffers/recommended/" + username);
    }
 
    getMyJobOffers(username : string) : Observable<any> {
-    return this.http.get("http://localhost:9090/job_offer/" + username);
+    return this.http.get("http://localhost:9000/job_offer/" + username);
    }
 }

@@ -13,59 +13,59 @@ export class PostService {
   }
   GetAllPosts(username : string) {
     return this._http.get<any>(
-      'http://localhost:9090/post/user/' + username,
+      'http://localhost:9000/post/user/' + username,
     );
   }
   GetUserReactionToPost(username: string, Id: string) {
     return this._http.get<any>(
-      'http://localhost:9090/post/' + Id + "/" + username + '/reaction'
+      'http://localhost:9000/post/' + Id + "/" + username + '/reaction'
     );
   }
   GetAllReactionsForPost(Id: string) {
     return this._http.get<any>(
-      'http://localhost:9090/post/' + Id + '/reactions'
+      'http://localhost:9000/post/' + Id + '/reactions'
     );
   }
   GetAllCommentsForPost(Id: any) {
     return this._http.get<any>(
-      'http://localhost:9090/post/' + Id + '/comments'
+      'http://localhost:9000/post/' + Id + '/comments'
     );
   }
 
   CreatePost(newPost: IPostRequest) : Observable<any> {
     return this._http.post<any>(
-      'http://localhost:9090/post',
+      'http://localhost:9000/post',
       newPost
     );
   }
   LikePost(Username: string, link: any)  {
     return this._http.post<any>(
-      'http://localhost:9090' + link,
+      'http://localhost:9000' + link,
       { Username }
     );
   }
   DislikePost(Username: string, link: any) {
     return this._http.post<any>(
-      'http://localhost:9090' + link,
+      'http://localhost:9000' + link,
       { Username }
     );
   }
   CommentPost(Comment: any, link: any) {
     return this._http.post<any>(
-      'http://localhost:9090' + link,
+      'http://localhost:9000' + link,
       Comment
     );
   }
 
   GetPost(Id: any) {
     return this._http.get<any>(
-      'http://localhost:9090/post/' + Id 
+      'http://localhost:9000/post/' + Id 
     );
   }
 
   getUsersFeed(username : string ){
     return this._http.get<any>(
-      'http://localhost:9090/users/' + username + '/feed'
+      'http://localhost:9000/users/' + username + '/feed'
     );
   }
 
