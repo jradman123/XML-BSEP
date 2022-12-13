@@ -17,9 +17,11 @@ import (
 	"gateway/module/infrastructure/persistance"
 	cfg "gateway/module/startup/config"
 	gorilla_handlers "github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	runtime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	otgo "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"gopkg.in/go-playground/validator.v9"
@@ -36,7 +38,7 @@ const name = "api_gateway"
 
 type Server struct {
 	config *cfg.Config
-	mux    *runtime.ServeMux // Part of grpcGateway library
+	mux    *runtime.ServeMux
 	tracer otgo.Tracer
 	closer io.Closer
 }
@@ -142,8 +144,16 @@ func (server *Server) Start() {
 		gorilla_handlers.AllowedHeaders([]string{"Accept", "Accept-Language", "Content-Type", "Content-Language", "Origin", "Authorization", "Access-Control-Allow-*", "Access-Control-Allow-Origin", "*"}),
 		gorilla_handlers.AllowCredentials(),
 	)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), tracingWrapper(cors(muxMiddleware(server)))))
+
+	r := mux.NewRouter()
+	metricsMiddleware := traceri.NewMetricsMiddleware()
+	r.Use(metricsMiddleware.Metrics)
+	r.Path("/metrics").Handler(promhttp.Handler())
+	r.PathPrefix("/").Handler(tracingWrapper(cors(muxMiddleware(server))))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), r))
+	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", server.config.Port), tracingWrapper(cors(muxMiddleware(server)))))
 }
+
 func muxMiddleware(server *Server) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		server.mux.ServeHTTP(w, r)
