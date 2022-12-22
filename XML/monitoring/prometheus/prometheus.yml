@@ -16,22 +16,6 @@ scrape_configs:
     static_configs:
       - targets: ['api_gateway:9000']
 
-  - job_name: 'user_service'
-    static_configs:
-      - targets: [ 'user_service:8082' ]
-
-  - job_name: 'post_service'
-    static_configs:
-      - targets: [ 'post_service:8083' ]
-
-  - job_name: 'connection_service'
-    static_configs:
-      - targets: [ 'connection_service:8084' ]
-
-  - job_name: 'message_service'
-    static_configs:
-      - targets: [ 'message_service:8085' ]
-
   - job_name: 'node_exporter'
     static_configs:
       - targets: [ 'node-exporter:9100' ]

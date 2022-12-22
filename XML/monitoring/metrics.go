@@ -1,29 +1,31 @@
 package monitoring
 
 import (
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type MetricsMiddleware struct {
-	status200 *prometheus.CounterVec
-	status500 *prometheus.CounterVec
+	totalRequests      *prometheus.CounterVec
+	durationOfRequests *prometheus.HistogramVec
 }
 
 func NewMetricsMiddleware() *MetricsMiddleware {
-	status200 := promauto.NewCounterVec(prometheus.CounterOpts{
-		Name: "status200",
-		Help: "The total number of requests with status 200 ",
-	}, []string{"method", "path", "statuscode"})
-	status500 := promauto.NewCounterVec(prometheus.CounterOpts{
-		Name: "status500",
-		Help: "The total number of requests with status 500",
-	}, []string{"method", "path", "statuscode"})
+	totalRequests := promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "http_requests_total",
+		Help: "The total number of requests.",
+	}, []string{"method", "path", "statusCode", "service"})
+	durationOfRequests := promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "http_response_time_seconds",
+		Help: "Duration of HTTP requests.",
+	}, []string{"path", "service"})
 	return &MetricsMiddleware{
-		status200: status200,
-		status500: status500,
+		totalRequests:      totalRequests,
+		durationOfRequests: durationOfRequests,
 	}
 }
 
@@ -31,22 +33,19 @@ func NewMetricsMiddleware() *MetricsMiddleware {
 func (lm *MetricsMiddleware) Metrics(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		timer := prometheus.NewTimer(lm.durationOfRequests.With(prometheus.Labels{"path": r.RequestURI, "service": getServiceName(r.RequestURI)}))
+
 		wi := &responseWriterInterceptor{
 			statusCode:     http.StatusOK,
 			ResponseWriter: w,
 		}
-		next.ServeHTTP(wi, r)
 
-		if wi.statusCode == 200 {
-			lm.status200.With(prometheus.Labels{"method": r.Method, "path": r.RequestURI, "statuscode": strconv.Itoa(wi.statusCode)}).Inc()
-		} else if wi.statusCode == 500 {
-			lm.status500.With(prometheus.Labels{"method": r.Method, "path": r.RequestURI, "statuscode": strconv.Itoa(wi.statusCode)}).Inc()
-		}
+		next.ServeHTTP(wi, r)
+		lm.totalRequests.With(prometheus.Labels{"method": r.Method, "path": r.RequestURI, "statusCode": strconv.Itoa(wi.statusCode), "service": getServiceName(r.RequestURI)}).Inc()
+		timer.ObserveDuration()
 	})
 }
 
-// responseWriterInterceptor is a simple wrapper to intercept set data on a
-// ResponseWriter.
 type responseWriterInterceptor struct {
 	http.ResponseWriter
 	statusCode int
@@ -59,4 +58,23 @@ func (w *responseWriterInterceptor) WriteHeader(statusCode int) {
 
 func (w *responseWriterInterceptor) Write(p []byte) (int, error) {
 	return w.ResponseWriter.Write(p)
+}
+
+func getServiceName(path string) (serviceName string) {
+	partOfPath := strings.Split(path, "/")
+	fmt.Println(partOfPath[1])
+	if strings.EqualFold(partOfPath[1], "connection") {
+		serviceName = "connection_service"
+	} else if strings.EqualFold(partOfPath[1], "job_offer") || strings.EqualFold(partOfPath[1], "post") {
+		serviceName = "post_service"
+	} else if strings.EqualFold(partOfPath[1], "messages") || strings.EqualFold(partOfPath[1], "notification") {
+		serviceName = "message_service"
+	} else if strings.EqualFold(partOfPath[1], "users") && !strings.EqualFold(partOfPath[2], "auth") && !strings.EqualFold(partOfPath[2], "login") && !strings.EqualFold(partOfPath[3], "feed") {
+		serviceName = "user_service"
+	} else if strings.EqualFold(partOfPath[1], "users") && (strings.EqualFold(partOfPath[2], "auth") || strings.EqualFold(partOfPath[2], "login") || strings.EqualFold(partOfPath[3], "feed")) {
+		serviceName = "api_gateway"
+	} else {
+		serviceName = "api_gateway"
+	}
+	return serviceName
 }
