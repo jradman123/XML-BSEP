@@ -2,19 +2,14 @@ package api
 
 import (
 	pb "common/module/proto/user_service"
-	"context"
 	"fmt"
 	"github.com/google/uuid"
-	tracer "monitoring/module"
 	"time"
 	"user/module/domain/dto"
 	"user/module/domain/model"
 )
 
-func MapProduct(user *model.User, ctx context.Context) *pb.User {
-	span := tracer.StartSpanFromContext(ctx, "MapProduct")
-	defer span.Finish()
-
+func MapProduct(user *model.User) *pb.User {
 	usersPb := &pb.User{
 		Username:      user.Username,
 		Password:      user.Password,
@@ -32,10 +27,7 @@ func MapProduct(user *model.User, ctx context.Context) *pb.User {
 	return usersPb
 }
 
-func MapUserToPbResponseUser(user *model.User, ctx context.Context) *pb.RegisteredUser {
-	span := tracer.StartSpanFromContext(ctx, "MapUserToPbResponseUser")
-	defer span.Finish()
-
+func MapUserToPbResponseUser(user *model.User) *pb.RegisteredUser {
 	usersPb := &pb.RegisteredUser{
 		Username:  user.Username,
 		Email:     user.Email,
@@ -44,11 +36,7 @@ func MapUserToPbResponseUser(user *model.User, ctx context.Context) *pb.Register
 	}
 	return usersPb
 }
-func MapDtoToUser(userPb *dto.NewUser, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "MapDtoToUser")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapDtoToUser(userPb *dto.NewUser) *model.User {
 	status := model.Public
 	if userPb.ProfileStatus == "PRIVATE" {
 		status = model.Private
@@ -61,8 +49,8 @@ func MapDtoToUser(userPb *dto.NewUser, ctx context.Context) *model.User {
 		Username:      userPb.Username,
 		Email:         userPb.Email,
 		PhoneNumber:   userPb.PhoneNumber,
-		Gender:        mapGenderToModel(userPb.Gender, ctx),
-		DateOfBirth:   mapToDate(userPb.DateOfBirth, ctx),
+		Gender:        mapGenderToModel(userPb.Gender),
+		DateOfBirth:   mapToDate(userPb.DateOfBirth),
 		Password:      userPb.Password,
 		Role:          model.Regular,
 		IsConfirmed:   false,
@@ -72,11 +60,7 @@ func MapDtoToUser(userPb *dto.NewUser, ctx context.Context) *model.User {
 	return userD
 }
 
-func MapPbUserDetailsToUser(userDetailsPb *pb.UserDetailsRequest, ctx context.Context) *dto.UserDetails {
-	span := tracer.StartSpanFromContext(ctx, "MapPbUserDetailsToUser")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapPbUserDetailsToUser(userDetailsPb *pb.UserDetailsRequest) *dto.UserDetails {
 	userD := &dto.UserDetails{
 		FirstName:   userDetailsPb.UserDetails.FirstName,
 		LastName:    userDetailsPb.UserDetails.LastName,
@@ -89,73 +73,58 @@ func MapPbUserDetailsToUser(userDetailsPb *pb.UserDetailsRequest, ctx context.Co
 	}
 	for i, s := range userDetailsPb.UserDetails.Educations {
 		fmt.Println(i, s)
-		ed := mapPbEducationToEducationDto(s, ctx)
+		ed := mapPbEducationToEducationDto(s)
 		userD.Educations = append(userD.Educations, *ed)
 	}
 	for i, s := range userDetailsPb.UserDetails.Interests {
 		fmt.Println(i, s)
-		ed := mapPbEducationToInterestDto(s, ctx)
+		ed := mapPbEducationToInterestDto(s)
 		userD.Interests = append(userD.Interests, *ed)
 	}
 	for i, s := range userDetailsPb.UserDetails.Skills {
 		fmt.Println(i, s)
-		ed := mapPbEducationToSkillDto(s, ctx)
+		ed := mapPbEducationToSkillDto(s)
 		userD.Skills = append(userD.Skills, *ed)
 	}
 	for i, s := range userDetailsPb.UserDetails.Experiences {
 		fmt.Println(i, s)
-		ed := mapPbEducationToExperienceDto(s, ctx)
+		ed := mapPbEducationToExperienceDto(s)
 		userD.Experiences = append(userD.Experiences, *ed)
 	}
 	return userD
 }
-func mapPbEducationToEducationDto(e *pb.Education, ctx context.Context) *dto.EducationDto {
-	span := tracer.StartSpanFromContext(ctx, "mapPbEducationToEducationDto")
-	defer span.Finish()
-
+func mapPbEducationToEducationDto(e *pb.Education) *dto.EducationDto {
 	education := &dto.EducationDto{
 		Education: e.Education,
 	}
 	return education
 }
-func mapPbEducationToSkillDto(e *pb.Skill, ctx context.Context) *dto.SkillDto {
-	span := tracer.StartSpanFromContext(ctx, "mapPbEducationToSkillDto")
-	defer span.Finish()
-
+func mapPbEducationToSkillDto(e *pb.Skill) *dto.SkillDto {
 	skill := &dto.SkillDto{
 		Skill: e.Skill,
 	}
 	return skill
 }
-func mapPbEducationToInterestDto(e *pb.Interest, ctx context.Context) *dto.InterestDto {
-	span := tracer.StartSpanFromContext(ctx, "mapPbEducationToInterestDto")
-	defer span.Finish()
+func mapPbEducationToInterestDto(e *pb.Interest) *dto.InterestDto {
 	interest := &dto.InterestDto{
 		Interest: e.Interest,
 	}
 	return interest
 }
-func mapPbEducationToExperienceDto(e *pb.Experience, ctx context.Context) *dto.ExperienceDto {
-	span := tracer.StartSpanFromContext(ctx, "mapPbEducationToExperienceDto")
-	defer span.Finish()
-
+func mapPbEducationToExperienceDto(e *pb.Experience) *dto.ExperienceDto {
 	experience := &dto.ExperienceDto{
 		Experience: e.Experience,
 	}
 	return experience
 }
 
-func MapUserDetailsDtoToUser(dto *dto.UserDetails, user *model.User, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "MapUserDetailsDtoToUser")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapUserDetailsDtoToUser(dto *dto.UserDetails, user *model.User) *model.User {
 	user.Biography = dto.Biography
 	user.FirstName = dto.FirstName
 	user.LastName = dto.LastName
-	user.Gender = mapGenderToModel(dto.Gender, ctx)
+	user.Gender = mapGenderToModel(dto.Gender)
 	user.PhoneNumber = dto.PhoneNumber
-	user.DateOfBirth = mapToDate(dto.DateOfBirth, ctx)
+	user.DateOfBirth = mapToDate(dto.DateOfBirth)
 	//KAKO SAD DA SVE NIZOVE PONISTIM DA BUDU PRAZNI NA POCETKU
 	var skills []model.Skill
 	var interests []model.Interest
@@ -163,22 +132,22 @@ func MapUserDetailsDtoToUser(dto *dto.UserDetails, user *model.User, ctx context
 	var experiences []model.Experience
 	for i, s := range dto.Educations {
 		fmt.Println(i, s)
-		ed := mapEducationDtoToEducation(&s, ctx)
+		ed := mapEducationDtoToEducation(&s)
 		educations = append(educations, *ed)
 	}
 	for i, s := range dto.Interests {
 		fmt.Println(i, s)
-		ed := mapInterestDtoToInterest(&s, ctx)
+		ed := mapInterestDtoToInterest(&s)
 		interests = append(interests, *ed)
 	}
 	for i, s := range dto.Skills {
 		fmt.Println(i, s)
-		ed := mapSkillDtoToSkill(&s, ctx)
+		ed := mapSkillDtoToSkill(&s)
 		skills = append(skills, *ed)
 	}
 	for i, s := range dto.Experiences {
 		fmt.Println(i, s)
-		ed := mapExperienceDtoToExperience(&s, ctx)
+		ed := mapExperienceDtoToExperience(&s)
 
 		experiences = append(experiences, *ed)
 	}
@@ -189,46 +158,32 @@ func MapUserDetailsDtoToUser(dto *dto.UserDetails, user *model.User, ctx context
 	return user
 }
 
-func mapEducationDtoToEducation(e *dto.EducationDto, ctx context.Context) *model.Education {
-	span := tracer.StartSpanFromContext(ctx, "mapEducationDtoToEducation")
-	defer span.Finish()
-
+func mapEducationDtoToEducation(e *dto.EducationDto) *model.Education {
 	education := &model.Education{
 		Education: e.Education,
 	}
 	return education
 }
-func mapSkillDtoToSkill(e *dto.SkillDto, ctx context.Context) *model.Skill {
-	span := tracer.StartSpanFromContext(ctx, "mapSkillDtoToSkill")
-	defer span.Finish()
-
+func mapSkillDtoToSkill(e *dto.SkillDto) *model.Skill {
 	skill := &model.Skill{
 		Skill: e.Skill,
 	}
 	return skill
 }
-func mapInterestDtoToInterest(e *dto.InterestDto, ctx context.Context) *model.Interest {
-	span := tracer.StartSpanFromContext(ctx, "mapInterestDtoToInterest")
-	defer span.Finish()
-
+func mapInterestDtoToInterest(e *dto.InterestDto) *model.Interest {
 	interest := &model.Interest{
 		Interest: e.Interest,
 	}
 	return interest
 }
-func mapExperienceDtoToExperience(e *dto.ExperienceDto, ctx context.Context) *model.Experience {
-	span := tracer.StartSpanFromContext(ctx, "mapExperienceDtoToExperience")
-	defer span.Finish()
-
+func mapExperienceDtoToExperience(e *dto.ExperienceDto) *model.Experience {
 	experience := &model.Experience{
 		Experience: e.Experience,
 	}
 	return experience
 }
 
-func MapPbUserToNewUserDto(userPb *pb.RegisterUserRequest, ctx context.Context) *dto.NewUser {
-	span := tracer.StartSpanFromContext(ctx, "MapPbUserToNewUserDto")
-	defer span.Finish()
+func MapPbUserToNewUserDto(userPb *pb.RegisterUserRequest) *dto.NewUser {
 	fmt.Printf("Eo ga userPb: %v", userPb)
 	userD := &dto.NewUser{
 		FirstName:     userPb.UserRequest.FirstName,
@@ -245,19 +200,13 @@ func MapPbUserToNewUserDto(userPb *pb.RegisterUserRequest, ctx context.Context) 
 	return userD
 }
 
-func mapToDate(birth string, ctx context.Context) time.Time {
-	span := tracer.StartSpanFromContext(ctx, "mapToDate")
-	defer span.Finish()
-
+func mapToDate(birth string) time.Time {
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, birth)
 	return dateOfBirth
 
 }
-func mapGenderToModel(gender string, ctx context.Context) model.Gender {
-	span := tracer.StartSpanFromContext(ctx, "mapGenderToModel")
-	defer span.Finish()
-
+func mapGenderToModel(gender string) model.Gender {
 	switch gender {
 	case "MALE":
 		return model.MALE
@@ -269,9 +218,7 @@ func mapGenderToModel(gender string, ctx context.Context) model.Gender {
 	return model.OTHER
 }
 
-func MapPbToUserActivateRequest(request *pb.ActivationRequest, ctx context.Context) *dto.UserActivateRequest {
-	span := tracer.StartSpanFromContext(ctx, "MapPbToUserActivateRequest")
-	defer span.Finish()
+func MapPbToUserActivateRequest(request *pb.ActivationRequest) *dto.UserActivateRequest {
 	requestDTO := &dto.UserActivateRequest{
 		Code:     request.Account.Code,
 		Username: request.Account.Username,
@@ -279,10 +226,7 @@ func MapPbToUserActivateRequest(request *pb.ActivationRequest, ctx context.Conte
 	return requestDTO
 }
 
-func MapPbToNewPasswordRequestDto(request *pb.NewPasswordRequest, ctx context.Context) *dto.NewRecoveryPasswordRequest {
-	span := tracer.StartSpanFromContext(ctx, "MapPbToNewPasswordRequestDto")
-	defer span.Finish()
-
+func MapPbToNewPasswordRequestDto(request *pb.NewPasswordRequest) *dto.NewRecoveryPasswordRequest {
 	requestDto := &dto.NewRecoveryPasswordRequest{
 		Username:    request.Recovery.Username,
 		NewPassword: request.Recovery.Password,
@@ -291,11 +235,7 @@ func MapPbToNewPasswordRequestDto(request *pb.NewPasswordRequest, ctx context.Co
 	return requestDto
 }
 
-func MapUserToUserDetails(user *model.User, ctx context.Context) *pb.UserDetails {
-	span := tracer.StartSpanFromContext(ctx, "MapUserToUserDetails")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapUserToUserDetails(user *model.User) *pb.UserDetails {
 	var skills []*pb.Skill
 	var interests []*pb.Interest
 	var educations []*pb.Education
@@ -303,22 +243,22 @@ func MapUserToUserDetails(user *model.User, ctx context.Context) *pb.UserDetails
 
 	for i, s := range user.Educations {
 		fmt.Println(i, s)
-		ed := mapEducationToEducationPb(&s, ctx)
+		ed := mapEducationToEducationPb(&s)
 		educations = append(educations, ed)
 	}
 	for i, s := range user.Interests {
 		fmt.Println(i, s)
-		ed := mapInterestToInterestPb(&s, ctx)
+		ed := mapInterestToInterestPb(&s)
 		interests = append(interests, ed)
 	}
 	for i, s := range user.Skills {
 		fmt.Println(i, s)
-		ed := mapSkillToSkillPb(&s, ctx)
+		ed := mapSkillToSkillPb(&s)
 		skills = append(skills, ed)
 	}
 	for i, s := range user.Experiences {
 		fmt.Println(i, s)
-		ed := mapExperienceToExperiencePb(&s, ctx)
+		ed := mapExperienceToExperiencePb(&s)
 
 		experiences = append(experiences, ed)
 	}
@@ -329,7 +269,7 @@ func MapUserToUserDetails(user *model.User, ctx context.Context) *pb.UserDetails
 		PhoneNumber:   user.PhoneNumber,
 		FirstName:     user.FirstName,
 		LastName:      user.LastName,
-		Gender:        mapGenderToString(user.Gender, ctx),
+		Gender:        mapGenderToString(user.Gender),
 		DateOfBirth:   user.DateOfBirth.String(),
 		Biography:     user.Biography,
 		Skills:        skills,
@@ -341,9 +281,7 @@ func MapUserToUserDetails(user *model.User, ctx context.Context) *pb.UserDetails
 	return userDetails
 }
 
-func mapGenderToString(gender model.Gender, ctx context.Context) string {
-	span := tracer.StartSpanFromContext(ctx, "mapGenderToString")
-	defer span.Finish()
+func mapGenderToString(gender model.Gender) string {
 	if gender == model.MALE {
 		return "MALE"
 	}
@@ -354,83 +292,64 @@ func mapGenderToString(gender model.Gender, ctx context.Context) string {
 	}
 }
 
-func mapEducationToEducationPb(e *model.Education, ctx context.Context) *pb.Education {
-	span := tracer.StartSpanFromContext(ctx, "mapEducationToEducationPb")
-	defer span.Finish()
-
+func mapEducationToEducationPb(e *model.Education) *pb.Education {
 	education := &pb.Education{
 		Education: e.Education,
 	}
 	return education
 }
-func mapSkillToSkillPb(e *model.Skill, ctx context.Context) *pb.Skill {
-	span := tracer.StartSpanFromContext(ctx, "mapSkillToSkillPb")
-	defer span.Finish()
+func mapSkillToSkillPb(e *model.Skill) *pb.Skill {
 	skill := &pb.Skill{
 		Skill: e.Skill,
 	}
 	return skill
 }
-func mapInterestToInterestPb(e *model.Interest, ctx context.Context) *pb.Interest {
-	span := tracer.StartSpanFromContext(ctx, "mapInterestToInterestPb")
-	defer span.Finish()
-
+func mapInterestToInterestPb(e *model.Interest) *pb.Interest {
 	interest := &pb.Interest{
 		Interest: e.Interest,
 	}
 	return interest
 }
-func mapExperienceToExperiencePb(e *model.Experience, ctx context.Context) *pb.Experience {
-	span := tracer.StartSpanFromContext(ctx, "mapExperienceToExperiencePb")
-	defer span.Finish()
-
+func mapExperienceToExperiencePb(e *model.Experience) *pb.Experience {
 	experience := &pb.Experience{
 		Experience: e.Experience,
 	}
 	return experience
 }
 
-func MapUserPersonalDetailsDtoToUser(dto *dto.UserPersonalDetails, user *model.User, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "MapUserPersonalDetailsDtoToUser")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapUserPersonalDetailsDtoToUser(dto *dto.UserPersonalDetails, user *model.User) *model.User {
 	user.Biography = dto.Biography
 	user.FirstName = dto.FirstName
 	user.LastName = dto.LastName
-	user.Gender = mapGenderToModel(dto.Gender, ctx)
+	user.Gender = mapGenderToModel(dto.Gender)
 	user.PhoneNumber = dto.PhoneNumber
-	user.DateOfBirth = mapToDate(dto.DateOfBirth, ctx)
+	user.DateOfBirth = mapToDate(dto.DateOfBirth)
 	return user
 }
 
-func MapUserProfessionalDetailsDtoToUser(dto *dto.UserProfessionalDetails, user *model.User, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "MapUserProfessionalDetailsDtoToUser")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapUserProfessionalDetailsDtoToUser(dto *dto.UserProfessionalDetails, user *model.User) *model.User {
 	var skills []model.Skill
 	var interests []model.Interest
 	var educations []model.Education
 	var experiences []model.Experience
 	for i, s := range dto.Educations {
 		fmt.Println(i, s)
-		ed := mapEducationDtoToEducation(&s, ctx)
+		ed := mapEducationDtoToEducation(&s)
 		educations = append(educations, *ed)
 	}
 	for i, s := range dto.Interests {
 		fmt.Println(i, s)
-		ed := mapInterestDtoToInterest(&s, ctx)
+		ed := mapInterestDtoToInterest(&s)
 		interests = append(interests, *ed)
 	}
 	for i, s := range dto.Skills {
 		fmt.Println(i, s)
-		ed := mapSkillDtoToSkill(&s, ctx)
+		ed := mapSkillDtoToSkill(&s)
 		skills = append(skills, *ed)
 	}
 	for i, s := range dto.Experiences {
 		fmt.Println(i, s)
-		ed := mapExperienceDtoToExperience(&s, ctx)
+		ed := mapExperienceDtoToExperience(&s)
 
 		experiences = append(experiences, *ed)
 	}
@@ -441,10 +360,7 @@ func MapUserProfessionalDetailsDtoToUser(dto *dto.UserProfessionalDetails, user 
 	return user
 }
 
-func MapPbUserPersonalDetailsToUser(userPersonalDetailsPb *pb.UserPersonalDetailsRequest, ctx context.Context) *dto.UserPersonalDetails {
-	span := tracer.StartSpanFromContext(ctx, "MapPbUserPersonalDetailsToUser")
-	defer span.Finish()
-
+func MapPbUserPersonalDetailsToUser(userPersonalDetailsPb *pb.UserPersonalDetailsRequest) *dto.UserPersonalDetails {
 	userD := &dto.UserPersonalDetails{
 		FirstName:   userPersonalDetailsPb.UserPersonalDetails.FirstName,
 		LastName:    userPersonalDetailsPb.UserPersonalDetails.LastName,
@@ -458,59 +374,47 @@ func MapPbUserPersonalDetailsToUser(userPersonalDetailsPb *pb.UserPersonalDetail
 	return userD
 }
 
-func MapUserToUserPersonalDetails(user *model.User, ctx context.Context) *pb.UserPersonalDetails {
-	span := tracer.StartSpanFromContext(ctx, "mapUserToUserPersonalDetails")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapUserToUserPersonalDetails(user *model.User) *pb.UserPersonalDetails {
 	userPersonalDetails := &pb.UserPersonalDetails{
 		Username:    user.Username,
 		PhoneNumber: user.PhoneNumber,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
-		Gender:      mapGenderToString(user.Gender, ctx),
+		Gender:      mapGenderToString(user.Gender),
 		DateOfBirth: user.DateOfBirth.String(),
 		Biography:   user.Biography,
 	}
 	return userPersonalDetails
 }
 
-func MapPbUserProfessionalDetailsToUser(userProfessionalDetailsPb *pb.UserProfessionalDetailsRequest, ctx context.Context) *dto.UserProfessionalDetails {
-	span := tracer.StartSpanFromContext(ctx, "MapPbUserProfessionalDetailsToUser")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapPbUserProfessionalDetailsToUser(userProfessionalDetailsPb *pb.UserProfessionalDetailsRequest) *dto.UserProfessionalDetails {
 	userD := &dto.UserProfessionalDetails{
 		Username: userProfessionalDetailsPb.UserProfessionalDetails.Username,
 	}
 	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Educations {
 		fmt.Println(i, s)
-		ed := mapPbEducationToEducationDto(s, ctx)
+		ed := mapPbEducationToEducationDto(s)
 		userD.Educations = append(userD.Educations, *ed)
 	}
 	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Interests {
 		fmt.Println(i, s)
-		ed := mapPbEducationToInterestDto(s, ctx)
+		ed := mapPbEducationToInterestDto(s)
 		userD.Interests = append(userD.Interests, *ed)
 	}
 	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Skills {
 		fmt.Println(i, s)
-		ed := mapPbEducationToSkillDto(s, ctx)
+		ed := mapPbEducationToSkillDto(s)
 		userD.Skills = append(userD.Skills, *ed)
 	}
 	for i, s := range userProfessionalDetailsPb.UserProfessionalDetails.Experiences {
 		fmt.Println(i, s)
-		ed := mapPbEducationToExperienceDto(s, ctx)
+		ed := mapPbEducationToExperienceDto(s)
 		userD.Experiences = append(userD.Experiences, *ed)
 	}
 	return userD
 }
 
-func MapUserToUserProfessionalDetails(user *model.User, ctx context.Context) *pb.UserProfessionalDetails {
-	span := tracer.StartSpanFromContext(ctx, "MapUserToUserProfessionalDetails")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapUserToUserProfessionalDetails(user *model.User) *pb.UserProfessionalDetails {
 	var skills []*pb.Skill
 	var interests []*pb.Interest
 	var educations []*pb.Education
@@ -518,22 +422,22 @@ func MapUserToUserProfessionalDetails(user *model.User, ctx context.Context) *pb
 
 	for i, s := range user.Educations {
 		fmt.Println(i, s)
-		ed := mapEducationToEducationPb(&s, ctx)
+		ed := mapEducationToEducationPb(&s)
 		educations = append(educations, ed)
 	}
 	for i, s := range user.Interests {
 		fmt.Println(i, s)
-		ed := mapInterestToInterestPb(&s, ctx)
+		ed := mapInterestToInterestPb(&s)
 		interests = append(interests, ed)
 	}
 	for i, s := range user.Skills {
 		fmt.Println(i, s)
-		ed := mapSkillToSkillPb(&s, ctx)
+		ed := mapSkillToSkillPb(&s)
 		skills = append(skills, ed)
 	}
 	for i, s := range user.Experiences {
 		fmt.Println(i, s)
-		ed := mapExperienceToExperiencePb(&s, ctx)
+		ed := mapExperienceToExperiencePb(&s)
 
 		experiences = append(experiences, ed)
 	}
@@ -588,10 +492,7 @@ func MapToStringArrayExperiences(experiences []model.Experience) []string {
 	return strings
 }
 
-func MapUserToEmailUsernameResponse(user *model.User, ctx context.Context) *pb.EmailUsernameResponse {
-	span := tracer.StartSpanFromContext(ctx, "MapUserToEmailUsernameResponse")
-	defer span.Finish()
-
+func MapUserToEmailUsernameResponse(user *model.User) *pb.EmailUsernameResponse {
 	emailUsername := &pb.EmailUsername{
 		Email:    user.Email,
 		Username: user.Username,
@@ -605,20 +506,14 @@ func MapUserToEmailUsernameResponse(user *model.User, ctx context.Context) *pb.E
 	return emailUsernameResponse
 }
 
-func MapUserToChangeEmailResponse(user *model.User, ctx context.Context) *pb.ChangeEmailResponse {
-	span := tracer.StartSpanFromContext(ctx, "MapUserToChangeEmailResponse")
-	defer span.Finish()
-
+func MapUserToChangeEmailResponse(user *model.User) *pb.ChangeEmailResponse {
 	changeEmailResponse := &pb.ChangeEmailResponse{
 		Email: user.Email,
 	}
 	return changeEmailResponse
 }
 
-func MapUserToChangeUsernameResponse(user *model.User, ctx context.Context) *pb.ChangeUsernameResponse {
-	span := tracer.StartSpanFromContext(ctx, "MapUserToChangeUsernameResponse")
-	defer span.Finish()
-
+func MapUserToChangeUsernameResponse(user *model.User) *pb.ChangeUsernameResponse {
 	changeUsernameResponse := &pb.ChangeUsernameResponse{
 		Username: user.Username,
 	}

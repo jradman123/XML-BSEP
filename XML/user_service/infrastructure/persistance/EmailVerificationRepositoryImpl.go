@@ -27,10 +27,7 @@ func (e EmailVerificationRepositoryImpl) CreateEmailVerification(ver *model.Emai
 	fmt.Print(result)
 	return ver, result.Error
 }
-func (e EmailVerificationRepositoryImpl) GetVerificationByUsername(username string, ctx context.Context) ([]model.EmailVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetVerificationByUsernameRepository")
-	defer span.Finish()
-
+func (e EmailVerificationRepositoryImpl) GetVerificationByUsername(username string) ([]model.EmailVerification, error) {
 	var verifications []model.EmailVerification
 	records := e.db.Find(&verifications, "username = ?", username)
 	if records.Error != nil {

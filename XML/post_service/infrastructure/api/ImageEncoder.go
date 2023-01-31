@@ -2,7 +2,6 @@ package api
 
 import (
 	"bufio"
-	"context"
 	"encoding/base64"
 	"fmt"
 	"log"
@@ -21,7 +20,7 @@ func lol() {
 	createJpg()
 	createPng()
 	base64toPng()
-	base64toJpg(getJPEGbase64("flower.jpg"), context.TODO())
+	base64toJpg(getJPEGbase64("flower.jpg"))
 }
 
 //Take an existing jpg srcFileName and decode/encode it

@@ -7,5 +7,5 @@ import (
 
 type EmailVerificationRepository interface {
 	CreateEmailVerification(ver *model.EmailVerification, ctx context.Context) (*model.EmailVerification, error)
-	GetVerificationByUsername(username string, ctx context.Context) ([]model.EmailVerification, error)
+	GetVerificationByUsername(username string) ([]model.EmailVerification, error)
 }
