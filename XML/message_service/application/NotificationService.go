@@ -30,24 +30,17 @@ func (service *NotificationService) Create(notification *model.Notification, ctx
 	result, _ := service.userService.AllowedNotificationForUser(notification.NotificationTo, notification.Type, ctx)
 	fmt.Println(result)
 	if result {
-		noti, err := service.notificationRepo.Create(notification, ctx)
+		noti, err := service.notificationRepo.Create(notification)
 		service.notificationPusher.Trigger("notifications", "notification", noti)
 		return noti, err
 	}
 	return nil, nil
 }
 
-func (service *NotificationService) GetAllForUser(username string, ctx context.Context) ([]*model.Notification, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetAllForUserService")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.notificationRepo.GetAllForUser(username, ctx)
+func (service *NotificationService) GetAllForUser(username string) ([]*model.Notification, error) {
+	return service.notificationRepo.GetAllForUser(username)
 }
 
-func (service *NotificationService) MarkAsRead(id primitive.ObjectID, ctx context.Context) {
-	span := tracer.StartSpanFromContext(ctx, "MarkAsReadService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	service.notificationRepo.MarkAsRead(id, ctx)
+func (service *NotificationService) MarkAsRead(id primitive.ObjectID) {
+	service.notificationRepo.MarkAsRead(id)
 }

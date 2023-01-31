@@ -29,29 +29,29 @@ func NewNotificationCommandHandler(service *application.NotificationService, pub
 
 func (handler *NotificationCommandHandler) handle(command *events.PostNotificationCommand) {
 
-	notification := api.MapNewPostNotification(command, context.TODO())
+	notification := api.MapNewPostNotification(command)
 	var reply = &events.PostNotificationReply{}
 	switch command.Type {
 	case events.LikePost:
 		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapPostNotificationReply(events.NotificationNotSent, context.TODO())
+			reply = api.MapPostNotificationReply(events.NotificationNotSent)
 		}
-		reply = api.MapPostNotificationReply(events.NotificationSent, context.TODO())
+		reply = api.MapPostNotificationReply(events.NotificationSent)
 	case events.DislikePost:
 		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapPostNotificationReply(events.NotificationNotSent, context.TODO())
+			reply = api.MapPostNotificationReply(events.NotificationNotSent)
 		}
-		reply = api.MapPostNotificationReply(events.NotificationSent, context.TODO())
+		reply = api.MapPostNotificationReply(events.NotificationSent)
 	case events.CommentPost:
 		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapPostNotificationReply(events.NotificationNotSent, context.TODO())
+			reply = api.MapPostNotificationReply(events.NotificationNotSent)
 		}
-		reply = api.MapPostNotificationReply(events.NotificationSent, context.TODO())
+		reply = api.MapPostNotificationReply(events.NotificationSent)
 	default:
-		reply = api.MapPostNotificationReply(events.UnknownReply, context.TODO())
+		reply = api.MapPostNotificationReply(events.UnknownReply)
 
 		if reply.Type != events.UnknownReply {
 			_ = handler.replyPublisher.Publish(reply)

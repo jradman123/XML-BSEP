@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	courier "github.com/trycourier/courier-go/v2"
 	"math/rand"
-	tracer "monitoring/module"
 	"regexp"
 	"time"
 )
@@ -45,9 +44,7 @@ func (s *PasswordLessService) GetUsernameByCode(code string) (*modelGateway.Logi
 
 }
 
-func sendMailWithCourier(email string, code string, subject string, body string, ctx context.Context) {
-	span := tracer.StartSpanFromContext(ctx, "sendMailWithCourier")
-	defer span.Finish()
+func sendMailWithCourier(email string, code string, subject string, body string) {
 
 	client := courier.CreateClient(authToken, nil)
 	fmt.Println(code)
@@ -80,10 +77,7 @@ func BadEmail(input string) bool {
 	return !justMail
 }
 func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin string, user *modelGateway.User) error {
-	span := tracer.StartSpanFromContext(ctx, "SendLink")
-	defer span.Finish()
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
 	badMail := BadEmail(user.Email)
 	if badMail {
 
@@ -104,11 +98,11 @@ func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin 
 		Used:     false,
 	}
 
-	ver, err := s.repo.CreateEmailVerification(&loginVerification, ctx)
+	ver, err := s.repo.CreateEmailVerification(&loginVerification)
 	fmt.Println(ver)
 	fmt.Println(err)
 
-	defer sendMailWithCourier(user.Email, loginVerification.VerCode, "Passwordless login", "Here is your code :", ctx)
+	defer sendMailWithCourier(user.Email, loginVerification.VerCode, "Passwordless login", "Here is your code :")
 
 	return nil
 }

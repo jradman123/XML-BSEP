@@ -28,23 +28,23 @@ func NewConnectionNotificationCommandHandler(service *application.NotificationSe
 }
 
 func (handler *ConnectionNotificationCommandHandler) handle(command *events.ConnectionNotificationCommand) {
-	notification := api.MapNewConnectionNotification(command, context.TODO())
+	notification := api.MapNewConnectionNotification(command)
 	var reply = &events.ConnectionNotificationReply{}
 	switch command.Type {
 	case events.Connect:
 		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, context.TODO())
+			reply = api.MapConnectionNotificationReply(events.NotificationNotSent)
 		}
-		reply = api.MapConnectionNotificationReply(events.NotificationSent, context.TODO())
+		reply = api.MapConnectionNotificationReply(events.NotificationSent)
 	case events.AcceptRequest:
 		_, err := handler.service.Create(notification, context.TODO())
 		if err != nil {
-			reply = api.MapConnectionNotificationReply(events.NotificationNotSent, context.TODO())
+			reply = api.MapConnectionNotificationReply(events.NotificationNotSent)
 		}
-		reply = api.MapConnectionNotificationReply(events.NotificationSent, context.TODO())
+		reply = api.MapConnectionNotificationReply(events.NotificationSent)
 	default:
-		reply = api.MapConnectionNotificationReply(events.UnknownReply, context.TODO())
+		reply = api.MapConnectionNotificationReply(events.UnknownReply)
 
 		if reply.Type != events.UnknownReply {
 			_ = handler.replyPublisher.Publish(reply)

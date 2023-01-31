@@ -43,9 +43,7 @@ func GenerateNewUserSecret() []byte {
 }
 
 func (u TFAuthService) Check2FaForUser(username string) (bool, error) {
-
 	res, err := u.repository.Check2FaForUser(username)
-
 	if err != nil {
 		return false, err
 	}
@@ -83,14 +81,11 @@ func (u TFAuthService) Enable2FaForUser(username string) (bool, string, error) {
 }
 
 func (u TFAuthService) Disable2FaForUser(username string) (bool, error) {
-
 	res, err := u.repository.Disable2FaForUser(username)
-
 	if err != nil {
 		return false, err
 	}
 	return res, nil
-
 }
 
 func (u TFAuthService) GetUserSecret(username string) (string, error) {

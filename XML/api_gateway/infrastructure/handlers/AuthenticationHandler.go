@@ -205,7 +205,7 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 		"userIP": ip,
 	}).Infof("INFO:Handling LOGIN")
 
-	span1 := tracer.StartSpanFromContext(ctx, "GetByUsername")
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
 	user, err := a.userService.GetByUsername(loginRequest.Username)
 	span1.Finish()
 
@@ -306,7 +306,7 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	var claims = &interceptor.JwtClaims{}
 	claims.Username = request.Username
 
-	span2 := tracer.StartSpanFromContext(ctx, "GetUserRole")
+	span2 := tracer.StartSpanFromContext(ctx, "ReadUserRole")
 	userRoles, err := a.userService.GetUserRole(request.Username)
 	span2.Finish()
 
@@ -335,7 +335,7 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 
 	}
 
-	span3 := tracer.StartSpanFromContext(ctx, "GetByUsername")
+	span3 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
 	user, err := a.userService.GetByUsername(request.Username)
 	span3.Finish()
 
@@ -386,7 +386,7 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 	var claims = &interceptor.JwtClaims{}
 	claims.Username = loginRequest.Username
 
-	span1 := tracer.StartSpanFromContext(tracer.ContextWithSpan(ctx, span), "GetUserRole")
+	span1 := tracer.StartSpanFromContext(tracer.ContextWithSpan(ctx, span), "ReadUserRole")
 	userRoles, err := a.userService.GetUserRole(loginRequest.Username)
 	span1.Finish()
 
@@ -413,7 +413,7 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 		return
 
 	}
-	span2 := tracer.StartSpanFromContext(tracer.ContextWithSpan(ctx, span), "GetByUsername")
+	span2 := tracer.StartSpanFromContext(tracer.ContextWithSpan(ctx, span), "ReadUserByUsername")
 	user, err := a.userService.GetByUsername(loginRequest.Username)
 	span2.Finish()
 
@@ -481,7 +481,7 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 		}).Infof("INFO:Handling PasswordLessLoginReq")
 	}
 
-	span1 := tracer.StartSpanFromContext(ctx, "GetByUsername")
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
 	user, err := a.userService.GetByUsername(loginRequest.Username)
 	span1.Finish()
 
@@ -558,7 +558,10 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 		return
 	}
 
+	span2 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
 	user, err := a.userService.GetByUsername(username)
+	span2.Finish()
+
 	if err != nil {
 		a.LogError(ip, user.Username, "USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
@@ -570,9 +573,9 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 		return
 	}
 
-	span2 := tracer.StartSpanFromContext(ctx, "PasswordlessLogin")
+	span3 := tracer.StartSpanFromContext(ctx, "PasswordlessLogin")
 	validCode, err := a.passwordLessService.PasswordlessLogin(ver)
-	span2.Finish()
+	span3.Finish()
 
 	if !validCode {
 		a.LogError(ip, user.Username, "CODE INVALID")
@@ -588,9 +591,9 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	var claims = &interceptor.JwtClaims{}
 	claims.Username = username
 
-	span3 := tracer.StartSpanFromContext(ctx, "GetUserRole")
+	span4 := tracer.StartSpanFromContext(ctx, "ReadUserRole")
 	userRoles, err := a.userService.GetUserRole(username)
-	span3.Finish()
+	span4.Finish()
 
 	if err != nil {
 		a.LogError(ip, user.Username, "THIS USER HAS NO ROLE")

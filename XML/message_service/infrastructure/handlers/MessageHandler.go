@@ -38,7 +38,11 @@ func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	fmt.Println("usao u hendler get all sent")
 	fmt.Println("dobio username " + request.Username)
-	sender, err := m.userService.GetByUsername(request.Username, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "GetSenderByUsername")
+	sender, err := m.userService.GetByUsername(request.Username)
+	span1.Finish()
+
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
@@ -48,15 +52,18 @@ func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) 
 	}
 	fmt.Println("sender[0].UserId")
 	fmt.Println(sender[0].UserId)
-	messages, err := m.messageService.GetAllSent(sender[0].UserId, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "GetAllSentMessages")
+	messages, err := m.messageService.GetAllSent(sender[0].UserId)
+	span2.Finish()
 
 	fmt.Println(messages)
 
 	fmt.Println(messages)
 	response := &pb.GetMultipleResponse{Messages: []*pb.Message{}}
 	for _, message := range messages {
-		receiver, _ := m.userService.GetById(message.ReceiverId, ctx)
-		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username, ctx)
+		receiver, _ := m.userService.GetById(message.ReceiverId)
+		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username)
 		response.Messages = append(response.Messages, current)
 	}
 
@@ -71,7 +78,10 @@ func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetReque
 	fmt.Println("usao u hendler get all receiver")
 	fmt.Println("dobio username " + request.Username)
 
-	receiver, err := m.userService.GetByUsername(request.Username, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "GetByUsername")
+	receiver, err := m.userService.GetByUsername(request.Username)
+	span1.Finish()
+
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
@@ -79,11 +89,15 @@ func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetReque
 		fmt.Println("nemas ovog usera u bAzi")
 		return nil, err
 	}
-	messages, err := m.messageService.GetAllReceived(receiver[0].UserId, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "GetAllReceivedMessages")
+	messages, err := m.messageService.GetAllReceived(receiver[0].UserId)
+	span2.Finish()
+
 	response := &pb.GetMultipleResponse{Messages: []*pb.Message{}}
 	for _, message := range messages {
-		sender, _ := m.userService.GetById(message.SenderId, ctx)
-		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username, ctx)
+		sender, _ := m.userService.GetById(message.SenderId)
+		current := api.MapMessageReply(message, receiver[0].Username, sender[0].Username)
 		response.Messages = append(response.Messages, current)
 	}
 
@@ -94,11 +108,20 @@ func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessage
 	span := tracer.StartSpanFromContextMetadata(ctx, "SendMessage")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	userSender, _ := m.userService.GetByUsername(request.Message.SenderUsername, ctx)
-	userReceiver, _ := m.userService.GetByUsername(request.Message.ReceiverUsername, ctx)
 
-	modell := api.MapNewMessage(request.Message.MessageText, userReceiver[0].UserId, userSender[0].UserId, ctx)
-	message, err := m.messageService.SendMessage(modell, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "GetSenderByUsername")
+	userSender, _ := m.userService.GetByUsername(request.Message.SenderUsername)
+	span1.Finish()
+
+	span2 := tracer.StartSpanFromContext(ctx, "GetReceiverByUsername")
+	userReceiver, _ := m.userService.GetByUsername(request.Message.ReceiverUsername)
+	span2.Finish()
+
+	modell := api.MapNewMessage(request.Message.MessageText, userReceiver[0].UserId, userSender[0].UserId)
+
+	span3 := tracer.StartSpanFromContext(ctx, "WriteMessageInDatabase")
+	message, err := m.messageService.SendMessage(modell)
+	span3.Finish()
 
 	if err != nil {
 		m.logError.Logger.WithFields(logrus.Fields{
@@ -117,8 +140,12 @@ func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessage
 		RedirectPath:     "/chatbox",
 		Type:             model.MESSAGE,
 	}
+
+	span4 := tracer.StartSpanFromContext(ctx, "CreateNotification")
 	m.notificationService.Create(nnn, ctx)
+	span4.Finish()
+
 	m.pusher.Trigger("messages", "message", request.Message)
-	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername, ctx)
+	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername)
 	return &pb.MessageSentResponse{Message: response}, nil
 }

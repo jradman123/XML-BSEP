@@ -15,7 +15,7 @@ type LoginVerificationRepositoryImpl struct {
 }
 
 func (l LoginVerificationRepositoryImpl) UsedCode(ver *modelGateway.LoginVerification) error {
-	
+
 	result := l.db.Model(&ver).Update("used", true)
 	fmt.Print(result)
 	if result.Error != nil {
@@ -38,10 +38,7 @@ func NewLoginVerificationRepositoryImpl(db *gorm.DB) repositories.LoginVerificat
 	return &LoginVerificationRepositoryImpl{db: db}
 }
 
-func (l LoginVerificationRepositoryImpl) CreateEmailVerification(ver *modelGateway.LoginVerification, ctx context.Context) (*modelGateway.LoginVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "CreateEmailVerification")
-	defer span.Finish()
-
+func (l LoginVerificationRepositoryImpl) CreateEmailVerification(ver *modelGateway.LoginVerification) (*modelGateway.LoginVerification, error) {
 	result := l.db.Create(&ver)
 	fmt.Print(result)
 	return ver, result.Error

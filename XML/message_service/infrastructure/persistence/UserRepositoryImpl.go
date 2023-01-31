@@ -54,11 +54,9 @@ func (u UserRepositoryImpl) UpdateUser(requestUser *model.User, ctx context.Cont
 	return user, nil
 }
 
-func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID, ctx context.Context) (err error) {
-	span := tracer.StartSpanFromContext(ctx, "DeleteUserRepository")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	_, err = u.users.DeleteOne(ctx,
+func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID) (err error) {
+
+	_, err = u.users.DeleteOne(context.TODO(),
 		bson.M{"user_id": userId})
 	if err != nil {
 		log.Fatal(err)
@@ -66,32 +64,24 @@ func (u UserRepositoryImpl) DeleteUser(userId uuid.UUID, ctx context.Context) (e
 	return err
 }
 
-func (u UserRepositoryImpl) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "GetByUsernameRepository")
-	defer span.Finish()
+func (u UserRepositoryImpl) GetByUsername(username string) (user []*model.User, err error) {
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
 	filter := bson.M{"username": username}
-	return u.filter(filter, ctx)
+	return u.filter(filter)
 }
 
-func (repo UserRepositoryImpl) GetSettingsForUser(username string, ctx context.Context) (*model.NotificationSettings, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetSettingsForUserRepository")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func (repo UserRepositoryImpl) GetSettingsForUser(username string) (*model.NotificationSettings, error) {
+
 	filter := bson.M{"username": username}
 	var user model.User
-	found := repo.users.FindOne(ctx, filter)
+	found := repo.users.FindOne(context.TODO(), filter)
 	found.Decode(&user)
 	return &user.Settings, nil
 }
 
-func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings, ctx context.Context) (*model.NotificationSettings, error) {
-	span := tracer.StartSpanFromContext(ctx, "ChangeSettingsForUserRepository")
-	defer span.Finish()
+func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *model.NotificationSettings) (*model.NotificationSettings, error) {
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	_, err := u.users.UpdateOne(ctx, bson.M{"username": username}, bson.D{
+	_, err := u.users.UpdateOne(context.TODO(), bson.M{"username": username}, bson.D{
 		{"$set", bson.D{{"settings", newSettings}}},
 	})
 	if err != nil {
@@ -100,12 +90,9 @@ func (u UserRepositoryImpl) ChangeSettingsForUser(username string, newSettings *
 	return newSettings, nil
 }
 
-func (u UserRepositoryImpl) GetById(userId uuid.UUID, ctx context.Context) ([]*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetByIdRepository")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func (u UserRepositoryImpl) GetById(userId uuid.UUID) ([]*model.User, error) {
 	filter := bson.M{"user_id": userId}
-	return u.filter(filter, ctx)
+	return u.filter(filter)
 }
 
 func stringToBin(s string) (binString string) {
@@ -121,32 +108,26 @@ func (u UserRepositoryImpl) filterOne(filter bson.M) (user *model.User, err erro
 	return
 }
 
-func (u UserRepositoryImpl) filter(filter interface{}, ctx context.Context) ([]*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "filterUser")
-	defer span.Finish()
+func (u UserRepositoryImpl) filter(filter interface{}) ([]*model.User, error) {
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	cursor, err := u.users.Find(ctx, filter)
+	cursor, err := u.users.Find(context.TODO(), filter)
 	defer func(cursor *mongo.Cursor, ctx context.Context) {
 		err := cursor.Close(ctx)
 		if err != nil {
 
 		}
-	}(cursor, ctx)
+	}(cursor, context.TODO())
 
 	if err != nil {
 		return nil, err
 	}
 
-	return decodeUser(cursor, ctx)
+	return decodeUser(cursor)
 }
 
-func decodeUser(cursor *mongo.Cursor, ctx context.Context) (users []*model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "decodeUser")
-	defer span.Finish()
+func decodeUser(cursor *mongo.Cursor) (users []*model.User, err error) {
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	for cursor.Next(ctx) {
+	for cursor.Next(context.TODO()) {
 		var user model.User
 		err = cursor.Decode(&user)
 		if err != nil {

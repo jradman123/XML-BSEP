@@ -36,6 +36,7 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 	span := tracer.StartSpanFromContextMetadata(ctx, "CreateNotification")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	notiType := model.PROFILE
 	if newNotificationReq.NewNotification.NotificationType == "MESSAGE" {
 		notiType = model.MESSAGE
@@ -60,7 +61,7 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 		notification, _ := n.notificationService.Create(noti, ctx)
 
 		response := &pb.NewNotificationResponse{Notification: &pb.Notification{}}
-		response.Notification = api.MapNotificationResponse(notification, ctx)
+		response.Notification = api.MapNotificationResponse(notification)
 		return response, nil
 	}
 	return &pb.NewNotificationResponse{}, nil
@@ -70,11 +71,15 @@ func (n NotificationHandler) GetAllForUser(ctx context.Context, request *pb.GetA
 	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllForUser")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	notifications, _ := n.notificationService.GetAllForUser(request.Username, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadAllForUser")
+	notifications, _ := n.notificationService.GetAllForUser(request.Username)
+	span1.Finish()
+
 	response := &pb.GetAllNotificationResponse{Notifications: []*pb.Notification{}}
 
 	for _, notification := range notifications {
-		current := api.MapNotificationResponse(notification, ctx)
+		current := api.MapNotificationResponse(notification)
 		response.Notifications = append(response.Notifications, current)
 	}
 
@@ -86,10 +91,14 @@ func (n NotificationHandler) GetSettingsForUser(ctx context.Context, request *pb
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	settings, _ := n.userService.GetSettingsForUser(request.Username, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadSettingsForUser")
+	settings, _ := n.userService.GetSettingsForUser(request.Username)
+	span1.Finish()
+
 	response := &pb.GetSettingsResponse{Settings: &pb.NotificationSettings{}}
 
-	response.Settings = api.MapSettingsResponse(settings, ctx)
+	response.Settings = api.MapSettingsResponse(settings)
 
 	return response, nil
 }
@@ -103,14 +112,17 @@ func (n NotificationHandler) ChangeSettingsForUser(ctx context.Context, request 
 
 	fmt.Println(*request.Settings)
 
-	settingsMapped := api.MapChangeSettingsRequest(request, ctx)
-	settings, err := n.userService.ChangeSettingsForUser(request.Username, settingsMapped, ctx)
+	settingsMapped := api.MapChangeSettingsRequest(request)
+	span1 := tracer.StartSpanFromContext(ctx, "WriteChangedSettingsForUser")
+	settings, err := n.userService.ChangeSettingsForUser(request.Username, settingsMapped)
+	span1.Finish()
+
 	if err != nil {
 		fmt.Println(err)
 		return &pb.GetSettingsResponse{}, err
 	}
 	response := &pb.GetSettingsResponse{Settings: &pb.NotificationSettings{}}
-	response.Settings = api.MapSettingsResponse(settings, ctx)
+	response.Settings = api.MapSettingsResponse(settings)
 
 	return response, nil
 }
@@ -121,6 +133,10 @@ func (n NotificationHandler) MarkAsRead(ctx context.Context, request *pb.MarkAsR
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	objectId, _ := primitive.ObjectIDFromHex(request.Id)
-	n.notificationService.MarkAsRead(objectId, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "MarkAsReadInDatabase")
+	n.notificationService.MarkAsRead(objectId)
+	span1.Finish()
+
 	return &pb.Empty{}, nil
 }
