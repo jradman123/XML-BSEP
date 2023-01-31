@@ -6,6 +6,8 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+	"google.golang.org/grpc/metadata"
+
 	// "github.com/uber/jaeger-lib/metrics"
 
 	"context"
@@ -96,4 +98,16 @@ func StartSpanFromContextMetadata(ctx context.Context, name string) opentracing.
 		opentracing.ChildOf(spanContext),
 	)
 	return span
+}
+func InjectToMetadata(ctx context.Context, tracer opentracing.Tracer, clientSpan opentracing.Span) context.Context {
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	} else {
+		md = md.Copy()
+	}
+	mdWriter := metadataTextMap{}
+	tracer.Inject(clientSpan.Context(), opentracing.HTTPHeaders, mdWriter)
+
+	return metadata.NewOutgoingContext(ctx, metadata.Join(md, metadata.MD(mdWriter)))
 }

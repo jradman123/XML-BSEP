@@ -14,10 +14,8 @@ type LoginVerificationRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func (l LoginVerificationRepositoryImpl) UsedCode(ver *modelGateway.LoginVerification, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "UsedCode")
-	defer span.Finish()
-
+func (l LoginVerificationRepositoryImpl) UsedCode(ver *modelGateway.LoginVerification) error {
+	
 	result := l.db.Model(&ver).Update("used", true)
 	fmt.Print(result)
 	if result.Error != nil {
@@ -26,9 +24,7 @@ func (l LoginVerificationRepositoryImpl) UsedCode(ver *modelGateway.LoginVerific
 	return nil
 }
 
-func (l LoginVerificationRepositoryImpl) GetVerificationByCode(code string, ctx context.Context) (*modelGateway.LoginVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetVerificationByCode")
-	defer span.Finish()
+func (l LoginVerificationRepositoryImpl) GetVerificationByCode(code string) (*modelGateway.LoginVerification, error) {
 
 	ver := &modelGateway.LoginVerification{}
 	if l.db.First(&ver, "ver_code = ?", code).RowsAffected == 0 {

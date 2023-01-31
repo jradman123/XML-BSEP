@@ -38,12 +38,9 @@ func NewPasswordLessService(logInfo *logger.Logger, logError *logger.Logger, rep
 
 }
 
-func (s *PasswordLessService) GetUsernameByCode(code string, ctx context.Context) (*modelGateway.LoginVerification, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetUsernameByCode")
-	defer span.Finish()
+func (s *PasswordLessService) GetUsernameByCode(code string) (*modelGateway.LoginVerification, error) {
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	ver, er := s.repo.GetVerificationByCode(code, ctx)
+	ver, er := s.repo.GetVerificationByCode(code)
 	return ver, er
 
 }
@@ -116,14 +113,11 @@ func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin 
 	return nil
 }
 
-func (s *PasswordLessService) PasswordlessLogin(ver *modelGateway.LoginVerification, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "PasswordlessLogin")
-	defer span.Finish()
+func (s *PasswordLessService) PasswordlessLogin(ver *modelGateway.LoginVerification) (bool, error) {
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
 	if ver.Time.Add(time.Minute * 3).After(time.Now()) {
 		if !ver.Used {
-			changePassErr := s.repo.UsedCode(ver, ctx)
+			changePassErr := s.repo.UsedCode(ver)
 			if changePassErr != nil {
 				return false, ErrCodeFlagUsed
 			}

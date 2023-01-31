@@ -49,7 +49,7 @@ func (u UserFeedHandler) GetFeedPostsForUser(rw http.ResponseWriter, r *http.Req
 	span := tracer.StartSpanFromRequest("GetFeedPostsForUser", otgo.GlobalTracer(), r)
 	defer span.Finish()
 
-	ctx := tracer.ContextWithSpan(context.Background(), span)
+	ctx := tracer.InjectToMetadata(context.TODO(), otgo.GlobalTracer(), span)
 	fmt.Println("GetFeedPostsForUser HANDLER")
 	username := params["username"]
 	if username == "" {
