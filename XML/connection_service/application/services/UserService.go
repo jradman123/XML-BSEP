@@ -46,12 +46,9 @@ func (s UserService) DeleteUser(user model.User, ctx context.Context) error {
 	return nil
 }
 
-func (s UserService) GetUserId(username string, ctx context.Context) (string, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetUserIdService")
-	defer span.Finish()
+func (s UserService) GetUserId(username string) (string, error) {
 
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	userId, err := s.userRepo.GetUserId(username, ctx)
+	userId, err := s.userRepo.GetUserId(username)
 	fmt.Println("dobila sam ovaj user id za username " + userId)
 	if err != nil {
 		return "", err

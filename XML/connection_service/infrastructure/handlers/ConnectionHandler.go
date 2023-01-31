@@ -65,8 +65,9 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 			"username": request.Username,
 		}).Infof("INFO:Handling Get connections for user")
 	}
-
-	userId, err := c.userService.GetUserId(request.Username, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserId")
+	userId, err := c.userService.GetUserId(request.Username)
+	span1.Finish()
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -74,7 +75,10 @@ func (c ConnectionHandler) GetConnections(ctx context.Context, request *pb.GetRe
 		return nil, err
 	}
 
-	users, err := c.connectionService.GetAllConnectionForUser(userId, ctx)
+	span2 := tracer.StartSpanFromContext(ctx, "ReadAllConnectionForUser")
+	users, err := c.connectionService.GetAllConnectionForUser(userId)
+	span2.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -123,7 +127,10 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 		}).Infof("INFO:Handling Get connections for user")
 	}
 
-	userId, err := c.userService.GetUserId(request.Username, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserId")
+	userId, err := c.userService.GetUserId(request.Username)
+	span1.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -131,7 +138,10 @@ func (c ConnectionHandler) GetConnectionRequests(ctx context.Context, request *p
 		return nil, err
 	}
 
-	users, err := c.connectionService.GetAllConnectionRequestsForUser(userId, ctx)
+	span2 := tracer.StartSpanFromContext(ctx, "ReadAllConnectionRequestsForUser")
+	users, err := c.connectionService.GetAllConnectionRequestsForUser(userId)
+	span2.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -181,14 +191,22 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 			"userSenderUsername": connection.Connection.UserSender,
 		}).Infof("INFO:Handling Create connection")
 	}
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadSenderId")
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	span1.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "ReadReceiverId")
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	span2.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -200,7 +218,11 @@ func (c ConnectionHandler) CreateConnection(ctx context.Context, connection *pb.
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.CreateConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver, ctx)
+
+	span3 := tracer.StartSpanFromContext(ctx, "CreateConnectionInDatabase")
+	conResult, err := c.connectionService.CreateConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver)
+	span3.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -236,14 +258,21 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 		}).Infof("INFO:Handling Create connection")
 	}
 
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadSenderId")
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	span1.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "ReadReceiverId")
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	span2.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -255,7 +284,11 @@ func (c ConnectionHandler) AcceptConnection(ctx context.Context, connection *pb.
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.AcceptConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver, ctx)
+
+	span3 := tracer.StartSpanFromContext(ctx, "AcceptedConnectionRequest")
+	conResult, err := c.connectionService.AcceptConnection(con, connection.Connection.UserSender, connection.Connection.UserReceiver)
+	span3.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -292,14 +325,10 @@ func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connect
 		}).Infof("INFO:Handling ConnectionStatusForUsers")
 	}
 
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
-	if err != nil {
-		c.logError.Logger.WithFields(logrus.Fields{
-			"username": connection.Connection.UserSender,
-		}).Errorf(getUsersError)
-		return nil, err
-	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadSenderId")
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	span1.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -307,7 +336,21 @@ func (c ConnectionHandler) ConnectionStatusForUsers(ctx context.Context, connect
 		return nil, err
 	}
 
-	conResult, err := c.connectionService.ConnectionStatusForUsers(userSenderId, userReceiverId, ctx)
+	span2 := tracer.StartSpanFromContext(ctx, "ReadReceiverId")
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	span2.Finish()
+
+	if err != nil {
+		c.logError.Logger.WithFields(logrus.Fields{
+			"username": connection.Connection.UserSender,
+		}).Errorf(getUsersError)
+		return nil, err
+	}
+
+	span3 := tracer.StartSpanFromContext(ctx, "ReadConnectionStatusBetweenUsers")
+	conResult, err := c.connectionService.ConnectionStatusForUsers(userSenderId, userReceiverId)
+	span3.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -343,14 +386,21 @@ func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConn
 		}).Infof("INFO:Handling Create connection")
 	}
 
-	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadSenderId")
+	userSenderId, err := c.userService.GetUserId(connection.Connection.UserSender)
+	span1.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
 		}).Errorf(getUsersError)
 		return nil, err
 	}
-	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "ReadReceiverId")
+	userReceiverId, err := c.userService.GetUserId(connection.Connection.UserReceiver)
+	span2.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": connection.Connection.UserSender,
@@ -362,7 +412,11 @@ func (c ConnectionHandler) BlockUser(ctx context.Context, connection *pb.NewConn
 		UserOneUID: userSenderId,
 		UserTwoUID: userReceiverId,
 	}
-	conResult, err := c.connectionService.BlockUser(con, ctx)
+
+	span3 := tracer.StartSpanFromContext(ctx, "MarkThatUserIsBlockedByAnotherUser")
+	conResult, err := c.connectionService.BlockUser(con)
+	span3.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"userSenderUsername": connection.Connection.UserSender,
@@ -397,7 +451,10 @@ func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, req
 		}).Infof("INFO:Handling GetRecommendedNewConnections for user")
 	}
 
-	userId, err := c.userService.GetUserId(request.Username, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserId")
+	userId, err := c.userService.GetUserId(request.Username)
+	span1.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -405,7 +462,10 @@ func (c ConnectionHandler) GetRecommendedNewConnections(ctx context.Context, req
 		return nil, err
 	}
 
-	users, err := c.connectionService.GetRecommendedNewConnections(userId, ctx)
+	span2 := tracer.StartSpanFromContext(ctx, "ReadRecommendedConnectionsForUser")
+	users, err := c.connectionService.GetRecommendedNewConnections(userId)
+	span2.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -454,7 +514,9 @@ func (c ConnectionHandler) GetRecommendedJobOffers(ctx context.Context, request 
 		}).Infof("INFO:Handling GetRecommendedJobOffers for user")
 	}
 
-	userId, err := c.userService.GetUserId(request.Username, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserId")
+	userId, err := c.userService.GetUserId(request.Username)
+	span1.Finish()
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
@@ -462,7 +524,10 @@ func (c ConnectionHandler) GetRecommendedJobOffers(ctx context.Context, request 
 		return nil, err
 	}
 
-	offers, err := c.connectionService.GetRecommendedJobOffers(userId, ctx)
+	span2 := tracer.StartSpanFromContext(ctx, "ReadRecommendedJobOffersForUser")
+	offers, err := c.connectionService.GetRecommendedJobOffers(userId)
+	span2.Finish()
+
 	if err != nil {
 		c.logError.Logger.WithFields(logrus.Fields{
 			"username": request.Username,
