@@ -35,12 +35,15 @@ func (p PostHandler) MustEmbedUnimplementedPostServiceServer() {
 }
 
 func (p PostHandler) GetAllByUsername(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
-	//request = p.sanitizeGetRequest(request)
 	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllByUsername")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	posts, err := p.postService.GetAllByUsername(request.Id, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadAllForUsers")
+	posts, err := p.postService.GetAllByUsername(request.Id)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
@@ -50,7 +53,7 @@ func (p PostHandler) GetAllByUsername(ctx context.Context, request *pb.GetReques
 	response := &pb.GetMultipleResponse{Posts: []*pb.Post{}}
 
 	for _, post := range posts {
-		current := api.MapPostReply(post, ctx)
+		current := api.MapPostReply(post)
 		response.Posts = append(response.Posts, current)
 	}
 
@@ -71,14 +74,18 @@ func (p PostHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetRe
 		}).Errorf("ERR:HEX STRING INVALID")
 		return nil, err
 	}
-	post, err := p.postService.Get(objectId, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadById")
+	post, err := p.postService.Get(objectId)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
 		}).Errorf("ERR:GET POST FROM DB")
 		return nil, err
 	}
-	postPb := api.MapPostReply(post, ctx)
+	postPb := api.MapPostReply(post)
 	response := &pb.GetResponse{Post: postPb}
 	return response, nil
 }
@@ -89,14 +96,18 @@ func (p PostHandler) GetAll(ctx context.Context, _ *pb.Empty) (*pb.GetMultipleRe
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	p.logInfo.Logger.Infof("INFO:Handling GetAllPosts")
-	posts, err := p.postService.GetAll(ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadAllPosts")
+	posts, err := p.postService.GetAll()
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.Errorf("ERR:GETTING ALL POSTS FROM DB")
 		return nil, err
 	}
 	response := &pb.GetMultipleResponse{Posts: []*pb.Post{}}
 	for _, post := range posts {
-		current := api.MapPostReply(post, ctx)
+		current := api.MapPostReply(post)
 		response.Posts = append(response.Posts, current)
 	}
 	return response, nil
@@ -111,11 +122,19 @@ func (p PostHandler) CheckLikedStatus(ctx context.Context, request *pb.UserReact
 	if err != nil {
 		panic(err)
 	}
-	user, err := p.userService.GetByUsername(request.Username, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
+	user, err := p.userService.GetByUsername(request.Username)
+	span1.Finish()
+
 	if err != nil {
 		panic(err)
 	}
-	reaction, err := p.postService.CheckLikedStatus(objectId, user[0].UserId, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "ReadDidUserLikeStatus")
+	reaction, err := p.postService.CheckLikedStatus(objectId, user[0].UserId)
+	span2.Finish()
+
 	if err != nil {
 		panic(err)
 	}
@@ -143,9 +162,16 @@ func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) 
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, _ := p.userService.GetByUsername(request.Post.Username, ctx)
-	post := api.MapNewPost(request.Post, user[0], ctx)
-	err := p.postService.Create(post, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
+	user, _ := p.userService.GetByUsername(request.Post.Username)
+	span1.Finish()
+
+	post := api.MapNewPost(request.Post, user[0])
+
+	span2 := tracer.StartSpanFromContext(ctx, "WritePostInDatabase")
+	err := p.postService.Create(post)
+	span2.Finish()
 
 	if err != nil {
 		p.logError.Logger.Errorf("ERR:CREATE POST")
@@ -162,15 +188,22 @@ func (p PostHandler) CreateComment(ctx context.Context, request *pb.CreateCommen
 	//request = p.sanitizeComment(request, userNameCtx)
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 
-	post, err := p.postService.Get(objectId, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadPostById")
+	post, err := p.postService.Get(objectId)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
 			"postId": request.PostId,
 		}).Errorf("ERR:GET POST FROM DB")
 	}
-	comment := api.MapNewComment(request.Comment, ctx)
-	err = p.postService.CreateComment(post, comment, ctx)
+	comment := api.MapNewComment(request.Comment)
+
+	span2 := tracer.StartSpanFromContext(ctx, "WriteCommentInDatabase")
+	err = p.postService.CreateComment(post, comment)
+	span2.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": userNameCtx,
@@ -193,7 +226,10 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	//request = p.sanitizeReactionRequest(request, userNameCtx)
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 
-	post, err := p.postService.Get(objectId, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadPostById")
+	post, err := p.postService.Get(objectId)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -203,10 +239,18 @@ func (p PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) 
 	}
 	fmt.Println("USERNAME")
 	fmt.Println(request.Username)
-	user, err := p.userService.GetByUsername(request.Username, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
+	user, err := p.userService.GetByUsername(request.Username)
+	span2.Finish()
+
 	fmt.Println("USER")
 	fmt.Println(user[0])
-	err = p.postService.LikePost(post, user[0].UserId, request.Username, ctx)
+
+	span3 := tracer.StartSpanFromContext(ctx, "WriteInDBThatPostIsLikedByUser")
+	err = p.postService.LikePost(post, user[0].UserId, request.Username)
+	span3.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -226,7 +270,10 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 	//request = p.sanitizeReactionRequest(request, userNameCtx)
 	objectId, err := primitive.ObjectIDFromHex(request.PostId)
 
-	post, err := p.postService.Get(objectId, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadPostById")
+	post, err := p.postService.Get(objectId)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -234,8 +281,15 @@ func (p PostHandler) DislikePost(ctx context.Context, request *pb.ReactionReques
 		}).Errorf("ERR:GET POST FROM DB")
 		return nil, err
 	}
-	user, err := p.userService.GetByUsername(request.Username, ctx)
-	err = p.postService.DislikePost(post, user[0].UserId, request.Username, ctx)
+
+	span2 := tracer.StartSpanFromContext(ctx, "ReadUserByUsername")
+	user, err := p.userService.GetByUsername(request.Username)
+	span2.Finish()
+
+	span3 := tracer.StartSpanFromContext(ctx, "WriteInDBThatPostIsDislikedByUser")
+	err = p.postService.DislikePost(post, user[0].UserId, request.Username)
+	span3.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"user":   userNameCtx,
@@ -253,9 +307,12 @@ func (p PostHandler) CreateJobOffer(ctx context.Context, request *pb.CreateJobOf
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	request = p.sanitizeJobOffer(request)
-	offer := api.MapNewJobOffer(request.JobOffer, ctx)
+	offer := api.MapNewJobOffer(request.JobOffer)
 
-	err := p.postService.CreateJobOffer(offer, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "WriteJobOfferInDB")
+	err := p.postService.CreateJobOffer(offer)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"jobOfferId": request.JobOffer.Id,
@@ -271,14 +328,18 @@ func (p PostHandler) GetAllJobOffers(ctx context.Context, _ *pb.Empty) (*pb.GetA
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	p.logInfo.Logger.Infof("INFO:Handling GetAllJobOffers")
-	offers, err := p.postService.GetAllJobOffers(ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadAllJobOffers")
+	offers, err := p.postService.GetAllJobOffers()
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.Errorf("ERR:GETTING ALL JOB OFFERS FROM DB")
 		return nil, err
 	}
 	response := &pb.GetAllJobOffers{JobOffers: []*pb.JobOffer{}}
 	for _, offer := range offers {
-		current := api.MapJobOfferReply(offer, ctx)
+		current := api.MapJobOfferReply(offer)
 		response.JobOffers = append(response.JobOffers, current)
 	}
 	return response, nil
@@ -289,13 +350,17 @@ func (p PostHandler) GetUsersJobOffers(ctx context.Context, req *pb.GetMyJobsReq
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	offers, err := p.postService.GetUsersJobOffers(req.Username, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUsersJobOffers")
+	offers, err := p.postService.GetUsersJobOffers(req.Username)
+	span1.Finish()
+
 	if err != nil {
 		return nil, err
 	}
 	response := &pb.GetAllJobOffers{JobOffers: []*pb.JobOffer{}}
 	for _, offer := range offers {
-		current := api.MapJobOfferReply(offer, ctx)
+		current := api.MapJobOfferReply(offer)
 		response.JobOffers = append(response.JobOffers, current)
 	}
 	return response, nil
@@ -318,7 +383,10 @@ func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.Get
 	}
 	objectId, err := primitive.ObjectIDFromHex(request.Id)
 
-	post, err := p.postService.Get(objectId, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadPostById")
+	post, err := p.postService.Get(objectId)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
@@ -326,7 +394,7 @@ func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.Get
 		return nil, err
 	}
 
-	likesNum, dislikesNum := api.FindNumberOfReactions(post, ctx)
+	likesNum, dislikesNum := api.FindNumberOfReactions(post)
 	response := &pb.GetReactionsResponse{}
 	response.DislikesNumber = int32(dislikesNum)
 	response.LikesNumber = int32(likesNum)
@@ -348,7 +416,11 @@ func (p PostHandler) GetAllCommentsForPost(ctx context.Context, request *pb.GetR
 		}).Errorf("ERR:HEX STRING INVALID")
 		return nil, err
 	}
-	post, err := p.postService.Get(objectId, ctx)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadPostById")
+	post, err := p.postService.Get(objectId)
+	span1.Finish()
+
 	if err != nil {
 		p.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Id,
@@ -358,11 +430,11 @@ func (p PostHandler) GetAllCommentsForPost(ctx context.Context, request *pb.GetR
 
 	response := &pb.GetAllCommentsResponse{Comments: []*pb.Comment{}}
 	for _, comment := range post.Comments {
-		user, err := p.userService.GetByUsername(comment.Username, ctx)
+		user, err := p.userService.GetByUsername(comment.Username)
 		if err != nil {
 			return nil, err
 		}
-		current := api.MapUserCommentsForPost(user[0], comment.CommentText, ctx)
+		current := api.MapUserCommentsForPost(user[0], comment.CommentText)
 		response.Comments = append(response.Comments, current)
 	}
 

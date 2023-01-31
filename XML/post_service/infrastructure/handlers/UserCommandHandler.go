@@ -3,7 +3,6 @@ package handlers
 import (
 	saga "common/module/saga/messaging"
 	events "common/module/saga/user_events"
-	"context"
 	"post/module/application"
 	"post/module/infrastructure/api"
 )
@@ -30,49 +29,49 @@ func NewUserCommandHandler(userService *application.UserService, postService *ap
 }
 
 func (handler *UserCommandHandler) handle(command *events.UserCommand) {
-	user := api.MapNewUser(command, context.TODO())
+	user := api.MapNewUser(command)
 	var reply = &events.UserReply{}
 	switch command.Type {
 	case events.CreateUser:
-		user, err := handler.userService.CreateUser(user, context.TODO())
+		user, err := handler.userService.CreateUser(user)
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
+			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
-		reply = api.MapUserReply(user, events.UserCreated, context.TODO())
+		reply = api.MapUserReply(user, events.UserCreated)
 
 	case events.UpdateUser:
-		_, err := handler.userService.UpdateUser(user, context.TODO())
+		_, err := handler.userService.UpdateUser(user)
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
+			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
-		err = handler.postService.UpdateUserPosts(user, context.TODO())
+		err = handler.postService.UpdateUserPosts(user)
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
+			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
-		reply = api.MapUserReply(user, events.UserUpdated, context.TODO())
+		reply = api.MapUserReply(user, events.UserUpdated)
 
 	case events.DeleteUser:
-		err := handler.userService.DeleteUser(user.UserId, context.TODO())
+		err := handler.userService.DeleteUser(user.UserId)
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
+			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
-		reply = api.MapUserReply(user, events.UserDeleted, context.TODO())
+		reply = api.MapUserReply(user, events.UserDeleted)
 
 	case events.ActivateUser:
-		err := handler.userService.ActivateUserAccount(user.UserId, context.TODO())
+		err := handler.userService.ActivateUserAccount(user.UserId)
 		if err != nil {
-			reply = api.MapUserReply(user, events.UserRolledBack, context.TODO())
+			reply = api.MapUserReply(user, events.UserRolledBack)
 		}
-		reply = api.MapUserReply(user, events.UserActivated, context.TODO())
+		reply = api.MapUserReply(user, events.UserActivated)
 	case events.ChangeEmail:
-		_, err := handler.userService.UpdateUser(user, context.TODO())
+		_, err := handler.userService.UpdateUser(user)
 		if err != nil {
-			reply = api.MapUserReply(user, events.ChangedEmailRolledBack, context.TODO())
+			reply = api.MapUserReply(user, events.ChangedEmailRolledBack)
 		}
-		reply = api.MapUserReply(user, events.ChangedEmail, context.TODO())
+		reply = api.MapUserReply(user, events.ChangedEmail)
 
 	default:
-		reply = api.MapUserReply(user, events.UnknownReply, context.TODO())
+		reply = api.MapUserReply(user, events.UnknownReply)
 	}
 
 	if reply.Type != events.UnknownReply {

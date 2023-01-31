@@ -2,10 +2,8 @@ package application
 
 import (
 	"common/module/logger"
-	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	tracer "monitoring/module"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
 	"post/module/infrastructure/orchestrators"
@@ -23,102 +21,55 @@ func NewPostService(repository repositories.PostRepository, logInfo *logger.Logg
 	return &PostService{repository: repository, logInfo: logInfo, logError: logError, postOrchestrator: porchestrator, jobOrchestrator: jorchestrator}
 }
 
-func (service *PostService) Get(id primitive.ObjectID, ctx context.Context) (*model.Post, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.Get(id, ctx)
+func (service *PostService) Get(id primitive.ObjectID) (*model.Post, error) {
+	return service.repository.Get(id)
 }
 
-func (service *PostService) GetAll(ctx context.Context) ([]*model.Post, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetAllService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.GetAll(ctx)
+func (service *PostService) GetAll() ([]*model.Post, error) {
+	return service.repository.GetAll()
 }
 
-func (service *PostService) Create(post *model.Post, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "CreatePostService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.Create(post, ctx)
+func (service *PostService) Create(post *model.Post) error {
+	return service.repository.Create(post)
 }
 
-func (service *PostService) GetAllByUsername(username string, ctx context.Context) ([]*model.Post, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetAllByUsernameService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.GetAllByUsername(username, ctx)
+func (service *PostService) GetAllByUsername(username string) ([]*model.Post, error) {
+	return service.repository.GetAllByUsername(username)
 }
 
-func (service *PostService) CreateComment(post *model.Post, comment *model.Comment, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "CreateCommentService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func (service *PostService) CreateComment(post *model.Post, comment *model.Comment) error {
 	service.postOrchestrator.CommentPost(post.Id, comment.Username, post.Username)
-	return service.repository.CreateComment(post, comment, ctx)
+	return service.repository.CreateComment(post, comment)
 }
 
-func (service *PostService) LikePost(post *model.Post, userId uuid.UUID, likerUsername string, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "LikePostService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func (service *PostService) LikePost(post *model.Post, userId uuid.UUID, likerUsername string) error {
 	service.postOrchestrator.LikePost(post.Id, likerUsername, post.Username)
-	return service.repository.LikePost(post, userId, ctx)
+	return service.repository.LikePost(post, userId)
 }
 
-func (service *PostService) DislikePost(post *model.Post, userId uuid.UUID, haterUsername string, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "DislikePostService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func (service *PostService) DislikePost(post *model.Post, userId uuid.UUID, haterUsername string) error {
 	service.postOrchestrator.DislikePost(post.Id, haterUsername, post.Username)
-	return service.repository.DislikePost(post, userId, ctx)
+	return service.repository.DislikePost(post, userId)
 }
 
-func (service *PostService) CreateJobOffer(offer *model.JobOffer, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "CreateJobOfferService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	offer, err := service.repository.CreateJobOffer(offer, ctx)
+func (service *PostService) CreateJobOffer(offer *model.JobOffer) error {
+	offer, err := service.repository.CreateJobOffer(offer)
 	service.jobOrchestrator.CreateJobOffer(*offer)
 	return err
 }
 
-func (service *PostService) GetAllJobOffers(ctx context.Context) ([]*model.JobOffer, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetAllJobOffersService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.GetAllJobOffers(ctx)
+func (service *PostService) GetAllJobOffers() ([]*model.JobOffer, error) {
+	return service.repository.GetAllJobOffers()
 }
 
-func (service *PostService) UpdateUserPosts(user *model.User, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "UpdateUserPostsService")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.UpdateUserPosts(user, ctx)
+func (service *PostService) UpdateUserPosts(user *model.User) error {
+	return service.repository.UpdateUserPosts(user)
 }
 
-func (service *PostService) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID, ctx context.Context) (model.ReactionType, error) {
-	span := tracer.StartSpanFromContext(ctx, "CheckLikedStatusService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.CheckLikedStatus(id, userId, ctx)
+func (service *PostService) CheckLikedStatus(id primitive.ObjectID, userId uuid.UUID) (model.ReactionType, error) {
+	return service.repository.CheckLikedStatus(id, userId)
 }
 
-func (service *PostService) GetUsersJobOffers(username string, ctx context.Context) ([]*model.JobOffer, error) {
-	span := tracer.StartSpanFromContext(ctx, "GetUsersJobOffersService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	return service.repository.GetUsersJobOffers(username, ctx)
+func (service *PostService) GetUsersJobOffers(username string) ([]*model.JobOffer, error) {
+	return service.repository.GetUsersJobOffers(username)
 }

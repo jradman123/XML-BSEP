@@ -3,24 +3,19 @@ package api
 import (
 	pb "common/module/proto/posts_service"
 	events "common/module/saga/user_events"
-	"context"
 	b64 "encoding/base64"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"image"
 	"image/jpeg"
 	"log"
-	tracer "monitoring/module"
 	"os"
 	"post/module/domain/model"
 	"strings"
 	"time"
 )
 
-func MapNewPost(postPb *pb.Post, user *model.User, ctx context.Context) *model.Post {
-	span := tracer.StartSpanFromContext(ctx, "MapNewPost")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapNewPost(postPb *pb.Post, user *model.User) *model.Post {
 	post := &model.Post{
 		Id:         primitive.NewObjectID(),
 		Username:   user.Username,
@@ -29,14 +24,11 @@ func MapNewPost(postPb *pb.Post, user *model.User, ctx context.Context) *model.P
 		DatePosted: time.Now(),
 		IsDeleted:  false,
 	}
-	base64toJpg(postPb.ImagePaths, ctx)
-	post.ImagePaths = convertBase64ToByte(postPb.ImagePaths, ctx)
+	base64toJpg(postPb.ImagePaths)
+	post.ImagePaths = convertBase64ToByte(postPb.ImagePaths)
 	return post
 }
-func base64toJpg(img string, ctx context.Context) {
-	span := tracer.StartSpanFromContext(ctx, "base64ToJpg")
-	defer span.Finish()
-
+func base64toJpg(img string) {
 	data := img[strings.IndexByte(img, ',')+1:]
 	reader := b64.NewDecoder(b64.StdEncoding, strings.NewReader(data))
 	m, formatString, err := image.Decode(reader)
@@ -68,10 +60,7 @@ func base64toJpg(img string, ctx context.Context) {
 
 }
 
-func convertBase64ToByte(image string, ctx context.Context) []byte {
-	span := tracer.StartSpanFromContext(ctx, "convertBase64ToByte")
-	defer span.Finish()
-
+func convertBase64ToByte(image string) []byte {
 	fmt.Println("convertBase64ToByte")
 	imageDec := image[strings.IndexByte(image, ',')+1:]
 	dec, err := b64.StdEncoding.DecodeString(imageDec)
@@ -81,10 +70,7 @@ func convertBase64ToByte(image string, ctx context.Context) []byte {
 	return dec
 
 }
-func MapNewComment(commentPb *pb.Comment, ctx context.Context) *model.Comment {
-	span := tracer.StartSpanFromContext(ctx, "MapNewComment")
-	defer span.Finish()
-
+func MapNewComment(commentPb *pb.Comment) *model.Comment {
 	comment := &model.Comment{
 		Id:          primitive.NewObjectID(),
 		Username:    commentPb.Username,
@@ -93,27 +79,20 @@ func MapNewComment(commentPb *pb.Comment, ctx context.Context) *model.Comment {
 	return comment
 }
 
-func MapNewJobOffer(offerPb *pb.JobOffer, ctx context.Context) *model.JobOffer {
-	span := tracer.StartSpanFromContext(ctx, "MapNewJobOffer")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapNewJobOffer(offerPb *pb.JobOffer) *model.JobOffer {
 	offer := &model.JobOffer{
 		Id:             primitive.NewObjectID(),
 		Publisher:      offerPb.Publisher,
 		Position:       offerPb.Position,
 		JobDescription: offerPb.JobDescription,
 		Requirements:   offerPb.Requirements,
-		DatePosted:     mapToDate(offerPb.DatePosted, ctx),
-		Duration:       mapToDate(offerPb.Duration, ctx),
+		DatePosted:     mapToDate(offerPb.DatePosted),
+		Duration:       mapToDate(offerPb.Duration),
 	}
 
 	return offer
 }
-func MapNewUser(command *events.UserCommand, ctx context.Context) *model.User {
-	span := tracer.StartSpanFromContext(ctx, "MapNewUser")
-	defer span.Finish()
-
+func MapNewUser(command *events.UserCommand) *model.User {
 	user := &model.User{
 		Id:        primitive.NewObjectID(),
 		UserId:    command.User.UserId,
@@ -125,9 +104,7 @@ func MapNewUser(command *events.UserCommand, ctx context.Context) *model.User {
 	}
 	return user
 }
-func MapUserReply(user *model.User, replyType events.UserReplyType, ctx context.Context) (reply *events.UserReply) {
-	span := tracer.StartSpanFromContext(ctx, "MapUserReply")
-	defer span.Finish()
+func MapUserReply(user *model.User, replyType events.UserReplyType) (reply *events.UserReply) {
 	reply = &events.UserReply{
 		Type: replyType,
 		PostUser: events.PostUser{
@@ -141,20 +118,14 @@ func MapUserReply(user *model.User, replyType events.UserReplyType, ctx context.
 	}
 	return reply
 }
-func mapToDate(birth string, ctx context.Context) time.Time {
-	span := tracer.StartSpanFromContext(ctx, "mapToDate")
-	defer span.Finish()
-
+func mapToDate(birth string) time.Time {
 	layout := "2006-01-02T15:04:05.000Z"
 	dateOfBirth, _ := time.Parse(layout, birth)
 	return dateOfBirth
 
 }
 
-func MapJobOfferReply(offer *model.JobOffer, ctx context.Context) *pb.JobOffer {
-	span := tracer.StartSpanFromContext(ctx, "MapJobOfferReply")
-	defer span.Finish()
-
+func MapJobOfferReply(offer *model.JobOffer) *pb.JobOffer {
 	id := offer.Id.Hex()
 
 	offerPb := &pb.JobOffer{
@@ -170,10 +141,7 @@ func MapJobOfferReply(offer *model.JobOffer, ctx context.Context) *pb.JobOffer {
 	return offerPb
 }
 
-func MapPostReply(post *model.Post, ctx context.Context) *pb.Post {
-	span := tracer.StartSpanFromContext(ctx, "MapPostReply")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
+func MapPostReply(post *model.Post) *pb.Post {
 	id := post.Id.Hex()
 
 	links := &pb.Links{
@@ -183,7 +151,7 @@ func MapPostReply(post *model.Post, ctx context.Context) *pb.Post {
 		User:    "/user/" + post.UserId.String(),
 	}
 
-	likesNum, dislikesNum := FindNumberOfReactions(post, ctx)
+	likesNum, dislikesNum := FindNumberOfReactions(post)
 
 	postPb := &pb.Post{
 		Id:             id,
@@ -195,15 +163,12 @@ func MapPostReply(post *model.Post, ctx context.Context) *pb.Post {
 		DislikesNumber: int32(dislikesNum),
 		CommentsNumber: int32(len(post.Comments)),
 	}
-	postPb.ImagePaths = convertByteToBase64(post.ImagePaths, ctx)
+	postPb.ImagePaths = convertByteToBase64(post.ImagePaths)
 
 	return postPb
 }
 
-func FindNumberOfReactions(post *model.Post, ctx context.Context) (int, int) {
-	span := tracer.StartSpanFromContext(ctx, "FindNumberOfReactions")
-	defer span.Finish()
-
+func FindNumberOfReactions(post *model.Post) (int, int) {
 	likesNum := 0
 	dislikesNum := 0
 
@@ -216,18 +181,11 @@ func FindNumberOfReactions(post *model.Post, ctx context.Context) (int, int) {
 	}
 	return likesNum, dislikesNum
 }
-func convertByteToBase64(image []byte, ctx context.Context) string {
-	span := tracer.StartSpanFromContext(ctx, "convertByteToBase64")
-	defer span.Finish()
-
+func convertByteToBase64(image []byte) string {
 	imageEnc := b64.StdEncoding.EncodeToString(image)
 	return imageEnc
 }
-func MapUserCommentsForPost(user *model.User, commentText string, ctx context.Context) *pb.Comment {
-
-	span := tracer.StartSpanFromContext(ctx, "MapUserCommentsForPost")
-	defer span.Finish()
-
+func MapUserCommentsForPost(user *model.User, commentText string) *pb.Comment {
 	commentPb := &pb.Comment{
 		Username:    user.Username,
 		FirstName:   user.FirstName,

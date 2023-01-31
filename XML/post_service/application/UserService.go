@@ -2,10 +2,8 @@ package application
 
 import (
 	"common/module/logger"
-	"context"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	tracer "monitoring/module"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
 )
@@ -20,35 +18,23 @@ func NewUserService(repository repositories.UserRepository, logInfo *logger.Logg
 	return &UserService{repository: repository, logInfo: logInfo, logError: logError}
 }
 
-func (s UserService) CreateUser(requestUser *model.User, ctx context.Context) (user *model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "CreateUserService")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, err = s.repository.CreateUser(requestUser, ctx)
+func (s UserService) CreateUser(requestUser *model.User) (user *model.User, err error) {
+	user, err = s.repository.CreateUser(requestUser)
 	return user, err
 }
 
-func (s UserService) UpdateUser(requestUser *model.User, ctx context.Context) (user *model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "UpdateUserService")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, err = s.repository.UpdateUser(requestUser, ctx)
+func (s UserService) UpdateUser(requestUser *model.User) (user *model.User, err error) {
+	user, err = s.repository.UpdateUser(requestUser)
 	return user, err
 }
 
-func (s UserService) DeleteUser(userId uuid.UUID, ctx context.Context) (err error) {
-	span := tracer.StartSpanFromContext(ctx, "DeleteUserService")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	err = s.repository.DeleteUser(userId, ctx)
+func (s UserService) DeleteUser(userId uuid.UUID) (err error) {
+	err = s.repository.DeleteUser(userId)
 	return err
 }
 
-func (s UserService) ActivateUserAccount(userId uuid.UUID, ctx context.Context) (err error) {
-	span := tracer.StartSpanFromContext(ctx, "ActivateUserAccountService")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	err = s.repository.ActivateUserAccount(userId, ctx)
+func (s UserService) ActivateUserAccount(userId uuid.UUID) (err error) {
+	err = s.repository.ActivateUserAccount(userId)
 	return err
 }
 func (s UserService) Get(id primitive.ObjectID) (user *model.User, err error) {
@@ -59,11 +45,7 @@ func (s UserService) GetByUserId(id uuid.UUID) (user []*model.User, err error) {
 	user, err = s.repository.GetByUserId(id)
 	return user, err
 }
-func (s UserService) GetByUsername(username string, ctx context.Context) (user []*model.User, err error) {
-	span := tracer.StartSpanFromContext(ctx, "GetByUsernameService")
-	defer span.Finish()
-
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, err = s.repository.GetByUsername(username, ctx)
+func (s UserService) GetByUsername(username string) (user []*model.User, err error) {
+	user, err = s.repository.GetByUsername(username)
 	return user, err
 }
