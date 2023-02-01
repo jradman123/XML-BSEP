@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	courier "github.com/trycourier/courier-go/v2"
 	"math/rand"
+	tracer "monitoring/module"
 	"regexp"
 	"time"
 )
@@ -37,14 +38,20 @@ func NewPasswordLessService(logInfo *logger.Logger, logError *logger.Logger, rep
 
 }
 
-func (s *PasswordLessService) GetUsernameByCode(code string) (*modelGateway.LoginVerification, error) {
-
+func (s *PasswordLessService) GetUsernameByCode(code string, ctx context.Context) (*modelGateway.LoginVerification, error) {
+	span := tracer.StartSpanFromContext(ctx, "GetUsernameByCode")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadVerification")
 	ver, er := s.repo.GetVerificationByCode(code)
+	span1.Finish()
 	return ver, er
 
 }
 
-func sendMailWithCourier(email string, code string, subject string, body string) {
+func sendMailWithCourier(ctx context.Context, email string, code string, subject string, body string) {
+	span := tracer.StartSpanFromContext(ctx, "sendMailWithCourier")
+	defer span.Finish()
 
 	client := courier.CreateClient(authToken, nil)
 	fmt.Println(code)
@@ -77,6 +84,8 @@ func BadEmail(input string) bool {
 	return !justMail
 }
 func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin string, user *modelGateway.User) error {
+	span := tracer.StartSpanFromContext(ctx, "SendLink-Service")
+	defer span.Finish()
 
 	badMail := BadEmail(user.Email)
 	if badMail {
@@ -97,29 +106,40 @@ func (s *PasswordLessService) SendLink(ctx context.Context, redirectURI, origin 
 		Time:     time.Now(),
 		Used:     false,
 	}
-
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	span1 := tracer.StartSpanFromContext(ctx, "WriteEmailVerification")
 	ver, err := s.repo.CreateEmailVerification(&loginVerification)
+	span1.Finish()
+
 	fmt.Println(ver)
 	fmt.Println(err)
 
-	defer sendMailWithCourier(user.Email, loginVerification.VerCode, "Passwordless login", "Here is your code :")
+	defer sendMailWithCourier(ctx, user.Email, loginVerification.VerCode, "Passwordless login", "Here is your code :")
 
 	return nil
 }
 
-func (s *PasswordLessService) PasswordlessLogin(ver *modelGateway.LoginVerification) (bool, error) {
+func (s *PasswordLessService) PasswordlessLogin(ver *modelGateway.LoginVerification, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "PasswordlessLogin-Service")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	if ver.Time.Add(time.Minute * 3).After(time.Now()) {
 		if !ver.Used {
+			span1 := tracer.StartSpanFromContext(ctx, "WriteInDBThatCodeIsUsed")
 			changePassErr := s.repo.UsedCode(ver)
+			span1.Finish()
 			if changePassErr != nil {
+				span1.LogFields(tracer.LogString("Database operation", changePassErr.Error()))
 				return false, ErrCodeFlagUsed
 			}
 
 		} else {
+			span.LogFields(tracer.LogString("Error", ErrCodeUsed.Error()))
 			return false, ErrCodeUsed
 		}
 	} else {
+		span.LogFields(tracer.LogString("Error", ErrCodeExpired.Error()))
 		return false, ErrCodeExpired
 	}
 	return true, nil

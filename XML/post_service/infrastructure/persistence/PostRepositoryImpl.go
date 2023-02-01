@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	tracer "monitoring/module"
 	"post/module/domain/model"
 	"post/module/domain/repositories"
 )
@@ -94,7 +93,7 @@ func (p PostRepositoryImpl) GetUsersJobOffers(username string) ([]*model.JobOffe
 	return p.filterJobOffers(filter)
 }
 
-func (p PostRepositoryImpl) UpdateUserPosts(user *model.User, ctx context.Context) error {
+func (p PostRepositoryImpl) UpdateUserPosts(user *model.User) error {
 	//filter := bson.M{"user_id": user.UserId}
 	//posts, err := p.filter(filter)
 	//if err != nil {
@@ -105,10 +104,8 @@ func (p PostRepositoryImpl) UpdateUserPosts(user *model.User, ctx context.Contex
 	//		{"$set", bson.D{{"username", user.Username}}},
 	//	})
 	//}
-	span := tracer.StartSpanFromContext(ctx, "UpdateUserPostsRepository")
-	defer span.Finish()
-	ctx = tracer.ContextWithSpan(context.Background(), span)
-	p.posts.UpdateMany(ctx, bson.M{"user_id": user.UserId},
+
+	p.posts.UpdateMany(context.TODO(), bson.M{"user_id": user.UserId},
 		bson.D{
 			{"$set", bson.D{{"username", user.Username}}}})
 	return nil

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
+	"github.com/opentracing/opentracing-go/log"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
 	"google.golang.org/grpc/metadata"
@@ -110,4 +111,12 @@ func InjectToMetadata(ctx context.Context, tracer opentracing.Tracer, clientSpan
 	tracer.Inject(clientSpan.Context(), opentracing.HTTPHeaders, mdWriter)
 
 	return metadata.NewOutgoingContext(ctx, metadata.Join(md, metadata.MD(mdWriter)))
+}
+
+func LogString(key string, value string) log.Field {
+	return log.String(key, value)
+}
+
+func LogError(span opentracing.Span, err error, fields ...log.Field) {
+	ext.LogError(span, err, fields...)
 }
