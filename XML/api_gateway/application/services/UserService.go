@@ -3,6 +3,7 @@ package services
 import (
 	"common/module/logger"
 	"context"
+	"errors"
 	"gateway/module/domain/model"
 	"gateway/module/domain/repositories"
 	"log"
@@ -29,7 +30,7 @@ func (u UserService) GetByUsername(username string, ctx context.Context) (*model
 	span1.Finish()
 
 	if err != nil {
-		span1.LogFields(tracer.LogString("Database operation", err.Error()))
+		tracer.LogError(span1, errors.New(err.Error()))
 		return nil, err
 	}
 	return user, nil
@@ -50,12 +51,13 @@ func (u UserService) GetUserRole(username string, ctx context.Context) (string, 
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
+
 	span1 := tracer.StartSpanFromContext(ctx, "ReadUserRoleForUser")
 	role, err := u.userRepository.GetUserRole(username)
 	span1.Finish()
 
 	if err != nil {
-		span1.LogFields(tracer.LogString("Database operation", err.Error()))
+		tracer.LogError(span1, errors.New(err.Error()))
 		return "", err
 	}
 	return role, nil

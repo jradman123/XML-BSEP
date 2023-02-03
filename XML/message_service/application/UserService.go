@@ -53,10 +53,12 @@ func (s UserService) ChangeSettingsForUser(username string, newSettings *model.N
 }
 
 func (s UserService) AllowedNotificationForUser(username string, notificationType model.NotificationType, ctx context.Context) (result bool, err error) {
-	span := tracer.StartSpanFromContext(ctx, "CheckIfAllowedNotificationForUser")
+	span := tracer.StartSpanFromContext(ctx, "AllowedNotificationForUser")
 	defer span.Finish()
-
+	ctx = tracer.ContextWithSpan(context.Background(), span)
+	span1 := tracer.StartSpanFromContext(ctx, "AllowedNotificationForUser")
 	settings, err := s.repository.GetSettingsForUser(username)
+	span1.Finish()
 	switch notificationType {
 	case model.PROFILE:
 		return settings.Connections, nil

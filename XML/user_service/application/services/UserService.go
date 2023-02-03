@@ -46,10 +46,17 @@ func NewUserService(logInfo *logger.Logger, logError *logger.Logger, repository 
 	return &UserService{logInfo, logError, repository, emailRepo, recoveryRepo, orchestrator}
 }
 
-func (u UserService) GetUsers() ([]model.User, error) {
+func (u UserService) GetUsers(ctx context.Context) ([]model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "GetUsers-Service")
+	defer span.Finish()
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUsersFromDB")
 	users, err := u.userRepository.GetUsers()
+	span1.Finish()
+
 	if err != nil {
+		tracer.LogError(span1, errors.New(err.Error()))
 		fmt.Sprintln("evo ovde sam puko - service")
 		u.logError.Logger.Errorf("ERR:CANT GET USERS")
 		return nil, errors.New("cant get users")
@@ -59,10 +66,16 @@ func (u UserService) GetUsers() ([]model.User, error) {
 
 }
 
-func (u UserService) GetByUsername(username string) (*model.User, error) {
+func (u UserService) GetByUsername(username string, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "GetByUsername-Service")
+	defer span.Finish()
+
+	span1 := tracer.StartSpanFromContext(tracer.ContextWithSpan(context.Background(), span), "ReadUserFromDBByUsername")
 	user, err := u.userRepository.GetByUsername(username)
+	span1.Finish()
 
 	if err != nil {
+		tracer.LogError(span1, errors.New(err.Error()))
 		u.logError.Logger.Errorf("ERR:INVALID USERNAME:" + username)
 		return nil, err
 	}
@@ -80,11 +93,16 @@ func (u UserService) GetUserSalt(username string) (string, error) {
 	return salt, nil
 }
 
-func (u UserService) UserExists(username string) error {
+func (u UserService) UserExists(username string, ctx context.Context) error {
+	span := tracer.StartSpanFromContext(ctx, "UserExists-Service")
+	defer span.Finish()
+
+	span1 := tracer.StartSpanFromContext(tracer.ContextWithSpan(context.Background(), span), "CheckIfUserExists")
 	err := u.userRepository.UserExists(username)
+	span1.Finish()
 
 	if err != nil {
-		//u.logError.Logger.Errorf("ERR:USER DOES NOT EXIST:" + username)
+		tracer.LogError(span1, errors.New(err.Error()))
 		return err
 	}
 	return nil
@@ -104,7 +122,7 @@ func (u UserService) GetUserRole(username string, ctx context.Context) (string, 
 }
 
 func (u UserService) CreateRegisteredUser(user *model.User, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "WriteNewUserInDB")
+	span := tracer.StartSpanFromContext(ctx, "CreateRegisteredUser-Service")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -122,8 +140,12 @@ func (u UserService) CreateRegisteredUser(user *model.User, ctx context.Context)
 	rand.Seed(time.Now().UnixNano())
 	rn := rand.Intn(100000)
 
-	regUser, err := u.userRepository.CreateRegisteredUser(user, ctx)
+	span1 := tracer.StartSpanFromContext(ctx, "WriteNewUserInDB")
+	regUser, err := u.userRepository.CreateRegisteredUser(user)
+	span1.Finish()
+
 	if err != nil {
+		span1.LogFields(tracer.LogString("Database operation", er.Error()))
 		u.logError.Logger.Println(DbError)
 		return regUser, ErrorCreatingUser
 	}
@@ -135,9 +157,13 @@ func (u UserService) CreateRegisteredUser(user *model.User, ctx context.Context)
 		Time:     time.Now(),
 	}
 
-	_, e := u.emailRepo.CreateEmailVerification(&emailVerification, ctx)
+	span2 := tracer.StartSpanFromContext(ctx, "WriteEmailVerificationInDB")
+	_, e := u.emailRepo.CreateEmailVerification(&emailVerification)
+	span2.Finish()
+
 	fmt.Println(e)
 	if e != nil {
+		span2.LogFields(tracer.LogString("Database operation", e.Error()))
 		u.logError.Logger.Println(ErrorEmailVerification)
 		return nil, ErrorEmailVerification
 	}
@@ -159,17 +185,21 @@ func (u UserService) CreateRegisteredUser(user *model.User, ctx context.Context)
 }
 
 func (u UserService) ActivateUserAccount(username string, verCode int, ctx context.Context) (bool, error) {
+	span := tracer.StartSpanFromContext(ctx, "ActivateUserAccount-Handler")
+	defer span.Finish()
 
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var allVerForUsername []model.EmailVerification
 	var dbEr error
 	span1 := tracer.StartSpanFromContext(ctx, "ReadVerificationForUser")
 	allVerForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username)
 	span1.Finish()
 	if dbEr != nil {
+		tracer.LogError(span1, errors.New(dbEr.Error()))
 		u.logError.Logger.Errorf("ERR:DB:CODE DOES NOT EXIST FOR USER")
 		return false, dbEr
 	}
-	codeInfoForUsername, err := findMostRecent(allVerForUsername)
+	codeInfoForUsername, err := findMostRecent(allVerForUsername, ctx)
 	if err != nil {
 		u.logError.Logger.Errorf("ERR:NO VERIFICATION FOR USER")
 		return false, err
@@ -212,8 +242,9 @@ func (u UserService) ActivateUserAccount(username string, verCode int, ctx conte
 	}
 }
 
-func findMostRecent(verifications []model.EmailVerification) (*model.EmailVerification, error) {
-
+func findMostRecent(verifications []model.EmailVerification, ctx context.Context) (*model.EmailVerification, error) {
+	span := tracer.StartSpanFromContext(ctx, "findMostRecent")
+	defer span.Finish()
 	if len(verifications) > 1 {
 		latest := verifications[0]
 		latestIdx := 0
@@ -237,13 +268,16 @@ func findMostRecent(verifications []model.EmailVerification) (*model.EmailVerifi
 }
 
 func (u UserService) SendCodeToRecoveryMail(username string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "SendCodeToRecoveryMail")
+	span := tracer.StartSpanFromContext(ctx, "SendCodeToRecoveryMail-Service")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserFromDBByUsername")
 	user, err := u.userRepository.GetByUsername(username)
+	span1.Finish()
 
 	if err != nil {
+		tracer.LogError(span1, errors.New(err.Error()))
 		u.logError.Logger.Println("ERR:USER DOES NOT EXIST")
 		return false, err
 	}
@@ -263,20 +297,22 @@ func (u UserService) SendCodeToRecoveryMail(username string, ctx context.Context
 	fmt.Println(recovery)
 
 	//obrisi prethodni zahtev ako postoji jer eto da uvijek samo poslednji ima u bazi
-	span1 := tracer.StartSpanFromContext(ctx, "DeleteAllRequestsForUser")
+	span2 := tracer.StartSpanFromContext(ctx, "DeleteAllRequestsForUser")
 	deleteErr := u.recoveryRepo.ClearOutRequestsForUsername(username)
-	span1.Finish()
+	span2.Finish()
 
 	if deleteErr != nil {
+		tracer.LogError(span2, errors.New(deleteErr.Error()))
 		return false, deleteErr
 	}
 
-	span2 := tracer.StartSpanFromContext(ctx, "WriteNewRequestForPasswordRecovery")
+	span3 := tracer.StartSpanFromContext(ctx, "WriteNewRequestForPasswordRecovery")
 	_, e := u.recoveryRepo.CreatePasswordRecoveryRequest(&recovery)
-	span2.Finish()
+	span3.Finish()
 
 	fmt.Println(e)
 	if e != nil {
+		tracer.LogError(span3, errors.New(e.Error()))
 		u.logError.Logger.Println("ERR:PASS RECOVERY REQ")
 		return false, e
 	} else {
@@ -289,7 +325,7 @@ func (u UserService) SendCodeToRecoveryMail(username string, ctx context.Context
 }
 
 func (u UserService) CreateNewPassword(username string, newHashedPassword string, code string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "CreateNewPassword")
+	span := tracer.StartSpanFromContext(ctx, "CreateNewPassword-Service")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -301,6 +337,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 	span1.Finish()
 
 	if dbEr != nil {
+		tracer.LogError(span1, errors.New(dbEr.Error()))
 		u.logError.Logger.Errorf("ERR:THERE IS NOT A PASS RECOVERY REQUEST IN DATABASE FOR USER:" + username)
 		fmt.Println(dbEr)
 
@@ -332,19 +369,22 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 
 				//sacuvati izmjene korisnika,tj izmjenjen password
 				span2 := tracer.StartSpanFromContext(ctx, "WriteNewPasswordInDB")
-				changePassErr := u.userRepository.ChangePassword(user, newHashedPassword, ctx)
+				changePassErr := u.userRepository.ChangePassword(user, newHashedPassword)
 				span2.Finish()
 
 				if changePassErr != nil {
+					tracer.LogError(span2, errors.New(changePassErr.Error()))
 					fmt.Println("error pri cuvanju novog pass")
 					u.logError.Logger.Errorf("ERR:SAVING NEW PASSWORD")
 					return false, changePassErr
 				}
-				//staviti iskoristen kod na true
 
-				//service.Repo.ActivateUserAccount(user)
+				span3 := tracer.StartSpanFromContext(ctx, "ReadUserFromDBByUsername")
 				_, er := u.userRepository.GetByUsername(username)
+				span3.Finish()
+
 				if er != nil {
+					tracer.LogError(span3, errors.New(er.Error()))
 					fmt.Println(er)
 
 					u.logError.Logger.Errorf("ERR:NO USER")
@@ -379,18 +419,22 @@ func checkEmailValid(email string, ctx context.Context) error {
 
 	emailRegex, err := regexp.Compile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	if err != nil {
+		tracer.LogError(span, errors.New(err.Error()))
 		fmt.Println(err)
 		return errors.New("sorry, something went wrong")
 	}
 	rg := emailRegex.MatchString(email)
 	if !rg {
+		tracer.LogError(span, errors.New("email address is not valid syntax"))
 		return errors.New("email address is not a valid syntax, please check again")
 	}
 	// check email length
 	if len(email) < 4 {
+		tracer.LogError(span, errors.New("email length is too short"))
 		return errors.New("email length is too short")
 	}
 	if len(email) > 253 {
+		tracer.LogError(span, errors.New("email length is too long"))
 		return errors.New("email length is too long")
 	}
 	return nil
@@ -405,6 +449,7 @@ func checkEmailDomain(email string, ctx context.Context) error {
 	// func LookupMX(name string) ([]*MX, error)
 	_, err := net.LookupMX(host)
 	if err != nil {
+		tracer.LogError(span, errors.New("could not find email's domain server"))
 		err = errors.New("eould not find email's domain server, please chack and try again")
 		return err
 	}
@@ -436,6 +481,7 @@ func sendMailWithCourier(email string, code string, subject string, body string,
 		})
 
 	if err != nil {
+		tracer.LogError(span, errors.New(err.Error()))
 		logErr.Logger.Println("ERR:SENDING MAIL")
 		fmt.Println(err)
 	}
@@ -443,24 +489,30 @@ func sendMailWithCourier(email string, code string, subject string, body string,
 }
 
 func (u UserService) EditUser(userDetails *dto.UserDetails, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "EditUserService")
+	span := tracer.StartSpanFromContext(ctx, "EditUser-Service")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, err := u.GetByUsername(userDetails.Username)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUserFromDBByUsername")
+	user, err := u.GetByUsername(userDetails.Username, ctx)
+	span1.Finish()
+
 	if err != nil {
+		tracer.LogError(span1, errors.New(err.Error()))
 		return nil, err
 	}
 	user = api.MapUserDetailsDtoToUser(userDetails, user)
 
-	span1 := tracer.StartSpanFromContext(ctx, "WriteChangedUserDetailsInDB")
+	span2 := tracer.StartSpanFromContext(ctx, "WriteChangedUserDetailsInDB")
 	edited, e := u.userRepository.EditUserDetails(user)
-	span1.Finish()
+	span2.Finish()
 
 	if e != nil {
+		tracer.LogError(span2, errors.New(e.Error()))
 		return nil, e
 	}
 	if !edited {
+		tracer.LogError(span2, errors.New("user was not edited"))
 		return nil, errors.New("user was not edited")
 	}
 	err = u.orchestrator.UpdateUser(user)
@@ -475,11 +527,11 @@ func (u UserService) EditUser(userDetails *dto.UserDetails, ctx context.Context)
 }
 
 func (u UserService) ChangeProfileStatus(username string, newStatus string, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "ChangeProfileStatusService")
+	span := tracer.StartSpanFromContext(ctx, "ChangeProfileStatus-Service")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, err := u.GetByUsername(username)
+	user, err := u.GetByUsername(username, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -490,9 +542,11 @@ func (u UserService) ChangeProfileStatus(username string, newStatus string, ctx 
 	span1.Finish()
 
 	if e != nil {
+		tracer.LogError(span1, errors.New(e.Error()))
 		return nil, e
 	}
 	if !edited {
+		tracer.LogError(span1, errors.New("user status was not edited"))
 		return nil, errors.New("user status was not edited")
 	}
 	err = u.orchestrator.ChangeProfileStatus(user)
@@ -503,11 +557,11 @@ func (u UserService) ChangeProfileStatus(username string, newStatus string, ctx 
 }
 
 func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPersonalDetails, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "EditUserPersonalDetailsService")
+	span := tracer.StartSpanFromContext(ctx, "EditUserPersonalDetails-Service")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, err := u.GetByUsername(userPersonalDetails.Username)
+	user, err := u.GetByUsername(userPersonalDetails.Username, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -518,9 +572,11 @@ func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPerson
 	span1.Finish()
 
 	if e != nil {
+		tracer.LogError(span1, errors.New(e.Error()))
 		return nil, e
 	}
 	if !edited {
+		tracer.LogError(span1, errors.New("user was not edited"))
 		return nil, errors.New("user was not edited")
 	}
 	err = u.orchestrator.EditConnectionUser(user)
@@ -536,7 +592,7 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	user, err := u.GetByUsername(userProfessionalDetails.Username)
+	user, err := u.GetByUsername(userProfessionalDetails.Username, ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -553,9 +609,11 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 	span1.Finish()
 
 	if e != nil {
+		tracer.LogError(span1, errors.New(e.Error()))
 		return nil, e
 	}
 	if !edited {
+		tracer.LogError(span1, errors.New("user was not edited"))
 		return nil, errors.New("user was not edited")
 	}
 	//err = u.orchestrator.EditConnectionUser(user)
@@ -566,11 +624,14 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 }
 
 func (u UserService) CheckIfEmailExists(id uuid.UUID, email string, ctx context.Context) bool {
-	span := tracer.StartSpanFromContext(ctx, "CheckIfEmailExists")
+	span := tracer.StartSpanFromContext(ctx, "CheckIfEmailExists-Service")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
+	span1 := tracer.StartSpanFromContext(ctx, "ReadUsersFromDB")
 	users, _ := u.userRepository.GetUsers()
+	span1.Finish()
+
 	for _, element := range users {
 		if element.ID == id {
 			continue
@@ -598,19 +659,32 @@ func (u UserService) CheckIfUsernameExists(id uuid.UUID, username string, ctx co
 	return false
 }
 
-func (u UserService) GetById(id uuid.UUID) (*model.User, error) {
+func (u UserService) GetById(id uuid.UUID, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "GetById-Service")
+	defer span.Finish()
+
+	span1 := tracer.StartSpanFromContext(tracer.ContextWithSpan(context.Background(), span), "ReadUserFromDBById")
 	user, err := u.userRepository.GetById(id)
+	span1.Finish()
+
 	if err != nil {
+		tracer.LogError(span1, errors.New(err.Error()))
 		return nil, err
 	}
 	return user, nil
 
 }
 
-func (u UserService) UpdateEmail(user *model.User) (*model.User, error) {
+func (u UserService) UpdateEmail(user *model.User, ctx context.Context) (*model.User, error) {
+	span := tracer.StartSpanFromContext(ctx, "UpdateEmail-Service")
+	defer span.Finish()
 
+	span1 := tracer.StartSpanFromContext(tracer.ContextWithSpan(context.Background(), span), "WriteUpdatedEmailInDB")
 	result, err := u.userRepository.UpdateEmail(user)
+	span1.Finish()
+
 	if err != nil {
+		tracer.LogError(span, errors.New(err.Error()))
 		return nil, err
 	}
 	if result {
@@ -630,8 +704,13 @@ func (u UserService) UpdateUsername(ctx context.Context, user *model.User) (*mod
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
+
+	span1 := tracer.StartSpanFromContext(ctx, "WriteNewUsernameInDB")
 	result, err := u.userRepository.UpdateUsername(ctx, user)
+	span1.Finish()
+
 	if err != nil {
+		tracer.LogError(span1, errors.New(err.Error()))
 		return nil, err
 	}
 	if result {

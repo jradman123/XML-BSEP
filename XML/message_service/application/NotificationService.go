@@ -24,7 +24,7 @@ func NewNotificationService(logInfo *logger.Logger, logError *logger.Logger, not
 }
 
 func (service *NotificationService) Create(notification *model.Notification, ctx context.Context) (*model.Notification, error) {
-	span := tracer.StartSpanFromContext(ctx, "CreateNotificationService")
+	span := tracer.StartSpanFromContext(ctx, "CreateNotification-Service")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	result, _ := service.userService.AllowedNotificationForUser(notification.NotificationTo, notification.Type, ctx)

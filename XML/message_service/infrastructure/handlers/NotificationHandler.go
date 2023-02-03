@@ -33,7 +33,7 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 	// create Notification object and store it in the database
 	// trigger pusher
 	// check if this notification is blocked for that user
-	span := tracer.StartSpanFromContextMetadata(ctx, "CreateNotification")
+	span := tracer.StartSpanFromContextMetadata(ctx, "CreateNotification-Handler")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
@@ -68,7 +68,7 @@ func (n NotificationHandler) Create(ctx context.Context, newNotificationReq *pb.
 }
 
 func (n NotificationHandler) GetAllForUser(ctx context.Context, request *pb.GetAllNotificationRequest) (*pb.GetAllNotificationResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllForUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllForUser-Handler")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
@@ -87,7 +87,7 @@ func (n NotificationHandler) GetAllForUser(ctx context.Context, request *pb.GetA
 }
 
 func (n NotificationHandler) GetSettingsForUser(ctx context.Context, request *pb.GetSettingsRequest) (*pb.GetSettingsResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "GetSettingsForUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetSettingsForUser-Handler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -118,6 +118,7 @@ func (n NotificationHandler) ChangeSettingsForUser(ctx context.Context, request 
 	span1.Finish()
 
 	if err != nil {
+		tracer.LogError(span1, err)
 		fmt.Println(err)
 		return &pb.GetSettingsResponse{}, err
 	}

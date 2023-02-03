@@ -74,6 +74,7 @@ func sendMailWithCourier(ctx context.Context, email string, code string, subject
 		})
 
 	if err != nil {
+		tracer.LogError(span, errors.New(err.Error()))
 		fmt.Println(err)
 	}
 	fmt.Println(requestID)
@@ -130,16 +131,16 @@ func (s *PasswordLessService) PasswordlessLogin(ver *modelGateway.LoginVerificat
 			changePassErr := s.repo.UsedCode(ver)
 			span1.Finish()
 			if changePassErr != nil {
-				span1.LogFields(tracer.LogString("Database operation", changePassErr.Error()))
+				tracer.LogError(span1, errors.New(changePassErr.Error()))
 				return false, ErrCodeFlagUsed
 			}
 
 		} else {
-			span.LogFields(tracer.LogString("Error", ErrCodeUsed.Error()))
+			tracer.LogError(span, errors.New(ErrCodeUsed.Error()))
 			return false, ErrCodeUsed
 		}
 	} else {
-		span.LogFields(tracer.LogString("Error", ErrCodeExpired.Error()))
+		tracer.LogError(span, errors.New(ErrCodeExpired.Error()))
 		return false, ErrCodeExpired
 	}
 	return true, nil

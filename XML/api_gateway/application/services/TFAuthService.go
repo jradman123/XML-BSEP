@@ -55,7 +55,7 @@ func (u TFAuthService) Check2FaForUser(username string, ctx context.Context) (bo
 	span1.Finish()
 
 	if err != nil {
-		span1.LogFields(tracer.LogString("Database operation", err.Error()))
+		tracer.LogError(span1, errors.New(err.Error()))
 		return false, err
 	}
 	return res, nil
@@ -68,17 +68,21 @@ func (u TFAuthService) Enable2FaForUser(username string, ctx context.Context) (b
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	secrets := GenerateNewUserSecret()
 	secret := base32.StdEncoding.EncodeToString(secrets)
+
+	span1 := tracer.StartSpanFromContext(ctx, "ReadFromDBIs2FaEnabledForUser")
 	check, _ := u.repository.Check2FaForUser(username)
+	span1.Finish()
+
 	if check == true {
 		return false, "", TwoFactorEnabled
 	}
 
-	span1 := tracer.StartSpanFromContext(ctx, "WriteInDBThat2FaIsEnabledForUser")
+	span2 := tracer.StartSpanFromContext(ctx, "WriteInDBThat2FaIsEnabledForUser")
 	res, err := u.repository.Enable2FaForUser(username, secret)
-	span1.Finish()
+	span2.Finish()
 
 	if err != nil {
-		span1.LogFields(tracer.LogString("Database operation", err.Error()))
+		tracer.LogError(span2, errors.New(err.Error()))
 		return false, "", err
 	}
 
@@ -109,14 +113,13 @@ func (u TFAuthService) Disable2FaForUser(username string, ctx context.Context) (
 	span1.Finish()
 
 	if err != nil {
-		span1.LogFields(tracer.LogString("Database operation", err.Error()))
+		tracer.LogError(span1, errors.New(err.Error()))
 		return false, err
 	}
 	return res, nil
 }
 
 func (u TFAuthService) GetUserSecret(username string, ctx context.Context) (string, error) {
-
 	span := tracer.StartSpanFromContext(ctx, "GetUserSecret-Service")
 	defer span.Finish()
 
@@ -127,7 +130,7 @@ func (u TFAuthService) GetUserSecret(username string, ctx context.Context) (stri
 	span1.Finish()
 
 	if err != nil {
-		span1.LogFields(tracer.LogString("Database operation", err.Error()))
+		tracer.LogError(span1, errors.New(err.Error()))
 		return "", err
 	}
 	return res, nil

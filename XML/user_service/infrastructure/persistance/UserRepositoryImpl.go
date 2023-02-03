@@ -60,10 +60,7 @@ func (r UserRepositoryImpl) GetByUsername(username string) (*model.User, error) 
 	return user, nil
 }
 
-func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User, ctx context.Context) (*model.User, error) {
-	span := tracer.StartSpanFromContext(ctx, "CreateRegisteredUserRepository")
-	defer span.Finish()
-
+func (r UserRepositoryImpl) CreateRegisteredUser(user *model.User) (*model.User, error) {
 	result := r.db.Create(&user)
 	fmt.Print(result)
 	regUser := &model.User{}
@@ -108,10 +105,7 @@ func (r UserRepositoryImpl) GetUserRole(username string, ctx context.Context) (s
 	return "", errors.New("User role not found for username" + username)
 }
 
-func (r UserRepositoryImpl) ChangePassword(user *model.User, password string, ctx context.Context) error {
-	span := tracer.StartSpanFromContext(ctx, "ChangePasswordRepository")
-	defer span.Finish()
-
+func (r UserRepositoryImpl) ChangePassword(user *model.User, password string) error {
 	result := r.db.Model(&user).Update("password", password)
 	fmt.Print(result)
 	return result.Error

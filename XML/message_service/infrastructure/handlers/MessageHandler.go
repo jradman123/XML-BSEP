@@ -32,7 +32,7 @@ func (m MessageHandler) MustEmbedUnimplementedMessageServiceServer() {
 }
 
 func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllSent")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllSent-Handler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -44,6 +44,7 @@ func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) 
 	span1.Finish()
 
 	if err != nil {
+		tracer.LogError(span1, err)
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
 		}).Errorf("No user in database")
@@ -71,7 +72,7 @@ func (m MessageHandler) GetAllSent(ctx context.Context, request *pb.GetRequest) 
 }
 
 func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetRequest) (*pb.GetMultipleResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllReceived")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllReceived-Handler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -83,6 +84,7 @@ func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetReque
 	span1.Finish()
 
 	if err != nil {
+		tracer.LogError(span1, err)
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Username,
 		}).Errorf("No user in database")
@@ -124,6 +126,7 @@ func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessage
 	span3.Finish()
 
 	if err != nil {
+		tracer.LogError(span3, err)
 		m.logError.Logger.WithFields(logrus.Fields{
 			"userId": request.Message.SenderUsername,
 		}).Errorf("Can not send message")
@@ -141,9 +144,7 @@ func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessage
 		Type:             model.MESSAGE,
 	}
 
-	span4 := tracer.StartSpanFromContext(ctx, "CreateNotification")
 	m.notificationService.Create(nnn, ctx)
-	span4.Finish()
 
 	m.pusher.Trigger("messages", "message", request.Message)
 	response := api.MapMessageReply(message, request.Message.ReceiverUsername, request.Message.SenderUsername)

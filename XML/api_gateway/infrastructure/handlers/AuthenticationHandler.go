@@ -104,7 +104,6 @@ func (a AuthenticationHandler) Check2FaForUser(rw http.ResponseWriter, r *http.R
 	res, err := a.tfaService.Check2FaForUser(request.Username, ctx)
 
 	if err != nil {
-		tracer.LogError(span, err)
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -161,6 +160,7 @@ func (a AuthenticationHandler) Disable2FaForUser(rw http.ResponseWriter, r *http
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
+		tracer.LogError(span, err)
 		http.Error(rw, "Error decoding request", http.StatusBadRequest)
 		return
 	}
@@ -209,7 +209,6 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 	user, err := a.userService.GetByUsername(loginRequest.Username, ctx)
 
 	if err != nil {
-		tracer.LogError(span, err)
 		http.Error(rw, "Invalid credentials!", http.StatusBadRequest)
 		a.logError.Logger.WithFields(logrus.Fields{
 			"user":   loginRequest.Username,
@@ -247,7 +246,6 @@ func (a AuthenticationHandler) AuthenticateUser(rw http.ResponseWriter, r *http.
 	twofa, err := a.tfaService.Check2FaForUser(loginRequest.Username, ctx)
 
 	if err != nil {
-		tracer.LogError(span, err)
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -285,7 +283,6 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 	userSecret, err := a.tfaService.GetUserSecret(request.Username, ctx)
 
 	if err != nil {
-		tracer.LogError(span, err)
 		http.Error(rw, "Error user secret", http.StatusBadRequest)
 		return
 	}
@@ -311,7 +308,6 @@ func (a AuthenticationHandler) Authenticate2Fa(rw http.ResponseWriter, r *http.R
 
 	ip := ReadUserIP(r)
 	if err != nil {
-		tracer.LogError(span, errors.New("this user has no role"))
 		a.logError.Logger.WithFields(logrus.Fields{
 			"user":   request.Username,
 			"userIP": ip,
@@ -376,6 +372,7 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 
 	err := json.NewDecoder(r.Body).Decode(&loginRequest)
 	if err != nil {
+		tracer.LogError(span, errors.New("decoding login request"))
 		http.Error(rw, "Error decoding loginRequest:"+err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -389,7 +386,6 @@ func (a AuthenticationHandler) AuthenticateUserRegular(rw http.ResponseWriter, r
 
 	ip := ReadUserIP(r)
 	if err != nil {
-		tracer.LogError(span, errors.New("this user has no role"))
 		a.logError.Logger.WithFields(logrus.Fields{
 			"user":   loginRequest.Username,
 			"userIP": ip,
@@ -482,7 +478,6 @@ func (a AuthenticationHandler) PasswordLessLoginReq(rw http.ResponseWriter, r *h
 	user, err := a.userService.GetByUsername(loginRequest.Username, ctx)
 
 	if err != nil {
-		tracer.LogError(span, err)
 		a.logError.Logger.WithFields(logrus.Fields{
 			"user":   loginRequest.Username,
 			"userIP": ip,
@@ -556,7 +551,6 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	user, err := a.userService.GetByUsername(username, ctx)
 
 	if err != nil {
-		tracer.LogError(span, err)
 		a.LogError(ip, user.Username, "USER NOT FOUND")
 		http.Error(rw, "User not found! "+err.Error(), http.StatusBadRequest)
 		return
@@ -588,7 +582,6 @@ func (a AuthenticationHandler) PasswordlessLogin(rw http.ResponseWriter, r *http
 	userRoles, err := a.userService.GetUserRole(username, ctx)
 
 	if err != nil {
-		tracer.LogError(span, errors.New("this user has no role"))
 		a.LogError(ip, user.Username, "THIS USER HAS NO ROLE")
 		http.Error(rw, err.Error(), http.StatusBadRequest)
 		return

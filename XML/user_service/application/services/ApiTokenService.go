@@ -22,7 +22,11 @@ func NewApiTokenService(logInfo *logger.Logger, logError *logger.Logger, userSer
 	return &ApiTokenService{logInfo, logError, userService}
 }
 
-func (s ApiTokenService) GenerateApiToken(user *model.User) (string, error) {
+func (s ApiTokenService) GenerateApiToken(user *model.User, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "GenerateApiToken-Service")
+	defer span.Finish()
+
+	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var claims = &ApiTokenClaims{}
 	claims.Username = user.Username
 	claims.Method = "ShareJobOffer"
@@ -33,21 +37,21 @@ func (s ApiTokenService) GenerateApiToken(user *model.User) (string, error) {
 	var tokenCreationTime = time.Now().UTC()
 	var tokenExpirationTime = tokenCreationTime.Add(time.Duration(720) * time.Hour)
 
-	token, err := generateToken(claims, tokenExpirationTime)
+	token, err := generateToken(claims, tokenExpirationTime, ctx)
 	if err != nil {
 		return "", err
 	}
 	return token, nil
 }
 
-func (s ApiTokenService) CheckIfHasAccess(token string, ctx context.Context) (bool, error) {
-	span := tracer.StartSpanFromContext(ctx, "CheckIfHasAccess")
-	defer span.Finish()
+func (s ApiTokenService) CheckIfHasAccess(token string) (bool, error) {
 
 	return true, nil
 }
 
-func generateToken(claims *ApiTokenClaims, expirationTime time.Time) (string, error) {
+func generateToken(claims *ApiTokenClaims, expirationTime time.Time, ctx context.Context) (string, error) {
+	span := tracer.StartSpanFromContext(ctx, "generateToken")
+	defer span.Finish()
 
 	claims.ExpiresAt = expirationTime.Unix()
 	claims.IssuedAt = time.Now().UTC().Unix()
@@ -58,6 +62,7 @@ func generateToken(claims *ApiTokenClaims, expirationTime time.Time) (string, er
 	mySigningKey := []byte(os.Getenv("SECRET"))
 	tokenString, err := token.SignedString(mySigningKey)
 	if err != nil {
+		tracer.LogError(span, errors.New(err.Error()))
 		return "", err
 	}
 	return tokenString, nil
