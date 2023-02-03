@@ -56,7 +56,7 @@ func (u UserService) GetUsers(ctx context.Context) ([]model.User, error) {
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		fmt.Sprintln("evo ovde sam puko - service")
 		u.logError.Logger.Errorf("ERR:CANT GET USERS")
 		return nil, errors.New("cant get users")
@@ -75,7 +75,7 @@ func (u UserService) GetByUsername(username string, ctx context.Context) (*model
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		u.logError.Logger.Errorf("ERR:INVALID USERNAME:" + username)
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (u UserService) UserExists(username string, ctx context.Context) error {
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		return err
 	}
 	return nil
@@ -191,11 +191,13 @@ func (u UserService) ActivateUserAccount(username string, verCode int, ctx conte
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	var allVerForUsername []model.EmailVerification
 	var dbEr error
+
 	span1 := tracer.StartSpanFromContext(ctx, "ReadVerificationForUser")
 	allVerForUsername, dbEr = u.emailRepo.GetVerificationByUsername(username)
 	span1.Finish()
+
 	if dbEr != nil {
-		tracer.LogError(span1, errors.New(dbEr.Error()))
+		tracer.LogError(span1, dbEr)
 		u.logError.Logger.Errorf("ERR:DB:CODE DOES NOT EXIST FOR USER")
 		return false, dbEr
 	}
@@ -337,7 +339,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 	span1.Finish()
 
 	if dbEr != nil {
-		tracer.LogError(span1, errors.New(dbEr.Error()))
+		tracer.LogError(span1, dbEr)
 		u.logError.Logger.Errorf("ERR:THERE IS NOT A PASS RECOVERY REQUEST IN DATABASE FOR USER:" + username)
 		fmt.Println(dbEr)
 
@@ -373,7 +375,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				span2.Finish()
 
 				if changePassErr != nil {
-					tracer.LogError(span2, errors.New(changePassErr.Error()))
+					tracer.LogError(span2, changePassErr)
 					fmt.Println("error pri cuvanju novog pass")
 					u.logError.Logger.Errorf("ERR:SAVING NEW PASSWORD")
 					return false, changePassErr
@@ -384,7 +386,7 @@ func (u UserService) CreateNewPassword(username string, newHashedPassword string
 				span3.Finish()
 
 				if er != nil {
-					tracer.LogError(span3, errors.New(er.Error()))
+					tracer.LogError(span3, er)
 					fmt.Println(er)
 
 					u.logError.Logger.Errorf("ERR:NO USER")
@@ -419,7 +421,7 @@ func checkEmailValid(email string, ctx context.Context) error {
 
 	emailRegex, err := regexp.Compile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	if err != nil {
-		tracer.LogError(span, errors.New(err.Error()))
+		tracer.LogError(span, err)
 		fmt.Println(err)
 		return errors.New("sorry, something went wrong")
 	}
@@ -498,7 +500,7 @@ func (u UserService) EditUser(userDetails *dto.UserDetails, ctx context.Context)
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		return nil, err
 	}
 	user = api.MapUserDetailsDtoToUser(userDetails, user)
@@ -508,7 +510,7 @@ func (u UserService) EditUser(userDetails *dto.UserDetails, ctx context.Context)
 	span2.Finish()
 
 	if e != nil {
-		tracer.LogError(span2, errors.New(e.Error()))
+		tracer.LogError(span2, e)
 		return nil, e
 	}
 	if !edited {
@@ -542,7 +544,7 @@ func (u UserService) ChangeProfileStatus(username string, newStatus string, ctx 
 	span1.Finish()
 
 	if e != nil {
-		tracer.LogError(span1, errors.New(e.Error()))
+		tracer.LogError(span1, e)
 		return nil, e
 	}
 	if !edited {
@@ -572,7 +574,7 @@ func (u UserService) EditUserPersonalDetails(userPersonalDetails *dto.UserPerson
 	span1.Finish()
 
 	if e != nil {
-		tracer.LogError(span1, errors.New(e.Error()))
+		tracer.LogError(span1, e)
 		return nil, e
 	}
 	if !edited {
@@ -609,7 +611,7 @@ func (u UserService) EditUserProfessionalDetails(userProfessionalDetails *dto.Us
 	span1.Finish()
 
 	if e != nil {
-		tracer.LogError(span1, errors.New(e.Error()))
+		tracer.LogError(span1, e)
 		return nil, e
 	}
 	if !edited {
@@ -668,7 +670,7 @@ func (u UserService) GetById(id uuid.UUID, ctx context.Context) (*model.User, er
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		return nil, err
 	}
 	return user, nil
@@ -684,7 +686,7 @@ func (u UserService) UpdateEmail(user *model.User, ctx context.Context) (*model.
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span, errors.New(err.Error()))
+		tracer.LogError(span, err)
 		return nil, err
 	}
 	if result {
@@ -710,7 +712,7 @@ func (u UserService) UpdateUsername(ctx context.Context, user *model.User) (*mod
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		return nil, err
 	}
 	if result {

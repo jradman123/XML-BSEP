@@ -107,7 +107,7 @@ func (m MessageHandler) GetAllReceived(ctx context.Context, request *pb.GetReque
 }
 
 func (m MessageHandler) SendMessage(ctx context.Context, request *pb.SendMessageRequest) (*pb.MessageSentResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "SendMessage")
+	span := tracer.StartSpanFromContextMetadata(ctx, "SendMessage-Handler")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 

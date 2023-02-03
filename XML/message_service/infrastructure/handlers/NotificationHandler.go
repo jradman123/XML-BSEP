@@ -104,7 +104,7 @@ func (n NotificationHandler) GetSettingsForUser(ctx context.Context, request *pb
 }
 
 func (n NotificationHandler) ChangeSettingsForUser(ctx context.Context, request *pb.ChangeSettingsRequest) (*pb.GetSettingsResponse, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "ChangeSettingsForUser")
+	span := tracer.StartSpanFromContextMetadata(ctx, "ChangeSettingsForUser-Handler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -113,6 +113,7 @@ func (n NotificationHandler) ChangeSettingsForUser(ctx context.Context, request 
 	fmt.Println(*request.Settings)
 
 	settingsMapped := api.MapChangeSettingsRequest(request)
+
 	span1 := tracer.StartSpanFromContext(ctx, "WriteChangedSettingsForUser")
 	settings, err := n.userService.ChangeSettingsForUser(request.Username, settingsMapped)
 	span1.Finish()
@@ -129,7 +130,7 @@ func (n NotificationHandler) ChangeSettingsForUser(ctx context.Context, request 
 }
 
 func (n NotificationHandler) MarkAsRead(ctx context.Context, request *pb.MarkAsReadRequest) (*pb.Empty, error) {
-	span := tracer.StartSpanFromContextMetadata(ctx, "MarkAsRead")
+	span := tracer.StartSpanFromContextMetadata(ctx, "MarkAsRead-Handler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

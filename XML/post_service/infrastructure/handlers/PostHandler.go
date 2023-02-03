@@ -7,7 +7,6 @@ import (
 	notificationProto "common/module/proto/notification_service"
 	pb "common/module/proto/posts_service"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/sirupsen/logrus"
@@ -41,7 +40,7 @@ func (p PostHandler) GetAllByUsername(ctx context.Context, request *pb.GetReques
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 
-	span1 := tracer.StartSpanFromContext(ctx, "ReadAllForUsers")
+	span1 := tracer.StartSpanFromContext(ctx, "ReadAllPostsForUsers")
 	posts, err := p.postService.GetAllByUsername(request.Id)
 	span1.Finish()
 
@@ -125,7 +124,7 @@ func (p PostHandler) CheckLikedStatus(ctx context.Context, request *pb.UserReact
 	ctx = tracer.ContextWithSpan(context.Background(), span)
 	objectId, err := primitive.ObjectIDFromHex(request.Id)
 	if err != nil {
-		tracer.LogError(span, errors.New(err.Error()))
+		tracer.LogError(span, err)
 		panic(err)
 	}
 
@@ -166,7 +165,7 @@ func (p PostHandler) CheckLikedStatus(ctx context.Context, request *pb.UserReact
 func (p PostHandler) Create(ctx context.Context, request *pb.CreatePostRequest) (*pb.Empty, error) {
 	//userNameCtx := fmt.Sprintf(ctx.Value(interceptor.LoggedInUserKey{}).(string))
 	//request = p.sanitizePost(request, userNameCtx)
-	span := tracer.StartSpanFromContextMetadata(ctx, "CreatePost-Handler")
+	span := tracer.StartSpanFromContextMetadata(ctx, "Create-Handler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)
@@ -424,7 +423,7 @@ func (p PostHandler) GetAllReactionsForPost(ctx context.Context, request *pb.Get
 func (p PostHandler) GetAllCommentsForPost(ctx context.Context, request *pb.GetRequest) (*pb.GetAllCommentsResponse, error) {
 	//request = p.sanitizeGetRequest(request)
 
-	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllCommentsForPost")
+	span := tracer.StartSpanFromContextMetadata(ctx, "GetAllCommentsForPost-Handler")
 	defer span.Finish()
 
 	ctx = tracer.ContextWithSpan(context.Background(), span)

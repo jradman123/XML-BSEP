@@ -338,7 +338,6 @@ func (u UserHandler) SendRequestForPasswordRecovery(ctx context.Context, request
 
 	codeSent, codeErr := u.service.SendCodeToRecoveryMail(requestUsername, ctx)
 	if codeErr != nil {
-		tracer.LogError(span, codeErr)
 		return &pb.PasswordRecoveryResponse{CodeSent: false}, codeErr
 	}
 	if !codeSent {
@@ -402,7 +401,7 @@ func (u UserHandler) RecoverPassword(ctx context.Context, request *pb.NewPasswor
 		hashedSaltedPassword = string(pass)
 
 	} else {
-		tracer.LogError(span, errors.New("password firmat is invalid"))
+		tracer.LogError(span, errors.New("password format is invalid"))
 		fmt.Println("Password format is not valid!")
 		u.logError.Logger.Errorf("ERR:PASSWORD FORMAT NOT VALID")
 		return &pb.NewPasswordResponse{PasswordChanged: false}, errors.New("password format is not valid")

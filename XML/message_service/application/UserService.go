@@ -56,7 +56,7 @@ func (s UserService) AllowedNotificationForUser(username string, notificationTyp
 	span := tracer.StartSpanFromContext(ctx, "AllowedNotificationForUser")
 	defer span.Finish()
 	ctx = tracer.ContextWithSpan(context.Background(), span)
-	span1 := tracer.StartSpanFromContext(ctx, "AllowedNotificationForUser")
+	span1 := tracer.StartSpanFromContext(ctx, "ReadNotificationSettingsForUser")
 	settings, err := s.repository.GetSettingsForUser(username)
 	span1.Finish()
 	switch notificationType {

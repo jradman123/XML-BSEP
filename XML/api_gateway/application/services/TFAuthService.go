@@ -55,7 +55,7 @@ func (u TFAuthService) Check2FaForUser(username string, ctx context.Context) (bo
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		return false, err
 	}
 	return res, nil
@@ -113,7 +113,7 @@ func (u TFAuthService) Disable2FaForUser(username string, ctx context.Context) (
 	span1.Finish()
 
 	if err != nil {
-		tracer.LogError(span1, errors.New(err.Error()))
+		tracer.LogError(span1, err)
 		return false, err
 	}
 	return res, nil

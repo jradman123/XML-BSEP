@@ -62,7 +62,7 @@ func generateToken(claims *ApiTokenClaims, expirationTime time.Time, ctx context
 	mySigningKey := []byte(os.Getenv("SECRET"))
 	tokenString, err := token.SignedString(mySigningKey)
 	if err != nil {
-		tracer.LogError(span, errors.New(err.Error()))
+		tracer.LogError(span, err)
 		return "", err
 	}
 	return tokenString, nil
