@@ -74,7 +74,7 @@ func getServiceName(path string) (serviceName string) {
 	} else if strings.EqualFold(partOfPath[1], "users") && (strings.EqualFold(partOfPath[2], "auth") || strings.EqualFold(partOfPath[2], "login") || strings.EqualFold(partOfPath[3], "feed")) {
 		serviceName = "api_gateway"
 	} else {
-		serviceName = "api_gateway"
+		serviceName = "api_gateway2"
 	}
 	return serviceName
 }
