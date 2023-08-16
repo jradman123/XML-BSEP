@@ -29,7 +29,7 @@
     "font-awesome": "^4.7.0",
     "owasp-dependency-check": "^0.0.18",
     "rxjs": "~7.4.0",
-    "zone.js": "~0.11.4"
+    "zone.js": "~0.13.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~13.0.4",
